@@ -20,12 +20,12 @@
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
-OpenVarioFront_SOURCES=OpenVarioFront.cpp 
+OpenVarioFront_SOURCES=OpenVarioFront.cpp $(EGL_SYS_DIR)/sysEGLWindow.cpp
  
 OpenVarioFront_LDADD= $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
-AM_LDFLAGS=$(LOG4CXX_LDFLAGS)
+AM_LDFLAGS=$(LOG4CXX_LDFLAGS) $(EGL_SYS_LIBS)
 

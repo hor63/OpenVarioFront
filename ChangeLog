@@ -1,0 +1,17 @@
+2018-04-24  hor  <horstmannkai@hotmail.com>
+
+	* .autotools: New file.
+	* .cproject: New file.
+	* .gitignore: New file.
+	* .project: New file.
+	* .settings/language.settings.xml: New file.
+	* .settings/org.eclipse.cdt.codan.core.prefs: New file.
+	* config.log: New file.
+	* src/sysEGLWindow.h: New file.
+	* src/X11/sysEGLWindow.cpp: New file.
+	* configure.ac: 
+	* src/Makefile.am: 
+	* src/OpenVarioFront.cpp: 
+	  Project skeleton and build framework
+	  Start X11 system specific function to create a window for EGL. 
+	  

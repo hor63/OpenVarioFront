@@ -29,9 +29,16 @@
 #  include <config.h>
 #endif
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
-int main(int argint,char** argv) {
-	int rc = 0;
 
-	return rc;
+#include "sysEGLWindow.h"
+
+void openNativeWindow(EGLNativeDisplayType& display,
+		EGLNativeWindowType& window, GLint width, GLint height,
+		char const* windowName, char const* displayName) {
+
+	Display* xDisplay = XOpenDisplay(NULL);
+
 }
