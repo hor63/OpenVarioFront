@@ -38,7 +38,7 @@ int main(int argint,char** argv) {
 	EGLNativeDisplayType disp;
 	EGLNativeWindowType win;
 
-	OpenVarioFront::openNativeWindow(disp,win,320,240,PACKAGE_STRING,NULL);
+	OevGLES::openNativeWindow(disp,win,320,240,PACKAGE_STRING,NULL);
 
 	sleep(10);
 

@@ -27,7 +27,7 @@
 
 #include "ExceptionBase.h"
 
-namespace OpenVarioFront {
+namespace OevGLES {
 
 
 ExceptionBase::~ExceptionBase() {
@@ -38,4 +38,4 @@ const char* ExceptionBase::what() const noexcept {
 }
 
 
-} /* namespace OpenVarioFront */
+} /* namespace OevGLES */

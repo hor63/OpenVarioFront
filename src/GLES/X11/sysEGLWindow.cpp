@@ -37,7 +37,7 @@
 #include <sstream>
 #include <memory.h>
 
-namespace OpenVarioFront {
+namespace OevGLES {
 
 void openNativeWindow(EGLNativeDisplayType& display,
 		EGLNativeWindowType& window, GLint width, GLint height,
@@ -120,4 +120,4 @@ void openNativeWindow(EGLNativeDisplayType& display,
 
 }
 
-} // namespace OpenVarioFront
+} // namespace OevGLES

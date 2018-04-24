@@ -31,7 +31,7 @@
 #include <exception>
 #include <string>
 
-namespace OpenVarioFront {
+namespace OevGLES {
 
 class ExceptionBase :public std::exception {
 public:
@@ -47,6 +47,6 @@ private:
 	 std::string description;
 };
 
-} /* namespace OpenVarioFront */
+} /* namespace OevGLES */
 
 #endif /* SRC_EXCEPTIONBASE_H_ */

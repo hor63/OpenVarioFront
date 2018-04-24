@@ -33,7 +33,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
 
-namespace OpenVarioFront {
+namespace OevGLES {
 
 
 /** \brief Obtains the default system display, and opens a window within
@@ -54,7 +54,7 @@ void openNativeWindow(EGLNativeDisplayType& display,
 		char const* windowName = NULL,
 		char const* displayName = NULL);
 
-} // namespace OpenVarioFront
+} // namespace OevGLES
 
 
 #ifndef SRC_SYSEGLWINDOW_H_
