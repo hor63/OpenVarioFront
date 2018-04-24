@@ -1,5 +1,12 @@
 2018-04-24  hor  <horstmannkai@hotmail.com>
 
+	* src/GLES/EGLRenderSurface.cpp: New file.
+	* src/GLES/EGLRenderSurface.h: New file.
+	* src/GLES/Makefile.am: 
+	  Add class EGLRenderSurface
+	  
+2018-04-24  hor  <horstmannkai@hotmail.com>
+
 	* .autotools: New file.
 	* .cproject: New file.
 	* .gitignore: New file.

@@ -19,7 +19,7 @@
 	
 
 noinst_LIBRARIES = libOEV_GLES.a
-libOEV_GLES_a_SOURCES = $(EGL_SYS_DIR)/sysEGLWindow.cpp ExceptionBase.cpp
+libOEV_GLES_a_SOURCES = $(EGL_SYS_DIR)/sysEGLWindow.cpp EGLRenderSurface.cpp ExceptionBase.cpp
 
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES $(LOG4CXX_CXXFLAGS) \
