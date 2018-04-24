@@ -1,10 +1,10 @@
 /*
- *  OpenVarioFront.cpp
+ *  ExceptionBase.cpp
  *
- *  start module. Contains the main() function. Startup, initialization, and start of the main loop.
+ *  Created on: Apr 24, 2018
+ *      Author: kai_horstmann
  *
- *  Created on: Apr 23, 2018
- *      Author: hor
+ *  Exception classes which can be thrown throughout this program
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2018  Kai Horstmann
@@ -25,22 +25,17 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include "ExceptionBase.h"
 
-#include <unistd.h>
+namespace OpenVarioFront {
 
-#include "sysEGLWindow.h"
 
-int main(int argint,char** argv) {
-	int rc = 0;
-	EGLNativeDisplayType disp;
-	EGLNativeWindowType win;
-
-	OpenVarioFront::openNativeWindow(disp,win,320,240,PACKAGE_STRING,NULL);
-
-	sleep(10);
-
-	return rc;
+ExceptionBase::~ExceptionBase() {
 }
+
+const char* ExceptionBase::what() const noexcept {
+	return description.c_str();
+}
+
+
+} /* namespace OpenVarioFront */

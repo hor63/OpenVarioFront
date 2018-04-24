@@ -1,7 +1,7 @@
 /*
- *  OpenVarioFront.cpp
+ *  sysEGLWindow.h
  *
- *  start module. Contains the main() function. Startup, initialization, and start of the main loop.
+ *  Declare system dependent functions to obtain the EGLNativeDisplay and EGLNativeWindow, and input functions
  *
  *  Created on: Apr 23, 2018
  *      Author: hor
@@ -33,23 +33,29 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
 
+namespace OpenVarioFront {
+
+
 /** \brief Obtains the default system display, and opens a window within
  *
  * The function obtains the default system display, and opens a window with the passed dimensions \ref width and \ref height.
  * If width and heights are both 0 the function tries to open the window full-screen.
  *
  * @param[out] display The display to which EGL interfaces
- * @param window A new window which this call opens; into this window's surface OpenGL ES2 wil draw.
- * @param width Width of the window in the display dimension, usually in Pixel
- * @param height Height of the window in the display dimension, usually in Pixel
- * @param windowName Title of the window. Is only relevant for windows based systems which have borders and a window title.
- * @param displayName Optional. System dependent. If omitted the default display is used. Only useful on multiple headed systems with multiple monitors.
+ * @param[out] window A new window which this call opens; into this window's surface OpenGL ES2 wil draw.
+ * @param[in] width Width of the window in the display dimension, usually in Pixel
+ * @param[in] height Height of the window in the display dimension, usually in Pixel
+ * @param[in] windowName Title of the window. Is only relevant for windows based systems which have borders and a window title.
+ * @param[in] displayName Optional. System dependent. If omitted the default display is used. Only useful on multiple headed systems with multiple monitors.
  */
 void openNativeWindow(EGLNativeDisplayType& display,
 		EGLNativeWindowType& window,
 		GLint width = 0,GLint height = 0,
 		char const* windowName = NULL,
 		char const* displayName = NULL);
+
+} // namespace OpenVarioFront
+
 
 #ifndef SRC_SYSEGLWINDOW_H_
 #define SRC_SYSEGLWINDOW_H_

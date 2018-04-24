@@ -20,7 +20,7 @@
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
-OpenVarioFront_SOURCES=OpenVarioFront.cpp $(EGL_SYS_DIR)/sysEGLWindow.cpp
+OpenVarioFront_SOURCES=OpenVarioFront.cpp $(EGL_SYS_DIR)/sysEGLWindow.cpp ExceptionBase.cpp
  
 OpenVarioFront_LDADD= $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
