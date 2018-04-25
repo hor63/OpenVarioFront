@@ -32,10 +32,13 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include "sysEGLWindow.h"
-#include "ExceptionBase.h"
 #include <sstream>
 #include <memory.h>
+
+#include "OVFCommon.h"
+
+#include "sysEGLWindow.h"
+#include "ExceptionBase.h"
 
 namespace OevGLES {
 
@@ -51,6 +54,11 @@ void openNativeWindow(EGLNativeDisplayType& display,
     XWMHints wmHints;
     Atom wmState;
     XEvent xEv;
+#if defined HAVE_LOG4CXX_H
+    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");;
+#endif
+
+    LOG4CXX_DEBUG(logger,"display = " << display);
 
 	if (!display) {
 		errString << "XOpenDisplay (";
@@ -61,12 +69,13 @@ void openNativeWindow(EGLNativeDisplayType& display,
 		}
 		errString << " returned NULL. No X11 Display available.";
 
-		throw ExceptionBase(errString.str().c_str());
+		throw NativeWindowException(errString.str().c_str());
 	}
 
 	rootWindow = XDefaultRootWindow(display);
+    LOG4CXX_DEBUG(logger,"rootWindow = " << rootWindow);
 	if (!rootWindow) {
-		throw ExceptionBase("Cannot obtain root window");
+		throw NativeWindowException("Cannot obtain root window");
 	}
 
 	winAttr.event_mask =  ExposureMask | PointerMotionMask | KeyPressMask;
@@ -84,8 +93,9 @@ void openNativeWindow(EGLNativeDisplayType& display,
 			CWEventMask | CWOverrideRedirect, // value mask
             &winAttr);
 
-	if (!rootWindow) {
-		throw ExceptionBase("Cannot obtain root window");
+    LOG4CXX_DEBUG(logger,"window = " << window);
+	if (!window) {
+		throw NativeWindowException("Cannot open window");
 	}
 
 	wmHints.input = 1;

@@ -26,16 +26,43 @@
 #ifndef GLES_EGLRENDERSURFACE_H_
 #define GLES_EGLRENDERSURFACE_H_
 
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <EGL/eglplatform.h>
+
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+
+
+#include "OVFCommon.h"
+
 namespace OevGLES {
 
 class EGLRenderSurface {
 public:
-	EGLRenderSurface() {
-		// TODO Auto-generated constructor stub
+	EGLRenderSurface();
 
-	}
 	virtual ~EGLRenderSurface();
+
+	void createRenderSurface (GLint width, GLint height,
+			char const* windowName = 0, char const* displayName = 0);
+
+protected:
+
+#if defined HAVE_LOG4CXX_H
+    log4cxx::LoggerPtr logger;
+#endif
+
+    EGLNativeDisplayType	nativeDisplay = 0;
+    EGLNativeWindowType		nativeWindow = 0;
+    EGLDisplay				eglDisplay = EGL_NO_DISPLAY;
+
+    EGLint eglMajorVersion = 0;
+    EGLint eglMinorVersion = 0;
 };
+
+
 
 } /* namespace OevGLES */
 

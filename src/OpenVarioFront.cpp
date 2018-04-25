@@ -31,14 +31,25 @@
 
 #include <unistd.h>
 
-#include "sysEGLWindow.h"
+#include "OVFCommon.h"
+
+#include "GLES/EGLRenderSurface.h"
 
 int main(int argint,char** argv) {
 	int rc = 0;
-	EGLNativeDisplayType disp;
-	EGLNativeWindowType win;
 
-	OevGLES::openNativeWindow(disp,win,320,240,PACKAGE_STRING,NULL);
+#if defined HAVE_LOG4CXX_H
+	// create a basic configuration as fallback
+	log4cxx::BasicConfigurator::configure();
+
+    // The configuration file (when I can load it) will overwrite the command line settings.
+    log4cxx::PropertyConfigurator::configure(log4cxx::File("OpenVarioFront.logger.properties"));
+#endif // if defined HAVE_LOG4CXX_H
+
+
+	OevGLES::EGLRenderSurface eglSurface;
+
+	eglSurface.createRenderSurface(320,240,PACKAGE_STRING);
 
 	sleep(10);
 

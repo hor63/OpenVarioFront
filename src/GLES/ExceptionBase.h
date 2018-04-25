@@ -47,6 +47,26 @@ private:
 	 std::string description;
 };
 
+class NativeWindowException :public ExceptionBase {
+
+public:
+	NativeWindowException(char const *description)
+		:ExceptionBase {description}
+		{}
+	virtual ~NativeWindowException();
+
+};
+
+class EGLException :public ExceptionBase {
+
+public:
+	EGLException(char const *description)
+		:ExceptionBase {description}
+		{}
+	virtual ~EGLException();
+
+};
+
 } /* namespace OevGLES */
 
 #endif /* SRC_EXCEPTIONBASE_H_ */

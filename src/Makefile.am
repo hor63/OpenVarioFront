@@ -20,12 +20,16 @@ SUBDIRS=GLES
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
-OpenVarioFront_SOURCES=OpenVarioFront.cpp
+OpenVarioFront_SOURCES=OpenVarioFront.cpp  
  
-OpenVarioFront_LDADD= $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+OpenVarioFront_LDADD= GLES/libOEV_GLES.a -lGLESv2 -lEGL -lGLESv2 -lEGL $(EGL_SYS_LIBS) $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES $(LOG4CXX_CXXFLAGS) \
+AM_CXXFLAGS = -I$(top_srcdir)/src $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
-AM_LDFLAGS= GLES/libOEV_GLES.a $(LOG4CXX_LDFLAGS) $(EGL_SYS_LIBS)
+AM_LDFLAGS=  $(LOG4CXX_LDFLAGS) 
 
+all: $(abs_builddir)/OpenVarioFront.logger.properties
+
+$(abs_builddir)/OpenVarioFront.logger.properties: $(srcdir)/OpenVarioFront.logger.properties
+	cp $(srcdir)/OpenVarioFront.logger.properties $(abs_builddir)/OpenVarioFront.logger.properties

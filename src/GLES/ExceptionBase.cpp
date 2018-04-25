@@ -37,5 +37,9 @@ const char* ExceptionBase::what() const noexcept {
 	return description.c_str();
 }
 
+NativeWindowException::~NativeWindowException() {}
+
+EGLException::~EGLException() {}
+
 
 } /* namespace OevGLES */
