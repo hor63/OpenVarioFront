@@ -34,6 +34,7 @@
 
 namespace OevGLES {
 
+
 EGLRenderSurface::EGLRenderSurface()
 #if defined HAVE_LOG4CXX_H
     :logger{log4cxx::Logger::getLogger("OpenVarioFront.EGLRenderSurface")}
@@ -74,86 +75,28 @@ void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
 
     	LOG4CXX_DEBUG(logger,"Number of configurations = " << numConfigs);
         configs = new EGLConfig[numConfigs];
-        eglGetConfigs(eglDisplay,configs,numConfigs,&numReturnedConfigs);
 
-        for (EGLint i = 0; i < numReturnedConfigs; i++) {
+        EGLint attribList [] = {
+        		EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
+        		EGL_RENDERABLE_TYPE	, EGL_OPENGL_ES2_BIT,
+				EGL_RED_SIZE 		, 8,
+				EGL_GREEN_SIZE		, 8,
+				EGL_BLUE_SIZE		, 8,
+				EGL_ALPHA_SIZE		, 8,
+				EGL_DEPTH_SIZE		, 16,
+				EGL_NONE
+        };
 
-        	struct TConfigAttrs {
-        		char const * attrName;
-        		EGLint attrVal;
-        	} configAttrs[32];
+        if (eglChooseConfig(eglDisplay,attribList,configs,numConfigs,&numReturnedConfigs)){
+#if defined HAVE_LOG4CXX_H
+			if (logger->getLevel() == log4cxx::Level::getDebug()) {
+				debugPrintConfig (configs,numReturnedConfigs);
+			}
 
-        	#define queryConfigAttr(attr,k) {eglGetConfigAttrib(eglDisplay,configs[i],attr,&configAttrs[k].attrVal); \
-											configAttrs[k].attrName = #attr; }
+#endif // if defined HAVE_LOG4CXX_H
 
-        	queryConfigAttr(EGL_CONFIG_ID,0)
-        	queryConfigAttr(EGL_BUFFER_SIZE,1)
-        	queryConfigAttr(EGL_RED_SIZE,2)
-        	queryConfigAttr(EGL_GREEN_SIZE,3)
-        	queryConfigAttr(EGL_BLUE_SIZE,4)
-        	queryConfigAttr(EGL_LUMINANCE_SIZE,5)
-        	queryConfigAttr(EGL_ALPHA_SIZE,6)
-        	queryConfigAttr(EGL_ALPHA_MASK_SIZE,7)
-        	queryConfigAttr(EGL_BIND_TO_TEXTURE_RGB,8)
-        	queryConfigAttr(EGL_BIND_TO_TEXTURE_RGBA,9)
-        	queryConfigAttr(EGL_COLOR_BUFFER_TYPE,10)
-        	queryConfigAttr(EGL_CONFIG_CAVEAT,11)
-        	queryConfigAttr(EGL_CONFORMANT,12)
-        	queryConfigAttr(EGL_DEPTH_SIZE,13)
-        	queryConfigAttr(EGL_LEVEL,14)
-        	queryConfigAttr(EGL_MAX_PBUFFER_WIDTH,15)
-        	queryConfigAttr(EGL_MAX_PBUFFER_HEIGHT,16)
-        	queryConfigAttr(EGL_MAX_PBUFFER_PIXELS,17)
-        	queryConfigAttr(EGL_MAX_SWAP_INTERVAL,18)
-        	queryConfigAttr(EGL_MIN_SWAP_INTERVAL,19)
-        	queryConfigAttr(EGL_NATIVE_RENDERABLE,20)
-        	queryConfigAttr(EGL_NATIVE_VISUAL_ID,21)
-        	queryConfigAttr(EGL_NATIVE_VISUAL_TYPE,22)
-        	queryConfigAttr(EGL_RENDERABLE_TYPE,23)
-        	queryConfigAttr(EGL_SAMPLE_BUFFERS,24)
-        	queryConfigAttr(EGL_SAMPLES,25)
-        	queryConfigAttr(EGL_STENCIL_SIZE,26)
-        	queryConfigAttr(EGL_SURFACE_TYPE,27)
-        	queryConfigAttr(EGL_TRANSPARENT_TYPE,28)
-        	queryConfigAttr(EGL_TRANSPARENT_RED_VALUE,29)
-        	queryConfigAttr(EGL_TRANSPARENT_GREEN_VALUE,30)
-        	queryConfigAttr(EGL_TRANSPARENT_BLUE_VALUE,31)
-
-        	LOG4CXX_DEBUG(logger,"Configuration [ = " << i << "] = \n" <<
-        			"\t\t\t" << configAttrs[0].attrName << " =\t" << configAttrs[0].attrVal << "\n"
-        			"\t\t\t" << configAttrs[1].attrName << " =\t" << configAttrs[1].attrVal << "\n"
-        			"\t\t\t" << configAttrs[2].attrName << " =\t" << configAttrs[2].attrVal << "\n"
-        			"\t\t\t" << configAttrs[3].attrName << " =\t" << configAttrs[3].attrVal << "\n"
-        			"\t\t\t" << configAttrs[4].attrName << " =\t" << configAttrs[4].attrVal << "\n"
-        			"\t\t\t" << configAttrs[5].attrName << " =\t" << configAttrs[5].attrVal << "\n"
-        			"\t\t\t" << configAttrs[6].attrName << " =\t" << configAttrs[6].attrVal << "\n"
-        			"\t\t\t" << configAttrs[7].attrName << " =\t" << configAttrs[7].attrVal << "\n"
-        			"\t\t\t" << configAttrs[8].attrName << " =\t" << configAttrs[8].attrVal << "\n"
-        			"\t\t\t" << configAttrs[9].attrName << " =\t" << configAttrs[9].attrVal << "\n"
-        			"\t\t\t" << configAttrs[10].attrName << " =\t" << configAttrs[10].attrVal << "\n"
-        			"\t\t\t" << configAttrs[11].attrName << " =\t" << configAttrs[11].attrVal << "\n"
-        			"\t\t\t" << configAttrs[12].attrName << " =\t" << configAttrs[12].attrVal << "\n"
-        			"\t\t\t" << configAttrs[13].attrName << " =\t" << configAttrs[13].attrVal << "\n"
-        			"\t\t\t" << configAttrs[14].attrName << " =\t" << configAttrs[14].attrVal << "\n"
-        			"\t\t\t" << configAttrs[15].attrName << " =\t" << configAttrs[15].attrVal << "\n"
-        			"\t\t\t" << configAttrs[16].attrName << " =\t" << configAttrs[16].attrVal << "\n"
-        			"\t\t\t" << configAttrs[17].attrName << " =\t" << configAttrs[17].attrVal << "\n"
-        			"\t\t\t" << configAttrs[18].attrName << " =\t" << configAttrs[18].attrVal << "\n"
-        			"\t\t\t" << configAttrs[19].attrName << " =\t" << configAttrs[19].attrVal << "\n"
-        			"\t\t\t" << configAttrs[20].attrName << " =\t" << configAttrs[20].attrVal << "\n"
-        			"\t\t\t" << configAttrs[21].attrName << " =\t" << configAttrs[21].attrVal << "\n"
-        			"\t\t\t" << configAttrs[22].attrName << " =\t" << configAttrs[22].attrVal << "\n"
-        			"\t\t\t" << configAttrs[23].attrName << " =\t" << configAttrs[23].attrVal << "\n"
-        			"\t\t\t" << configAttrs[24].attrName << " =\t" << configAttrs[24].attrVal << "\n"
-        			"\t\t\t" << configAttrs[25].attrName << " =\t" << configAttrs[25].attrVal << "\n"
-        			"\t\t\t" << configAttrs[26].attrName << " =\t" << configAttrs[26].attrVal << "\n"
-        			"\t\t\t" << configAttrs[27].attrName << " =\t" << configAttrs[27].attrVal << "\n"
-        			"\t\t\t" << configAttrs[28].attrName << " =\t" << configAttrs[28].attrVal << "\n"
-        			"\t\t\t" << configAttrs[29].attrName << " =\t" << configAttrs[29].attrVal << "\n"
-        			"\t\t\t" << configAttrs[30].attrName << " =\t" << configAttrs[30].attrVal << "\n"
-        			"\t\t\t" << configAttrs[31].attrName << " =\t" << configAttrs[31].attrVal << "\n"
-        			);
-
+        } else {
+        	throw EGLException("Could not retrieve valid EGL configuration");
         }
 
         delete configs;
@@ -161,5 +104,91 @@ void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
     }
 
 }
+
+#if defined HAVE_LOG4CXX_H
+
+void EGLRenderSurface::debugPrintConfig (EGLConfig *configs,EGLint numReturnedConfigs) {
+	for (EGLint i = 0; i < numReturnedConfigs; i++) {
+
+		struct TConfigAttrs {
+			char const * attrName;
+			EGLint attrVal;
+		} configAttrs[32];
+
+		#define queryConfigAttr(attr,k) {eglGetConfigAttrib(eglDisplay,configs[i],attr,&configAttrs[k].attrVal); \
+										configAttrs[k].attrName = #attr; }
+
+		queryConfigAttr(EGL_CONFIG_ID,0)
+		queryConfigAttr(EGL_BUFFER_SIZE,1)
+		queryConfigAttr(EGL_RED_SIZE,2)
+		queryConfigAttr(EGL_GREEN_SIZE,3)
+		queryConfigAttr(EGL_BLUE_SIZE,4)
+		queryConfigAttr(EGL_LUMINANCE_SIZE,5)
+		queryConfigAttr(EGL_ALPHA_SIZE,6)
+		queryConfigAttr(EGL_ALPHA_MASK_SIZE,7)
+		queryConfigAttr(EGL_BIND_TO_TEXTURE_RGB,8)
+		queryConfigAttr(EGL_BIND_TO_TEXTURE_RGBA,9)
+		queryConfigAttr(EGL_COLOR_BUFFER_TYPE,10)
+		queryConfigAttr(EGL_CONFIG_CAVEAT,11)
+		queryConfigAttr(EGL_CONFORMANT,12)
+		queryConfigAttr(EGL_DEPTH_SIZE,13)
+		queryConfigAttr(EGL_LEVEL,14)
+		queryConfigAttr(EGL_MAX_PBUFFER_WIDTH,15)
+		queryConfigAttr(EGL_MAX_PBUFFER_HEIGHT,16)
+		queryConfigAttr(EGL_MAX_PBUFFER_PIXELS,17)
+		queryConfigAttr(EGL_MAX_SWAP_INTERVAL,18)
+		queryConfigAttr(EGL_MIN_SWAP_INTERVAL,19)
+		queryConfigAttr(EGL_NATIVE_RENDERABLE,20)
+		queryConfigAttr(EGL_NATIVE_VISUAL_ID,21)
+		queryConfigAttr(EGL_NATIVE_VISUAL_TYPE,22)
+		queryConfigAttr(EGL_RENDERABLE_TYPE,23)
+		queryConfigAttr(EGL_SAMPLE_BUFFERS,24)
+		queryConfigAttr(EGL_SAMPLES,25)
+		queryConfigAttr(EGL_STENCIL_SIZE,26)
+		queryConfigAttr(EGL_SURFACE_TYPE,27)
+		queryConfigAttr(EGL_TRANSPARENT_TYPE,28)
+		queryConfigAttr(EGL_TRANSPARENT_RED_VALUE,29)
+		queryConfigAttr(EGL_TRANSPARENT_GREEN_VALUE,30)
+		queryConfigAttr(EGL_TRANSPARENT_BLUE_VALUE,31)
+
+		LOG4CXX_DEBUG(logger,"Configuration [ = " << i << "] = \n" <<
+				"\t\t\t" << configAttrs[0].attrName << " =\t" << configAttrs[0].attrVal << "\n"
+				"\t\t\t" << configAttrs[1].attrName << " =\t" << configAttrs[1].attrVal << "\n"
+				"\t\t\t" << configAttrs[2].attrName << " =\t" << configAttrs[2].attrVal << "\n"
+				"\t\t\t" << configAttrs[3].attrName << " =\t" << configAttrs[3].attrVal << "\n"
+				"\t\t\t" << configAttrs[4].attrName << " =\t" << configAttrs[4].attrVal << "\n"
+				"\t\t\t" << configAttrs[5].attrName << " =\t" << configAttrs[5].attrVal << "\n"
+				"\t\t\t" << configAttrs[6].attrName << " =\t" << configAttrs[6].attrVal << "\n"
+				"\t\t\t" << configAttrs[7].attrName << " =\t" << configAttrs[7].attrVal << "\n"
+				"\t\t\t" << configAttrs[8].attrName << " =\t" << configAttrs[8].attrVal << "\n"
+				"\t\t\t" << configAttrs[9].attrName << " =\t" << configAttrs[9].attrVal << "\n"
+				"\t\t\t" << configAttrs[10].attrName << " =\t" << configAttrs[10].attrVal << "\n"
+				"\t\t\t" << configAttrs[11].attrName << " =\t" << configAttrs[11].attrVal << "\n"
+				"\t\t\t" << configAttrs[12].attrName << " =\t" << configAttrs[12].attrVal << "\n"
+				"\t\t\t" << configAttrs[13].attrName << " =\t" << configAttrs[13].attrVal << "\n"
+				"\t\t\t" << configAttrs[14].attrName << " =\t" << configAttrs[14].attrVal << "\n"
+				"\t\t\t" << configAttrs[15].attrName << " =\t" << configAttrs[15].attrVal << "\n"
+				"\t\t\t" << configAttrs[16].attrName << " =\t" << configAttrs[16].attrVal << "\n"
+				"\t\t\t" << configAttrs[17].attrName << " =\t" << configAttrs[17].attrVal << "\n"
+				"\t\t\t" << configAttrs[18].attrName << " =\t" << configAttrs[18].attrVal << "\n"
+				"\t\t\t" << configAttrs[19].attrName << " =\t" << configAttrs[19].attrVal << "\n"
+				"\t\t\t" << configAttrs[20].attrName << " =\t" << configAttrs[20].attrVal << "\n"
+				"\t\t\t" << configAttrs[21].attrName << " =\t" << configAttrs[21].attrVal << "\n"
+				"\t\t\t" << configAttrs[22].attrName << " =\t" << configAttrs[22].attrVal << "\n"
+				"\t\t\t" << configAttrs[23].attrName << " =\t" << configAttrs[23].attrVal << "\n"
+				"\t\t\t" << configAttrs[24].attrName << " =\t" << configAttrs[24].attrVal << "\n"
+				"\t\t\t" << configAttrs[25].attrName << " =\t" << configAttrs[25].attrVal << "\n"
+				"\t\t\t" << configAttrs[26].attrName << " =\t" << configAttrs[26].attrVal << "\n"
+				"\t\t\t" << configAttrs[27].attrName << " =\t" << configAttrs[27].attrVal << "\n"
+				"\t\t\t" << configAttrs[28].attrName << " =\t" << configAttrs[28].attrVal << "\n"
+				"\t\t\t" << configAttrs[29].attrName << " =\t" << configAttrs[29].attrVal << "\n"
+				"\t\t\t" << configAttrs[30].attrName << " =\t" << configAttrs[30].attrVal << "\n"
+				"\t\t\t" << configAttrs[31].attrName << " =\t" << configAttrs[31].attrVal << "\n"
+				);
+
+	}
+}
+
+#endif // if defined HAVE_LOG4CXX_H
 
 } /* namespace OevGLES */

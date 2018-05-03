@@ -48,6 +48,11 @@ public:
 	void createRenderSurface (GLint width, GLint height,
 			char const* windowName = 0, char const* displayName = 0);
 
+#if defined HAVE_LOG4CXX_H
+	void debugPrintConfig (EGLConfig *configs,EGLint numReturnedConfigs);
+#endif // if defined HAVE_LOG4CXX_H
+
+
 protected:
 
 #if defined HAVE_LOG4CXX_H
