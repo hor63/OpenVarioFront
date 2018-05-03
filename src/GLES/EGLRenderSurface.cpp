@@ -27,6 +27,7 @@
 #  include <config.h>
 #endif
 
+#include <sstream>
 
 #include "GLES/EGLRenderSurface.h"
 #include "GLES/sysEGLWindow.h"
@@ -50,8 +51,7 @@ EGLRenderSurface::~EGLRenderSurface() {
 
 void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
 		char const* windowName, char const* displayName) {
-	EGLint numConfigs = 0;
-	EGLConfig *configs;
+	EGLConfig config = EGL_NO_CONFIG_KHR;
 
 
 	openNativeWindow(nativeDisplay,nativeWindow,
@@ -61,20 +61,22 @@ void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
     LOG4CXX_DEBUG(logger,"eglDisplay = " << eglDisplay);
 
 	if (eglDisplay == EGL_NO_DISPLAY) {
-		throw EGLException("Cannot get an EGL display");
+		std::ostringstream errStr;
+		errStr << "Cannot get an EGL display. Error = " << eglGetError();
+
+		throw EGLException(errStr.str().c_str());
 	}
 
 	if (eglInitialize(eglDisplay,&eglMajorVersion,&eglMinorVersion) == EGL_FALSE) {
-		throw EGLException("Cannot initialize EGL");
+		std::ostringstream errStr;
+		errStr << "Cannot initialize EGL. Error = " << eglGetError();
+
+		throw EGLException(errStr.str().c_str());
 	}
     LOG4CXX_INFO(logger,"Initialized EGL. EGL Version = " << eglMajorVersion << '.' << eglMinorVersion);
 
-    eglGetConfigs(eglDisplay,0,0,&numConfigs);
-    if (logger->getLevel() == log4cxx::Level::getDebug()) {
+    {
     	EGLint numReturnedConfigs = 0;
-
-    	LOG4CXX_DEBUG(logger,"Number of configurations = " << numConfigs);
-        configs = new EGLConfig[numConfigs];
 
         EGLint attribList [] = {
         		EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
@@ -87,21 +89,83 @@ void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
 				EGL_NONE
         };
 
-        if (eglChooseConfig(eglDisplay,attribList,configs,numConfigs,&numReturnedConfigs)){
+        if (eglChooseConfig(eglDisplay,attribList,&config,1,&numReturnedConfigs)){
 #if defined HAVE_LOG4CXX_H
 			if (logger->getLevel() == log4cxx::Level::getDebug()) {
-				debugPrintConfig (configs,numReturnedConfigs);
+				debugPrintConfig (&config,numReturnedConfigs);
 			}
 
 #endif // if defined HAVE_LOG4CXX_H
 
         } else {
-        	throw EGLException("Could not retrieve valid EGL configuration");
+    		std::ostringstream errStr;
+    		errStr << "Could not retrieve valid EGL configuration. Error = " << eglGetError();
+
+    		throw EGLException(errStr.str().c_str());
         }
 
-        delete configs;
-        configs = 0;
     }
+    
+    {
+    	EGLint attribList[] = {
+    			EGL_RENDER_BUFFER , EGL_BACK_BUFFER,
+				EGL_NONE
+    	};
+
+    	renderSurface = eglCreateWindowSurface(eglDisplay,config,nativeWindow,attribList);
+
+        LOG4CXX_DEBUG(logger,"renderSurface = " << renderSurface);
+
+    	if (renderSurface == EGL_NO_SURFACE) {
+    		std::ostringstream errStr;
+    		errStr << "Error calling eglCreateWindowSurface. Error = " << eglGetError();
+
+    		throw EGLException(errStr.str().c_str());
+    	}
+
+    };
+
+    {
+    	EGLint attribList[] = {
+    			EGL_CONTEXT_CLIENT_VERSION , 2,
+				EGL_NONE
+    	};
+
+    	renderContext = eglCreateContext(eglDisplay,config,EGL_NO_CONTEXT,attribList);
+
+        LOG4CXX_DEBUG(logger,"renderContext = " << renderContext);
+
+    	if (renderContext == EGL_NO_CONTEXT) {
+    		std::ostringstream errStr;
+    		errStr << "Error calling eglCreateContext. Error = " << eglGetError();
+
+    		throw EGLException(errStr.str().c_str());
+    	}
+
+    };
+    
+	if (!eglMakeCurrent(eglDisplay,renderSurface,renderSurface,renderContext)) {
+		std::ostringstream errStr;
+		errStr << "Error calling eglMakeCurrent. Error = " << eglGetError();
+
+		throw EGLException(errStr.str().c_str());
+	}
+
+	LOG4CXX_DEBUG(logger,"renderContext is now current");
+
+
+
+}
+
+void EGLRenderSurface::makeContextCurrent() {
+	if (!eglMakeCurrent(eglDisplay,renderSurface,renderSurface,renderContext)) {
+		std::ostringstream errStr;
+		errStr << "Error calling eglMakeCurrent. Error = " << eglGetError();
+
+		throw EGLException(errStr.str().c_str());
+	}
+
+	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
 }
 
@@ -151,7 +215,7 @@ void EGLRenderSurface::debugPrintConfig (EGLConfig *configs,EGLint numReturnedCo
 		queryConfigAttr(EGL_TRANSPARENT_GREEN_VALUE,30)
 		queryConfigAttr(EGL_TRANSPARENT_BLUE_VALUE,31)
 
-		LOG4CXX_DEBUG(logger,"Configuration [ = " << i << "] = \n" <<
+		LOG4CXX_DEBUG(logger,"Configuration [ " << i << "] = \n" <<
 				"\t\t\t" << configAttrs[0].attrName << " =\t" << configAttrs[0].attrVal << "\n"
 				"\t\t\t" << configAttrs[1].attrName << " =\t" << configAttrs[1].attrVal << "\n"
 				"\t\t\t" << configAttrs[2].attrName << " =\t" << configAttrs[2].attrVal << "\n"

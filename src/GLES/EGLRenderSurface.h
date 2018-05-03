@@ -48,10 +48,27 @@ public:
 	void createRenderSurface (GLint width, GLint height,
 			char const* windowName = 0, char const* displayName = 0);
 
+	void makeContextCurrent();
+
+	EGLSurface getRenderSurface () const {
+		return renderSurface;
+	}
+
+	operator EGLSurface () const {
+		return renderSurface;
+	}
+
+	EGLContext getRenderContext() const {
+		return renderContext;
+	}
+
+	operator EGLContext () const {
+		return renderContext;
+	}
+
 #if defined HAVE_LOG4CXX_H
 	void debugPrintConfig (EGLConfig *configs,EGLint numReturnedConfigs);
 #endif // if defined HAVE_LOG4CXX_H
-
 
 protected:
 
@@ -62,6 +79,8 @@ protected:
     EGLNativeDisplayType	nativeDisplay = 0;
     EGLNativeWindowType		nativeWindow = 0;
     EGLDisplay				eglDisplay = EGL_NO_DISPLAY;
+    EGLSurface				renderSurface = EGL_NO_SURFACE;
+    EGLContext				renderContext = EGL_NO_CONTEXT;
 
     EGLint eglMajorVersion = 0;
     EGLint eglMinorVersion = 0;
