@@ -54,6 +54,14 @@ void openNativeWindow(EGLNativeDisplayType& display,
 		char const* windowName = NULL,
 		char const* displayName = NULL);
 
+/** \brief Close and destroy the native window
+ *
+ * @param[in] display The Display (may not be necessary in most cases
+ * @param[in] window The window which shall be closed and resources destroyed.
+ */
+void closeNativeWindow(EGLNativeDisplayType display,
+		EGLNativeWindowType window);
+
 } // namespace OevGLES
 
 

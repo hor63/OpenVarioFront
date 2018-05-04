@@ -54,10 +54,6 @@ public:
 		return renderSurface;
 	}
 
-	operator EGLSurface () const {
-		return renderSurface;
-	}
-
 	EGLContext getRenderContext() const {
 		return renderContext;
 	}

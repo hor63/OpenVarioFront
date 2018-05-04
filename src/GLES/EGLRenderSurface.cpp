@@ -46,7 +46,23 @@ EGLRenderSurface::EGLRenderSurface()
 
 
 EGLRenderSurface::~EGLRenderSurface() {
-	// TODO Auto-generated destructor stub
+
+	if (eglDisplay != EGL_NO_DISPLAY) {
+		eglMakeCurrent(eglDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
+	}
+
+
+	if (renderContext != EGL_NO_CONTEXT) {
+		eglDestroyContext(eglDisplay,renderContext);
+	}
+	if (renderSurface != EGL_NO_SURFACE) {
+		eglDestroySurface(eglDisplay,renderSurface);
+	}
+	if (eglDisplay != EGL_NO_DISPLAY) {
+		eglTerminate(eglDisplay);
+	}
+
+	closeNativeWindow(nativeDisplay,nativeWindow);
 }
 
 void EGLRenderSurface::createRenderSurface (GLint width, GLint height,

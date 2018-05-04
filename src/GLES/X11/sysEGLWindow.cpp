@@ -130,4 +130,14 @@ void openNativeWindow(EGLNativeDisplayType& display,
 
 }
 
+void closeNativeWindow(EGLNativeDisplayType display,
+		EGLNativeWindowType window) {
+
+	XUnmapWindow(display,window);
+	XDestroyWindow(display,window);
+	XCloseDisplay(display);
+
+}
+
+
 } // namespace OevGLES

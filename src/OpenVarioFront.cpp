@@ -30,6 +30,7 @@
 #endif
 
 #include <unistd.h>
+#include <iostream>
 
 #include "OVFCommon.h"
 
@@ -44,14 +45,22 @@ int main(int argint,char** argv) {
 
     // The configuration file (when I can load it) will overwrite the command line settings.
     log4cxx::PropertyConfigurator::configure(log4cxx::File("OpenVarioFront.logger.properties"));
+
+    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront");
 #endif // if defined HAVE_LOG4CXX_H
 
 
+    {
 	OevGLES::EGLRenderSurface eglSurface;
 
+    LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
 	eglSurface.createRenderSurface(320,240,PACKAGE_STRING);
 
-	sleep(10);
+	sleep(3);
+    LOG4CXX_INFO(logger,"Destroy eglSurface and eglContext and native window.");
+    }
+
+	sleep(3);
 
 	return rc;
 }
