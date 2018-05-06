@@ -155,18 +155,7 @@
 #endif /* BUILDING_OEV_UTILS */
 
 
-namespace openEV {
-
-/**
- * The global float type. Change this one to double, and the entire system will run in double.
- * For optimal performance this should be *float*. Eigen can use the NEON unit for vectorized arithmetic on ARMV7 processors if available.
- */
-	typedef float FloatType;
-
-}
-
-/** \brief Macro to define enums, which a facility to directly stream the Enum name, or to retrieve a string
- * Macro to define enums, which a facility to directly stream the Enum name, or to retrieve a string
+/** \brief Macro to define enums, with a facility to directly stream the Enum name, or to retrieve a string from an enum value
  *
  * The macro requires:
  *

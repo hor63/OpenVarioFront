@@ -31,10 +31,12 @@
 
 #include <unistd.h>
 #include <iostream>
+#include <fstream>
 
 #include "OVFCommon.h"
 
 #include "GLES/EGLRenderSurface.h"
+#include "GLES/GLShader.h"
 
 int main(int argint,char** argv) {
 	int rc = 0;
@@ -55,6 +57,26 @@ int main(int argint,char** argv) {
 
     LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
 	eglSurface.createRenderSurface(320,240,PACKAGE_STRING);
+
+	try {
+		OevGLES::GLVertexShader vertShader (
+				"void main () { \n"
+				"  xx = 125;\n"
+				"}\n");
+
+		vertShader.compileShader();
+	} catch (std::exception const& e) {
+		std::cerr << e.what() << std::endl;
+	}
+
+	try {
+		std::ifstream istr;
+		istr.open("/home/hor/openvario/software/openEVario/compile");
+		OevGLES::GLFragmentShader fragShader (istr);
+		fragShader.compileShader();
+	} catch (std::exception const& e) {
+		std::cerr << e.what() << std::endl;
+	}
 
 	sleep(3);
     LOG4CXX_INFO(logger,"Destroy eglSurface and eglContext and native window.");

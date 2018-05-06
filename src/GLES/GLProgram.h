@@ -1,10 +1,10 @@
 /*
- *  ExceptionBase.cpp
+ * GLProgram.h
  *
- *  Created on: Apr 24, 2018
- *      Author: kai_horstmann
+ *  Created on: May 6, 2018
+ *      Author: hor
  *
- *  Exception classes which can be thrown throughout this program
+ *  Wrapper for an OpenGL program. Attaches Vertex and fragment shader, and links the entire program
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2018  Kai Horstmann
@@ -25,17 +25,36 @@
  *
  */
 
-#include "ExceptionBase.h"
+
+#ifndef GLES_GLPROGRAM_H_
+#define GLES_GLPROGRAM_H_
+
+#include "GLES/GLShader.h"
 
 namespace OevGLES {
 
+class GLProgram {
+public:
+	GLProgram();
+	GLProgram(GLVertexShader &vertexShader,GLFragmentShader &fragmentShader);
+	virtual ~GLProgram();
 
-ExceptionBase::~ExceptionBase() {
-}
+	void attachVertexShader (GLVertexShader &vertexShader);
+	void attachFragmentShader (GLFragmentShader &fragmentShader);
 
-const char* ExceptionBase::what() const noexcept {
-	return description.c_str();
-}
+	void linkProgram ();
 
+private:
+
+	GLuint programHandle = 0;
+
+	GLVertexShader		*vertexShader = 0;
+	GLFragmentShader	*fragmentShader  = 0;
+
+	bool isLinked = false;
+
+};
 
 } /* namespace OevGLES */
+
+#endif /* GLES_GLPROGRAM_H_ */

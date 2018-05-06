@@ -29,18 +29,28 @@
 
 #include <sstream>
 
+#include "OVFCommon.h"
+
+
 #include "GLES/EGLRenderSurface.h"
 #include "GLES/sysEGLWindow.h"
 #include "GLES/ExceptionBase.h"
 
 namespace OevGLES {
 
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
+
+
 
 EGLRenderSurface::EGLRenderSurface()
-#if defined HAVE_LOG4CXX_H
-    :logger{log4cxx::Logger::getLogger("OpenVarioFront.EGLRenderSurface")}
-#endif
 		{
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.EGLRenderSurface");
+	}
+#endif
 
 }
 
@@ -188,6 +198,9 @@ void EGLRenderSurface::makeContextCurrent() {
 #if defined HAVE_LOG4CXX_H
 
 void EGLRenderSurface::debugPrintConfig (EGLConfig *configs,EGLint numReturnedConfigs) {
+
+#if defined HAVE_LOG4CXX_H
+
 	for (EGLint i = 0; i < numReturnedConfigs; i++) {
 
 		struct TConfigAttrs {
@@ -267,6 +280,9 @@ void EGLRenderSurface::debugPrintConfig (EGLConfig *configs,EGLint numReturnedCo
 				);
 
 	}
+
+#endif // if defined HAVE_LOG4CXX_H
+
 }
 
 #endif // if defined HAVE_LOG4CXX_H

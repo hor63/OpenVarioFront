@@ -53,7 +53,6 @@ public:
 	NativeWindowException(char const *description)
 		:ExceptionBase {description}
 		{}
-	virtual ~NativeWindowException();
 
 };
 
@@ -63,8 +62,22 @@ public:
 	EGLException(char const *description)
 		:ExceptionBase {description}
 		{}
-	virtual ~EGLException();
+};
 
+class ShaderException :public ExceptionBase {
+
+public:
+	ShaderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class ProgramException :public ExceptionBase {
+
+public:
+	ProgramException(char const *description)
+		:ExceptionBase {description}
+		{}
 };
 
 } /* namespace OevGLES */

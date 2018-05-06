@@ -1,7 +1,7 @@
 /*
- *  OpenVarioFront.cpp
+ *  sysEGLWindow.cpp
  *
- *  start module. Contains the main() function. Startup, initialization, and start of the main loop.
+ *  System dependent part of the EGL classes. Here for X11
  *
  *  Created on: Apr 23, 2018
  *      Author: hor
