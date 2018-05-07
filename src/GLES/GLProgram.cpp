@@ -111,7 +111,7 @@ void GLProgram::linkProgram () {
 	glLinkProgram(programHandle);
 	glGetProgramiv(programHandle,GL_LINK_STATUS,&linkResult);
 
-	LOG4CXX_DEBUG(logger,"glLinkProgram result = " <<  linkResult)
+	LOG4CXX_DEBUG(logger,"glLinkProgram result = " <<  linkResult);
 
 	if (linkResult != GL_TRUE) {
 		GLint infoLen = 0;

@@ -37,6 +37,7 @@
 
 #include "GLES/EGLRenderSurface.h"
 #include "GLES/GLShader.h"
+#include "GLES/GLProgram.h"
 
 int main(int argint,char** argv) {
 	int rc = 0;
@@ -54,26 +55,27 @@ int main(int argint,char** argv) {
 
     {
 	OevGLES::EGLRenderSurface eglSurface;
+	OevGLES::GLVertexShader vertShader (
+			"void main () { \n"
+			"  int i = 125;\n"
+			"}\n");
+
+	OevGLES::GLFragmentShader fragShader (
+			"precision mediump float;\n"
+			"varying float va;\n"
+			"void main () {\n"
+			"  float i = va;\n"
+			"}\n");
 
     LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
 	eglSurface.createRenderSurface(320,240,PACKAGE_STRING);
 
-	try {
-		OevGLES::GLVertexShader vertShader (
-				"void main () { \n"
-				"  xx = 125;\n"
-				"}\n");
-
-		vertShader.compileShader();
-	} catch (std::exception const& e) {
-		std::cerr << e.what() << std::endl;
-	}
 
 	try {
-		std::ifstream istr;
-		istr.open("/home/hor/openvario/software/openEVario/compile");
-		OevGLES::GLFragmentShader fragShader (istr);
-		fragShader.compileShader();
+		OevGLES::GLProgram prog(vertShader,fragShader);
+
+		prog.linkProgram();
+
 	} catch (std::exception const& e) {
 		std::cerr << e.what() << std::endl;
 	}

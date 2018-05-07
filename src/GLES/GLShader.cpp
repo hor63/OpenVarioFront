@@ -66,11 +66,10 @@ GLShader::GLShader(std::istream &istream) {
 	do  {
 		istream.read(buf,1023);
 		numRead = istream.gcount();
-		LOG4CXX_DEBUG(logger,"numRead " << numRead )
+		LOG4CXX_DEBUG(logger,"numRead " << numRead );
 		if (numRead > 0) {
 			// 0-terminate the input buffer
 			buf[numRead] = '\0';
-
 			shaderText.append(buf);
 		}
 	} while (numRead > 0 && !istream.fail() && !istream.bad() && !istream.eof());
@@ -146,10 +145,10 @@ void GLShader::compileShader() {
 				exceptString.append("\n-------------------------------------");
 				delete shaderSource;
 			}
-		}
 
-		LOG4CXX_FATAL(logger,exceptString);
-		throw ShaderException(exceptString.c_str());
+			LOG4CXX_FATAL(logger,exceptString);
+			throw ShaderException(exceptString.c_str());
+		}
 
 	}
 }
