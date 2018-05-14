@@ -79,6 +79,8 @@ GLShader::GLShader(std::istream &istream) {
 
 GLShader::~GLShader() {
 	if (shaderHandle != 0) {
+		LOG4CXX_DEBUG(logger,"Delete shader " << shaderHandle);
+
 		glDeleteShader(shaderHandle);
 	}
 }

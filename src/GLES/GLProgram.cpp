@@ -42,6 +42,71 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
+static char const * glEnumToString (GLenum type) {
+
+	char const * rc;
+
+	switch (type) {
+	case GL_FLOAT:
+		rc = "GL_FLOAT";
+		break;
+	case GL_FLOAT_VEC2:
+		rc = "GL_FLOAT_VEC2";
+		break;
+	case GL_FLOAT_VEC3:
+		rc = "GL_FLOAT_VEC3";
+		break;
+	case GL_FLOAT_VEC4:
+		rc = "GL_FLOAT_VEC4";
+		break;
+	case GL_INT:
+		rc = "GL_INT";
+		break;
+	case GL_INT_VEC2:
+		rc = "GL_INT_VEC2";
+		break;
+	case GL_INT_VEC3:
+		rc = "GL_INT_VEC3";
+		break;
+	case GL_INT_VEC4:
+		rc = "GL_INT_VEC4";
+		break;
+	case GL_BOOL:
+		rc = "GL_BOOL";
+		break;
+	case GL_BOOL_VEC2:
+		rc = "GL_BOOL_VEC2";
+		break;
+	case GL_BOOL_VEC3:
+		rc = "GL_BOOL_VEC3";
+		break;
+	case GL_BOOL_VEC4:
+		rc = "GL_BOOL_VEC4";
+		break;
+	case GL_FLOAT_MAT2:
+		rc = "GL_FLOAT_MAT2";
+		break;
+	case GL_FLOAT_MAT3:
+		rc = "GL_FLOAT_MAT3";
+		break;
+	case GL_FLOAT_MAT4:
+		rc = "GL_FLOAT_MAT4";
+		break;
+	case GL_SAMPLER_2D:
+		rc = "GL_SAMPLER_2D";
+		break;
+	case GL_SAMPLER_CUBE:
+		rc = "GL_SAMPLER_CUBE";
+		break;
+
+	default:
+		rc = "???";
+	}
+
+	return rc;
+
+}
+
 
 GLProgram::GLProgram()
 	:programHandle{0},
@@ -56,10 +121,10 @@ GLProgram::GLProgram()
 #endif
 }
 
-GLProgram::GLProgram(GLVertexShader &vertexShader,GLFragmentShader &fragmentShader)
+GLProgram::GLProgram(GLVertexShader *vertexShader,GLFragmentShader *fragmentShader)
 	:programHandle{0},
-	 vertexShader {&vertexShader},
-	 fragmentShader {&fragmentShader},
+	 vertexShader {vertexShader},
+	 fragmentShader {fragmentShader},
 	 isLinked {false}
 {
 #if defined HAVE_LOG4CXX_H
@@ -70,15 +135,33 @@ GLProgram::GLProgram(GLVertexShader &vertexShader,GLFragmentShader &fragmentShad
 }
 
 GLProgram::~GLProgram() {
-	// TODO Auto-generated destructor stub
+
+	detachVertexShader();
+	detachFragmentShader();
+
+	if (programHandle != 0) {
+		LOG4CXX_DEBUG(logger,"Delete GL program " << programHandle);
+		glDeleteProgram(programHandle);
+	}
+
 }
 
 
-void GLProgram::attachVertexShader (GLVertexShader &vertexShader) {
-	this->vertexShader = &vertexShader;
+void GLProgram::attachVertexShader (GLVertexShader *newVertexShader) {
+
+	if (vertexShader) {
+		detachVertexShader();
+	}
+
+	vertexShader = newVertexShader;
 }
-void GLProgram::attachFragmentShader (GLFragmentShader &fragmentShader){
-	this->fragmentShader = &fragmentShader;
+void GLProgram::attachFragmentShader (GLFragmentShader *newFragmentShader){
+
+	if (fragmentShader) {
+		detachFragmentShader();
+	}
+
+	fragmentShader = newFragmentShader;
 }
 
 void GLProgram::linkProgram () {
@@ -132,10 +215,113 @@ void GLProgram::linkProgram () {
 		throw ProgramException(errString.c_str());
 	}
 
+	retrieveShaderVariableInfos();
 
 
 }
 
+
+void GLProgram::retrieveShaderVariableInfos() {
+
+	GLint maxLenAttributes = 0;
+
+	GLint maxLenUniforms = 0;
+
+	glGetProgramiv(programHandle,GL_ACTIVE_ATTRIBUTES,&numAttributes);
+	LOG4CXX_DEBUG(logger,"numAttributes = " << numAttributes);
+
+	glGetProgramiv(programHandle,GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,&maxLenAttributes);
+	LOG4CXX_DEBUG(logger,"maxLenAttributes = " << maxLenAttributes);
+
+	{
+		char * buf = new char [maxLenAttributes];
+
+		for (GLuint i = 0; i < numAttributes; i++) {
+			GLint arraySize = 0;
+			GLenum type = 0;
+
+			glGetActiveAttrib(
+					programHandle,
+					i,
+					maxLenAttributes,
+					NULL,
+					&arraySize,
+					&type,
+					buf);
+
+			LOG4CXX_DEBUG(logger,"Attribute [" << i << "] = "	<< buf
+					<< ", type =  " << type << " = " << glEnumToString(type)
+					<< ", array size = " << arraySize);
+
+		}
+
+		delete buf;
+	}
+
+
+	glGetProgramiv(programHandle,GL_ACTIVE_UNIFORMS,&numUniforms);
+	LOG4CXX_DEBUG(logger,"numUniforms = " << numUniforms);
+
+	glGetProgramiv(programHandle,GL_ACTIVE_UNIFORM_MAX_LENGTH,&maxLenUniforms);
+	LOG4CXX_DEBUG(logger,"maxLenUniforms = " << maxLenUniforms);
+
+	{
+		char * buf = new char [maxLenUniforms];
+
+		for (GLuint i = 0; i < numUniforms; i++) {
+			GLint arraySize = 0;
+			GLenum type = 0;
+
+			glGetActiveUniform(
+					programHandle,
+					i,
+					maxLenUniforms,
+					NULL,
+					&arraySize,
+					&type,
+					buf);
+
+			LOG4CXX_DEBUG(logger,"Uniform [" << i << "] = "	<< buf
+					<< ", type =  " << type << " = " << glEnumToString(type)
+					<< ", array size = " << arraySize);
+
+		}
+
+		delete buf;
+	}
+
+
+
+}
+
+void GLProgram::detachVertexShader() {
+
+	if (vertexShader) {
+		LOG4CXX_DEBUG(logger,"Detach vertex shader " << GLuint(*vertexShader));
+
+		glDetachShader(programHandle,*vertexShader);
+
+		delete vertexShader;
+		vertexShader = 0;
+
+		isLinked = false;
+	}
+}
+
+void GLProgram::detachFragmentShader() {
+
+	if (fragmentShader) {
+		LOG4CXX_DEBUG(logger,"Detach fragment shader " << GLuint(*fragmentShader));
+
+		glDetachShader(programHandle, *fragmentShader);
+
+		delete fragmentShader;
+		fragmentShader = 0;
+
+		isLinked = false;
+	}
+
+}
 
 
 } /* namespace OevGLES */
