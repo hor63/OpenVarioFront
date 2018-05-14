@@ -55,16 +55,34 @@ int main(int argint,char** argv) {
 
     {
 	OevGLES::EGLRenderSurface eglSurface;
-	OevGLES::GLVertexShader vertShader (
+	OevGLES::GLVertexShader *vertShader = new OevGLES::GLVertexShader (
+			"precision mediump float;\n"
+			"\n"
+			"uniform vec4 mvpMatrix;\n"
+			"\n"
+			"uniform vec4 lightDir;\n"
+			"uniform vec4 lightColor;\n"
+			"uniform vec4 ambientLightColor;\n"
+			"\n"
+			"attribute vec4 vertexPos;\n"
+			"attribute vec4 vertexNormal;\n"
+			"attribute vec4 vertexColor;\n"
+			"\n"
+			"varying vec4 fragColor;\n"
+			"\n"
 			"void main () { \n"
-			"  int i = 125;\n"
+			"	float diffuseLightFactor = dot(lightDir.xyz,(mvpMatrix * vertexNormal).xyz);\n"
+			"	\n"
+			"	fragColor = vertexColor * (ambientLightColor + diffuseLightFactor * lightColor);\n"
+			"	gl_Position = mvpMatrix * vertexPos;\n"
 			"}\n");
 
-	OevGLES::GLFragmentShader fragShader (
+	OevGLES::GLFragmentShader *fragShader = new OevGLES::GLFragmentShader (
 			"precision mediump float;\n"
-			"varying float va;\n"
+			"varying vec4 fragColor;\n"
+			"\n"
 			"void main () {\n"
-			"  float i = va;\n"
+			"	gl_FragColor = fragColor;\n"
 			"}\n");
 
     LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
