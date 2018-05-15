@@ -53,54 +53,53 @@ int main(int argint,char** argv) {
 #endif // if defined HAVE_LOG4CXX_H
 
 
-    {
-	OevGLES::EGLRenderSurface eglSurface;
-	OevGLES::GLVertexShader *vertShader = new OevGLES::GLVertexShader (
-			"precision mediump float;\n"
-			"\n"
-			"uniform vec4 mvpMatrix;\n"
-			"\n"
-			"uniform vec4 lightDir;\n"
-			"uniform vec4 lightColor;\n"
-			"uniform vec4 ambientLightColor;\n"
-			"\n"
-			"attribute vec4 vertexPos;\n"
-			"attribute vec4 vertexNormal;\n"
-			"attribute vec4 vertexColor;\n"
-			"\n"
-			"varying vec4 fragColor;\n"
-			"\n"
-			"void main () { \n"
-			"	float diffuseLightFactor = dot(lightDir.xyz,(mvpMatrix * vertexNormal).xyz);\n"
-			"	\n"
-			"	fragColor = vertexColor * (ambientLightColor + diffuseLightFactor * lightColor);\n"
-			"	gl_Position = mvpMatrix * vertexPos;\n"
-			"}\n");
+    try {
+		OevGLES::EGLRenderSurface eglSurface;
+		OevGLES::GLVertexShader *vertShader = new OevGLES::GLVertexShader (
+				"precision mediump float;\n"
+				"\n"
+				"uniform vec4 mvpMatrix;\n"
+				"\n"
+				"uniform vec4 lightDir;\n"
+				"uniform vec4 lightColor;\n"
+				"uniform vec4 ambientLightColor;\n"
+				"\n"
+				"attribute vec4 vertexPos;\n"
+				"attribute vec4 vertexNormal;\n"
+				"attribute vec4 vertexColor;\n"
+				"\n"
+				"varying vec4 fragColor;\n"
+				"\n"
+				"void main () { \n"
+				"	float diffuseLightFactor = dot(lightDir.xyz,(mvpMatrix * vertexNormal).xyz);\n"
+				"	\n"
+				"	fragColor = vertexColor * (ambientLightColor + diffuseLightFactor * lightColor);\n"
+				"	gl_Position = mvpMatrix * vertexPos;\n"
+				"}\n");
 
-	OevGLES::GLFragmentShader *fragShader = new OevGLES::GLFragmentShader (
-			"precision mediump float;\n"
-			"varying vec4 fragColor;\n"
-			"\n"
-			"void main () {\n"
-			"	gl_FragColor = fragColor;\n"
-			"}\n");
+		OevGLES::GLFragmentShader *fragShader = new OevGLES::GLFragmentShader (
+				"precision mediump float;\n"
+				"varying vec4 fragColor;\n"
+				"\n"
+				"void main () {\n"
+				"	gl_FragColor = fragColor;\n"
+				"}\n");
 
-    LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
-	eglSurface.createRenderSurface(320,240,PACKAGE_STRING);
+		LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
+		eglSurface.createRenderSurface(320,240,PACKAGE_STRING);
 
 
-	try {
 		OevGLES::GLProgram prog(vertShader,fragShader);
 
 		prog.linkProgram();
+
+		sleep(3);
+	    LOG4CXX_INFO(logger,"Destroy eglSurface and eglContext and native window.");
 
 	} catch (std::exception const& e) {
 		std::cerr << e.what() << std::endl;
 	}
 
-	sleep(3);
-    LOG4CXX_INFO(logger,"Destroy eglSurface and eglContext and native window.");
-    }
 
 	sleep(3);
 
