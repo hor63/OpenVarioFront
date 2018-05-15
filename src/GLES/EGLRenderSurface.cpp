@@ -118,12 +118,31 @@ void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
         };
 
         if (eglChooseConfig(eglDisplay,attribList,&config,1,&numReturnedConfigs)){
+			if (numReturnedConfigs == 0) {
+				// Do not prescribe a sample number
+				attribList[16] = EGL_NONE;
+		        eglChooseConfig(eglDisplay,attribList,&config,1,&numReturnedConfigs);
+				if (numReturnedConfigs == 0) {
+					// Do not prescribe a sample buffer at all
+					attribList[14] = EGL_NONE;
+			        eglChooseConfig(eglDisplay,attribList,&config,1,&numReturnedConfigs);
+				}
+			}
+
+
 #if defined HAVE_LOG4CXX_H
 			if (logger->getLevel() == log4cxx::Level::getDebug()) {
 				debugPrintConfig (&config,numReturnedConfigs);
 			}
 
 #endif // if defined HAVE_LOG4CXX_H
+			if (numReturnedConfigs == 0) {
+    		std::ostringstream errStr;
+    		errStr << "Could not retrieve valid EGL configuration. Error = " << eglGetError();
+
+    		throw EGLException(errStr.str().c_str());
+			}
+
 
         } else {
     		std::ostringstream errStr;
