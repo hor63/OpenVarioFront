@@ -55,7 +55,7 @@ void openNativeWindow(EGLNativeDisplayType& display,
     Atom wmState;
     XEvent xEv;
 #if defined HAVE_LOG4CXX_H
-    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");;
+    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");
 #endif
 
     LOG4CXX_DEBUG(logger,"display = " << display);

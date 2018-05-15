@@ -32,7 +32,7 @@
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2131462481" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.704378459" name="GCC C++ Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp">
-								<option id="gnu.cpp.compiler.option.preprocessor.def.1178313990" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1178313990" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="HAVE_CONFIG_H=1"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1926842527" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>

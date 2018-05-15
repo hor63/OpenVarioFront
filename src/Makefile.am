@@ -24,7 +24,7 @@ OpenVarioFront_SOURCES=OpenVarioFront.cpp
  
 OpenVarioFront_LDADD= GLES/libOEV_GLES.a -lGLESv2 -lEGL -lGLESv2 -lEGL $(EGL_SYS_LIBS) $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
-AM_CXXFLAGS = -I$(top_srcdir)/src $(LOG4CXX_CXXFLAGS) \
+AM_CXXFLAGS = -I$(top_srcdir)/src -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 AM_LDFLAGS=  $(LOG4CXX_LDFLAGS) 
