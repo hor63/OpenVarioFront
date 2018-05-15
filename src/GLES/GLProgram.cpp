@@ -253,6 +253,7 @@ void GLProgram::retrieveShaderVariableInfos() {
 					<< ", type =  " << type << " = " << glEnumToString(type)
 					<< ", array size = " << arraySize);
 
+			attributeMap.insert (ShaderVariableInfoPair(std::string(buf),ShaderVariableInfo(buf,type,i)));
 		}
 
 		delete buf;
@@ -285,6 +286,8 @@ void GLProgram::retrieveShaderVariableInfos() {
 					<< ", type =  " << type << " = " << glEnumToString(type)
 					<< ", array size = " << arraySize);
 
+			uniformMap.insert (ShaderVariableInfoPair(std::string(buf),ShaderVariableInfo(buf,type,i)));
+
 		}
 
 		delete buf;
@@ -305,6 +308,26 @@ void GLProgram::detachVertexShader() {
 		vertexShader = 0;
 
 		isLinked = false;
+	}
+}
+
+const GLProgram::ShaderVariableInfo* GLProgram::getUniformInfo(const char* uniformName) {
+	auto it = uniformMap.find(std::string(uniformName));
+
+	if (it == uniformMap.cend()) {
+		return 0;
+	} else {
+		return &it->second;
+	}
+}
+
+const GLProgram::ShaderVariableInfo* GLProgram::getAttributeInfo(const char* attributeName) {
+	auto it = attributeMap.find(std::string(attributeName));
+
+	if (it == attributeMap.cend()) {
+		return 0;
+	} else {
+		return &it->second;
 	}
 }
 

@@ -29,6 +29,9 @@
 #ifndef GLES_GLPROGRAM_H_
 #define GLES_GLPROGRAM_H_
 
+#include <string>
+#include <map>
+
 #include "GLES/GLShader.h"
 
 namespace OevGLES {
@@ -42,6 +45,42 @@ namespace OevGLES {
  */
 class GLProgram {
 public:
+
+	/// \brief Information on shader uniforms and vertex shader attributes
+	class ShaderVariableInfo {
+	public:
+
+		ShaderVariableInfo(
+				char const* variableName,
+				GLenum variableType,
+				GLuint variableIndex
+				)
+		:variableName{variableName},
+		 variableType{variableType},
+		 variableIndex{variableIndex}
+		 {}
+
+		std::string const &getVariableName() const {
+			return variableName;
+		}
+		GLenum getVariableType () const {
+			return variableType;
+		}
+		GLuint getVariableIndex () const {
+			return variableIndex;
+		}
+
+	private:
+		std::string variableName;
+		GLenum variableType;
+		GLuint variableIndex;
+	}; // class ShaderVariableInfo
+
+	// helpful typedefs to manage the template hell
+	typedef std::map<std::string, ShaderVariableInfo> ShaderVariableInfoMap;
+	typedef std::pair<std::string, ShaderVariableInfo> ShaderVariableInfoPair;
+	typedef ShaderVariableInfoMap::const_iterator ShaderVariableInfoCIterator;
+
 
 	/** \brief Constructor. You must attach vertex and fragment shader with \ref attachVertexShader \ref attachFragmentShader manually
 	 *
@@ -136,6 +175,9 @@ public:
 	 */
 	void linkProgram ();
 
+	ShaderVariableInfo const *getUniformInfo(char const *uniformName);
+
+	ShaderVariableInfo const *getAttributeInfo(char const *attributeName);
 private:
 
 	GLuint programHandle = 0;
@@ -147,6 +189,12 @@ private:
 
 	GLint numAttributes = 0;
 	GLint numUniforms = 0;
+
+	/// \brief Map of information of active uniforms
+	ShaderVariableInfoMap uniformMap;
+	/// \brief Map of information of active attributes
+	ShaderVariableInfoMap attributeMap;
+
 
 	/** \brief queries the program for uniform and vertex attributes, and their index, type and other information
 	 *
