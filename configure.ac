@@ -184,6 +184,8 @@ DX_INIT_DOXYGEN(OpenVarioFront, $(srcdir)/doxygen.cfg, doc/doxygen)
 AC_CONFIG_FILES(Makefile
                 src/Makefile
                 src/GLES/Makefile
+                src/GLPrograms/Makefile
+                src/Renderers/Makefile
                 )
 
 AC_OUTPUT

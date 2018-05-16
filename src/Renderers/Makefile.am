@@ -1,5 +1,5 @@
 #    This file is part of OpenVarioFront, an electronic variometer for glider planes
-#    Copyright (C) 2016  Kai Horstmann
+#    Copyright (C) 2018  Kai Horstmann
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,21 +15,15 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=GLES GLPrograms Renderers
+# SUBDIRS=
 	
 
-bin_PROGRAMS=OpenVarioFront$(EXEEXT)
+noinst_LIBRARIES = libOEV_Renderers.a
+libOEV_Renderers_a_SOURCES = AnalogHandRenderer.cpp
 
-OpenVarioFront_SOURCES=OpenVarioFront.cpp  
- 
-OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/libOEV_GLES.a  -lGLESv2 -lEGL -lGLESv2 -lEGL $(EGL_SYS_LIBS) $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
+AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
-AM_LDFLAGS=  $(LOG4CXX_LDFLAGS) 
+AM_LDFLAGS= -l $(LOG4CXX_LDFLAGS) $(EGL_SYS_LIBS)
 
-all: $(abs_builddir)/OpenVarioFront.logger.properties
-
-$(abs_builddir)/OpenVarioFront.logger.properties: $(srcdir)/OpenVarioFront.logger.properties
-	cp $(srcdir)/OpenVarioFront.logger.properties $(abs_builddir)/OpenVarioFront.logger.properties

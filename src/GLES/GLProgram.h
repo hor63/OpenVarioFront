@@ -175,9 +175,39 @@ public:
 	 */
 	void linkProgram ();
 
+	/** \brief Retrieve information about an active uniform
+	 *
+	 * When the passed uniform name does not match any active uniform the function returns 0.
+	 *
+	 * @param uniformName Name of the uniform whose information is requested.
+	 * @return Information about the uniform like type and index in the program
+	 */
 	ShaderVariableInfo const *getUniformInfo(char const *uniformName);
 
+	/** \brief Retrieve information about an active vertex attribute
+	 *
+	 * When the passed attribute name does not match any active uniform the function returns 0.
+	 *
+	 * @param attributeName Name of the attribute whose information is requested.
+	 * @return Information about the uniform like type and index in the program
+	 */
 	ShaderVariableInfo const *getAttributeInfo(char const *attributeName);
+
+	/** \brief Return the GL program handle
+	 *
+	 * @return GL program handle for use with GL program calls
+	 */
+	GLuint getProgramHandle () {
+		return programHandle;
+	}
+
+	/** \brief Use the program for subsequent rendering
+	 *
+	 */
+	void useProgram() {
+		glUseProgram(programHandle);
+	}
+
 private:
 
 	GLuint programHandle = 0;
