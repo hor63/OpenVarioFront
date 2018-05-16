@@ -82,7 +82,7 @@ Mat4 scalingMatrix (GLfloat x, GLfloat y, GLfloat z ) {
 Mat4 rotationMatrixX (GLfloat adX) {
 	Mat4 rc;
 	GLfloat sinX = sinf(adX/180.0*M_PI);
-	GLfloat cosX = sinf(adX/180.0*M_PI);
+	GLfloat cosX = cosf(adX/180.0*M_PI);
 
 	initLogger();
 
@@ -107,7 +107,7 @@ Mat4 rotationMatrixX (GLfloat adX) {
 Mat4 rotationMatrixY (GLfloat adY) {
 	Mat4 rc;
 	GLfloat sinY = sinf(adY/180.0*M_PI);
-	GLfloat cosY = sinf(adY/180.0*M_PI);
+	GLfloat cosY = cosf(adY/180.0*M_PI);
 
 	initLogger();
 
@@ -132,7 +132,7 @@ Mat4 rotationMatrixY (GLfloat adY) {
 Mat4 rotationMatrixZ (GLfloat adZ) {
 	Mat4 rc;
 	GLfloat sinZ = sinf(adZ/180.0*M_PI);
-	GLfloat cosZ = sinf(adZ/180.0*M_PI);
+	GLfloat cosZ = cosf(adZ/180.0*M_PI);
 
 	initLogger();
 
@@ -157,8 +157,8 @@ Mat4 rotationMatrixZ (GLfloat adZ) {
 Mat4 viewMatrix (Vec3 const& camPos, Vec3 const &lookAt, Vec3 const & up) {
 	Mat4 rc;
 	Vec3 forwardVec = (lookAt - camPos).normalized();
-	Vec3 rightVec = forwardVec.cross(up.normalized());
-	Vec3 myUp = rightVec.cross(forwardVec).normalized();
+	Vec3 rightVec = (forwardVec.cross(up.normalized())).normalized();
+	Vec3 myUp = (rightVec.cross(forwardVec)).normalized();
 
 	initLogger();
 

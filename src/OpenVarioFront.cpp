@@ -39,6 +39,13 @@
 #include "GLES/GLShader.h"
 #include "GLES/GLProgram.h"
 
+// Success is defined in X headers, but collides with an enum value in lib Eigen.
+#if defined Success
+#	undef Success
+#endif
+
+#include "GLES/VecMat.h"
+
 int main(int argint,char** argv) {
 	int rc = 0;
 
@@ -95,6 +102,88 @@ int main(int argint,char** argv) {
 
 		sleep(3);
 	    LOG4CXX_INFO(logger,"Destroy eglSurface and eglContext and native window.");
+
+	    // Some testing of the MVP matrixes and effects on positions
+	    OevGLES::Mat4 transMat = OevGLES::translationMatrix(0.5f,-1.2f,-0.3f);
+	    OevGLES::Vec4 pos = {1.0f,1.0f,1.0f,1.0f};
+	    OevGLES::Vec4 pos1 = transMat * pos;
+	    LOG4CXX_DEBUG(logger,"Translation: \n" << transMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    OevGLES::Mat4 scaleMat = OevGLES::scalingMatrix(0.5f,-1.2f,-0.3f);
+	    pos1 = scaleMat * pos;
+	    LOG4CXX_DEBUG(logger,"Scaling: \n" << scaleMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    OevGLES::Mat4  rotMat = OevGLES::rotationMatrixX(30.0f);
+	    pos = {1.0f,0.0f,0.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating X: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {0.0f,1.0f,0.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating X: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {0.0f,0.0f,1.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating X: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {1.0f,1.0f,1.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating X: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    rotMat = OevGLES::rotationMatrixY(30.0f);
+	    pos = {1.0f,0.0f,0.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating Y: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {0.0f,1.0f,0.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating Y: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {0.0f,0.0f,1.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating Y: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {1.0f,1.0f,1.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating Y: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    rotMat = OevGLES::rotationMatrixZ(30.0f);
+	    pos = {1.0f,0.0f,0.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating Z: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {0.0f,1.0f,0.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating Z: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {0.0f,0.0f,1.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating Z: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    pos = {1.0f,1.0f,1.0f,1.0f};
+	    pos1 = rotMat * pos;
+	    LOG4CXX_DEBUG(logger,"Rotating Z: \n" << rotMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+
+	    OevGLES::Vec3 viewPos = {0.0f,0.2f,3.0f};
+	    OevGLES::Mat4 viewMat = OevGLES::viewMatrix(viewPos,OevGLES::Vec3(0,0,0),OevGLES::Vec3(0,1,0));
+	    pos = {1.0f,1.0f,1.0f,1.0f};
+	    pos1 = viewMat * pos;
+	    LOG4CXX_DEBUG(logger,"View transformation: \n" << viewMat << "\n * \n" << pos << "\n = \n" << pos1);
+
+	    OevGLES::Mat4 projectionMat = OevGLES::projectionMatrix(0.5f,10.0f,320.0f/240.0f,66.0f);
+	    pos = projectionMat * pos1;
+	    LOG4CXX_DEBUG(logger,"projection transformation: \n" << projectionMat << "\n * \n" << pos1 << "\n = \n" << pos);
+
+	    LOG4CXX_DEBUG(logger,"In normalized device space: \n" << pos(0)/pos(3)<< "\n" << pos(1)/pos(3)<< "\n" << pos(2)/pos(3));
+
+	    pos = {1.0f,1.0f,-3.0f,1.0f};
+	    pos1 = projectionMat * viewMat * pos;
+	    LOG4CXX_DEBUG(logger,"View-projection transformation of (1,1,-3): \n" << pos1);
+	    LOG4CXX_DEBUG(logger,"In normalized device space: \n" << pos1(0)/pos1(3)<< "\n" << pos1(1)/pos1(3)<< "\n" << pos1(2)/pos1(3));
+
+
+
 
 	} catch (std::exception const& e) {
 		std::cerr << e.what() << std::endl;
