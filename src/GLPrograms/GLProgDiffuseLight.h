@@ -45,6 +45,15 @@ public:
 	 */
 	static GLProgDiffuseLight *getProgram();
 
+	/** \brief Destroy the single instance of the program.
+	 *
+	 * This call should be made at the end of the program, or if the GLProgram is really no longer used.
+	 * After it is called all pointers obtained by \ref getProgram become invalid
+	 * If you call \ref getProgram after this call a new program object is created and returned to the caller.
+	 *
+	 */
+	static void destroyProgram();
+
 	/** \brief Retrieve the GL program
 	 *
 	 * @return reference to the GL program

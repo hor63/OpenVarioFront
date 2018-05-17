@@ -48,14 +48,26 @@ GLProgDiffuseLight* GLProgDiffuseLight::getProgram() {
 
 }
 
+void GLProgDiffuseLight::destroyProgram() {
+	if (theProgram) {
+		delete theProgram;
+		theProgram = 0;
+	}
+}
+
 void GLProgDiffuseLight::createProgram() {
 
 	OevGLES::GLVertexShader *vertShader = new OevGLES::GLVertexShader (
 			"precision mediump float;\n"
 			"\n"
+			"// MVP matrix is used to transform points\n"
 			"uniform vec4 mvpMatrix;\n"
 			"\n"
-			"uniform vec4 lightDir;\n"
+			"// MV matrix is used to transform normal vectors to eye space\n"
+			"uniform vec4 mvMatrix;\n"
+			"\n"
+			"// Light diretory vector is already in eye space\n"
+			"uniform vec3 lightDir;\n"
 			"uniform vec4 lightColor;\n"
 			"uniform vec4 ambientLightColor;\n"
 			"\n"
@@ -65,8 +77,10 @@ void GLProgDiffuseLight::createProgram() {
 			"\n"
 			"varying vec4 fragColor;\n"
 			"\n"
+			"const float cZero = 0.0f;"
+			"\n"
 			"void main () { \n"
-			"	float diffuseLightFactor = dot(lightDir.xyz,(mvpMatrix * vertexNormal).xyz);\n"
+			"	float diffuseLightFactor = max(cZero,dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
 			"	\n"
 			"	fragColor = vertexColor * (ambientLightColor + diffuseLightFactor * lightColor);\n"
 			"	gl_Position = mvpMatrix * vertexPos;\n"
