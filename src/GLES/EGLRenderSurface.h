@@ -48,6 +48,10 @@ public:
 
 	void makeContextCurrent();
 
+	EGLDisplay getDisplay() const {
+		return eglDisplay;
+	}
+
 	EGLSurface getRenderSurface () const {
 		return renderSurface;
 	}

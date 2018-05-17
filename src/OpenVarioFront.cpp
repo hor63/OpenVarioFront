@@ -38,6 +38,7 @@
 #include "GLES/EGLRenderSurface.h"
 #include "GLES/GLShader.h"
 #include "GLES/GLProgram.h"
+#include "GLPrograms/GLProgDiffuseLight.h"
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
 #if defined Success
@@ -64,10 +65,20 @@ int main(int argint,char** argv) {
 		OevGLES::EGLRenderSurface eglSurface;
 		LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
 		eglSurface.createRenderSurface(320,240,PACKAGE_STRING);
+		LOG4CXX_INFO(logger,"Create the diffuse light program");
+		OevGLES::GLProgDiffuseLight *simpleProgram = OevGLES::GLProgDiffuseLight::getProgram();
+
+		glClearColor(0.4f,0.2f,0.01f,1.0f);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		sleep(3);
+		eglSwapBuffers(eglSurface.getDisplay(),eglSurface.getRenderSurface());
 
 		sleep(3);
-	    LOG4CXX_INFO(logger,"Destroy eglSurface and eglContext and native window.");
 
+		LOG4CXX_INFO(logger,"Destroy the diffuse light program");
+		OevGLES::GLProgDiffuseLight::destroyProgram();
+
+	    LOG4CXX_INFO(logger,"Destroy eglSurface and eglContext and native window.");
 
 	} catch (std::exception const& e) {
 		std::cerr << e.what() << std::endl;
