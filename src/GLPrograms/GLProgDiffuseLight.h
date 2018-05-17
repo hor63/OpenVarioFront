@@ -26,14 +26,14 @@
 #ifndef GLPROGDIFFUSELIGHT_H_
 #define GLPROGDIFFUSELIGHT_H_
 
-#include "GLES/GLProgram.h"
+#include "GLPrograms/GLProgBase.h"
 
 namespace OevGLES {
 
 /** \brief GL program with diffuse Gouraud lighting
  *
  */
-class GLProgDiffuseLight {
+class GLProgDiffuseLight :public GLProgBase {
 public:
 	virtual ~GLProgDiffuseLight();
 
@@ -54,38 +54,26 @@ public:
 	 */
 	static void destroyProgram();
 
-	/** \brief Retrieve the GL program
+	/** \brief Retrieve the vertex shader code.
 	 *
-	 * @return reference to the GL program
+	 * @return Vertex shader code as one C string
 	 */
-	GLProgram &getGLProgram() {
-		return prog;
-	}
+	virtual char const* getVertexShaderCode() const override;
 
-	/** \brief Use the program for subsequent rendering
+	/** \brief Retrieve the frament shader code.
 	 *
+	 * @return Fragment shader code as one C string
 	 */
-	void useProgram() {
-		prog.useProgram();
-	}
+	virtual char const* getFragmentShaderCode() const override;
+
 
 private:
 	/// \brief The only instance of this program object.
 	static GLProgDiffuseLight* theProgram;
 
-	/// \brief The GL program object
-	GLProgram prog;
-
 	GLProgDiffuseLight() {
 
 	}
-
-	/** \brief Creates the shaders, compiles them, and links the program.
-	 *
-	 * This class holds the source code for the shaders.
-	 *
-	 */
-	void createProgram();
 
 
 };

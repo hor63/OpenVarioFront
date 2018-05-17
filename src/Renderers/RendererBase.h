@@ -1,8 +1,8 @@
 /*
- * AnalogHandRenderer.h
+ * RendererBase.h
  *
  *  Created on: May 17, 2018
- *      Author: hor
+ *      Author: kai_horstmann
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2018  Kai Horstmann
@@ -23,19 +23,15 @@
  *
  */
 
-#ifndef ANALOGHANDRENDERER_H_
-#define ANALOGHANDRENDERER_H_
+#ifndef RENDERERBASE_H_
+#define RENDERERBASE_H_
 
-#include "GLPrograms/GLProgDiffuseLight.h"
-#include "Renderers/RendererBase.h"
+#include "GLPrograms/GLProgBase.h"
 
-class AnalogHandRenderer {
+class RendererBase {
 public:
-	AnalogHandRenderer() {
-		// TODO Auto-generated constructor stub
-
-	}
-	virtual ~AnalogHandRenderer();
+	RendererBase();
+	virtual ~RendererBase();
 };
 
-#endif /* ANALOGHANDRENDERER_H_ */
+#endif /* RENDERERBASE_H_ */

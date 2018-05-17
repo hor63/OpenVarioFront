@@ -25,10 +25,7 @@
 
 #include "Renderers/AnalogHandRenderer.h"
 
-namespace OevGLES {
 
 AnalogHandRenderer::~AnalogHandRenderer() {
 	// TODO Auto-generated destructor stub
 }
-
-} /* namespace OevGLES */

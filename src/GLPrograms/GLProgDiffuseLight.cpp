@@ -23,6 +23,11 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
+
 #include "GLPrograms/GLProgDiffuseLight.h"
 
 namespace OevGLES {
@@ -55,9 +60,9 @@ void GLProgDiffuseLight::destroyProgram() {
 	}
 }
 
-void GLProgDiffuseLight::createProgram() {
+const char* GLProgDiffuseLight::getVertexShaderCode() const {
 
-	OevGLES::GLVertexShader *vertShader = new OevGLES::GLVertexShader (
+	return
 			"precision mediump float;\n"
 			"\n"
 			"// MVP matrix is used to transform points\n"
@@ -84,21 +89,18 @@ void GLProgDiffuseLight::createProgram() {
 			"	\n"
 			"	fragColor = vertexColor * (ambientLightColor + diffuseLightFactor * lightColor);\n"
 			"	gl_Position = mvpMatrix * vertexPos;\n"
-			"}\n");
+			"}\n";
 
-	OevGLES::GLFragmentShader *fragShader = new OevGLES::GLFragmentShader (
+}
+
+const char* GLProgDiffuseLight::getFragmentShaderCode() const {
+	return
 			"precision mediump float;\n"
 			"varying vec4 fragColor;\n"
 			"\n"
 			"void main () {\n"
 			"	gl_FragColor = fragColor;\n"
-			"}\n");
-
-	prog.attachVertexShader(vertShader);
-	prog.attachFragmentShader(fragShader);
-
-	prog.linkProgram();
-
+			"}\n";
 }
 
 } /* namespace OevGLES */

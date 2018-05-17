@@ -1,8 +1,8 @@
 /*
- * AnalogHandRenderer.h
+ * GLProgBase.cpp
  *
  *  Created on: May 17, 2018
- *      Author: hor
+ *      Author: kai_horstmann
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2018  Kai Horstmann
@@ -23,19 +23,38 @@
  *
  */
 
-#ifndef ANALOGHANDRENDERER_H_
-#define ANALOGHANDRENDERER_H_
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
 
-#include "GLPrograms/GLProgDiffuseLight.h"
-#include "Renderers/RendererBase.h"
 
-class AnalogHandRenderer {
-public:
-	AnalogHandRenderer() {
-		// TODO Auto-generated constructor stub
+#include "GLPrograms/GLProgBase.h"
 
-	}
-	virtual ~AnalogHandRenderer();
-};
+namespace OevGLES {
 
-#endif /* ANALOGHANDRENDERER_H_ */
+GLProgBase::GLProgBase() {
+
+}
+
+GLProgBase::~GLProgBase() {
+
+}
+
+void GLProgBase::createProgram() {
+
+	OevGLES::GLVertexShader *vertShader = new OevGLES::GLVertexShader (
+			getVertexShaderCode());
+
+	OevGLES::GLFragmentShader *fragShader = new OevGLES::GLFragmentShader (
+			getFragmentShaderCode());
+
+	prog.attachVertexShader(vertShader);
+	prog.attachFragmentShader(fragShader);
+
+	prog.linkProgram();
+
+}
+
+
+
+} /* namespace OevGLES */
