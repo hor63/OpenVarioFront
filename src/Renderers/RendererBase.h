@@ -28,10 +28,54 @@
 
 #include "GLPrograms/GLProgBase.h"
 
+#if defined Success
+#	undef Success
+#endif
+
+#include "GLES/VecMat.h"
+
 class RendererBase {
 public:
-	RendererBase();
+
+	/** \brief Constructor
+	 *
+	 * @param glprog Pointer to the GL program used to render the rendered item
+	 */
+	RendererBase(OevGLES::GLProgBase *glProg);
+
+	/** \brief destructor
+	 *
+	 */
 	virtual ~RendererBase();
+
+	/** \brief Setup the vertex arrays, calculate normals... and setup VBOs
+	 *
+	 */
+	virtual void setupVertexBuffers () = 0;
+
+	/** \brief Draw the rendered object.
+	 *
+	 * To be generic
+	 *
+	 * @param modelMatrix Model matrix, moves the object around from model to world space
+	 * @param viewMatrix View matrix, used to move from world to eye space
+	 * @param ProjMatrix Projection matrix, used to create the 3-dimensional effects on a 2D screen
+	 * @param MVMatrix Model-View Matrix
+	 * @param MVPMatrix Model/View/Projection matrix
+	 */
+	virtual void draw(
+			OevGLES::Mat4 const &modelMatrix,
+			OevGLES::Mat4 const &viewMatrix,
+			OevGLES::Mat4 const &ProjMatrix,
+			OevGLES::Mat4 const &MVMatrix,
+			OevGLES::Mat4 const &MVPMatrix
+			) = 0;
+
+protected:
+
+	// Pointer to the GL program
+	OevGLES::GLProgBase *glProg = 0;
+
 };
 
 #endif /* RENDERERBASE_H_ */

@@ -29,12 +29,10 @@
 
 #include "Renderers/RendererBase.h"
 
-RendererBase::RendererBase() {
-	// TODO Auto-generated constructor stub
-
-}
+RendererBase::RendererBase(OevGLES::GLProgBase *glprog)
+	:glProg{glprog}
+{ }
 
 RendererBase::~RendererBase() {
-	// TODO Auto-generated destructor stub
 }
 
