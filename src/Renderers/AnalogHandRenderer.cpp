@@ -89,11 +89,6 @@ AnalogHandRenderer::AnalogHandRenderer()
 			Eigen::Map<OevGLES::Vec3> pos1 (p0 + 8);
 			Eigen::Map<OevGLES::Vec3> pos2 (p0 + 16);
 
-			LOG4CXX_DEBUG(logger,"pos0 = \n" << pos0 );
-			LOG4CXX_DEBUG(logger,"pos1 = \n" << pos1 );
-			LOG4CXX_DEBUG(logger,"pos2 = \n" << pos2 );
-
-
 			OevGLES::Vec3 normal = (pos1 - pos0).normalized().cross((pos2-pos0).normalized()).normalized();
 			// Copy the normal into all normal vectors of the triangle
 			for (int k=1;k<6;k+=2) {
@@ -102,10 +97,11 @@ AnalogHandRenderer::AnalogHandRenderer()
 			}
 
 			LOG4CXX_DEBUG(logger,"Triangle # " << i << ":");
-			for (int k = 0;k < 6 ; k++) {
+			for (int k = 0;k < 6 ; k+= 2) {
 				Eigen::Map<OevGLES::Vec4> vecX ( p0 + (k*4));
+				Eigen::Map<OevGLES::Vec4> vecXNormal ( p0 + (k*4) + 4);
 
-				LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] = \n" << vecX);
+				LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] = [" << vecX.transpose() << "], Normal = [" << vecXNormal.transpose() << ']');
 
 			}
 
@@ -119,11 +115,10 @@ AnalogHandRenderer::~AnalogHandRenderer() { }
 void AnalogHandRenderer::setupVertexBuffers() {
 
 
-
-
 }
 
 void AnalogHandRenderer::draw(const OevGLES::Mat4& modelMatrix,
 		const OevGLES::Mat4& viewMatrix, const OevGLES::Mat4& ProjMatrix,
 		const OevGLES::Mat4& MVMatrix, const OevGLES::Mat4& MVPMatrix) {
 }
+

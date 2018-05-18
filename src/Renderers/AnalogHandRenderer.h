@@ -58,6 +58,7 @@ public:
 			OevGLES::Mat4 const &MVPMatrix
 			)  override;
 
+
 private:
 
 	// the memory layout of the vertex array is as follows:
