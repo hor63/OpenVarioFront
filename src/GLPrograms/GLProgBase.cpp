@@ -27,6 +27,7 @@
 #  include <config.h>
 #endif
 
+#include <sstream>
 
 #include "GLPrograms/GLProgBase.h"
 
@@ -53,8 +54,43 @@ void GLProgBase::createProgram() {
 
 	prog.linkProgram();
 
+	retrieveShaderVariableInfo();
+
 }
 
+GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleUniformInfo (
+		const char *uniformName) const {
+
+	auto inf = prog.getUniformInfo(uniformName);
+
+	if (!inf) {
+		std::ostringstream str;
+
+		str << "Uniform " << uniformName << " does not exist or is not active in the program.";
+
+		throw ProgramException(str.str().c_str());
+
+	}
+
+	return inf;
+}
+
+GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleAttributeInfo (
+		const char *attributeName) const {
+
+	auto inf = prog.getAttributeInfo(attributeName);
+
+	if (!inf) {
+		std::ostringstream str;
+
+		str << "Vertex attribute " << attributeName << " does not exist or is not active in the program.";
+
+		throw ProgramException(str.str().c_str());
+
+	}
+
+	return inf;
+}
 
 
 } /* namespace OevGLES */

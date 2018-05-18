@@ -59,6 +59,12 @@ public:
 		 variableType{variableType},
 		 variableIndex{variableIndex}
 		 {}
+			ShaderVariableInfo( )
+			:variableName{"none"},
+			 variableType{GL_NONE},
+			 variableIndex{9999}
+			 {}
+
 
 		std::string const &getVariableName() const {
 			return variableName;
@@ -182,7 +188,7 @@ public:
 	 * @param uniformName Name of the uniform whose information is requested.
 	 * @return Information about the uniform like type and index in the program
 	 */
-	ShaderVariableInfo const *getUniformInfo(char const *uniformName);
+	ShaderVariableInfo const *getUniformInfo(char const *uniformName) const;
 
 	/** \brief Retrieve information about an active vertex attribute
 	 *
@@ -191,7 +197,7 @@ public:
 	 * @param attributeName Name of the attribute whose information is requested.
 	 * @return Information about the uniform like type and index in the program
 	 */
-	ShaderVariableInfo const *getAttributeInfo(char const *attributeName);
+	ShaderVariableInfo const *getAttributeInfo(char const *attributeName) const;
 
 	/** \brief Return the GL program handle
 	 *

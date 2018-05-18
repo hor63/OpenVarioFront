@@ -66,11 +66,69 @@ public:
 	 */
 	virtual char const* getFragmentShaderCode() const override;
 
+	// The uniforms
+	GLProgram::ShaderVariableInfo const &getMvpMatrixInfo() const {
+		return mvpMatrixInfo;
+	}
+
+	GLProgram::ShaderVariableInfo  const &getMvMatrixInfo() const {
+		return mvMatrixInfo;
+	}
+
+	GLProgram::ShaderVariableInfo  const &getLightDirInfo() const {
+		return lightDirInfo;
+	}
+
+	GLProgram::ShaderVariableInfo  const &getLightColorInfo() const {
+		return lightColorInfo;
+	}
+	GLProgram::ShaderVariableInfo  const &getAmbientLightColorInfo() const {
+		return ambientLightColorInfo;
+	}
+
+	// The vertex attributes
+	GLProgram::ShaderVariableInfo  const &getVertexPosInfo() const {
+		return vertexPosInfo;
+	}
+	GLProgram::ShaderVariableInfo  const &getVertexNormalInfo() const {
+		return vertexNormalInfo;
+	}
+	GLProgram::ShaderVariableInfo  const &getVertexColorInfo() const {
+		return vertexColorInfo;
+	}
+
+
+protected:
+
+	/** \brief Called after linking the GL program to retrieve and store the shader variable information in the sub-class of this class.
+	 *
+	 * The variables which are to be retrieved are depending on the declarations and the actual shader code.
+	 *
+	 */
+	virtual void retrieveShaderVariableInfo() override;
+
 
 private:
 	/// \brief The only instance of this program object.
 	static GLProgDiffuseLight* theProgram;
 
+	// The uniforms
+	GLProgram::ShaderVariableInfo mvpMatrixInfo;
+	GLProgram::ShaderVariableInfo mvMatrixInfo;
+	GLProgram::ShaderVariableInfo lightDirInfo;
+	GLProgram::ShaderVariableInfo lightColorInfo;
+	GLProgram::ShaderVariableInfo ambientLightColorInfo;
+
+	// The vertex attributes
+	GLProgram::ShaderVariableInfo vertexPosInfo;
+	GLProgram::ShaderVariableInfo vertexNormalInfo;
+	GLProgram::ShaderVariableInfo vertexColorInfo;
+
+	/** \brief private constructor
+	 *
+	 * The constructor is private because only the static method \ref getProgram() will create the only object of this class on demand
+	 *
+	 */
 	GLProgDiffuseLight() {
 
 	}

@@ -311,7 +311,7 @@ void GLProgram::detachVertexShader() {
 	}
 }
 
-const GLProgram::ShaderVariableInfo* GLProgram::getUniformInfo(const char* uniformName) {
+const GLProgram::ShaderVariableInfo* GLProgram::getUniformInfo(const char* uniformName) const {
 	auto it = uniformMap.find(std::string(uniformName));
 
 	if (it == uniformMap.cend()) {
@@ -321,7 +321,7 @@ const GLProgram::ShaderVariableInfo* GLProgram::getUniformInfo(const char* unifo
 	}
 }
 
-const GLProgram::ShaderVariableInfo* GLProgram::getAttributeInfo(const char* attributeName) {
+const GLProgram::ShaderVariableInfo* GLProgram::getAttributeInfo(const char* attributeName) const {
 	auto it = attributeMap.find(std::string(attributeName));
 
 	if (it == attributeMap.cend()) {

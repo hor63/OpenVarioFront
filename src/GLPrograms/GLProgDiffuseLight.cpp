@@ -103,4 +103,21 @@ const char* GLProgDiffuseLight::getFragmentShaderCode() const {
 			"}\n";
 }
 
+
+void OevGLES::GLProgDiffuseLight::retrieveShaderVariableInfo() {
+
+	// The uniforms
+	mvpMatrixInfo			= *retrieveSingleUniformInfo("mvpMatrix");
+	mvMatrixInfo			= *retrieveSingleUniformInfo("mvMatrix");
+	lightDirInfo			= *retrieveSingleUniformInfo("lightDir");
+	lightColorInfo			= *retrieveSingleUniformInfo("lightColor");
+	ambientLightColorInfo	= *retrieveSingleUniformInfo("ambientLightColor");
+
+	// The vertex attributes
+	vertexPosInfo		= *retrieveSingleAttributeInfo("vertexPos");
+	vertexNormalInfo	= *retrieveSingleAttributeInfo("vertexNormal");
+	vertexColorInfo		= *retrieveSingleAttributeInfo("vertexColor");
+
+}
+
 } /* namespace OevGLES */

@@ -56,7 +56,7 @@ public:
 	 */
 	virtual char const* getVertexShaderCode() const = 0;
 
-	/** \brief Retrieve the frament shader code.
+	/** \brief Retrieve the fragment shader code.
 	 *
 	 *	The method must be overridden by sub-classes which provide their specific shader code.
 	 *
@@ -78,6 +78,32 @@ protected:
 	 */
 	void createProgram();
 
+	/** \brief Called after linking the GL program to retrieve and store the shader variable information in the sub-class of this class.
+	 *
+	 * The variables which are to be retrieved are depending on the declarations and the actual shader code.
+	 * Therefore this method is pure virtual here.
+	 *
+	 */
+	virtual void retrieveShaderVariableInfo() = 0;
+
+
+	/** \brief Retrieve granted single uniform information
+	 *
+	 *
+	 * @param uniformName Name of the uniform in the shader codes.
+	 * @return Uniform info like type and index in the program
+	 * @throws ProgramException when the uniform does not exist or is not active.
+	 */
+	GLProgram::ShaderVariableInfo const* retrieveSingleUniformInfo (char const *uniformName) const;
+
+	/** \brief Retrieve granted single attribute information
+	 *
+	 *
+	 * @param attributeName Name of the attribute in the vertex shader code.
+	 * @return Attribute info like type and index in the program
+	 * @throws ProgramException when the attribute does not exist or is not active.
+	 */
+	GLProgram::ShaderVariableInfo const * retrieveSingleAttributeInfo (char const *attributeName) const;
 
 
 };
