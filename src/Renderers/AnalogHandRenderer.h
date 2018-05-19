@@ -72,6 +72,13 @@ private:
 	GLfloat vertexArray[ 4  // 4 triangles
 						*3 // 3 vertexes per triangle
 						*8]; // Per vertex position and normal as Vec4
+
+	GLfloat handColor [4] = {1.0f,1.0f,0.95f,1.0f};
+
+	OevGLES::GLProgDiffuseLight* glProgram = 0;
+
+
+
 };
 
 #endif /* ANALOGHANDRENDERER_H_ */

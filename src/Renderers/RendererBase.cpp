@@ -29,8 +29,7 @@
 
 #include "Renderers/RendererBase.h"
 
-RendererBase::RendererBase(OevGLES::GLProgBase *glprog)
-	:glProg{glprog}
+RendererBase::RendererBase()
 { }
 
 RendererBase::~RendererBase() {

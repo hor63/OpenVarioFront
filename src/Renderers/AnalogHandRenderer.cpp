@@ -35,7 +35,7 @@
 #endif
 
 AnalogHandRenderer::AnalogHandRenderer()
-	: RendererBase{OevGLES::GLProgDiffuseLight::getProgram()},
+	:
 		// Setup the positions
 	    // The normals are computed in the constructor body
 	  vertexArray {
@@ -114,11 +114,30 @@ AnalogHandRenderer::~AnalogHandRenderer() { }
 
 void AnalogHandRenderer::setupVertexBuffers() {
 
+	// First get the program
+	glProgram = OevGLES::GLProgDiffuseLight::getProgram();
+
+	// make the program current
+	glProgram->useProgram();
+
+
+
 
 }
 
 void AnalogHandRenderer::draw(const OevGLES::Mat4& modelMatrix,
 		const OevGLES::Mat4& viewMatrix, const OevGLES::Mat4& ProjMatrix,
 		const OevGLES::Mat4& MVMatrix, const OevGLES::Mat4& MVPMatrix) {
+
+	// make my program current
+	glProgram->useProgram();
+
+	// set the color attribute constant
+	glVertexAttrib4fv(glProgram->getVertexColorInfo().getVariableIndex(),handColor);
+	glDisableVertexAttribArray(glProgram->getVertexColorInfo().getVariableIndex());
+
+
+
+
 }
 

@@ -39,9 +39,8 @@ public:
 
 	/** \brief Constructor
 	 *
-	 * @param glprog Pointer to the GL program used to render the rendered item
 	 */
-	RendererBase(OevGLES::GLProgBase *glProg);
+	RendererBase();
 
 	/** \brief destructor
 	 *
@@ -72,9 +71,6 @@ public:
 			) = 0;
 
 protected:
-
-	// Pointer to the GL program
-	OevGLES::GLProgBase *glProg = 0;
 
 };
 
