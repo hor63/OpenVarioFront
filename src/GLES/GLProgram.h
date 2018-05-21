@@ -203,7 +203,7 @@ public:
 	 *
 	 * @return GL program handle for use with GL program calls
 	 */
-	GLuint getProgramHandle () {
+	GLuint getProgramHandle () const {
 		return programHandle;
 	}
 

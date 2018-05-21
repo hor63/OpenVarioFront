@@ -90,20 +90,22 @@ protected:
 	/** \brief Retrieve granted single uniform information
 	 *
 	 *
-	 * @param uniformName Name of the uniform in the shader codes.
+	 * @param[in] uniformName Name of the uniform in the shader codes.
+	 * @param[out] uniformLocation Location of the bound variable in the program used to set uniform values.
 	 * @return Uniform info like type and index in the program
 	 * @throws ProgramException when the uniform does not exist or is not active.
 	 */
-	GLProgram::ShaderVariableInfo const* retrieveSingleUniformInfo (char const *uniformName) const;
+	GLProgram::ShaderVariableInfo const* retrieveSingleUniformInfo (char const *uniformName,GLint &uniformLocation) const;
 
 	/** \brief Retrieve granted single attribute information
 	 *
 	 *
-	 * @param attributeName Name of the attribute in the vertex shader code.
+	 * @param[in] attributeName Name of the attribute in the vertex shader code.
+	 * @param[out] attributeLocation Location of the bound variable in the program used to set vertex constants, and vertex arrays.
 	 * @return Attribute info like type and index in the program
 	 * @throws ProgramException when the attribute does not exist or is not active.
 	 */
-	GLProgram::ShaderVariableInfo const * retrieveSingleAttributeInfo (char const *attributeName) const;
+	GLProgram::ShaderVariableInfo const * retrieveSingleAttributeInfo (char const *attributeName,GLint &attributeLocation) const;
 
 
 };

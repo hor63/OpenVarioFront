@@ -120,23 +120,52 @@ void AnalogHandRenderer::setupVertexBuffers() {
 	// make the program current
 	glProgram->useProgram();
 
-
+	glGenBuffers(1,&vertexBufferHandle);
+	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
+	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 
 
 }
 
-void AnalogHandRenderer::draw(const OevGLES::Mat4& modelMatrix,
+void AnalogHandRenderer::draw(
+		const OevGLES::Mat4& modelMatrix,
 		const OevGLES::Mat4& viewMatrix, const OevGLES::Mat4& ProjMatrix,
-		const OevGLES::Mat4& MVMatrix, const OevGLES::Mat4& MVPMatrix) {
+		const OevGLES::Mat4& MVMatrix, const OevGLES::Mat4& MVPMatrix,
+		const OevGLES::Vec3& lightDir, const OevGLES::Vec4& lightColor,
+		const OevGLES::Vec4& ambientLightColor ) {
+
+	GLfloat* bufferOffset = 0;
 
 	// make my program current
 	glProgram->useProgram();
 
+	// Set the uniforms
+	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+
+	glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
+	glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
+	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
+
+
 	// set the color attribute constant
-	glVertexAttrib4fv(glProgram->getVertexColorInfo().getVariableIndex(),handColor);
-	glDisableVertexAttribArray(glProgram->getVertexColorInfo().getVariableIndex());
+	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
+	glVertexAttrib4fv(glProgram->getVertexColorLocation(),handColor);
+
+	// re-bind the buffer object
+	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
+
+	// setup the vertex coordinates
+	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+	glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+	// setup the vertex coordinates
+	bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
+	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+	glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
 
 
+	glDrawArrays(GL_TRIANGLES,0,12);
 
 
 }

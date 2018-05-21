@@ -59,7 +59,8 @@ void GLProgBase::createProgram() {
 }
 
 GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleUniformInfo (
-		const char *uniformName) const {
+		const char *uniformName,
+		GLint &uniformLocation) const {
 
 	auto inf = prog.getUniformInfo(uniformName);
 
@@ -72,11 +73,23 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleUniform
 
 	}
 
+	uniformLocation = glGetUniformLocation(prog.getProgramHandle(),uniformName);
+	if (uniformLocation == -1) {
+		std::ostringstream str;
+
+		str << "Location of uniform  " << uniformName << " cannot be retrieved.";
+
+		throw ProgramException(str.str().c_str());
+
+	}
+
+
 	return inf;
 }
 
 GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleAttributeInfo (
-		const char *attributeName) const {
+		const char *attributeName,
+		GLint &attributeLocation) const {
 
 	auto inf = prog.getAttributeInfo(attributeName);
 
@@ -85,9 +98,22 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleAttribu
 
 		str << "Vertex attribute " << attributeName << " does not exist or is not active in the program.";
 
+
 		throw ProgramException(str.str().c_str());
 
 	}
+
+	attributeLocation = glGetAttribLocation(prog.getProgramHandle(),attributeName);
+	if (attributeLocation == -1) {
+		std::ostringstream str;
+
+		str << "Location of vertex attribute  " << attributeName << " cannot be retrieved.";
+
+
+		throw ProgramException(str.str().c_str());
+
+	}
+
 
 	return inf;
 }

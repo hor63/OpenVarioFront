@@ -70,31 +70,59 @@ public:
 	GLProgram::ShaderVariableInfo const &getMvpMatrixInfo() const {
 		return mvpMatrixInfo;
 	}
+	GLint getMvpMatrixLocation () const {
+		return mvpMatrixLocation;
+	}
+
 
 	GLProgram::ShaderVariableInfo  const &getMvMatrixInfo() const {
 		return mvMatrixInfo;
+	}
+	GLint getMvMatrixLocation () const {
+		return mvMatrixLocation;
 	}
 
 	GLProgram::ShaderVariableInfo  const &getLightDirInfo() const {
 		return lightDirInfo;
 	}
+	GLint getLightDirLocation () const {
+		return lightDirLocation;
+	}
 
 	GLProgram::ShaderVariableInfo  const &getLightColorInfo() const {
 		return lightColorInfo;
 	}
+	GLint getLightColorLocation () const {
+		return lightColorLocation;
+	}
+
 	GLProgram::ShaderVariableInfo  const &getAmbientLightColorInfo() const {
 		return ambientLightColorInfo;
+	}
+	GLint getAmbientLightColorLocation () const {
+		return ambientLightColorLocation;
 	}
 
 	// The vertex attributes
 	GLProgram::ShaderVariableInfo  const &getVertexPosInfo() const {
 		return vertexPosInfo;
 	}
+	GLint getVertexPosLocation () const {
+		return vertexPosLocation;
+	}
+
 	GLProgram::ShaderVariableInfo  const &getVertexNormalInfo() const {
 		return vertexNormalInfo;
 	}
+	GLint getVertexNormalLocation () const {
+		return vertexNormalLocation;
+	}
+
 	GLProgram::ShaderVariableInfo  const &getVertexColorInfo() const {
 		return vertexColorInfo;
+	}
+	GLint getVertexColorLocation () const {
+		return vertexColorLocation;
 	}
 
 
@@ -113,16 +141,24 @@ private:
 	static GLProgDiffuseLight* theProgram;
 
 	// The uniforms
-	GLProgram::ShaderVariableInfo mvpMatrixInfo;
-	GLProgram::ShaderVariableInfo mvMatrixInfo;
-	GLProgram::ShaderVariableInfo lightDirInfo;
-	GLProgram::ShaderVariableInfo lightColorInfo;
-	GLProgram::ShaderVariableInfo ambientLightColorInfo;
+	GLProgram::ShaderVariableInfo	mvpMatrixInfo;
+	GLint 							mvpMatrixLocation = 0;
+	GLProgram::ShaderVariableInfo	mvMatrixInfo;
+	GLint							mvMatrixLocation = 0;
+	GLProgram::ShaderVariableInfo	lightDirInfo;
+	GLint							lightDirLocation = 0;
+	GLProgram::ShaderVariableInfo	lightColorInfo;
+	GLint							lightColorLocation = 0;
+	GLProgram::ShaderVariableInfo	ambientLightColorInfo;
+	GLint							ambientLightColorLocation = 0;
 
 	// The vertex attributes
-	GLProgram::ShaderVariableInfo vertexPosInfo;
-	GLProgram::ShaderVariableInfo vertexNormalInfo;
-	GLProgram::ShaderVariableInfo vertexColorInfo;
+	GLProgram::ShaderVariableInfo	vertexPosInfo;
+	GLint							vertexPosLocation = 0;
+	GLProgram::ShaderVariableInfo	vertexNormalInfo;
+	GLint							vertexNormalLocation = 0;
+	GLProgram::ShaderVariableInfo	vertexColorInfo;
+	GLint							vertexColorLocation = 0;
 
 	/** \brief private constructor
 	 *

@@ -66,10 +66,10 @@ const char* GLProgDiffuseLight::getVertexShaderCode() const {
 			"precision mediump float;\n"
 			"\n"
 			"// MVP matrix is used to transform points\n"
-			"uniform vec4 mvpMatrix;\n"
+			"uniform mat4 mvpMatrix;\n"
 			"\n"
 			"// MV matrix is used to transform normal vectors to eye space\n"
-			"uniform vec4 mvMatrix;\n"
+			"uniform mat4 mvMatrix;\n"
 			"\n"
 			"// Light diretory vector is already in eye space\n"
 			"uniform vec3 lightDir;\n"
@@ -87,7 +87,7 @@ const char* GLProgDiffuseLight::getVertexShaderCode() const {
 			"void main () { \n"
 			"	float diffuseLightFactor = max(cZero,dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
 			"	\n"
-			"	fragColor = vertexColor * (ambientLightColor + diffuseLightFactor * lightColor);\n"
+			"	fragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));\n"
 			"	gl_Position = mvpMatrix * vertexPos;\n"
 			"}\n";
 
@@ -107,16 +107,16 @@ const char* GLProgDiffuseLight::getFragmentShaderCode() const {
 void OevGLES::GLProgDiffuseLight::retrieveShaderVariableInfo() {
 
 	// The uniforms
-	mvpMatrixInfo			= *retrieveSingleUniformInfo("mvpMatrix");
-	mvMatrixInfo			= *retrieveSingleUniformInfo("mvMatrix");
-	lightDirInfo			= *retrieveSingleUniformInfo("lightDir");
-	lightColorInfo			= *retrieveSingleUniformInfo("lightColor");
-	ambientLightColorInfo	= *retrieveSingleUniformInfo("ambientLightColor");
+	mvpMatrixInfo			= *retrieveSingleUniformInfo("mvpMatrix",mvpMatrixLocation);
+	mvMatrixInfo			= *retrieveSingleUniformInfo("mvMatrix",mvMatrixLocation);
+	lightDirInfo			= *retrieveSingleUniformInfo("lightDir",lightDirLocation);
+	lightColorInfo			= *retrieveSingleUniformInfo("lightColor",lightColorLocation);
+	ambientLightColorInfo	= *retrieveSingleUniformInfo("ambientLightColor",ambientLightColorLocation);
 
 	// The vertex attributes
-	vertexPosInfo		= *retrieveSingleAttributeInfo("vertexPos");
-	vertexNormalInfo	= *retrieveSingleAttributeInfo("vertexNormal");
-	vertexColorInfo		= *retrieveSingleAttributeInfo("vertexColor");
+	vertexPosInfo		= *retrieveSingleAttributeInfo("vertexPos",vertexPosLocation);
+	vertexNormalInfo	= *retrieveSingleAttributeInfo("vertexNormal",vertexNormalLocation);
+	vertexColorInfo		= *retrieveSingleAttributeInfo("vertexColor",vertexColorLocation);
 
 }
 

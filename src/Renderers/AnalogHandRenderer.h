@@ -55,7 +55,10 @@ public:
 			OevGLES::Mat4 const &viewMatrix,
 			OevGLES::Mat4 const &ProjMatrix,
 			OevGLES::Mat4 const &MVMatrix,
-			OevGLES::Mat4 const &MVPMatrix
+			OevGLES::Mat4 const &MVPMatrix,
+			OevGLES::Vec3 const &lightDir,
+			OevGLES::Vec4 const &lightColor,
+			OevGLES::Vec4 const &ambientLightColor
 			)  override;
 
 
@@ -73,10 +76,11 @@ private:
 						*3 // 3 vertexes per triangle
 						*8]; // Per vertex position and normal as Vec4
 
-	GLfloat handColor [4] = {1.0f,1.0f,0.95f,1.0f};
+	GLfloat handColor [4] = {1.0f,1.0f,0.7f,1.0f};
 
 	OevGLES::GLProgDiffuseLight* glProgram = 0;
 
+	GLuint vertexBufferHandle = 0;
 
 
 };
