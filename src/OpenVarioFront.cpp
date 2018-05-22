@@ -63,24 +63,13 @@ int main(int argint,char** argv) {
 
 
     try {
-		OevGLES::Mat4 modelMatrix = OevGLES::Mat4::Identity();
-		OevGLES::Vec3 camPos = {3,4,20};
+		OevGLES::Vec4 camPos = {3,4,20,1};
 		OevGLES::Vec3 up = {0,1,0};
 		OevGLES::Vec3 origin = {0,0,0};
-		OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix(camPos,origin,up);
-		OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(18,22,320.0/240.0,66);
-		OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
-		OevGLES::Mat4 MVPMatrix = projMatrix * MVMatrix;
 		OevGLES::Vec4 lightDir4;
 		OevGLES::Vec3 lightDir;
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
-		OevGLES::Vec4 lightColor {0.5f,0.2f,0.2f,1.0f};
-
-		// Light dir is in eye space
-		lightDir4 = viewMatrix * OevGLES::Vec4  {-1.0f,10.0f,-10.0f,0.0f};
-		lightDir(0) = lightDir4(0);
-		lightDir(1) = lightDir4(1);
-		lightDir(2) = lightDir4(2);
+		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 
 
 		OevGLES::EGLRenderSurface eglSurface;
@@ -92,14 +81,31 @@ int main(int argint,char** argv) {
 
 		hand.setupVertexBuffers();
 
-		glClearColor(0.4f,0.2f,0.01f,1.0f);
-		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		GLfloat k = 0.0f;
+		for (GLfloat i = 0.0f; i<360.0f;i += 0.1f) {
 
-		hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
+			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
+			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(i) * camPos).block<3,1>(0,0),origin,up);
+			OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(5,35,320.0/240.0,66);
+			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
+			OevGLES::Mat4 MVPMatrix = projMatrix * viewMatrix * modelMatrix;
 
-		sleep(3);
+			// Light dir is in eye space
+			lightDir4 = viewMatrix * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f};
+			lightDir = lightDir4.block<3,1>(0,0);
+			lightDir.normalize();
 
-		eglSwapBuffers(eglSurface.getDisplay(),eglSurface.getRenderSurface());
+			glClearColor(0.2f,0.2f,0.01f,1.0f);
+			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
+
+			// sleep(3);
+
+			eglSwapBuffers(eglSurface.getDisplay(),eglSurface.getRenderSurface());
+
+			k += 1.0f;
+		}
 
 		sleep(10);
 
