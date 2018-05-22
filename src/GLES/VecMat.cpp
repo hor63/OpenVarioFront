@@ -159,6 +159,7 @@ Mat4 viewMatrix (Vec3 const& camPos, Vec3 const &lookAt, Vec3 const & up) {
 	Vec3 forwardVec = (lookAt - camPos).normalized();
 	Vec3 rightVec = (forwardVec.cross(up.normalized())).normalized();
 	Vec3 myUp = (rightVec.cross(forwardVec)).normalized();
+	Mat4 R,T;
 
 	initLogger();
 
@@ -174,15 +175,24 @@ Mat4 viewMatrix (Vec3 const& camPos, Vec3 const &lookAt, Vec3 const & up) {
 	 *
 	 */
 
-	rc <<	rightVec(0),	rightVec(1),	rightVec(2),	-camPos(0),
-			myUp(0),		myUp(1),		myUp(2),		-camPos(1),
-			-forwardVec(0),	-forwardVec(1),	-forwardVec(2),	-camPos(2),
+	R << 	rightVec(0),	rightVec(1),	rightVec(2),	0.0f,
+			myUp(0),		myUp(1),		myUp(2),		0.0f,
+			-forwardVec(0),	-forwardVec(1),	-forwardVec(2),	0.0f,
 			0.0f,			0.0f,			0.0f,			1.0f;
 
-	LOG4CXX_DEBUG(logger,"viewMatrix (camPos = \n" << camPos << ", lookAt = \n" << lookAt << ", up = \n" << up<< ")" );
-	LOG4CXX_DEBUG(logger,"viewMatrix: forwardVec = \n" << forwardVec);
-	LOG4CXX_DEBUG(logger,"viewMatrix: rightVec = \n" << rightVec);
-	LOG4CXX_DEBUG(logger,"viewMatrix: myUp = \n" << myUp);
+	T << 	1.0f,	0.0f,	0.0f,	-camPos(0),
+			0.0f,	1.0f,	0.0f,	-camPos(1),
+			0.0f,	0.0f,	1.0f,	-camPos(2),
+			0.0f,	0.0f,	0.0f,	1.0f;
+
+	rc = R * T;
+
+	LOG4CXX_DEBUG(logger,"viewMatrix (camPos = " << camPos.transpose() << ", lookAt = " << lookAt.transpose() << ", up = " << up.transpose() << ")" );
+	LOG4CXX_DEBUG(logger,"viewMatrix: forwardVec = " << forwardVec.transpose());
+	LOG4CXX_DEBUG(logger,"viewMatrix: rightVec = " << rightVec.transpose());
+	LOG4CXX_DEBUG(logger,"viewMatrix: myUp = " << myUp.transpose());
+	LOG4CXX_DEBUG(logger,"viewMatrix: R = \n" << R);
+	LOG4CXX_DEBUG(logger,"viewMatrix: T = \n" << T);
 	LOG4CXX_DEBUG(logger,"viewMatrix: rc = \n" << rc);
 	return rc;
 }
