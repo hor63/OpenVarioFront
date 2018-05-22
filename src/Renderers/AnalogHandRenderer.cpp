@@ -139,6 +139,19 @@ void AnalogHandRenderer::draw(
 	// make my program current
 	glProgram->useProgram();
 
+
+	LOG4CXX_DEBUG(logger,"lightDir = " << lightDir.transpose());
+	GLfloat* p0 = vertexArray;
+	for (int k = 0;k < 6 ; k+= 2) {
+		Eigen::Map<OevGLES::Vec4> vecXNormal4 ( p0 + (k*4) + 4);
+		OevGLES::Vec3 vecXNormal = (MVMatrix * vecXNormal4).block<3,1>(0,0);
+
+		LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] Normal = [" << vecXNormal4.transpose() << ']');
+		LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] MVMatrix * Normal = [" << vecXNormal.transpose() << ']');
+		LOG4CXX_DEBUG(logger,"lightDir dot normal = " << lightDir.dot(vecXNormal));
+
+	}
+
 	// Set the uniforms
 	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
 	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
@@ -161,7 +174,7 @@ void AnalogHandRenderer::draw(
 	glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
 	// setup the vertex coordinates
 	bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
-	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
 	glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
 
 
