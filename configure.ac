@@ -169,10 +169,29 @@ AC_SUBST([LOG4CXX_LIBS])
 AC_SUBST([LOG4CXX_LDFLAGS])
 AC_SUBST([LOG4CXX_CXXFLAGS])
 
-EGL_SYS_DIR=X11
-AC_SUBST([EGL_SYS_DIR])
-EGL_SYS_LIBS=-lX11
-AC_SUBST([EGL_SYS_LIBS])
+
+# Check if you have the Mali FBDEV headers and lib installed.
+AC_CHECK_LIB([Mali], [eglGetError], [
+		AC_DEFINE([HAVE_MALI_FBDEV], [1], [Defined if the Mali FBDEV EGL implementation is found])
+		EGL_SYS_DIR=Mali_fbdev
+		AC_SUBST([EGL_SYS_DIR])
+	], [
+		EGL_SYS_DIR=X11
+		AC_SUBST([EGL_SYS_DIR])
+		EGL_SYS_LIBS=-lX11
+		AC_SUBST([EGL_SYS_LIBS])
+	])
+
+
+# Obtain complile and link flags for Freetype 2 (Font rendering lib) and libpng
+# Both are mandatory. Therefore leave the default action when not found: Error and stop
+PKG_CHECK_MODULES([FREETYPE2], [freetype2])
+AC_SUBST([FREETYPE2_CFLAGS])
+AC_SUBST([FREETYPE2_LIBS])
+
+PKG_CHECK_MODULES([LIBPNG], [libpng])
+AC_SUBST([LIBPNG_CFLAGS])
+AC_SUBST([LIBPNG_LIBS])
 
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
