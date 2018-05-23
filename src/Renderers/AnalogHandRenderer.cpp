@@ -96,15 +96,18 @@ AnalogHandRenderer::AnalogHandRenderer()
 				posK = normal;
 			}
 
-			LOG4CXX_DEBUG(logger,"Triangle # " << i << ":");
-			for (int k = 0;k < 6 ; k+= 2) {
-				Eigen::Map<OevGLES::Vec4> vecX ( p0 + (k*4));
-				Eigen::Map<OevGLES::Vec4> vecXNormal ( p0 + (k*4) + 4);
+#if defined HAVE_LOG4CXX_H
+			if (logger->getLevel() == log4cxx::Level::getDebug()) {
+				LOG4CXX_DEBUG(logger,"Triangle # " << i << ":");
+				for (int k = 0;k < 6 ; k+= 2) {
+					Eigen::Map<OevGLES::Vec4> vecX ( p0 + (k*4));
+					Eigen::Map<OevGLES::Vec4> vecXNormal ( p0 + (k*4) + 4);
 
-				LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] = [" << vecX.transpose() << "], Normal = [" << vecXNormal.transpose() << ']');
+					LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] = [" << vecX.transpose() << "], Normal = [" << vecXNormal.transpose() << ']');
 
+				}
 			}
-
+#endif
 		}
 
 	}
