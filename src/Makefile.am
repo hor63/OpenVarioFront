@@ -22,9 +22,13 @@ bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
 OpenVarioFront_SOURCES=OpenVarioFront.cpp  
  
-OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/libOEV_GLES.a  -lGLESv2 -lEGL -lGLESv2 -lEGL $(EGL_SYS_LIBS) $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/libOEV_GLES.a \
+	-lGLESv2 -lEGL -lGLESv2 -lEGL $(EGL_SYS_LIBS) $(LOG4CXX_LIBS) \
+	$(FREETYPE2_LIBS) $(LIBPNG_LIBS) \
+	$(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
+	$(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 AM_LDFLAGS=  $(LOG4CXX_LDFLAGS) 
