@@ -15,12 +15,12 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# SUBDIRS=
+SUBDIRS= TexHelper
 	
 
 noinst_LIBRARIES = libOEV_GLES.a
 libOEV_GLES_a_SOURCES = $(EGL_SYS_DIR)/sysEGLWindow.cpp EGLRenderSurface.cpp GLShader.cpp GLProgram.cpp ExceptionBase.cpp VecMat.cpp
-
+libOEV_GLES_a_LIBADD = TexHelper/libOEV_TexHelper.a
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)

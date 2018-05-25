@@ -15,11 +15,11 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=../GLPrograms
+# SUBDIRS=
 	
 
-noinst_LIBRARIES = libOEV_Renderers.a
-libOEV_Renderers_a_SOURCES = RendererBase.cpp AnalogHandRenderer.cpp
+noinst_LIBRARIES = libOEV_TexHelper.a
+libOEV_TexHelper_a_SOURCES = TextureData.cpp PngReader.cpp
 
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \

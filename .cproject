@@ -41,8 +41,9 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src|src/GLES|GLES" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="GLES/Mali_fbdev|Renderers|GLPrograms" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="GLES/TexHelper|GLES/Mali_fbdev|Renderers|GLPrograms" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/GLES/Mali_fbdev"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/GLES/TexHelper"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/GLPrograms"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Renderers"/>
 					</sourceEntries>
@@ -87,8 +88,9 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src|src/GLES|GLES" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="GLES/Mali_fbdev|Renderers|GLPrograms" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="GLES/TexHelper|GLES/Mali_fbdev|Renderers|GLPrograms" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/GLES/Mali_fbdev"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/GLES/TexHelper"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/GLPrograms"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Renderers"/>
 					</sourceEntries>
