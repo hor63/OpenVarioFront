@@ -65,9 +65,17 @@ public:
 		Short565	= GL_UNSIGNED_SHORT_5_6_5
 	};
 
-	/** \Brief constructor
+	/** \brief constructor
 	 *
-	 * Creates the object. The actual data buffer creation is delayed until \ref getDataPrt or \ref writeData are called
+	 * Creates the object. The actual data buffer creation is delayed until \ref getDataPtr or \ref writeData are called
+	 *
+	 * Width and height *should* be identical, and a power of 2 (i.e. 2, 4, 8, 16, 32, 64...). GL implementations may or may not accept other dimensions,
+	 * and there may also a performance penalty.
+	 *
+	 * glFormat and dataFormat are not arbitrarily interchangble:
+	 * - For dataType GL_UNSIGNED_SHORT_4_4_4_4 and GL_UNSIGNED_SHORT_5_5_5_1 glFormat *must* GL_RGBA.
+	 * - For dataType GL_UNSIGNED_SHORT_5_6_5 glFormat *must* GL_RGB.
+	 * Any glFormat is allowed for dataFormat = GL_UNSIGNED_BYTE.
 	 *
 	 * @param width Width of the texture in Texel
 	 * @param height Height of the texture in Texel
@@ -92,7 +100,7 @@ public:
 	/** \brief destructor
 	 *
 	 * Deletes the internal buffer.
-	 * Pointers to the buffer obtained with \ref getDataPtr point to invalid data afterwards. Do not use.
+	 * Pointers to the buffer obtained with \ref getDataPtr point to invalid data afterwards. Do not use any more.
 	 */
 	virtual ~TextureData();
 
@@ -102,7 +110,7 @@ public:
 	 *
 	 * When it is created luminance or RGB values are initialized to 0, Alpha channels to the max. value of the format.
 	 *
-	 * When directly writing the data (which is explicitly forseen here) verify your own idea of the length of the data buffer with \ref getDataBufferLength().
+	 * When directly writing the data (which is explicitly foreseen here) verify your own idea of the length of the data buffer with \ref getDataBufferLength().
 	 *
 	 * @return Pointer to the texture data
 	 */
@@ -112,7 +120,7 @@ public:
 	 *
 	 * \see void *getDataPtr()
 	 *
-	 * @return Pointer to the texture data
+	 * @return Pointer to constant texture data
 	 */
 	void const *getDataPtr () const;
 
@@ -130,25 +138,49 @@ public:
 			void * const data,
 			GLuint dataLength);
 
-	/**
+	/** \brief Width of the buffer in texels
 	 *
-	 * @return
+	 * @return Width of the buffer in texels
 	 */
 	GLuint getWidth () const {
 		return width;
 	}
-	GLuint getHeight () const {
+
+	/** \brief Height of the buffer in texels
+	 *
+	 * @return Height of the buffer in texels
+	 */
+GLuint getHeight () const {
 		return height;
 	}
 
+	/** \brief Format of the texture data
+	 *
+	 * \see GlFormat
+	 *
+	 * @return Format of the texture data
+	 */
 	GlFormat getGlFormat () {
 		return glFormat;
 	}
 
+	/** \brief Data type of texture data
+	 *
+	 * \see DataType
+	 *
+	 * @return Data type of texture data
+	 */
 	DataType getDataType () const {
 		return dataType;
 	}
 
+	/** \brief Length of the texture buffer in bytes
+	 *
+	 *	Buffer length is width*height*num bytes per texel. The buffer is densly packed without alignment. RGB data in Unsigned_Byte type therefore have 3 bytes per texel.
+	 *	However if width and height are equal, and have 2^n values alignment rows are always aligned to 8 bytes when width and height >= 4 Texels
+	 *
+	 * @return Length of the texture buffer in bytes
+	 */
 	GLuint getDataBufferLength() const {
 		return lenData;
 	}
@@ -163,6 +195,7 @@ private:
 
 	void *data = 0;
 	GLuint lenData = 0;
+	GLuint lenPerTexel = 0;
 
 };
 
