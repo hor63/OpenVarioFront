@@ -133,9 +133,14 @@ void openNativeWindow(EGLNativeDisplayType& display,
 void closeNativeWindow(EGLNativeDisplayType display,
 		EGLNativeWindowType window) {
 
-	XUnmapWindow(display,window);
-	XDestroyWindow(display,window);
-	XCloseDisplay(display);
+	if (display != 0 && window != 0){
+		XUnmapWindow(display,window);
+		XDestroyWindow(display,window);
+	}
+
+	if (display != 0) {
+		XCloseDisplay(display);
+	}
 
 }
 
