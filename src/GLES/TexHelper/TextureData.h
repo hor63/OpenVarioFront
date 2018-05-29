@@ -80,13 +80,13 @@ public:
 	 * @param width Width of the texture in Texel
 	 * @param height Height of the texture in Texel
 	 * @param glFormat Format as \ref GlFormat enum
-	 * @param dataFormat Data type of the buffer as \ref DataType enum
+	 * @param dataType Data type of the buffer as \ref DataType enum
 	 */
 	TextureData(
 			GLuint width,
 			GLuint height,
 			GlFormat glFormat,
-			DataType dataFormat
+			DataType dataType
 			);
 
 	/** \brief Copy constructor
@@ -188,14 +188,14 @@ GLuint getHeight () const {
 
 private:
 
-	GLuint width = 0;
-	GLuint height = 0;
-	GlFormat glFormat = UndefFormat;
-	DataType dataType = undefType;
+	GLuint width = 0;					///< Width of the texture buffer in *Texels*
+	GLuint height = 0;					///< Height of the texture buffer in *Texels*
+	GlFormat glFormat = UndefFormat;	///< \see GlFormat
+	DataType dataType = undefType;		///< \see DataType
 
-	void *data = 0;
-	GLuint lenData = 0;
-	GLuint lenPerTexel = 0;
+	void *data = 0;						///< Pointer to the internal data buffer
+	GLuint lenData = 0;					///< Length of \ref data in *bytes*
+	GLuint bytesPerTexel = 0;			///< Bytes per texel in the buffer
 
 };
 

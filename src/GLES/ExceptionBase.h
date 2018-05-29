@@ -80,6 +80,14 @@ public:
 		{}
 };
 
+class TextureException :public ExceptionBase {
+
+public:
+	TextureException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
 } /* namespace OevGLES */
 
 #endif /* SRC_EXCEPTIONBASE_H_ */
