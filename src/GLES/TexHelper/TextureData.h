@@ -193,7 +193,7 @@ private:
 	GlFormat glFormat = UndefFormat;	///< \see GlFormat
 	DataType dataType = undefType;		///< \see DataType
 
-	void *data = 0;						///< Pointer to the internal data buffer
+	char *data = 0;						///< Pointer to the internal data buffer
 	GLuint lenData = 0;					///< Length of \ref data in *bytes*
 	GLuint bytesPerTexel = 0;			///< Bytes per texel in the buffer
 

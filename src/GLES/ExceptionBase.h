@@ -88,6 +88,14 @@ public:
 		{}
 };
 
+class PngReaderException :public ExceptionBase {
+
+public:
+	PngReaderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
 } /* namespace OevGLES */
 
 #endif /* SRC_EXCEPTIONBASE_H_ */

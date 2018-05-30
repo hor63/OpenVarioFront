@@ -26,12 +26,23 @@
 #ifndef PNGREADER_H_
 #define PNGREADER_H_
 
+#include <string>
+
+#include "GLES/TexHelper/TextureData.h"
+
 namespace OevGLES {
 
 class PngReader {
 public:
-	PngReader();
+	PngReader(char const *fileName);
 	virtual ~PngReader();
+
+	void readPngToTexture(TextureData &textureData);
+
+private:
+
+	std::string fileName;
+
 };
 
 } /* namespace OevGLES */
