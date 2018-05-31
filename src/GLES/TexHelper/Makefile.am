@@ -23,6 +23,7 @@ libOEV_TexHelper_a_SOURCES = TextureData.cpp PngReader.cpp
 
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
+	$(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 AM_LDFLAGS= -l $(LOG4CXX_LDFLAGS) $(EGL_SYS_LIBS)

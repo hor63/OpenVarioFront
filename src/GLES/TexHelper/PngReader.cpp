@@ -31,16 +31,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
-#include <png.h>
+#include <libpng16/png.h>
 
 #include "GLES/TexHelper/PngReader.h"
 #include "GLES/ExceptionBase.h"
 
 namespace OevGLES {
 
+#if defined HAVE_LOG4CXX_H
+log4cxx::LoggerPtr PngReader::logger = 0;
+#endif
+
 PngReader::PngReader(char const *fileName)
 	:fileName{fileName}
-{ }
+{
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.PngReader");
+	}
+#endif
+}
 
 PngReader::~PngReader() {}
 
@@ -49,11 +59,13 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 	FILE* pngFile = 0;
 	png_structp pngPtr = 0;
 	png_infop   pngInfo = 0;
+	TextureData *result = 0;
 
 
 	try {
 
 		pngFile = fopen(fileName.c_str(),"rb");
+		LOG4CXX_DEBUG(logger,"Opened PNG file \"" << fileName << "\". pngFile = " << pngFile);
 
 		if (!pngFile) {
 			std::ostringstream errMsg;
@@ -62,24 +74,100 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		}
 
 		pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
+		LOG4CXX_DEBUG(logger,"Created read struct. pngPtr = " << pngPtr);
 		if (!pngPtr) {
 			throw PngReaderException("png_create_read_struct() failed");
 		}
 
+		pngInfo = png_create_info_struct(pngPtr);
+		LOG4CXX_DEBUG(logger,"Created info struct. pngInfo = " << pngInfo);
+		if (!pngInfo) {
+			throw PngReaderException("png_create_info_struct() failed");
+		}
+
 		if (setjmp(png_jmpbuf(pngPtr))) {
-			throw PngReaderException("Setjump called due to internal png error");
+			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file");
+			throw PngReaderException("longjmp called due to internal png error");
 		}
 
 		png_init_io(pngPtr,pngFile);
+		LOG4CXX_DEBUG(logger,"Called png_init_io");
 
 		png_set_sig_bytes(pngPtr,0);
+		LOG4CXX_DEBUG(logger,"Called png_set_sig_bytes");
 
 		png_read_png(pngPtr,pngInfo,PNG_TRANSFORM_EXPAND|PNG_TRANSFORM_STRIP_16|PNG_TRANSFORM_PACKING,0);
+		LOG4CXX_DEBUG(logger,"Called png_read_png");
 
 		png_uint_32 width = 0,height =0;
 		int bitDepth = 0, colorType = 0;
 		png_get_IHDR(pngPtr,pngInfo,&width,&height,&bitDepth,&colorType,NULL,NULL,NULL);
-#error evaluate the color type and bitDepth, allocate row buffers, and read the data
+		LOG4CXX_DEBUG(logger,"Called png_get_IHDR");
+		LOG4CXX_DEBUG(logger,"width = "<< width << ", height = "<< height << ", bitDepth = "<< bitDepth << ", colorType = "<< colorType );
+
+		TextureData::GlFormat textureFormat;
+		TextureData::DataType textureDataType;
+		// Build the texture buffer object according to the information from the PNG file
+		switch (colorType) {
+		case PNG_COLOR_TYPE_GRAY:
+			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY");
+			if (bitDepth != 8) {
+				std::ostringstream os;
+				os << "Bit depth of color type PNG_COLOR_TYPE_GRAY is " << bitDepth << ". This depth is not supported.";
+				throw PngReaderException(os.str().c_str());
+			} else {
+				textureFormat = TextureData::Luminance;
+				textureDataType = TextureData::Byte;
+			}
+			break;
+
+		case PNG_COLOR_TYPE_GRAY_ALPHA:
+			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY_ALPHA");
+			if (bitDepth != 8) {
+				std::ostringstream os;
+				os << "Bit depth of color type PNG_COLOR_TYPE_GRAY_ALPHA is " << bitDepth << ". This depth is not supported.";
+				throw PngReaderException(os.str().c_str());
+			} else {
+				textureFormat = TextureData::LuminanceA;
+				textureDataType = TextureData::Byte;
+			}
+			break;
+
+		case PNG_COLOR_TYPE_RGB:
+			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGB");
+			if (bitDepth != 8) {
+				std::ostringstream os;
+				os << "Bit depth of color type PNG_COLOR_TYPE_RGB is " << bitDepth << ". This depth is not supported.";
+				throw PngReaderException(os.str().c_str());
+			} else {
+				textureFormat = TextureData::RGB;
+				textureDataType = TextureData::Byte;
+			}
+			break;
+
+		case PNG_COLOR_TYPE_RGB_ALPHA:
+			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGBA");
+			if (bitDepth != 8) {
+				std::ostringstream os;
+				os << "Bit depth of color type PNG_COLOR_TYPE_RGB_ALPHA is " << bitDepth << ". This depth is not supported.";
+				throw PngReaderException(os.str().c_str());
+			} else {
+				textureFormat = TextureData::RGBA;
+				textureDataType = TextureData::Byte;
+			}
+			break;
+
+		default:
+			{
+				std::ostringstream os;
+				os << "Un-supported PNG color type" << colorType;
+				LOG4CXX_ERROR(logger,os.str().c_str());
+				throw PngReaderException(os.str().c_str());
+			}
+
+		}
+
+		textureData = TextureData(width,height,textureFormat,textureDataType);
 
 		// Cleanup
 		png_destroy_read_struct(&pngPtr,&pngInfo,NULL);

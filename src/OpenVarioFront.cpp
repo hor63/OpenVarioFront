@@ -40,6 +40,8 @@
 #include "GLES/GLProgram.h"
 #include "GLPrograms/GLProgDiffuseLight.h"
 #include "Renderers/AnalogHandRenderer.h"
+#include "GLES/TexHelper/PngReader.h"
+
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
 #if defined Success
@@ -78,6 +80,11 @@ int main(int argint,char** argv) {
 		LOG4CXX_INFO(logger,"Create the diffuse light program");
 
 		AnalogHandRenderer hand;
+
+		OevGLES::TextureData texData(4,4,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
+		OevGLES::PngReader pngReader("Vario5m.png");
+
+		pngReader.readPngToTexture(texData);
 
 		hand.setupVertexBuffers();
 

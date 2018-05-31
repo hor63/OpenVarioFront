@@ -28,6 +28,8 @@
 
 #include <string>
 
+#include "OVFCommon.h"
+
 #include "GLES/TexHelper/TextureData.h"
 
 namespace OevGLES {
@@ -42,6 +44,10 @@ public:
 private:
 
 	std::string fileName;
+
+#if defined HAVE_LOG4CXX_H
+	static log4cxx::LoggerPtr logger;
+#endif
 
 };
 
