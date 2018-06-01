@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory.h>
 #include <sstream>
 #include <libpng16/png.h>
 
@@ -56,10 +57,11 @@ PngReader::~PngReader() {}
 
 void PngReader::readPngToTexture(TextureData &textureData) {
 
-	FILE* pngFile = 0;
-	png_structp pngPtr = 0;
-	png_infop   pngInfo = 0;
-	TextureData *result = 0;
+	FILE			*pngFile = 0;
+	png_structp 	pngPtr = 0;
+	png_infop   	pngInfo = 0;
+	TextureData 	*result = 0;
+	png_bytep	 	*rowPointers = 0;
 
 
 	try {
@@ -168,9 +170,39 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		}
 
 		textureData = TextureData(width,height,textureFormat,textureDataType);
+		png_bytep texDataPtr = png_bytep (textureData.getDataPtr());
+		LOG4CXX_DEBUG(logger,"PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
+				", the length of the texturedata buffer is " << textureData.getDataBufferLength());
+		if (textureData.getDataBufferLength() != png_get_rowbytes(pngPtr,pngInfo) * height) {
+			std::ostringstream os;
+			os << "Error in PngReader: PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
+					" whereas the length of the texturedata buffer is " << textureData.getDataBufferLength();
+			throw PngReaderException(os.str().c_str());
+		}
+
+		rowPointers = png_get_rows(pngPtr,pngInfo);
+		LOG4CXX_DEBUG(logger,"Read image into rows");
+
+
+		png_bytep currRow = texDataPtr;
+		png_size_t bytesPerRow = png_get_rowbytes(pngPtr,pngInfo);
+
+		LOG4CXX_DEBUG(logger,"Bytes per row = " << bytesPerRow);
+		LOG4CXX_DEBUG(logger,"Bytes per pixel = " << bytesPerRow/width);
+
+
+		// Read the rows bottom to top into the texture buffer
+		for (int i = height - 1; i >= 0; i--) {
+			LOG4CXX_TRACE(logger,"Copy from line " << i << " to line " << ((currRow - texDataPtr) / bytesPerRow));
+			memcpy (currRow,rowPointers[i],bytesPerRow);
+			currRow += bytesPerRow;
+		}
+
+		LOG4CXX_DEBUG(logger,"Copied the buffer");
 
 		// Cleanup
 		png_destroy_read_struct(&pngPtr,&pngInfo,NULL);
+		LOG4CXX_DEBUG(logger,"Destroyed the PNG structures.");
 
 		fclose (pngFile);
 
@@ -179,6 +211,10 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 	catch (std::exception const &e) {
 
 		// Perform internal cleanup before re-throwing the exception
+
+		if (rowPointers) {
+			delete rowPointers;
+		}
 
 		if (pngInfo) {
 			png_destroy_info_struct(pngPtr,&pngInfo);
