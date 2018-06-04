@@ -160,7 +160,7 @@ GLuint getHeight () const {
 	 *
 	 * @return Format of the texture data
 	 */
-	GlFormat getGlFormat () {
+	GlFormat getGlFormat () const {
 		return glFormat;
 	}
 
