@@ -81,15 +81,18 @@ const char* GLProgDiffLightTexture::getVertexShaderCode() const {
 			"attribute vec4 vertexPos;\n"
 			"attribute vec4 vertexNormal;\n"
 			"attribute vec4 vertexColor;\n"
+			"attribute vec2 vertexTexture0Pos;"
 			"\n"
 			"varying vec4 fragColor;\n"
+			"varying vec2 varyTexture0Pos;\n"
 			"\n"
 			"const float cZero = 0.0f;"
 			"\n"
 			"void main () { \n"
-			"	float diffuseLightFactor = max(cZero,dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
+			"	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
 			"	\n"
 			"	fragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));\n"
+			"	varyTexture0Pos = vertexTexture0Pos;\n"
 			"	gl_Position = mvpMatrix * vertexPos;\n"
 			"}\n";
 
@@ -98,10 +101,14 @@ const char* GLProgDiffLightTexture::getVertexShaderCode() const {
 const char* GLProgDiffLightTexture::getFragmentShaderCode() const {
 	return
 			"precision mediump float;\n"
+			"\n"
+			"uniform sampler2D texture0;"
+			"\n"
 			"varying vec4 fragColor;\n"
+			"varying vec2 varyTexture0Pos;"
 			"\n"
 			"void main () {\n"
-			"	gl_FragColor = fragColor;\n"
+			"	gl_FragColor = fragColor * texture2D(texture0,varyTexture0Pos);\n"
 			"}\n";
 }
 
@@ -114,11 +121,13 @@ void OevGLES::GLProgDiffLightTexture::retrieveShaderVariableInfo() {
 	lightDirInfo			= *retrieveSingleUniformInfo("lightDir",lightDirLocation);
 	lightColorInfo			= *retrieveSingleUniformInfo("lightColor",lightColorLocation);
 	ambientLightColorInfo	= *retrieveSingleUniformInfo("ambientLightColor",ambientLightColorLocation);
+	texture0Info			= *retrieveSingleUniformInfo("texture0",texture0Location);
 
 	// The vertex attributes
-	vertexPosInfo		= *retrieveSingleAttributeInfo("vertexPos",vertexPosLocation);
-	vertexNormalInfo	= *retrieveSingleAttributeInfo("vertexNormal",vertexNormalLocation);
-	vertexColorInfo		= *retrieveSingleAttributeInfo("vertexColor",vertexColorLocation);
+	vertexPosInfo			= *retrieveSingleAttributeInfo("vertexPos",vertexPosLocation);
+	vertexNormalInfo		= *retrieveSingleAttributeInfo("vertexNormal",vertexNormalLocation);
+	vertexColorInfo			= *retrieveSingleAttributeInfo("vertexColor",vertexColorLocation);
+	vertexTexture0PosInfo	= *retrieveSingleAttributeInfo("vertexTexture0Pos",vertexTexture0PosLocation);
 
 }
 

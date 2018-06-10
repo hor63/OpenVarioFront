@@ -52,7 +52,7 @@ public:
 
 	/** \brief set the texture data format and type from the texturedata object
 	 *
-	 * You can use the method to only load the highes level of a texture or subsequenty the enire mipmap chain.
+	 * You can use the method to only load the highest level of a texture or subsequently the entire mipmap chain.
 	 * Loading the complete mipmap chain correctly is your responsibility.
 	 * Else
 	 *

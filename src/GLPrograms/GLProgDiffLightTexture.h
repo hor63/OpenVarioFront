@@ -102,6 +102,13 @@ public:
 		return ambientLightColorLocation;
 	}
 
+	GLProgram::ShaderVariableInfo  const &getTexture0Info() const {
+		return texture0Info;
+	}
+	GLint getTexture0Location () const {
+		return texture0Location;
+	}
+
 	// The vertex attributes
 	GLProgram::ShaderVariableInfo  const &getVertexPosInfo() const {
 		return vertexPosInfo;
@@ -122,6 +129,13 @@ public:
 	}
 	GLint getVertexColorLocation () const {
 		return vertexColorLocation;
+	}
+
+	GLProgram::ShaderVariableInfo  const &getVertexTexture0PosInfo() const {
+		return vertexTexture0PosInfo;
+	}
+	GLint getVertexTexture0PosLocation () const {
+		return vertexTexture0PosLocation;
 	}
 
 
@@ -150,6 +164,8 @@ private:
 	GLint							lightColorLocation = 0;
 	GLProgram::ShaderVariableInfo	ambientLightColorInfo;
 	GLint							ambientLightColorLocation = 0;
+	GLProgram::ShaderVariableInfo	texture0Info;
+	GLint							texture0Location = 0;
 
 	// The vertex attributes
 	GLProgram::ShaderVariableInfo	vertexPosInfo;
@@ -158,13 +174,17 @@ private:
 	GLint							vertexNormalLocation = 0;
 	GLProgram::ShaderVariableInfo	vertexColorInfo;
 	GLint							vertexColorLocation = 0;
+	GLProgram::ShaderVariableInfo	vertexTexture0PosInfo;
+	GLint							vertexTexture0PosLocation = 0;
 
 	/** \brief private constructor
 	 *
 	 * The constructor is private because only the static method \ref getProgram() will create the only object of this class on demand
 	 *
 	 */
-	GLProgDiffLightTexture();
+	GLProgDiffLightTexture() {
+
+	}
 };
 
 } /* namespace OevGLES */

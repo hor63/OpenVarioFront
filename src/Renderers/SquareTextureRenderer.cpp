@@ -1,7 +1,7 @@
 /*
- * AnalogHandRenderer.cpp
+ * SquareTextureRenderer.cpp
  *
- *  Created on: May 17, 2018
+ *  Created on: Jun 10, 2018
  *      Author: hor
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
@@ -27,98 +27,80 @@
 #  include <config.h>
 #endif
 
-#include "Renderers/AnalogHandRenderer.h"
+#include "Renderers/SquareTextureRenderer.h"
+#include "GLES/TexHelper/PngReader.h"
 
 #if defined HAVE_LOG4CXX_H
 #include "OVFCommon.h"
 	static log4cxx::LoggerPtr logger;
 #endif
 
-AnalogHandRenderer::AnalogHandRenderer()
+SquareTextureRenderer::SquareTextureRenderer()
 	:
-		// Setup the positions
-	    // The normals are computed in the constructor body
+	// Setup the positions
+	/* The texture is rendered by 2 triangles in a fan forming a square.
+	 *
+	 *	V2	  V1
+	 *	-------
+	 *	|\    |
+	 *	| \   |
+	 *	|  \  |
+	 *	|   \ |
+	 *	|    \|
+	 *	-------
+	 *	V3	  V0
+	 *
+	 */
 	  vertexArray {
-		// 0 triangle
-		 0.0f, 0.0f,0.5f,1.0f, // Pos 0
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
-		10.0f, 0.0f,0.0f,1.0f, // Pos 1
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
-		 0.0f, 1.0f,0.0f,1.0f, // Pos 2
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
-		// 1st triangle
-		 0.0f, 0.0f,0.5f,1.0f, // Pos 0
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
-		 0.0f,-1.0f,0.0f,1.0f, // Pos 1
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
-		10.0f, 0.0f,0.0f,1.0f, // Pos 2
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
-		// 2nd triangle
-		 0.0f, 0.0f,0.5f,1.0f, // Pos 0
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
-		 0.0f, 1.0f,0.0f,1.0f, // Pos 1
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
-		-1.0f, 0.0f,0.0f,1.0f, // Pos 2
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
-		// 3rd triangle
-		 0.0f, 0.0f,0.5f,1.0f, // Pos 0
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
-		-1.0f, 0.0f,0.0f,1.0f, // Pos 1
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
-		 0.0f,-1.0f,0.0f,1.0f, // Pos 2
-		 0.0f, 0.0f,0.0f,0.0f // Normal 2
+		// Vertex0
+		 10.0f,-10.0f,-1.0f,1.0f,	// Pos 0
+		 1.0f,  0.0f,				// Texture coordinate 0
+		 10.0f, 10.0f,-1.0f,1.0f,	// Pos 1
+		 1.0f, 1.0f,				// Texture coordinate 1
+		-10.0f, 10.0f,-1.0f,1.0f,	// Pos 2
+		 0.0f, 1.0f,				// Texture coordinate 2
+		-10.0f,-10.0f,-1.0f,1.0f,	// Pos 3
+		 0.0f, 0.0f					// Texture coordinate 3
 	}
 	{
 
 #if defined HAVE_LOG4CXX_H
 		// Get the logger if necessary
 		if (!logger) {
-			logger = log4cxx::Logger::getLogger("OpenVarioFront.AnalogHandRenderer");
+			logger = log4cxx::Logger::getLogger("OpenVarioFront.SquareTextureRenderer");
 		}
-#endif
 
-		LOG4CXX_DEBUG(logger,"AnalogHandRenderer::AnalogHandRenderer()");
 
-		// Run through the 4 triangles, and calculate the normal of the areas
-		for (int i=0; i < 4 ; i++) {
+		LOG4CXX_DEBUG(logger,"SquareTextureRenderer::SquareTextureRenderer()");
 
-			LOG4CXX_DEBUG(logger,"Triangle #" << i);
+		if (logger->getLevel() == log4cxx::Level::getDebug()) {
+			// Print the 4 vertexes
+			for (int i=0; i < 4 ; i++) {
 
-			GLfloat* p0 = vertexArray + (i*24);
-			Eigen::Map<OevGLES::Vec3> pos0 (p0);
-			Eigen::Map<OevGLES::Vec3> pos1 (p0 + 8);
-			Eigen::Map<OevGLES::Vec3> pos2 (p0 + 16);
+				GLfloat* p0 = vertexArray + (i*6);
+				Eigen::Map<OevGLES::Vec4> vecX ( p0 );
+				Eigen::Map<OevGLES::Vec2> vecXTexPos ( p0 + 4);
 
-			OevGLES::Vec3 normal = (pos1 - pos0).normalized().cross((pos2-pos0).normalized()).normalized();
-			// Copy the normal into all normal vectors of the triangle
-			for (int k=1;k<6;k+=2) {
-				Eigen::Map<OevGLES::Vec3> posK (p0 + (k*4));
-				posK = normal;
+				LOG4CXX_DEBUG(logger,"Vertex #" << i << ": Position = [" << vecX.transpose() << "], NormaTexture coordinates = [" << vecXTexPos.transpose() << ']');
+
 			}
 
-#if defined HAVE_LOG4CXX_H
-			if (logger->getLevel() == log4cxx::Level::getDebug()) {
-				LOG4CXX_DEBUG(logger,"Triangle # " << i << ":");
-				for (int k = 0;k < 6 ; k+= 2) {
-					Eigen::Map<OevGLES::Vec4> vecX ( p0 + (k*4));
-					Eigen::Map<OevGLES::Vec4> vecXNormal ( p0 + (k*4) + 4);
-
-					LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] = [" << vecX.transpose() << "], Normal = [" << vecXNormal.transpose() << ']');
-
-				}
+			{
+				Eigen::Map<OevGLES::Vec4> vecNormal (textureNormal);
+				LOG4CXX_DEBUG(logger,"Normal of all vertextes = [" << vecNormal.transpose() << ']');
 			}
-#endif
 		}
+#endif
 
 	}
 
 
-AnalogHandRenderer::~AnalogHandRenderer() { }
+SquareTextureRenderer::~SquareTextureRenderer() { }
 
-void AnalogHandRenderer::setupVertexBuffers() {
+void SquareTextureRenderer::setupVertexBuffers() {
 
 	// First get the program
-	glProgram = OevGLES::GLProgDiffuseLight::getProgram();
+	glProgram = OevGLES::GLProgDiffLightTexture::getProgram();
 
 	// make the program current
 	glProgram->useProgram();
@@ -127,10 +109,15 @@ void AnalogHandRenderer::setupVertexBuffers() {
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 
+	// Load the texture into GL
+	OevGLES::PngReader varioBackgoundReader ("./Vario5m.png");
+	OevGLES::TextureData texData (8,8,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
+	varioBackgoundReader.readPngToTexture(texData);
+	varioBackgoundTexture.setTextureData(texData);
 
 }
 
-void AnalogHandRenderer::draw(
+void SquareTextureRenderer::draw(
 		const OevGLES::Mat4& modelMatrix,
 		const OevGLES::Mat4& viewMatrix, const OevGLES::Mat4& ProjMatrix,
 		const OevGLES::Mat4& MVMatrix, const OevGLES::Mat4& MVPMatrix,
@@ -144,6 +131,8 @@ void AnalogHandRenderer::draw(
 
 
 	LOG4CXX_DEBUG(logger,"lightDir = " << lightDir.transpose());
+
+	/*
 	GLfloat* p0 = vertexArray;
 	for (int k = 0;k < 6 ; k+= 2) {
 		Eigen::Map<OevGLES::Vec4> vecXNormal4 ( p0 + (k*4) + 4);
@@ -154,9 +143,11 @@ void AnalogHandRenderer::draw(
 		LOG4CXX_DEBUG(logger,"lightDir dot normal = " << lightDir.dot(vecXNormal));
 
 	}
+	*/
 
 	// Set the uniforms
 	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
 	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
 
 	glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
@@ -166,24 +157,31 @@ void AnalogHandRenderer::draw(
 
 	// set the color attribute constant
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
-	glVertexAttrib4fv(glProgram->getVertexColorLocation(),handColor);
+	glVertexAttrib4fv(glProgram->getVertexColorLocation(),textureBaseColor);
+
+	// set the vertex normal constant
+	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+	glVertexAttrib4fv(glProgram->getVertexNormalLocation(),textureNormal);
 
 	// re-bind the buffer object
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 
 	// setup the vertex coordinates
 	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-	glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
-	// setup the vertex coordinates
-	bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
-	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
-	glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+	glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,6 * sizeof (GLfloat),bufferOffset);
+	// setup the texture coordinates
+	bufferOffset += 4; // Advance the offset by 4 floats to the texture coordinate.
+	glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
+	glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),2,GL_FLOAT,GL_FALSE,6 * sizeof (GLfloat),bufferOffset);
+
+	// Assign the texture to Texure engine 0, and set the sampler uniform accordingly
+	varioBackgoundTexture.bindToUniformLocation(GL_TEXTURE0,0,glProgram->getTexture0Location());
 
 	// The object is opaque. Use the depth buffer, and write to the depth buffer
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 
-	glDrawArrays(GL_TRIANGLES,0,12);
+	glDrawArrays(GL_TRIANGLE_FAN,0,4);
 
 
 }

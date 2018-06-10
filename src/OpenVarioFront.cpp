@@ -38,9 +38,8 @@
 #include "GLES/EGLRenderSurface.h"
 #include "GLES/GLShader.h"
 #include "GLES/GLProgram.h"
-#include "GLPrograms/GLProgDiffuseLight.h"
 #include "Renderers/AnalogHandRenderer.h"
-#include "GLES/TexHelper/PngReader.h"
+#include "Renderers/SquareTextureRenderer.h"
 
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
@@ -80,15 +79,15 @@ int main(int argint,char** argv) {
 		LOG4CXX_INFO(logger,"Create the diffuse light program");
 
 		AnalogHandRenderer hand;
+		SquareTextureRenderer varioBackground;
 
-		OevGLES::TextureData texData(4,4,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
-		OevGLES::PngReader pngReader("Vario5m.png");
-
-		pngReader.readPngToTexture(texData);
 
 		hand.setupVertexBuffers();
+		varioBackground.setupVertexBuffers();
 
 		GLfloat k = 0.0f;
+		OevGLES::Mat4 modelMatrixBack = OevGLES::Mat4::Identity();
+
 		for (GLfloat i = 0.0f; i<360.0f;i += 0.1f) {
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
@@ -96,6 +95,8 @@ int main(int argint,char** argv) {
 			OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(5,35,320.0/240.0,66);
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVPMatrix = projMatrix * viewMatrix * modelMatrix;
+			OevGLES::Mat4 MVMatrixBack = viewMatrix * modelMatrixBack;
+			OevGLES::Mat4 MVPMatrixBack = projMatrix * viewMatrix * modelMatrixBack;
 
 			// Light dir is in eye space, rotate the light with the viewers point of view
 			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(i) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});
@@ -106,6 +107,7 @@ int main(int argint,char** argv) {
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
+			varioBackground.draw(modelMatrixBack,viewMatrix,projMatrix,MVMatrixBack,MVPMatrixBack,lightDir,lightColor,ambientLightColor);
 
 			// sleep(3);
 
