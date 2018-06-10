@@ -180,6 +180,9 @@ void AnalogHandRenderer::draw(
 	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
 	glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
 
+	// The object is opaque. Use the depth buffer, and write to the depth buffer
+	glDepthMask(GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
 
 	glDrawArrays(GL_TRIANGLES,0,12);
 

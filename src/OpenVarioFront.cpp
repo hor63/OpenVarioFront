@@ -97,8 +97,8 @@ int main(int argint,char** argv) {
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVPMatrix = projMatrix * viewMatrix * modelMatrix;
 
-			// Light dir is in eye space
-			lightDir4 = viewMatrix * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f};
+			// Light dir is in eye space, rotate the light with the viewers point of view
+			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(i) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});
 			lightDir = lightDir4.block<3,1>(0,0);
 			lightDir.normalize();
 

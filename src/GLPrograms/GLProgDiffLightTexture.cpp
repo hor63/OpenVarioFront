@@ -1,7 +1,7 @@
 /*
- * GLProgDiffuseLight.cpp
+ * GLProgDiffLightTexture.cpp
  *
- *  Created on: May 16, 2018
+ *  Created on: Jun 4, 2018
  *      Author: hor
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
@@ -28,23 +28,25 @@
 #endif
 
 
-#include "GLPrograms/GLProgDiffuseLight.h"
+
+#include "GLPrograms/GLProgDiffLightTexture.h"
 
 namespace OevGLES {
 
-GLProgDiffuseLight* GLProgDiffuseLight::theProgram = 0;
 
-GLProgDiffuseLight::~GLProgDiffuseLight() {
+GLProgDiffLightTexture* GLProgDiffLightTexture::theProgram = 0;
+
+GLProgDiffLightTexture::~GLProgDiffLightTexture() {
 
 	// This deletes the only instance of the program
 	theProgram = 0;
 
 }
 
-GLProgDiffuseLight* GLProgDiffuseLight::getProgram() {
+GLProgDiffLightTexture* GLProgDiffLightTexture::getProgram() {
 
 	if (!theProgram) {
-		theProgram = new GLProgDiffuseLight;
+		theProgram = new GLProgDiffLightTexture;
 
 		theProgram->createProgram();
 	}
@@ -53,14 +55,14 @@ GLProgDiffuseLight* GLProgDiffuseLight::getProgram() {
 
 }
 
-void GLProgDiffuseLight::destroyProgram() {
+void GLProgDiffLightTexture::destroyProgram() {
 	if (theProgram) {
 		delete theProgram;
 		theProgram = 0;
 	}
 }
 
-const char* GLProgDiffuseLight::getVertexShaderCode() const {
+const char* GLProgDiffLightTexture::getVertexShaderCode() const {
 
 	return
 			"precision mediump float;\n"
@@ -85,7 +87,7 @@ const char* GLProgDiffuseLight::getVertexShaderCode() const {
 			"const float cZero = 0.0f;"
 			"\n"
 			"void main () { \n"
-			"	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
+			"	float diffuseLightFactor = max(cZero,dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
 			"	\n"
 			"	fragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));\n"
 			"	gl_Position = mvpMatrix * vertexPos;\n"
@@ -93,7 +95,7 @@ const char* GLProgDiffuseLight::getVertexShaderCode() const {
 
 }
 
-const char* GLProgDiffuseLight::getFragmentShaderCode() const {
+const char* GLProgDiffLightTexture::getFragmentShaderCode() const {
 	return
 			"precision mediump float;\n"
 			"varying vec4 fragColor;\n"
@@ -104,7 +106,7 @@ const char* GLProgDiffuseLight::getFragmentShaderCode() const {
 }
 
 
-void OevGLES::GLProgDiffuseLight::retrieveShaderVariableInfo() {
+void OevGLES::GLProgDiffLightTexture::retrieveShaderVariableInfo() {
 
 	// The uniforms
 	mvpMatrixInfo			= *retrieveSingleUniformInfo("mvpMatrix",mvpMatrixLocation);
