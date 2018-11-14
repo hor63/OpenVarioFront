@@ -73,7 +73,7 @@ SquareTextureRenderer::SquareTextureRenderer()
 
 		LOG4CXX_DEBUG(logger,"SquareTextureRenderer::SquareTextureRenderer()");
 
-		if (logger->getLevel() != 0 && logger->getLevel() == log4cxx::Level::getDebug()) {
+		if (logger->getEffectiveLevel() == log4cxx::Level::getDebug()) {
 			// Print the 4 vertexes
 			for (int i=0; i < 4 ; i++) {
 
