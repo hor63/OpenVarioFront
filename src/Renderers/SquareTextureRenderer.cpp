@@ -32,7 +32,7 @@
 
 #if defined HAVE_LOG4CXX_H
 #include "OVFCommon.h"
-	static log4cxx::LoggerPtr logger;
+	static log4cxx::LoggerPtr logger = 0;
 #endif
 
 SquareTextureRenderer::SquareTextureRenderer()
@@ -73,7 +73,7 @@ SquareTextureRenderer::SquareTextureRenderer()
 
 		LOG4CXX_DEBUG(logger,"SquareTextureRenderer::SquareTextureRenderer()");
 
-		if (logger->getLevel() == log4cxx::Level::getDebug()) {
+		if (logger->getLevel() != 0 && logger->getLevel() == log4cxx::Level::getDebug()) {
 			// Print the 4 vertexes
 			for (int i=0; i < 4 ; i++) {
 
