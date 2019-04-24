@@ -29,9 +29,6 @@
 #  include <config.h>
 #endif
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
 #include <sstream>
 #include <memory.h>
 
@@ -47,101 +44,29 @@ void openNativeWindow(EGLNativeDisplayType& display,
 		char const* windowName, char const* displayName) {
 
 	std::ostringstream errString;
+	static fbdev_window win = {0,0};
 
-	display = XOpenDisplay(displayName);
-    Window   rootWindow;
-    XSetWindowAttributes winAttr;
-    XWMHints wmHints;
-    Atom wmState;
-    XEvent xEv;
 #if defined HAVE_LOG4CXX_H
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");
 #endif
 
+    display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     LOG4CXX_DEBUG(logger,"display = " << display);
-
-	if (!display) {
-		errString << "XOpenDisplay (";
-		if (displayName) {
-			errString << "\"" << displayName << "\"";
-		} else {
-			errString << "NULL";
-		}
-		errString << " returned NULL. No X11 Display available.";
-
-		throw NativeWindowException(errString.str().c_str());
-	}
-
-	rootWindow = XDefaultRootWindow(display);
-    LOG4CXX_DEBUG(logger,"rootWindow = " << rootWindow);
-	if (!rootWindow) {
-		throw NativeWindowException("Cannot obtain root window");
-	}
-
-	winAttr.event_mask =  ExposureMask | PointerMotionMask | KeyPressMask;
-	winAttr.override_redirect = 0;
-
-	window = XCreateWindow(
-			display,
-			rootWindow,
-			0,0, // x,y
-			width,height,
-			0, // border width
-            CopyFromParent, // depth
-			InputOutput, // class
-            CopyFromParent, // Visual
-			CWEventMask | CWOverrideRedirect, // value mask
-            &winAttr);
-
-    LOG4CXX_DEBUG(logger,"window = " << window);
-	if (!window) {
-		throw NativeWindowException("Cannot open window");
-	}
-
-	wmHints.input = 1;
-	wmHints.flags = InputHint;
-	XSetWMHints(display, window, &wmHints);
-
-	// make the window visible on the screen
-    XMapWindow (display, window);
-
-    // Set a title when defined
-    if (windowName) {
-    	XStoreName (display, window, windowName);
+    if (display == EGL_NO_DISPLAY) {
+    	throw NativeWindowException("Cannot obtain default display");
     }
 
-    // get identifiers for the provided atom name strings
-    wmState = XInternAtom (display, "_NET_WM_STATE", 0);
+    win.height = height;
+    win.width = width;
 
-    // Notify the parent that a new window was created.
-    memset ( &xEv, 0, sizeof(xEv) );
-    xEv.type                 = ClientMessage;
-    xEv.xclient.window       = window;
-    xEv.xclient.message_type = wmState;
-    xEv.xclient.format       = 32;
-    xEv.xclient.data.l[0]    = 1;
-    xEv.xclient.data.l[1]    = 0;
-    XSendEvent (
-       display,
-       rootWindow,
-       0,
-       SubstructureNotifyMask,
-       &xEv );
+    window = &win;
 
 }
 
 void closeNativeWindow(EGLNativeDisplayType display,
 		EGLNativeWindowType window) {
 
-	if (display != 0 && window != 0){
-		XUnmapWindow(display,window);
-		XDestroyWindow(display,window);
-	}
-
-	if (display != 0) {
-		XCloseDisplay(display);
-	}
-
+	;
 }
 
 

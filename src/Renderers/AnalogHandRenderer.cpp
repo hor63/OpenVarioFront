@@ -29,8 +29,9 @@
 
 #include "Renderers/AnalogHandRenderer.h"
 
-#if defined HAVE_LOG4CXX_H
 #include "OVFCommon.h"
+
+#if defined HAVE_LOG4CXX_H
 	static log4cxx::LoggerPtr logger;
 #endif
 
