@@ -77,7 +77,7 @@ EGLRenderSurface::~EGLRenderSurface() {
 
 void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
 		char const* windowName, char const* displayName) {
-	EGLConfig config = EGL_NO_CONFIG_KHR;
+	EGLConfig config = nullptr;
 
 
 	openNativeWindow(nativeDisplay,nativeWindow,
