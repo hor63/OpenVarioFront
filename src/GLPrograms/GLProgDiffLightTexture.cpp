@@ -86,7 +86,7 @@ const char* GLProgDiffLightTexture::getVertexShaderCode() const {
 			"varying vec4 fragColor;\n"
 			"varying vec2 varyTexture0Pos;\n"
 			"\n"
-			"const float cZero = 0.0f;"
+			"const float cZero = 0.0;"
 			"\n"
 			"void main () { \n"
 			"	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
