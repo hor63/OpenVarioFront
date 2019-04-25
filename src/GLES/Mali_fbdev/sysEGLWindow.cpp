@@ -50,11 +50,8 @@ void openNativeWindow(EGLNativeDisplayType& display,
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");
 #endif
 
-    display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    display = EGL_DEFAULT_DISPLAY;
     LOG4CXX_DEBUG(logger,"display = " << display);
-    if (display == EGL_NO_DISPLAY) {
-    	throw NativeWindowException("Cannot obtain default display");
-    }
 
     win.height = height;
     win.width = width;
