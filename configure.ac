@@ -180,6 +180,7 @@ AC_CHECK_LIB([Mali], [eglGetError], [
 		AC_SUBST([EGL_SYS_DIR])
 		EGL_SYS_LIBS=-lX11
 		AC_SUBST([EGL_SYS_LIBS])
+		AC_DEFINE([USE_X11],[1],[Define to 1 if EGL based on X11 windows is being used.])
 	])
 
 
