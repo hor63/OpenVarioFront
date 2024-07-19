@@ -6,6 +6,10 @@
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.PE64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.Cygwin_PE64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -17,11 +21,16 @@
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.linuxtools.cdt.autotools.core.buildArtefactType.autotools" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.linuxtools.cdt.autotools.core.buildArtefactType.autotools,org.eclipse.cdt.build.core.buildType=org.eclipse.linuxtools.cdt.autotools.core.buildType.default" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.autotools.core.ErrorParser" id="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612" name="Build (GNU)" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="org.eclipse.linuxtools.cdt.autotools.core.configuration.build">
 					<folderInfo id="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612." name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.base.335469853" name="Cross GCC">
-							<option id="cdt.managedbuild.option.gnu.cross.prefix.2010440157" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" value="arm-linux-gnueabihf-" valueType="string"/>
-							<option id="cdt.managedbuild.option.gnu.cross.path.1361966151" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path"/>
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.876362834" isAbstract="false" osList="all"/>
-							<builder arguments="V=1 -j4" buildPath="${workspace_loc:/OpenVarioFront}/build" cleanBuildTarget="clean" command="make" id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder.614981911" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Autotools Makefile Generator" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder"/>
+						<toolChain id="org.eclipse.linuxtools.cdt.autotools.core.toolChain.1799665523" name="GNU Autotools Toolchain" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolChain" unusedChildren="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc">
+							<targetPlatform id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.targetPlatform.372157461" isAbstract="false" name="GNU Autotools Target Platform" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.targetPlatform"/>
+							<builder buildPath="${workspace_loc:/OpenVarioFront}/build" id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder.1114813931" keepEnvironmentInBuildfile="false" name="Autotools Makefile Generator" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder"/>
+							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.1261550321" name="autogen.sh" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen"/>
+							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.867208401" name="GCC C++ Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1564314171" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure.216624458" name="configure" superClass="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure">
+								<option id="org.eclipse.linuxtools.cdt.autotools.core.option.configure.name.1373621600" superClass="org.eclipse.linuxtools.cdt.autotools.core.option.configure.name" value="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612" valueType="string"/>
+							</tool>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
@@ -95,27 +104,6 @@
 		<doc-comment-owner id="org.eclipse.cdt.ui.doxygen">
 			<path value=""/>
 		</doc-comment-owner>
-	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.795924793;cdt.managedbuild.tool.gnu.cpp.compiler.input.1305914486">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;cdt.managedbuild.tool.gnu.cross.c.compiler.1856513756;cdt.managedbuild.tool.gnu.c.compiler.input.639624216">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1276157571;cdt.managedbuild.tool.gnu.c.compiler.input.2131462481">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.704378459;cdt.managedbuild.tool.gnu.cpp.compiler.input.1926842527">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1852279547;cdt.managedbuild.tool.gnu.cpp.compiler.input.1129043965">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;cdt.managedbuild.tool.gnu.cross.c.compiler.1970870517;cdt.managedbuild.tool.gnu.c.compiler.input.1741629147">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
@@ -568,5 +556,29 @@
 				<runAllBuilders>false</runAllBuilders>
 			</target>
 		</buildTargets>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;cdt.managedbuild.tool.gnu.cross.c.compiler.1856513756;cdt.managedbuild.tool.gnu.c.compiler.input.639624216">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1276157571;cdt.managedbuild.tool.gnu.c.compiler.input.2131462481">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;cdt.managedbuild.tool.gnu.cross.c.compiler.1970870517;cdt.managedbuild.tool.gnu.c.compiler.input.1741629147">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.795924793;cdt.managedbuild.tool.gnu.cpp.compiler.input.1305914486">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1852279547;cdt.managedbuild.tool.gnu.cpp.compiler.input.1129043965">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.867208401;cdt.managedbuild.tool.gnu.cpp.compiler.input.1564314171">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.704378459;cdt.managedbuild.tool.gnu.cpp.compiler.input.1926842527">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>
