@@ -32,7 +32,7 @@ AM_CXXFLAGS = -I$(top_srcdir)/src -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CX
 	$(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) $(SDL2_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
-AM_LDFLAGS=  $(LOG4CXX_LDFLAGS) 
+AM_LDFLAGS= $(LOG4CXX_LDFLAGS) 
 
 all: $(abs_builddir)/OpenVarioFront.logger.properties $(abs_builddir)/Vario5m.png
 

@@ -37,7 +37,7 @@
 
 #include "OVFCommon.h"
 
-#include "sysEGLWindow.h"
+#include "sysSDLWindow.h"
 #include "ExceptionBase.h"
 
 namespace OevGLES {

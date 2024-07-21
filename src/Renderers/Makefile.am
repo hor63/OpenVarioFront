@@ -25,5 +25,5 @@ libOEV_Renderers_a_SOURCES = RendererBase.cpp AnalogHandRenderer.cpp SquareTextu
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
 	$(PANGO_FT2_CFLAGS) $(SDL2_CFLAGS) $(PTHREAD_CFLAGS)
 
-AM_LDFLAGS= -l $(LOG4CXX_LDFLAGS) $(EGL_SYS_LIBS)
+AM_LDFLAGS= $(LOG4CXX_LDFLAGS) 
 
