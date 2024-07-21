@@ -23,7 +23,7 @@ bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 OpenVarioFront_SOURCES=OpenVarioFront.cpp  
  
 OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/TexHelper/libOEV_TexHelper.a GLES/libOEV_GLES.a \
-	-lGLESv2 -lEGL -lGLESv2 -lEGL $(EGL_SYS_LIBS) $(LOG4CXX_LIBS) \
+	-lGLESv2 $(LOG4CXX_LIBS) \
 	$(FREETYPE2_LIBS) $(LIBPNG_LIBS) \
 	$(PANGO_FT2_LIBS) $(SDL2_LIBS) \
 	$(PTHREAD_LIBS)
