@@ -88,6 +88,12 @@ int main(int argint,char** argv) {
 		GLfloat k = 0.0f;
 		OevGLES::Mat4 modelMatrixBack = OevGLES::Mat4::Identity();
 
+		std::cout << "Extensions are : " << glGetString(GL_EXTENSIONS) << std::endl;
+		std::cout << "Pointer to glBindVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glBindVertexArrayOES")) << std::endl;
+		std::cout << "Pointer to glDeleteVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glDeleteVertexArraysOES")) << std::endl;
+		std::cout << "Pointer to glGenVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glGenVertexArraysOES")) << std::endl;
+		std::cout << "Pointer to glIsVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glIsVertexArrayOES")) << std::endl;
+
 		for (GLfloat i = 0.0f; i<360.0f;i += 0.1f) {
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
