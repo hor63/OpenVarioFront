@@ -25,9 +25,7 @@
  *
  */
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <EGL/eglplatform.h>
+#include <SDL.h>
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -48,8 +46,7 @@ namespace OevGLES {
  * @param[in] windowName Title of the window. Is only relevant for windows based systems which have borders and a window title.
  * @param[in] displayName Optional. System dependent. If omitted the default display is used. Only useful on multiple headed systems with multiple monitors.
  */
-void openNativeWindow(EGLNativeDisplayType& display,
-		EGLNativeWindowType& window,
+void openNativeWindow(
 		GLint width = 0,GLint height = 0,
 		char const* windowName = NULL,
 		char const* displayName = NULL);
