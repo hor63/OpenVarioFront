@@ -32,8 +32,8 @@
 #include "OVFCommon.h"
 
 
-#include "GLES/EGLRenderSurface.h"
-#include "GLES/sysEGLWindow.h"
+#include "GLES/SDLRenderSurface.h"
+#include "GLES/sysSDLWindow.h"
 #include "GLES/ExceptionBase.h"
 
 namespace OevGLES {
@@ -72,16 +72,16 @@ EGLRenderSurface::~EGLRenderSurface() {
 		eglTerminate(eglDisplay);
 	}
 
-	closeNativeWindow(nativeDisplay,nativeWindow);
+	closeNativeWindow();
 }
 
 void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
-		char const* windowName, char const* displayName) {
+		char const* windowName) {
 	EGLConfig config = nullptr;
 
 
-	openNativeWindow(nativeDisplay,nativeWindow,
-			width, height, windowName, displayName);
+	openNativeWindow(
+			width, height, windowName);
 
 	eglDisplay = eglGetDisplay(nativeDisplay);
     LOG4CXX_DEBUG(logger,"eglDisplay = " << eglDisplay);

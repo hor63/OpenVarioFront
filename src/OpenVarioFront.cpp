@@ -35,7 +35,7 @@
 
 #include "OVFCommon.h"
 
-#include "GLES/EGLRenderSurface.h"
+#include "GLES/SDLRenderSurface.h"
 #include "GLES/GLShader.h"
 #include "GLES/GLProgram.h"
 #include "Renderers/AnalogHandRenderer.h"

@@ -44,7 +44,7 @@ public:
 	virtual ~EGLRenderSurface();
 
 	void createRenderSurface (GLint width, GLint height,
-			char const* windowName = 0, char const* displayName = 0);
+			char const* windowName);
 
 	void makeContextCurrent();
 

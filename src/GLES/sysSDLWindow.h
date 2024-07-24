@@ -47,17 +47,15 @@ namespace OevGLES {
  * @param[in] displayName Optional. System dependent. If omitted the default display is used. Only useful on multiple headed systems with multiple monitors.
  */
 void openNativeWindow(
-		GLint width = 0,GLint height = 0,
-		char const* windowName = NULL,
-		char const* displayName = NULL);
+		GLint width,GLint height,
+		char const* windowName);
 
 /** \brief Close and destroy the native window
  *
  * @param[in] display The Display (may not be necessary in most cases
  * @param[in] window The window which shall be closed and resources destroyed.
  */
-void closeNativeWindow(EGLNativeDisplayType display,
-		EGLNativeWindowType window);
+void closeNativeWindow();
 
 } // namespace OevGLES
 
