@@ -33,7 +33,6 @@
 
 
 #include "GLES/SDLRenderSurface.h"
-#include "GLES/sysSDLWindow.h"
 #include "GLES/ExceptionBase.h"
 
 namespace OevGLES {
@@ -57,146 +56,16 @@ EGLRenderSurface::EGLRenderSurface()
 
 EGLRenderSurface::~EGLRenderSurface() {
 
-	if (eglDisplay != EGL_NO_DISPLAY) {
-		eglMakeCurrent(eglDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
-	}
 
-
-	if (renderContext != EGL_NO_CONTEXT) {
-		eglDestroyContext(eglDisplay,renderContext);
-	}
-	if (renderSurface != EGL_NO_SURFACE) {
-		eglDestroySurface(eglDisplay,renderSurface);
-	}
-	if (eglDisplay != EGL_NO_DISPLAY) {
-		eglTerminate(eglDisplay);
-	}
-
-	closeNativeWindow();
+	nativeWindow.closeNativeWindow();
 }
 
 void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
 		char const* windowName) {
-	EGLConfig config = nullptr;
 
-
-	openNativeWindow(
+	nativeWindow.openNativeWindow(
 			width, height, windowName);
 
-	eglDisplay = eglGetDisplay(nativeDisplay);
-    LOG4CXX_DEBUG(logger,"eglDisplay = " << eglDisplay);
-
-	if (eglDisplay == EGL_NO_DISPLAY) {
-		std::ostringstream errStr;
-		errStr << "Cannot get an EGL display. Error = " << eglGetError();
-
-		throw EGLException(errStr.str().c_str());
-	}
-
-	if (eglInitialize(eglDisplay,&eglMajorVersion,&eglMinorVersion) == EGL_FALSE) {
-		std::ostringstream errStr;
-		errStr << "Cannot initialize EGL. Error = " << eglGetError();
-
-		throw EGLException(errStr.str().c_str());
-	}
-    LOG4CXX_INFO(logger,"Initialized EGL. EGL Version = " << eglMajorVersion << '.' << eglMinorVersion);
-
-    {
-    	EGLint numReturnedConfigs = 0;
-
-        EGLint attribList [] = {
-        		EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
-        		EGL_RENDERABLE_TYPE	, EGL_OPENGL_ES2_BIT,
-				EGL_RED_SIZE 		, 8,
-				EGL_GREEN_SIZE		, 8,
-				EGL_BLUE_SIZE		, 8,
-				EGL_ALPHA_SIZE		, 8,
-				EGL_DEPTH_SIZE		, 16,
-				EGL_SAMPLE_BUFFERS  , 1,
-				EGL_SAMPLES         , 2,
-				EGL_NONE
-        };
-
-        if (eglChooseConfig(eglDisplay,attribList,&config,1,&numReturnedConfigs)){
-			if (numReturnedConfigs == 0) {
-				// Do not prescribe a sample number
-				attribList[16] = EGL_NONE;
-		        eglChooseConfig(eglDisplay,attribList,&config,1,&numReturnedConfigs);
-				if (numReturnedConfigs == 0) {
-					// Do not prescribe a sample buffer at all
-					attribList[14] = EGL_NONE;
-			        eglChooseConfig(eglDisplay,attribList,&config,1,&numReturnedConfigs);
-				}
-			}
-
-
-#if defined HAVE_LOG4CXX_H
-			if (logger->getLevel() == log4cxx::Level::getDebug()) {
-				debugPrintConfig (&config,numReturnedConfigs);
-			}
-
-#endif // if defined HAVE_LOG4CXX_H
-			if (numReturnedConfigs == 0) {
-    		std::ostringstream errStr;
-    		errStr << "Could not retrieve valid EGL configuration. Error = " << eglGetError();
-
-    		throw EGLException(errStr.str().c_str());
-			}
-
-
-        } else {
-    		std::ostringstream errStr;
-    		errStr << "Could not retrieve valid EGL configuration. Error = " << eglGetError();
-
-    		throw EGLException(errStr.str().c_str());
-        }
-
-    }
-    
-    {
-    	EGLint attribList[] = {
-    			EGL_RENDER_BUFFER , EGL_BACK_BUFFER,
-				EGL_NONE
-    	};
-
-    	renderSurface = eglCreateWindowSurface(eglDisplay,config,nativeWindow,attribList);
-
-        LOG4CXX_DEBUG(logger,"renderSurface = " << renderSurface);
-
-    	if (renderSurface == EGL_NO_SURFACE) {
-    		std::ostringstream errStr;
-    		errStr << "Error calling eglCreateWindowSurface. Error = " << eglGetError();
-
-    		throw EGLException(errStr.str().c_str());
-    	}
-
-    };
-
-    {
-    	EGLint attribList[] = {
-    			EGL_CONTEXT_CLIENT_VERSION , 2,
-				EGL_NONE
-    	};
-
-    	renderContext = eglCreateContext(eglDisplay,config,EGL_NO_CONTEXT,attribList);
-
-        LOG4CXX_DEBUG(logger,"renderContext = " << renderContext);
-
-    	if (renderContext == EGL_NO_CONTEXT) {
-    		std::ostringstream errStr;
-    		errStr << "Error calling eglCreateContext. Error = " << eglGetError();
-
-    		throw EGLException(errStr.str().c_str());
-    	}
-
-    };
-    
-	if (!eglMakeCurrent(eglDisplay,renderSurface,renderSurface,renderContext)) {
-		std::ostringstream errStr;
-		errStr << "Error calling eglMakeCurrent. Error = " << eglGetError();
-
-		throw EGLException(errStr.str().c_str());
-	}
 
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
@@ -205,12 +74,6 @@ void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
 }
 
 void EGLRenderSurface::makeContextCurrent() {
-	if (!eglMakeCurrent(eglDisplay,renderSurface,renderSurface,renderContext)) {
-		std::ostringstream errStr;
-		errStr << "Error calling eglMakeCurrent. Error = " << eglGetError();
-
-		throw EGLException(errStr.str().c_str());
-	}
 
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
@@ -218,6 +81,7 @@ void EGLRenderSurface::makeContextCurrent() {
 
 #if defined HAVE_LOG4CXX_H
 
+/*
 void EGLRenderSurface::debugPrintConfig (EGLConfig *configs,EGLint numReturnedConfigs) {
 
 #if defined HAVE_LOG4CXX_H
@@ -305,6 +169,7 @@ void EGLRenderSurface::debugPrintConfig (EGLConfig *configs,EGLint numReturnedCo
 #endif // if defined HAVE_LOG4CXX_H
 
 }
+*/
 
 #endif // if defined HAVE_LOG4CXX_H
 

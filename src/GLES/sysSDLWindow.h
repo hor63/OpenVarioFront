@@ -33,18 +33,29 @@
 
 namespace OevGLES {
 
+class SDLNativeWindow {
+public:
 
-/** \brief Obtains the default system display, and opens a window within
+	SDLNativeWindow () {}
+	/** \brief The destructor will implicitly close and destroz an open native window if it was open.
+	 *
+	 * \see \ref openNativeWindow()
+	 * \see \ref closeNativeWindow()
+	 */
+	~SDLNativeWindow();
+
+	SDLNativeWindow (SDLNativeWindow&& source);
+	SDLNativeWindow (SDLNativeWindow const& source) = delete;
+	SDLNativeWindow operator = (SDLNativeWindow const& source) = delete;
+
+/** \brief Opens a native Window with OpenGL ES2 capabilities via SDL
  *
  * The function obtains the default system display, and opens a window with the passed dimensions \ref width and \ref height.
  * If width and heights are both 0 the function tries to open the window full-screen.
  *
- * @param[out] display The display to which EGL interfaces
- * @param[out] window A new window which this call opens; into this window's surface OpenGL ES2 wil draw.
  * @param[in] width Width of the window in the display dimension, usually in Pixel
  * @param[in] height Height of the window in the display dimension, usually in Pixel
  * @param[in] windowName Title of the window. Is only relevant for windows based systems which have borders and a window title.
- * @param[in] displayName Optional. System dependent. If omitted the default display is used. Only useful on multiple headed systems with multiple monitors.
  */
 void openNativeWindow(
 		GLint width,GLint height,
@@ -52,10 +63,14 @@ void openNativeWindow(
 
 /** \brief Close and destroy the native window
  *
- * @param[in] display The Display (may not be necessary in most cases
- * @param[in] window The window which shall be closed and resources destroyed.
  */
 void closeNativeWindow();
+
+protected:
+
+SDL_Window * sdlWindow = nullptr;
+
+}; // class SDLNativeWindow
 
 } // namespace OevGLES
 

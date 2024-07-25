@@ -42,7 +42,11 @@
 
 namespace OevGLES {
 
-void openNativeWindow( GLint width, GLint height,
+SDLNativeWindow::~SDLNativeWindow() {
+	closeNativeWindow();
+}
+
+void SDLNativeWindow::openNativeWindow( GLint width, GLint height,
 		char const* windowName) {
 
 	std::ostringstream errString;
@@ -51,11 +55,19 @@ void openNativeWindow( GLint width, GLint height,
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");
 #endif
 
+    sdlWindow = SDL_CreateWindow(windowName, SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
+    		width, height,
+			SDL_WINDOW_OPENGL);
 
 }
 
-void closeNativeWindow() {
+void SDLNativeWindow::closeNativeWindow() {
 
+	if (sdlWindow != nullptr) {
+		SDL_DestroyWindow(sdlWindow);
+
+		sdlWindow = nullptr;
+	}
 
 }
 

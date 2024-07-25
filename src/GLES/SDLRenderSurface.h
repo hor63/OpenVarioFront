@@ -26,14 +26,9 @@
 #ifndef GLES_EGLRENDERSURFACE_H_
 #define GLES_EGLRENDERSURFACE_H_
 
+#include "GLES/sysSDLWindow.h"
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <EGL/eglplatform.h>
-
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <GLES2/gl2platform.h>
+#include "SDL_opengles2.h"
 
 namespace OevGLES {
 
@@ -48,34 +43,12 @@ public:
 
 	void makeContextCurrent();
 
-	EGLDisplay getDisplay() const {
-		return eglDisplay;
-	}
-
-	EGLSurface getRenderSurface () const {
-		return renderSurface;
-	}
-
-	EGLContext getRenderContext() const {
-		return renderContext;
-	}
-
-	operator EGLContext () const {
-		return renderContext;
-	}
-
-	void debugPrintConfig (EGLConfig *configs,EGLint numReturnedConfigs);
-
 protected:
 
-    EGLNativeDisplayType	nativeDisplay = 0;
-    EGLNativeWindowType		nativeWindow = 0;
-    EGLDisplay				eglDisplay = EGL_NO_DISPLAY;
-    EGLSurface				renderSurface = EGL_NO_SURFACE;
-    EGLContext				renderContext = EGL_NO_CONTEXT;
+	SDLNativeWindow nativeWindow;
 
-    EGLint eglMajorVersion = 0;
-    EGLint eglMinorVersion = 0;
+    GLint eglMajorVersion = 2;
+    GLint eglMinorVersion = 0;
 
 };
 
