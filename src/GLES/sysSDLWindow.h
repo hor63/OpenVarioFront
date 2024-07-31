@@ -48,27 +48,31 @@ public:
 	SDLNativeWindow (SDLNativeWindow const& source) = delete;
 	SDLNativeWindow operator = (SDLNativeWindow const& source) = delete;
 
-/** \brief Opens a native Window with OpenGL ES2 capabilities via SDL
- *
- * The function obtains the default system display, and opens a window with the passed dimensions \ref width and \ref height.
- * If width and heights are both 0 the function tries to open the window full-screen.
- *
- * @param[in] width Width of the window in the display dimension, usually in Pixel
- * @param[in] height Height of the window in the display dimension, usually in Pixel
- * @param[in] windowName Title of the window. Is only relevant for windows based systems which have borders and a window title.
- */
-void openNativeWindow(
+	/** \brief Opens a native Window with OpenGL ES2 capabilities via SDL
+	 *
+	 * The function obtains the default system display, and opens a window with the passed dimensions \ref width and \ref height.
+	 * If width and heights are both 0 the function tries to open the window full-screen.
+	 *
+	 * @param[in] width Width of the window in the display dimension, usually in Pixel
+	 * @param[in] height Height of the window in the display dimension, usually in Pixel
+	 * @param[in] windowName Title of the window. Is only relevant for windows based systems which have borders and a window title.
+	 */
+	void openNativeGLES2Window(
 		GLint width,GLint height,
 		char const* windowName);
 
-/** \brief Close and destroy the native window
- *
- */
-void closeNativeWindow();
+	/** \brief Close and destroy the native window
+	 *
+	 */
+	void closeNativeWindow();
+
+	operator SDL_Window * () {
+		return sdlWindow;
+	}
 
 protected:
 
-SDL_Window * sdlWindow = nullptr;
+	SDL_Window * sdlWindow = nullptr;
 
 }; // class SDLNativeWindow
 

@@ -72,10 +72,15 @@ int main(int argint,char** argv) {
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 
+	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+	    SDL_SetHint(SDL_HINT_VIDEO_X11_FORCE_EGL,"1");
 
-		OevGLES::EGLRenderSurface eglSurface;
+		SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
+
+
+		OevGLES::SDLRenderSurface SDLSurface;
 		LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
-		eglSurface.createRenderSurface(640,480,PACKAGE_STRING);
+		SDLSurface.createRenderSurface(640,480,PACKAGE_STRING);
 		LOG4CXX_INFO(logger,"Create the diffuse light program");
 
 		AnalogHandRenderer hand;
@@ -117,7 +122,7 @@ int main(int argint,char** argv) {
 
 			// sleep(3);
 
-			eglSwapBuffers(eglSurface.getDisplay(),eglSurface.getRenderSurface());
+			SDL_GL_SwapWindow(SDLSurface.getNativeWindow());
 
 			k += 1.0f;
 		}

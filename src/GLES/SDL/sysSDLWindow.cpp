@@ -46,7 +46,7 @@ SDLNativeWindow::~SDLNativeWindow() {
 	closeNativeWindow();
 }
 
-void SDLNativeWindow::openNativeWindow( GLint width, GLint height,
+void SDLNativeWindow::openNativeGLES2Window( GLint width, GLint height,
 		char const* windowName) {
 
 	std::ostringstream errString;

@@ -32,20 +32,26 @@
 
 namespace OevGLES {
 
-class EGLRenderSurface {
+class SDLRenderSurface {
 public:
-	EGLRenderSurface();
+	SDLRenderSurface();
 
-	virtual ~EGLRenderSurface();
+	virtual ~SDLRenderSurface();
 
 	void createRenderSurface (GLint width, GLint height,
 			char const* windowName);
 
 	void makeContextCurrent();
 
+	SDLNativeWindow& getNativeWindow() {
+		return nativeWindow;
+	}
+
 protected:
 
 	SDLNativeWindow nativeWindow;
+
+	SDL_GLContext glContext = nullptr;
 
     GLint eglMajorVersion = 2;
     GLint eglMinorVersion = 0;

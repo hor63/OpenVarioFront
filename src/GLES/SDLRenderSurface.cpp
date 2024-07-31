@@ -43,7 +43,7 @@ static log4cxx::LoggerPtr logger = 0;
 
 
 
-EGLRenderSurface::EGLRenderSurface()
+SDLRenderSurface::SDLRenderSurface()
 		{
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -54,18 +54,29 @@ EGLRenderSurface::EGLRenderSurface()
 }
 
 
-EGLRenderSurface::~EGLRenderSurface() {
+SDLRenderSurface::~SDLRenderSurface() {
 
 
 	nativeWindow.closeNativeWindow();
 }
 
-void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
+void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 		char const* windowName) {
 
-	nativeWindow.openNativeWindow(
+    // Leave defaults SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+
+	nativeWindow.openNativeGLES2Window(
 			width, height, windowName);
 
+	glContext = SDL_GL_CreateContext (nativeWindow);
+
+	SDL_GL_MakeCurrent(nativeWindow,glContext);
 
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
@@ -73,7 +84,7 @@ void EGLRenderSurface::createRenderSurface (GLint width, GLint height,
 
 }
 
-void EGLRenderSurface::makeContextCurrent() {
+void SDLRenderSurface::makeContextCurrent() {
 
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
