@@ -2,6 +2,3 @@
 	path = 3rdParty/eigen
 	url = https://github.com/hor63/eigen-git-mirror.git
 	branch = branches/3.3
-[submodule "src/SDL"]
-	path = src/SDL
-	url = https://github.com/libsdl-org/SDL.git
