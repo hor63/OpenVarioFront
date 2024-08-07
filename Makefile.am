@@ -27,4 +27,3 @@ ACLOCAL_AMFLAGS= -I m4
 #	make -C doc/doxygen/latex
 
 @DX_RULES@
-

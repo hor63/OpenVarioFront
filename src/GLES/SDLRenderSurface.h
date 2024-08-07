@@ -28,7 +28,7 @@
 
 #include "GLES/sysSDLWindow.h"
 
-#include "SDL_opengles2.h"
+#include "SDL3/SDL_opengles2.h"
 
 namespace OevGLES {
 

@@ -55,7 +55,7 @@ void SDLNativeWindow::openNativeGLES2Window( GLint width, GLint height,
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");
 #endif
 
-    sdlWindow = SDL_CreateWindow(windowName, SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
+    sdlWindow = SDL_CreateWindow(windowName,
     		width, height,
 			SDL_WINDOW_OPENGL);
 

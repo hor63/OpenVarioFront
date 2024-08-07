@@ -15,7 +15,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=SDL GLES GLPrograms Renderers
+SUBDIRS=GLES GLPrograms Renderers
 	
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
@@ -25,11 +25,11 @@ OpenVarioFront_SOURCES=OpenVarioFront.cpp
 OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/TexHelper/libOEV_TexHelper.a GLES/libOEV_GLES.a \
 	-lGLESv2 $(LOG4CXX_LIBS) \
 	$(FREETYPE2_LIBS) $(LIBPNG_LIBS) \
-	$(PANGO_FT2_LIBS) $(SDL2_LIBS) \
+	$(PANGO_FT2_LIBS) $(SDL3_LIBS) \
 	$(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
-	$(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) $(SDL2_CFLAGS) \
+	$(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) $(SDL3_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 AM_LDFLAGS= $(LOG4CXX_LDFLAGS) 
