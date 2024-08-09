@@ -72,6 +72,7 @@ int main(int argint,char** argv) {
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 
+		SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 // Not in SDL3	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 	    SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1");
 
@@ -100,6 +101,12 @@ int main(int argint,char** argv) {
 //		std::cout << "Pointer to glIsVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glIsVertexArrayOES")) << std::endl;
 
 		for (GLfloat i = 0.0f; i<360.0f;i += 0.1f) {
+			SDL_Event sdlEvent;
+			while (SDL_PollEvent(&sdlEvent)){
+				if (sdlEvent.type == SDL_EVENT_QUIT) {
+					exit (0);
+				}
+			}
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
 			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(i) * camPos).block<3,1>(0,0),origin,up);
