@@ -1,5 +1,5 @@
 #    This file is part of OpenVarioFront, an electronic variometer for glider planes
-#    Copyright (C) 2016  Kai Horstmann
+#    Copyright (C) 2024  Kai Horstmann
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -16,14 +16,9 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-SUBDIRS=3rdParty src
 
-MOSTLYCLEANFILES= $(DX_CLEANFILES)
+all:
+	$(MAKE) -C SDL all VERBOSE=$(V)
 
-ACLOCAL_AMFLAGS= -I m4 
-        
-#doxygen: 
-#	$(DX_DOXYGEN)
-#	make -C doc/doxygen/latex
-
-@DX_RULES@
+clean:
+	$(MAKE) -C SDL clean VERBOSE=$(V)

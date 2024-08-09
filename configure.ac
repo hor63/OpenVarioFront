@@ -179,9 +179,9 @@ PKG_CHECK_MODULES([LIBPNG], [libpng])
 AC_SUBST([LIBPNG_CFLAGS])
 AC_SUBST([LIBPNG_LIBS])
 
-PKG_CHECK_MODULES([SDL3], [sdl3])
-AC_SUBST([SDL3_CFLAGS])
-AC_SUBST([SDL3_LIBS])
+#PKG_CHECK_MODULES([SDL3], [sdl3])
+#AC_SUBST([SDL3_CFLAGS])
+#AC_SUBST([SDL3_LIBS])
 
 PKG_CHECK_MODULES([PANGO], [pango])
 AC_SUBST([PANGO_CFLAGS])
@@ -199,6 +199,7 @@ DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(OpenVarioFront, $(srcdir)/doxygen.cfg, doc/doxygen)
 
 AC_CONFIG_FILES(Makefile
+                3rdParty/Makefile
                 src/Makefile
                 src/GLES/Makefile
                 src/GLES/TexHelper/Makefile
@@ -211,3 +212,7 @@ AC_OUTPUT
 # create the doc/doxygen directory right away. If it does not exist the doxygen rules will not work :(
 AS_ECHO(["configure: creating directory doc/doxygen"]) 
 AS_MKDIR_P(doc/doxygen)
+
+cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
+    -DCMAKE_BUILD_TYPE=Debug -DSDL_STATIC=ON -DSDL_SHARED=OFF \
+    -DCMAKE_C_FLAGS="-Og -g3" -DCMAKE_CXX_FLAGS="-Og -g3"  -DCMAKE_LD_FLAGS="-Og -g3" -DCMAKE_SHARED_LINKER_FLAGS="-Og -g3"

@@ -23,12 +23,12 @@ bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 OpenVarioFront_SOURCES=OpenVarioFront.cpp  
  
 OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/TexHelper/libOEV_TexHelper.a GLES/libOEV_GLES.a \
-	-lGLESv2 $(LOG4CXX_LIBS) \
+	-lGLESv2 ../3rdParty/SDL/libSDL3.a $(LOG4CXX_LIBS) \
 	$(FREETYPE2_LIBS) $(LIBPNG_LIBS) \
-	$(PANGO_FT2_LIBS) $(SDL3_LIBS) \
+	$(PANGO_FT2_LIBS) \
 	$(PTHREAD_LIBS)
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
+AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen/Eigen -I$(top_srcdir)/3rdParty/SDL/include $(LOG4CXX_CXXFLAGS) \
 	$(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) $(SDL3_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
