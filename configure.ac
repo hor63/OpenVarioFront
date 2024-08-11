@@ -205,6 +205,7 @@ AC_CONFIG_FILES(Makefile
                 src/GLES/TexHelper/Makefile
                 src/GLPrograms/Makefile
                 src/Renderers/Makefile
+                src/GLTextRender/Makefile
                 )
 
 AC_OUTPUT

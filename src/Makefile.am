@@ -15,7 +15,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=GLES GLPrograms Renderers
+SUBDIRS=GLES GLPrograms Renderers GLTextRender
 	
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
@@ -23,6 +23,7 @@ bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 OpenVarioFront_SOURCES=OpenVarioFront.cpp  
  
 OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/TexHelper/libOEV_TexHelper.a GLES/libOEV_GLES.a \
+	GLTextRender/libOEV_GLTextRender.a \
 	-lGLESv2 ../3rdParty/SDL/libSDL3.a $(LOG4CXX_LIBS) \
 	$(FREETYPE2_LIBS) $(LIBPNG_LIBS) \
 	$(PANGO_FT2_LIBS) \

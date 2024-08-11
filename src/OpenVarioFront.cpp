@@ -40,6 +40,7 @@
 #include "GLES/GLProgram.h"
 #include "Renderers/AnalogHandRenderer.h"
 #include "Renderers/SquareTextureRenderer.h"
+#include "GLTextRender/GLTextGlobals.h"
 
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
@@ -71,6 +72,9 @@ int main(int argint,char** argv) {
 		OevGLES::Vec3 lightDir;
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
+		OevGLES::GLTextGlobals glTextGlob;
+
+		glTextGlob.init();
 
 		SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 // Not in SDL3	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
