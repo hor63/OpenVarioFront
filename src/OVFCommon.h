@@ -72,8 +72,8 @@
 
 #if defined HAVE_LOG4CXX_H
 #	include <log4cxx/logger.h>
-#	include "log4cxx/basicconfigurator.h"
-#	include "log4cxx/propertyconfigurator.h"
+#	include <log4cxx/basicconfigurator.h>
+#	include <log4cxx/propertyconfigurator.h>
 #else /* #if defined HAVE_LOG4CXX_H */
 // These are all the logger macros from log4cxx/logger.h. Here redefined empty when no logger is used.
 #define LOG4CXX_LOG(logger, level, message)  do {;} while (0)
