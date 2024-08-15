@@ -44,14 +44,24 @@ static log4cxx::LoggerPtr logger = 0;
 GLTextGlobals::GLTextGlobals() {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextGlobals");
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextGlobals");
 	}
 #endif
 
 }
 
 GLTextGlobals::~GLTextGlobals() {
-	// TODO Auto-generated destructor stub
+
+	if (pangoContext) {
+		g_object_unref(pangoContext);
+		pangoContext = nullptr;
+	}
+
+	if (fontMap) {
+		g_object_unref(fontMap);
+		fontMap = nullptr;
+	}
+
 }
 
 void GLTextGlobals::init() {
@@ -81,7 +91,7 @@ void GLTextGlobals::init() {
 		auto fontDesc = pango_context_get_font_description(pangoContext);
 		if (fontDesc) {
 			LOG4CXX_DEBUG(logger, "Default font family = " << pango_font_description_get_family(fontDesc)
-					<< " with size " << pango_font_description_get_size(fontDesc)
+					<< " with size " << (pango_font_description_get_size(fontDesc)/PANGO_SCALE)
 					<< " with style " << static_cast<int>(pango_font_description_get_style(fontDesc)));
 		} else {
 			LOG4CXX_DEBUG(logger, "Default fontDesc of pangoContext is NULL!");

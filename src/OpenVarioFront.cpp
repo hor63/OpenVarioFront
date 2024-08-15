@@ -41,6 +41,7 @@
 #include "Renderers/AnalogHandRenderer.h"
 #include "Renderers/SquareTextureRenderer.h"
 #include "GLTextRender/GLTextGlobals.h"
+#include "GLTextRender/GLTextRenderer.h"
 
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
@@ -75,6 +76,11 @@ int main(int argint,char** argv) {
 		OevGLES::GLTextGlobals glTextGlob;
 
 		glTextGlob.init();
+
+		OevGLES::GLTextRenderer glTextRend (glTextGlob);
+		glTextRend.setText("BlaBlaBla. الأرواح عالية نادرا ما تفعل بشكل جيد. 兴致很高兴. 興致很高興. วิญญาณสูงไม่ค่อยทำได้ดี"
+				"\nDer Plüschelch rührt keinen Huf. Die efter effter efffter effer efffer effffer efier effier efffier Ligatur"
+				);
 
 		SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 // Not in SDL3	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");

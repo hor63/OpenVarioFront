@@ -28,12 +28,25 @@
 #ifndef GLTEXTRENDER_GLTEXTRENDERER_H_
 #define GLTEXTRENDER_GLTEXTRENDERER_H_
 
+#include <string>
+
+#include "GLTextGlobals.h"
+
 namespace OevGLES {
 
 class GLTextRenderer {
 public:
-	GLTextRenderer();
+	GLTextRenderer(GLTextGlobals& glob);
 	virtual ~GLTextRenderer();
+
+	void setText (const std::string& str);
+
+private:
+	std::string text;
+
+	PangoLayout* pangoLayout = nullptr;
+
+	GLTextGlobals& globals;
 };
 
 } /* namespace OevGLES */

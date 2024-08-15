@@ -40,6 +40,14 @@ public:
 
 	void init();
 
+	PangoFontMap* getFontMap() {
+		return fontMap;
+	}
+
+	PangoContext* getPangoContext() {
+		return pangoContext;
+	}
+
 private:
 
 	PangoFontMap* fontMap = nullptr;
