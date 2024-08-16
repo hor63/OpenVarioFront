@@ -5,3 +5,6 @@
 [submodule "3rdParty/SDL"]
 	path = 3rdParty/SDL
 	url = https://github.com/hor63/SDL.git
+[submodule "3rdParty/pango"]
+	path = 3rdParty/pango
+	url = https://gitlab.gnome.org/GNOME/pango.git
