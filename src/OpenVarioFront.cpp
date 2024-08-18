@@ -42,6 +42,7 @@
 #include "Renderers/SquareTextureRenderer.h"
 #include "GLTextRender/GLTextGlobals.h"
 #include "GLTextRender/GLTextRenderer.h"
+#include "GLTextRender/PangoGLTextRender.h"
 
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
@@ -78,9 +79,31 @@ int main(int argint,char** argv) {
 		glTextGlob.init();
 
 		OevGLES::GLTextRenderer glTextRend (glTextGlob);
-		glTextRend.setText("BlaBlaBla. الأرواح عالية نادرا ما تفعل بشكل جيد. 兴致很高兴. 興致很高興. วิญญาณสูงไม่ค่อยทำได้ดี"
-				"\nDer Plüschelch rührt keinen Huf. Die efter effter efffter effer efffer effffer efier effier efffier Ligatur"
+
+		glTextRend.setText(
+				  "01234567890"
+				"\nABCDEFGHIJK"
+				"\nLMNOPQRSTUV"
+				"\nWXZYabcdefg"
+				"\nhijklmnopqr"
+				"\nstuvwxzy!@#"
+				"\n$%^&*()_+<>"
+				"\n[]{};'\\:\"|"
+				"\n,./?€üöäÜÖÄ"
+				"\níéóúêîôû^'´`"
+				"îêôû°ß-="
 				);
+
+		pango_gl_text_render_layout(glTextRend.getPangoLayout(),0,0);
+
+
+		glTextRend.setText("BlaBlaBla. الأرواح عالية نادرا ما تفعل بشكل جيد."
+				"\n兴致很高兴. 興致很高興. วิญญาณสูงไม่ค่อยทำได้ดี"
+				"\nDer Plüschelch rührt keinen Huf."
+				"\nDie efter effter efffter effer efffer effffer efier effier efffier Ligatur"
+				);
+
+		pango_gl_text_render_layout(glTextRend.getPangoLayout(),0,0);
 
 		SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 // Not in SDL3	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");

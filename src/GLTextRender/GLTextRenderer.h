@@ -41,6 +41,10 @@ public:
 
 	void setText (const std::string& str);
 
+	PangoLayout* getPangoLayout() {
+		return pangoLayout;
+	}
+
 private:
 	std::string text;
 

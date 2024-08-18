@@ -25,8 +25,8 @@ OpenVarioFront_SOURCES=OpenVarioFront.cpp
 OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/TexHelper/libOEV_TexHelper.a GLES/libOEV_GLES.a \
 	GLTextRender/libOEV_GLTextRender.a \
 	-lGLESv2 ../3rdParty/SDL/libSDL3.a $(LOG4CXX_LIBS) \
-	$(FREETYPE2_LIBS) $(LIBPNG_LIBS) \
 	$(PANGO_FT2_LIBS) \
+	$(FREETYPE2_LIBS) $(LIBPNG_LIBS) \
 	$(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen/Eigen -I$(top_srcdir)/3rdParty/SDL/include $(LOG4CXX_CXXFLAGS) \
