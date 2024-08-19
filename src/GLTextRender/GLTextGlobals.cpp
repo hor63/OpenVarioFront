@@ -92,10 +92,35 @@ void GLTextGlobals::init() {
 		if (fontDesc) {
 			LOG4CXX_DEBUG(logger, "Default font family = " << pango_font_description_get_family(fontDesc)
 					<< " with size " << (pango_font_description_get_size(fontDesc)/PANGO_SCALE)
-					<< " with style " << static_cast<int>(pango_font_description_get_style(fontDesc)));
+					<< " with style " << static_cast<int>(pango_font_description_get_style(fontDesc))
+					<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDesc)));
 		} else {
 			LOG4CXX_DEBUG(logger, "Default fontDesc of pangoContext is NULL!");
 		}
+
+		PangoFontDescription* newFontDesc = pango_font_description_new ();
+		if (newFontDesc) {
+
+			pango_font_description_set_family(newFontDesc, "Noto Sans,Noto Sans CJK SC,Noto Sans Arabic");
+			pango_font_description_set_size(newFontDesc, 20*PANGO_SCALE);
+
+			pango_context_set_font_description(pangoContext, newFontDesc);
+
+			pango_font_description_free(newFontDesc);
+			newFontDesc = nullptr;
+
+			fontDesc = pango_context_get_font_description(pangoContext);
+			if (fontDesc) {
+				LOG4CXX_DEBUG(logger, "Default font family = " << pango_font_description_get_family(fontDesc)
+						<< " with size " << (pango_font_description_get_size(fontDesc)/PANGO_SCALE)
+						<< " with style " << static_cast<int>(pango_font_description_get_style(fontDesc))
+						<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDesc)));
+			} else {
+				LOG4CXX_DEBUG(logger, "Default fontDesc of pangoContext is NULL!");
+			}
+
+		}
+
 	} else {
 		LOG4CXX_FATAL(logger, "pangoContext is NULL!");
 	}
