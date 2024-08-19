@@ -35,6 +35,7 @@
 #include <glib-object.h>
 
 #include "PangoGLTextRender.h"
+#include <pango/pangoft2.h>
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
@@ -76,11 +77,28 @@ static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
 
 		if (fontDesc) {
 
-			LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Glyph " << glyph
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Glyph " << glyph
 					<< ", font family " << pango_font_description_get_family(fontDesc)
 					<< ", size = " << (static_cast<double>(pango_font_description_get_size(fontDesc))/PANGO_SCALE)
 					<< (pango_font_description_get_size_is_absolute(fontDesc)?"Pixel" : "pt")
 					<< " at position " << x << ',' << y);
+
+			FT_Face ftFace = pango_ft2_font_get_face(font);
+
+			auto rc = FT_Load_Glyph(ftFace, glyph, FT_LOAD_RENDER);
+			LOG4CXX_DEBUG(logger,"\tFT_Load_Glyph returned "<< rc);
+
+			if (rc == 0) {
+				LOG4CXX_DEBUG(logger,"\t Glyph " << glyph << " height= " << (static_cast<double>(ftFace->glyph->metrics.height) / (1 << 6))
+						<< " width = " << (static_cast<double>(ftFace->glyph->metrics.width) / (1 << 6))
+						<< " bitmap_left = " << ftFace->glyph->bitmap_left
+						<< " bitmap_top = " << ftFace->glyph->bitmap_top
+						<< " bitmap.num_grays = " << ftFace->glyph->bitmap.num_grays
+						<< " bitmap.width = " << ftFace->glyph->bitmap.width
+						<< " bitmap.rows = " << ftFace->glyph->bitmap.rows
+						);
+			}
+
 
 			pango_font_description_free(fontDesc);
 		}
