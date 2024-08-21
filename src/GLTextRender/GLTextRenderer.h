@@ -41,6 +41,14 @@ public:
 
 	void setText (const std::string& str);
 
+	void renderText();
+
+	void setFontSize (double sizePoints);
+	void setFonts(std::string fonts);
+
+	double getFontSize();
+	const std::string& getFonts();
+
 	PangoLayout* getPangoLayout() {
 		return pangoLayout;
 	}

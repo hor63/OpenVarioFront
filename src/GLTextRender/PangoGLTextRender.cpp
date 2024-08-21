@@ -30,6 +30,8 @@
 #  include <config.h>
 #endif
 
+#include <math.h>
+
 #include "OVFCommon.h"
 
 #include <glib-object.h>
@@ -70,6 +72,7 @@ static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
 					       double            x,
 					       double            y){
 
+	FT_Face ftFace = pango_ft2_font_get_face(font);
 #if defined HAVE_LOG4CXX_H
 
 	if (logger->isDebugEnabled()){
@@ -81,9 +84,11 @@ static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
 					<< ", font family " << pango_font_description_get_family(fontDesc)
 					<< ", size = " << (static_cast<double>(pango_font_description_get_size(fontDesc))/PANGO_SCALE)
 					<< (pango_font_description_get_size_is_absolute(fontDesc)?"Pixel" : "pt")
-					<< " at position " << x << ',' << y);
+					<< " at position " << x << ',' << y
+					<< " Pointer font = " << reinterpret_cast<void*>(font)
+					<< " , ftFace = " << reinterpret_cast<void*>(ftFace)
+					);
 
-			FT_Face ftFace = pango_ft2_font_get_face(font);
 
 			auto rc = FT_Load_Glyph(ftFace, glyph, FT_LOAD_RENDER);
 			LOG4CXX_DEBUG(logger,"\tFT_Load_Glyph returned "<< rc);
@@ -101,6 +106,47 @@ static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
 
 
 			pango_font_description_free(fontDesc);
+		}
+
+		{
+			  int x_start, x_limit;
+			  int y_start, y_limit;
+			  int ixoff = floor (x + 0.5);
+			  int iyoff = floor (y + 0.5);
+			  int ix, iy;
+			  int src , dest;
+
+
+			  x_start = MAX (0, - (ixoff + ftFace->glyph-> bitmap_left));
+			  x_limit = MIN ((int) ftFace->glyph->bitmap.width,
+					 (int) (1024 - (ixoff + ftFace->glyph->bitmap_left)));
+
+			  y_start = MAX (0,  - (iyoff - ftFace->glyph->bitmap_top));
+			  y_limit = MIN ((int) ftFace->glyph->bitmap.rows,
+					 (int) (1024 - (iyoff - ftFace->glyph->bitmap_top)));
+
+			  src =
+			    y_start * ftFace->glyph->bitmap.pitch;
+
+			  dest =
+			    (y_start + iyoff - ftFace->glyph->bitmap_top) * 1024 +
+			    x_start + ixoff + ftFace->glyph->bitmap_left;
+
+
+			  LOG4CXX_DEBUG(logger,"\tglyph-> bitmap_left = " << ftFace->glyph-> bitmap_left
+					  << " glyph->bitmap.width = " << ftFace->glyph->bitmap.width
+					  << " glyph->bitmap_top = " << ftFace->glyph->bitmap_top
+					  << " glyph->bitmap.rows = " << ftFace->glyph->bitmap.rows
+					  << " glyph->bitmap.pitch = " << ftFace->glyph->bitmap.pitch
+					  << " ixoff = " << ixoff
+					  << " iyoff = " << iyoff
+					  << " x_start = " << x_start
+					  << " x_limit = " << x_limit
+					  << " y_start = " << y_start
+					  << " y_limit = " << y_limit
+					  << " src offset = " << src
+					  << " dest offs (pitch 1024) = " << dest
+					  );
 		}
 	}
 
