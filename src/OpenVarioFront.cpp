@@ -55,6 +55,8 @@
 int main(int argint,char** argv) {
 	int rc = 0;
 
+	setlocale(LC_ALL, "");
+
 #if defined HAVE_LOG4CXX_H
 	// create a basic configuration as fallback
 	log4cxx::BasicConfigurator::configure();
@@ -78,6 +80,7 @@ int main(int argint,char** argv) {
 
 		glTextGlob.init();
 
+		{
 		OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
 		glTextRend.setText(
@@ -95,8 +98,10 @@ int main(int argint,char** argv) {
 				);
 
 		pango_gl_text_render_layout(glTextRend.getPangoLayout(),0,0);
+		}
 
-
+		{
+		OevGLES::GLTextRenderer glTextRend (glTextGlob);
 		glTextRend.setText("BlaBlaBla. الأرواح عالية نادرا ما تفعل بشكل جيد."
 				"\n兴致很高兴. 興致很高興. วิญญาณสูงไม่ค่อยทำได้ดี"
 				"\nDer Plüschelch rührt keinen Huf."
@@ -104,7 +109,7 @@ int main(int argint,char** argv) {
 				);
 
 		pango_gl_text_render_layout(glTextRend.getPangoLayout(),0,0);
-
+		}
 		SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 // Not in SDL3	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 	    SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1");
