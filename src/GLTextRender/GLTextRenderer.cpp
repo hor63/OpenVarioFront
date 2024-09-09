@@ -32,6 +32,7 @@
 #include "OVFCommon.h"
 
 #include "GLTextRenderer.h"
+#include "PangoGLTextRender.h"
 
 namespace OevGLES {
 
@@ -71,23 +72,31 @@ void GLTextRenderer::setText (const std::string& str){
 			PangoGlyphItem *glyphItem = pango_layout_iter_get_run_readonly(layoutIter);
 
 			if (glyphItem) {
-				LOG4CXX_DEBUG(logger,"\tGot one GlyphItem with num_chars = " << glyphItem->item->num_chars
+				LOG4CXX_TRACE(logger,"\tGot one GlyphItem with num_chars = " << glyphItem->item->num_chars
 						<< ", num_glyphs = " << glyphItem->glyphs->num_glyphs);
 
 				for (int i = 0;i < glyphItem->glyphs->num_glyphs; ++i) {
-					LOG4CXX_DEBUG(logger,"\t\tGlyph["<<i<<"] "
+					LOG4CXX_TRACE(logger,"\t\tGlyph["<<i<<"] "
 							<< glyphItem->glyphs->glyphs[i].glyph);
 				}
 			} else {
-				LOG4CXX_DEBUG(logger,"Empty run = End of line");
+				LOG4CXX_TRACE(logger,"Empty run = End of line");
 			}
 
 		} while (pango_layout_iter_next_run(layoutIter));
-		LOG4CXX_DEBUG(logger,"End of runs");
+		LOG4CXX_TRACE(logger,"End of runs");
 		pango_layout_iter_free(layoutIter);
 	}
 #endif // #if defined HAVE_LOG4CXX_H
 
+}
+
+void GLTextRenderer::renderLayout(int x, int y) {
+	pango_gl_text_render_layout_subpixel(pangoLayout,x * PANGO_SCALE, y * PANGO_SCALE);
+}
+
+void GLTextRenderer::renderLayoutSubpixel(int x, int y) {
+	pango_gl_text_render_layout_subpixel(pangoLayout,x, y);
 }
 
 } /* namespace OevGLES */

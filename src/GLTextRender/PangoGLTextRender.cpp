@@ -219,11 +219,3 @@ pango_gl_text_render_layout_subpixel (
   pango_renderer_draw_layout (renderer, layout, x, y);
 }
 
-void pango_gl_text_render_layout (
-			 PangoLayout *layout,
-			 int          x,
-			 int          y)
-{
-  pango_gl_text_render_layout_subpixel (layout, x * PANGO_SCALE, y * PANGO_SCALE);
-}
-

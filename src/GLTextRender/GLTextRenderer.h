@@ -41,8 +41,6 @@ public:
 
 	void setText (const std::string& str);
 
-	void renderText();
-
 	void setFontSize (double sizePoints);
 	void setFonts(std::string fonts);
 
@@ -52,6 +50,47 @@ public:
 	PangoLayout* getPangoLayout() {
 		return pangoLayout;
 	}
+
+	/** \brief Render the text into the GLES context
+	 *
+	 * The text must be set with \ref setText() before rendering.<br>
+	 * Text attributes must be set with the respective methods of this class before rendering.
+	 *
+	 * The text is being rendered into a \p PangoLayout with a special GL renderer object
+	 *
+	 * @x: the X position of the left of the layout (in pixels)
+	 * @y: the Y position of the top of the layout (in pixels)
+	 *
+	 */
+	void
+	renderLayout (
+			 int          x = 0,
+			 int          y = 0);
+
+	/** \brief Render the text into the GLES context
+	 *
+	 * The text must be set with \ref setText() before rendering.<br>
+	 * Text attributes must be set with the respective methods of this class before rendering.
+	 *
+	 * The text is being rendered into a \p PangoLayout with a special GL renderer object
+	 *
+	 * @x: the X position of the left of the layout (in Pango units)
+	 * @y: the Y position of the top of the layout (in Pango units)
+	 *
+	 * Render a `PangoLayout` onto an OpenGL ES2 context, with he
+	 * location specified in fixed-point Pango units rather than
+	 * pixels.
+	 *
+	 * (Using this will avoid extra inaccuracies from rounding
+	 * to integer pixels multiple times, even if the final glyph
+	 * positions are integers.)
+	 *
+	 */
+	void
+	renderLayoutSubpixel (
+					  int          x = 0,
+					  int          y = 0);
+
 
 private:
 	std::string text;

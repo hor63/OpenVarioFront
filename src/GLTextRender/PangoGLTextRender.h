@@ -32,20 +32,6 @@
 #include <pango/pango.h>
 
 /**
- * pango_gl_text_render_layout:
- * @layout: a `PangoLayout`
- * @x: the X position of the left of the layout (in pixels)
- * @y: the Y position of the top of the layout (in pixels)
- *
- * Render a `PangoLayout` onto an OpenGL ES2 context
- */
-void
-pango_gl_text_render_layout (
-		 PangoLayout *layout,
-		 int          x,
-		 int          y);
-
-/**
  * pango_gl_text_render_layout_subpixel:
  * @layout: a `PangoLayout`
  * @x: the X position of the left of the layout (in Pango units)
@@ -65,8 +51,5 @@ pango_gl_text_render_layout_subpixel (
 				  PangoLayout *layout,
 				  int          x,
 				  int          y);
-
-
-
 
 #endif /* GLTEXTRENDER_PANGOGLTEXTRENDER_H_ */
