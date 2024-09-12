@@ -102,7 +102,7 @@ void GLTextGlobals::init() {
 		if (newFontDesc) {
 
 			pango_font_description_set_family(newFontDesc, "Noto Sans");
-			pango_font_description_set_size(newFontDesc, 20*PANGO_SCALE);
+			pango_font_description_set_size(newFontDesc, 11*PANGO_SCALE);
 
 			pango_context_set_font_description(pangoContext, newFontDesc);
 

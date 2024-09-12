@@ -82,6 +82,7 @@ int main(int argint,char** argv) {
 		{
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
+			glTextRend.setFontSize(12);
 			glTextRend.setText(
 					  "01234567890"
 					"\nABCDEFGHIJK"
@@ -95,6 +96,47 @@ int main(int argint,char** argv) {
 					"\níéóúêîôû^'´`"
 					"îêôû°ß-="
 					);
+
+			glTextRend.renderLayout();
+		}
+		{
+			OevGLES::GLTextRenderer glTextRend (glTextGlob);
+
+			glTextRend.setFontSize(12);
+			glTextRend.setText(
+					  "01234567890"
+					);
+
+			glTextRend.renderLayout();
+		}
+		{
+			OevGLES::GLTextRenderer glTextRend (glTextGlob);
+
+			glTextRend.setFontSize(10);
+			glTextRend.setText(
+					  "01234567890"
+					);
+
+			glTextRend.renderLayout();
+		}
+		{
+			OevGLES::GLTextRenderer glTextRend (glTextGlob);
+
+			glTextRend.setFontSize(12);
+			glTextRend.setText(
+					  "012345678901"
+					);
+
+			glTextRend.renderLayout();
+		}
+		{
+			OevGLES::GLTextRenderer glTextRend (glTextGlob);
+
+			glTextRend.setFontSize(10);
+			glTextRend.setText(
+					  "01234567890"
+					);
+			glTextRend.setFontSize(10);
 
 			glTextRend.renderLayout();
 		}

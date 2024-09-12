@@ -42,7 +42,7 @@ static log4cxx::LoggerPtr logger = 0;
 
 GLTextRenderer::GLTextRenderer(GLTextGlobals& glob) :
 		globals{glob}
-	{
+{
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextRenderer");
@@ -50,10 +50,50 @@ GLTextRenderer::GLTextRenderer(GLTextGlobals& glob) :
 #endif
 
 	pangoLayout = pango_layout_new(globals.getPangoContext());
+	auto fDesc = pango_layout_get_font_description(pangoLayout);
+	if (fDesc == nullptr) {
+		fDesc = pango_context_get_font_description(globals.getPangoContext());
+	}
+	if (fDesc) {
+		fontDescr = pango_font_description_copy(fDesc);
+	} else {
+		fontDescr = pango_font_description_new();
+		fonts = "Noto Sans";
+		pango_font_description_set_family(fontDescr, fonts.c_str());
+		pango_font_description_set_size(fontDescr, 11*PANGO_SCALE);
+	}
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": Initial font family = " << pango_font_description_get_family(fontDescr)
+			<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
+			<< " with style " << static_cast<int>(pango_font_description_get_style(fontDescr))
+			<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDescr)));
+
+	PangoFontMask fontMask = pango_font_description_get_set_fields (fontDescr);
+	if (!(fontMask & PANGO_FONT_MASK_SIZE)){
+		pango_font_description_set_size(fontDescr, 11*PANGO_SCALE);
+	}
+	if (!(fontMask & PANGO_FONT_MASK_FAMILY)){
+		fonts = "Noto Sans";
+		pango_font_description_set_family(fontDescr,fonts.c_str());
+	} else {
+		fonts = pango_font_description_get_family(fontDescr);
+	}
+	pango_layout_set_font_description(pangoLayout,fontDescr);
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+			<< ": Initial font family = " << fonts<<":"<<pango_font_description_get_family(fontDescr)
+			<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
+			<< " with style " << static_cast<int>(pango_font_description_get_style(fontDescr))
+			<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDescr)));
 }
 
 GLTextRenderer::~GLTextRenderer() {
-	g_object_unref(pangoLayout);
+	if (pangoLayout) {
+		g_object_unref(pangoLayout);
+	}
+	if (fontDescr) {
+		pango_font_description_free (fontDescr);
+	}
 }
 
 void GLTextRenderer::setText (const std::string& str){
@@ -72,12 +112,28 @@ void GLTextRenderer::setText (const std::string& str){
 			PangoGlyphItem *glyphItem = pango_layout_iter_get_run_readonly(layoutIter);
 
 			if (glyphItem) {
+				auto glyphFontDescr = pango_font_describe(glyphItem->item->analysis.font);
 				LOG4CXX_TRACE(logger,"\tGot one GlyphItem with num_chars = " << glyphItem->item->num_chars
 						<< ", num_glyphs = " << glyphItem->glyphs->num_glyphs);
 
+				LOG4CXX_TRACE(logger,"\t\t Font pointer = " << reinterpret_cast<void*>(glyphItem->item->analysis.font));
+				if (glyphFontDescr) {
+
+					LOG4CXX_TRACE(logger,"\t\tFont family = " << pango_font_description_get_family (glyphFontDescr)
+							<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
+							<< " with style " << static_cast<int>(pango_font_description_get_style(glyphFontDescr))
+							<< " with weight " << static_cast<int>(pango_font_description_get_weight(glyphFontDescr)));
+
+					pango_font_description_free(glyphFontDescr);
+				}
+
 				for (int i = 0;i < glyphItem->glyphs->num_glyphs; ++i) {
-					LOG4CXX_TRACE(logger,"\t\tGlyph["<<i<<"] "
-							<< glyphItem->glyphs->glyphs[i].glyph);
+					LOG4CXX_TRACE(logger,"\t\t\tGlyph["<<i<<"] = "
+							<< glyphItem->glyphs->glyphs[i].glyph
+							<< " at x = " << glyphItem->glyphs->glyphs[i].geometry.x_offset
+							<< ", y = " << glyphItem->glyphs->glyphs[i].geometry.y_offset
+							<< " with width = " << glyphItem->glyphs->glyphs[i].geometry.y_offset
+														);
 				}
 			} else {
 				LOG4CXX_TRACE(logger,"Empty run = End of line");
@@ -97,6 +153,21 @@ void GLTextRenderer::renderLayout(int x, int y) {
 
 void GLTextRenderer::renderLayoutSubpixel(int x, int y) {
 	pango_gl_text_render_layout_subpixel(pangoLayout,x, y);
+}
+
+void GLTextRenderer::setFontSize(double sizePoints) {
+	pango_font_description_set_size(fontDescr,(static_cast<gint>(sizePoints*PANGO_SCALE)));
+	pango_layout_set_font_description(pangoLayout,fontDescr);
+}
+
+void GLTextRenderer::setFonts(std::string fontNames) {
+	fonts = fontNames;
+	pango_font_description_set_family(fontDescr,fonts.c_str());
+	pango_layout_set_font_description(pangoLayout,fontDescr);
+}
+
+double GLTextRenderer::getFontSize() {
+	return static_cast<double>(pango_font_description_get_size(fontDescr)) / PANGO_SCALE;
 }
 
 } /* namespace OevGLES */

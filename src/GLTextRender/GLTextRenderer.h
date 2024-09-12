@@ -42,10 +42,12 @@ public:
 	void setText (const std::string& str);
 
 	void setFontSize (double sizePoints);
-	void setFonts(std::string fonts);
+	void setFonts(std::string fontNames);
 
 	double getFontSize();
-	const std::string& getFonts();
+	const std::string& getFonts() {
+		return fonts;
+	}
 
 	PangoLayout* getPangoLayout() {
 		return pangoLayout;
@@ -94,8 +96,11 @@ public:
 
 private:
 	std::string text;
+	std::string fonts;
+
 
 	PangoLayout* pangoLayout = nullptr;
+	PangoFontDescription* fontDescr = nullptr;
 
 	GLTextGlobals& globals;
 };
