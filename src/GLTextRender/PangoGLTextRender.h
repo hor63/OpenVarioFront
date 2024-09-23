@@ -29,7 +29,34 @@
 #ifndef GLTEXTRENDER_PANGOGLTEXTRENDER_H_
 #define GLTEXTRENDER_PANGOGLTEXTRENDER_H_
 
-#include <pango/pango.h>
+#include <pango/pangoft2.h>
+
+#define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
+
+typedef struct _PangoGLTextRendererClass PangoGLTextRendererClass;
+typedef struct _PangoGLTextRenderer PangoGLTextRenderer;
+
+#define PANGO_GL_TEXT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_GL_TEXT_RENDERER, PangoGlTextRenderer))
+#define PANGO_IS_GL_TEXT_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_GL_TEXT_RENDERER))
+
+#define PANGO_GL_TEXT_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
+#define PANGO_IS_GL_TEXT_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_GL_TEXT_RENDERER))
+#define PANGO_GL_TEXT_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
+
+typedef struct _PangoGLTextRendererPrivate PangoGLTextRendererPrivate;
+
+struct _PangoGLTextRenderer
+{
+  PangoRenderer parent_instance;
+
+  PangoGLTextRendererPrivate* priv;
+};
+
+struct _PangoGLTextRendererClass
+{
+  PangoRendererClass parent_class;
+};
+
 
 /**
  * pango_gl_text_render_layout_subpixel:

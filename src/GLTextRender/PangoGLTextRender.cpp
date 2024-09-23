@@ -34,36 +34,17 @@
 
 #include "OVFCommon.h"
 
-#include <glib-object.h>
-
 #include "PangoGLTextRender.h"
-#include <pango/pangoft2.h>
+#include "GLTextRenderer.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-extern "C" {
-typedef struct _PangoGLTextRendererClass PangoGLTextRendererClass;
-typedef struct _PangoGLTextRenderer PangoGLTextRenderer;
+G_BEGIN_DECLS
 
-#define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
-#define PANGO_GL_TEXT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_GL_TEXT_RENDERER, PangoGlTextRenderer))
-#define PANGO_IS_GL_TEXT_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_GL_TEXT_RENDERER))
-
-#define PANGO_GL_TEXT_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
-#define PANGO_IS_GL_TEXT_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_GL_TEXT_RENDERER))
-#define PANGO_GL_TEXT_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
-
-struct _PangoGLTextRenderer
-{
-  PangoRenderer parent_instance;
-
-};
-
-struct _PangoGLTextRendererClass
-{
-  PangoRendererClass parent_class;
+struct _PangoGLTextRendererPrivate {
+	OevGLES::GLTextRenderer* glTextRender;
 };
 
 static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
@@ -165,10 +146,12 @@ static void pango_gl_text_renderer_draw_trapezoid (PangoRenderer    *renderer,
 
 }
 
-G_DEFINE_TYPE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_TYPE_RENDERER)
+G_DEFINE_TYPE_WITH_PRIVATE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_TYPE_RENDERER)
 
 static void
 pango_gl_text_renderer_init (PangoGLTextRenderer *self /* G_GNUC_UNUSED*/) {
+
+	self->priv = reinterpret_cast<PangoGLTextRendererPrivate*>(pango_gl_text_renderer_get_instance_private (self));
 
 }
 
@@ -187,7 +170,8 @@ pango_gl_text_renderer_class_init (PangoGLTextRendererClass *klass) {
 
 }
 
-} // extern "C"
+G_END_DECLS
+
 
 static PangoRenderer *pangoGlTextRenderer = nullptr;
 
