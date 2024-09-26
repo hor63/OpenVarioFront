@@ -31,17 +31,19 @@
 
 #include <pango/pangoft2.h>
 
-#define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
+
+namespace OevGLES {
+
+class GLTextRenderer;
+
+} // namespace OevGLES
+
+G_BEGIN_DECLS
+
 
 typedef struct _PangoGLTextRendererClass PangoGLTextRendererClass;
 typedef struct _PangoGLTextRenderer PangoGLTextRenderer;
 
-#define PANGO_GL_TEXT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_GL_TEXT_RENDERER, PangoGlTextRenderer))
-#define PANGO_IS_GL_TEXT_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_GL_TEXT_RENDERER))
-
-#define PANGO_GL_TEXT_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
-#define PANGO_IS_GL_TEXT_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_GL_TEXT_RENDERER))
-#define PANGO_GL_TEXT_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
 
 typedef struct _PangoGLTextRendererPrivate PangoGLTextRendererPrivate;
 
@@ -57,26 +59,9 @@ struct _PangoGLTextRendererClass
   PangoRendererClass parent_class;
 };
 
+PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* rendererObj);
 
-/**
- * pango_gl_text_render_layout_subpixel:
- * @layout: a `PangoLayout`
- * @x: the X position of the left of the layout (in Pango units)
- * @y: the Y position of the top of the layout (in Pango units)
- *
- * Render a `PangoLayout` onto an OpenGL ES2 context, with he
- * location specified in fixed-point Pango units rather than
- * pixels.
- *
- * (Using this will avoid extra inaccuracies from rounding
- * to integer pixels multiple times, even if the final glyph
- * positions are integers.)
- *
- */
-void
-pango_gl_text_render_layout_subpixel (
-				  PangoLayout *layout,
-				  int          x,
-				  int          y);
+G_END_DECLS
+
 
 #endif /* GLTEXTRENDER_PANGOGLTEXTRENDER_H_ */

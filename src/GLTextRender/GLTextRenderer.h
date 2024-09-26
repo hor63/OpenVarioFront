@@ -31,6 +31,7 @@
 #include <string>
 
 #include "GLTextGlobals.h"
+#include "PangoGLTextRender.h"
 
 namespace OevGLES {
 
@@ -101,6 +102,7 @@ private:
 
 	PangoLayout* pangoLayout = nullptr;
 	PangoFontDescription* fontDescr = nullptr;
+	PangoGLTextRenderer* pangoTextRenderer;
 
 	GLTextGlobals& globals;
 };

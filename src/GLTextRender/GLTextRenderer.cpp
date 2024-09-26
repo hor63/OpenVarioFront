@@ -32,7 +32,6 @@
 #include "OVFCommon.h"
 
 #include "GLTextRenderer.h"
-#include "PangoGLTextRender.h"
 
 namespace OevGLES {
 
@@ -48,6 +47,8 @@ GLTextRenderer::GLTextRenderer(GLTextGlobals& glob) :
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextRenderer");
 	}
 #endif
+
+	pangoTextRenderer = pango_gl_text_renderer_new(this);
 
 	pangoLayout = pango_layout_new(globals.getPangoContext());
 	auto fDesc = pango_layout_get_font_description(pangoLayout);
@@ -94,6 +95,10 @@ GLTextRenderer::~GLTextRenderer() {
 	if (fontDescr) {
 		pango_font_description_free (fontDescr);
 	}
+	if (pangoTextRenderer) {
+		g_object_unref(pangoTextRenderer);
+	}
+
 }
 
 void GLTextRenderer::setText (const std::string& str){
@@ -148,11 +153,12 @@ void GLTextRenderer::setText (const std::string& str){
 }
 
 void GLTextRenderer::renderLayout(int x, int y) {
-	pango_gl_text_render_layout_subpixel(pangoLayout,x * PANGO_SCALE, y * PANGO_SCALE);
+	renderLayoutSubpixel (x * PANGO_SCALE, y * PANGO_SCALE);
+
 }
 
 void GLTextRenderer::renderLayoutSubpixel(int x, int y) {
-	pango_gl_text_render_layout_subpixel(pangoLayout,x, y);
+	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
 }
 
 void GLTextRenderer::setFontSize(double sizePoints) {

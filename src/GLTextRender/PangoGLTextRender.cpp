@@ -42,6 +42,14 @@ static log4cxx::LoggerPtr logger = 0;
 #endif
 
 G_BEGIN_DECLS
+#define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
+
+#define PANGO_GL_TEXT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_GL_TEXT_RENDERER, PangoGlTextRenderer))
+#define PANGO_IS_GL_TEXT_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_GL_TEXT_RENDERER))
+
+#define PANGO_GL_TEXT_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
+#define PANGO_IS_GL_TEXT_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_GL_TEXT_RENDERER))
+#define PANGO_GL_TEXT_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
 
 struct _PangoGLTextRendererPrivate {
 	OevGLES::GLTextRenderer* glTextRender;
@@ -144,6 +152,15 @@ static void pango_gl_text_renderer_draw_trapezoid (PangoRenderer    *renderer,
 					       double            x12,
 					       double            x22){
 
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": part = " << static_cast<int>(part)
+			<< ", y1  = " << y1
+			<< ", x11 = " << x11
+			<< ", x21 = " << x21
+			<< ", y2  = " << y2
+			<< ", x12 = " << x12
+			<< ", x22 = " << x22
+			);
+
 }
 
 G_DEFINE_TYPE_WITH_PRIVATE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_TYPE_RENDERER)
@@ -152,6 +169,11 @@ static void
 pango_gl_text_renderer_init (PangoGLTextRenderer *self /* G_GNUC_UNUSED*/) {
 
 	self->priv = reinterpret_cast<PangoGLTextRendererPrivate*>(pango_gl_text_renderer_get_instance_private (self));
+	self->priv->glTextRender = nullptr;
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": self = " << reinterpret_cast<void*>(self)
+			<<  ", self->priv = " << reinterpret_cast<void*>(self->priv)
+			);
 
 }
 
@@ -173,33 +195,11 @@ pango_gl_text_renderer_class_init (PangoGLTextRendererClass *klass) {
 G_END_DECLS
 
 
-static PangoRenderer *pangoGlTextRenderer = nullptr;
+PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* rendererObj) {
+	PangoGLTextRenderer* ret = reinterpret_cast<PangoGLTextRenderer*>(g_object_new (PANGO_TYPE_GL_TEXT_RENDERER, NULL));
 
-static PangoRenderer *getPangoGLRenderer(){
-	if (pangoGlTextRenderer == nullptr) {
-		pangoGlTextRenderer = reinterpret_cast<PangoRenderer *>(g_object_new (PANGO_TYPE_GL_TEXT_RENDERER, NULL));
-	}
+	ret->priv->glTextRender = rendererObj;
 
-	return pangoGlTextRenderer;
-}
-
-
-void
-pango_gl_text_render_layout_subpixel (
-				  PangoLayout *layout,
-				  int          x,
-				  int          y)
-{
-  PangoContext *context;
-  PangoFontMap *fontmap;
-  PangoRenderer *renderer;
-
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
-
-  context = pango_layout_get_context (layout);
-  fontmap = pango_context_get_font_map (context);
-  renderer = getPangoGLRenderer();
-
-  pango_renderer_draw_layout (renderer, layout, x, y);
+	return ret;
 }
 
