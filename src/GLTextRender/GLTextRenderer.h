@@ -31,7 +31,11 @@
 #include <string>
 
 #include "GLTextGlobals.h"
-#include "PangoGLTextRender.h"
+
+
+extern "C" {
+typedef struct _PangoGLTextRenderer PangoGLTextRenderer;
+}
 
 namespace OevGLES {
 

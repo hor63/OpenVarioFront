@@ -29,15 +29,215 @@
 #  include <config.h>
 #endif
 
+#include <cmath>
+
 #include "OVFCommon.h"
 
 #include "GLTextRenderer.h"
 
-namespace OevGLES {
+// ===============================================================================================
+
+#include <pango/pangoft2.h>
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
 #endif
+
+
+
+namespace OevGLES {
+
+class GLTextRenderer;
+
+} // namespace OevGLES
+
+G_BEGIN_DECLS
+
+
+typedef struct _PangoGLTextRendererClass PangoGLTextRendererClass;
+
+
+typedef struct _PangoGLTextRendererPrivate PangoGLTextRendererPrivate;
+
+struct _PangoGLTextRenderer
+{
+  PangoRenderer parent_instance;
+
+  PangoGLTextRendererPrivate* priv;
+};
+
+struct _PangoGLTextRendererClass
+{
+  PangoRendererClass parent_class;
+};
+
+static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* rendererObj);
+
+#define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
+
+#define PANGO_GL_TEXT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_GL_TEXT_RENDERER, PangoGlTextRenderer))
+#define PANGO_IS_GL_TEXT_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_GL_TEXT_RENDERER))
+
+#define PANGO_GL_TEXT_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
+#define PANGO_IS_GL_TEXT_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_GL_TEXT_RENDERER))
+#define PANGO_GL_TEXT_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
+
+struct _PangoGLTextRendererPrivate {
+	OevGLES::GLTextRenderer* glTextRender;
+};
+
+static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
+					       PangoFont        *font,
+					       PangoGlyph        glyph,
+					       double            x,
+					       double            y){
+
+	FT_Face ftFace = pango_ft2_font_get_face(font);
+
+#if defined HAVE_LOG4CXX_H
+
+	if (logger->isDebugEnabled()){
+		PangoFontDescription* fontDesc = pango_font_describe(font);
+
+		if (fontDesc) {
+
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Glyph " << glyph
+					<< ", font family " << pango_font_description_get_family(fontDesc)
+					<< ", size = " << (static_cast<double>(pango_font_description_get_size(fontDesc))/PANGO_SCALE)
+					<< (pango_font_description_get_size_is_absolute(fontDesc)?"Pixel" : "pt")
+					<< " at position " << x << ',' << y
+					<< " Pointer font = " << reinterpret_cast<void*>(font)
+					<< " , ftFace = " << reinterpret_cast<void*>(ftFace)
+					);
+
+
+			auto rc = FT_Load_Glyph(ftFace, glyph, FT_LOAD_RENDER);
+			LOG4CXX_DEBUG(logger,"\tFT_Load_Glyph returned "<< rc);
+
+			if (rc == 0) {
+				LOG4CXX_DEBUG(logger,"\t Glyph " << glyph << " height= " << (static_cast<double>(ftFace->glyph->metrics.height) / (1 << 6))
+						<< " width = " << (static_cast<double>(ftFace->glyph->metrics.width) / (1 << 6))
+						<< " bitmap_left = " << ftFace->glyph->bitmap_left
+						<< " bitmap_top = " << ftFace->glyph->bitmap_top
+						<< " bitmap.num_grays = " << ftFace->glyph->bitmap.num_grays
+						<< " bitmap.width = " << ftFace->glyph->bitmap.width
+						<< " bitmap.rows = " << ftFace->glyph->bitmap.rows
+						);
+			}
+
+
+			pango_font_description_free(fontDesc);
+		}
+
+		{
+			  int x_start, x_limit;
+			  int y_start, y_limit;
+			  int ixoff = floor (x + 0.5);
+			  int iyoff = floor (y + 0.5);
+			  int ix, iy;
+			  int src , dest;
+
+
+			  x_start = MAX (0, - (ixoff + ftFace->glyph-> bitmap_left));
+			  x_limit = MIN ((int) ftFace->glyph->bitmap.width,
+					 (int) (1024 - (ixoff + ftFace->glyph->bitmap_left)));
+
+			  y_start = MAX (0,  - (iyoff - ftFace->glyph->bitmap_top));
+			  y_limit = MIN ((int) ftFace->glyph->bitmap.rows,
+					 (int) (1024 - (iyoff - ftFace->glyph->bitmap_top)));
+
+			  src =
+			    y_start * ftFace->glyph->bitmap.pitch;
+
+			  dest =
+			    (y_start + iyoff - ftFace->glyph->bitmap_top) * 1024 +
+			    x_start + ixoff + ftFace->glyph->bitmap_left;
+
+
+			  LOG4CXX_DEBUG(logger,"\tglyph-> bitmap_left = " << ftFace->glyph-> bitmap_left
+					  << " glyph->bitmap.width = " << ftFace->glyph->bitmap.width
+					  << " glyph->bitmap_top = " << ftFace->glyph->bitmap_top
+					  << " glyph->bitmap.rows = " << ftFace->glyph->bitmap.rows
+					  << " glyph->bitmap.pitch = " << ftFace->glyph->bitmap.pitch
+					  << " ixoff = " << ixoff
+					  << " iyoff = " << iyoff
+					  << " x_start = " << x_start
+					  << " x_limit = " << x_limit
+					  << " y_start = " << y_start
+					  << " y_limit = " << y_limit
+					  << " src offset = " << src
+					  << " dest offs (pitch 1024) = " << dest
+					  );
+		}
+	}
+
+#endif // #if defined HAVE_LOG4CXX_H
+
+}
+
+static void pango_gl_text_renderer_draw_trapezoid (PangoRenderer    *renderer,
+					       PangoRenderPart   part,
+					       double            y1,
+					       double            x11,
+					       double            x21,
+					       double            y2,
+					       double            x12,
+					       double            x22){
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": part = " << static_cast<int>(part)
+			<< ", y1  = " << y1
+			<< ", x11 = " << x11
+			<< ", x21 = " << x21
+			<< ", y2  = " << y2
+			<< ", x12 = " << x12
+			<< ", x22 = " << x22
+			);
+
+}
+
+G_DEFINE_TYPE_WITH_PRIVATE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_TYPE_RENDERER)
+
+static void
+pango_gl_text_renderer_init (PangoGLTextRenderer *self /* G_GNUC_UNUSED*/) {
+
+	self->priv = reinterpret_cast<PangoGLTextRendererPrivate*>(pango_gl_text_renderer_get_instance_private (self));
+	self->priv->glTextRender = nullptr;
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": self = " << reinterpret_cast<void*>(self)
+			<<  ", self->priv = " << reinterpret_cast<void*>(self->priv)
+			);
+
+}
+
+static void
+pango_gl_text_renderer_class_init (PangoGLTextRendererClass *klass) {
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.PangoGLTextRender");
+	}
+#endif
+
+	PangoRendererClass *renderer_class = PANGO_RENDERER_CLASS (klass);
+
+	renderer_class->draw_glyph = pango_gl_text_renderer_draw_glyph;
+	renderer_class->draw_trapezoid = pango_gl_text_renderer_draw_trapezoid;
+
+}
+
+G_END_DECLS
+
+
+static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* rendererObj) {
+	PangoGLTextRenderer* ret = reinterpret_cast<PangoGLTextRenderer*>(g_object_new (PANGO_TYPE_GL_TEXT_RENDERER, NULL));
+
+	ret->priv->glTextRender = rendererObj;
+
+	return ret;
+}
+
+// ===============================================================================================
+
+namespace OevGLES {
 
 GLTextRenderer::GLTextRenderer(GLTextGlobals& glob) :
 		globals{glob}
