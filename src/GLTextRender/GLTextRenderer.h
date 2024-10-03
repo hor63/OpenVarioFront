@@ -33,6 +33,7 @@
 #include "GLTextGlobals.h"
 
 
+// forward declarations for private types within the module.
 extern "C" {
 typedef struct _PangoGLTextRenderer PangoGLTextRenderer;
 }
@@ -76,6 +77,14 @@ public:
 
 	/** \brief Render the text into the GLES context
 	 *
+	 * Renders a `PangoLayout` onto an OpenGL ES2 context, with he
+	 * location specified in fixed-point Pango units rather than
+	 * pixels.
+	 *
+	 * (Using this will avoid extra inaccuracies from rounding
+	 * to integer pixels multiple times, even if the final glyph
+	 * positions are integers.)
+	 *
 	 * The text must be set with \ref setText() before rendering.<br>
 	 * Text attributes must be set with the respective methods of this class before rendering.
 	 *
@@ -84,13 +93,6 @@ public:
 	 * @x: the X position of the left of the layout (in Pango units)
 	 * @y: the Y position of the top of the layout (in Pango units)
 	 *
-	 * Render a `PangoLayout` onto an OpenGL ES2 context, with he
-	 * location specified in fixed-point Pango units rather than
-	 * pixels.
-	 *
-	 * (Using this will avoid extra inaccuracies from rounding
-	 * to integer pixels multiple times, even if the final glyph
-	 * positions are integers.)
 	 *
 	 */
 	void
@@ -98,6 +100,11 @@ public:
 					  int          x = 0,
 					  int          y = 0);
 
+	void draw_glyph (
+			PangoFont           *font,
+			PangoGlyph          glyph,
+			double              x,
+			double              y);
 
 private:
 	std::string text;

@@ -35,9 +35,8 @@
 
 #include "GLTextRenderer.h"
 
-// ===============================================================================================
+// ===== Start private PangoGLTextRendererClass glib based stuff ===========================
 
-#include <pango/pangoft2.h>
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
@@ -73,9 +72,7 @@ struct _PangoGLTextRendererClass
 
 static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* rendererObj);
 
-#define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
-
-#define PANGO_GL_TEXT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_GL_TEXT_RENDERER, PangoGlTextRenderer))
+#define PANGO_GL_TEXT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRenderer))
 #define PANGO_IS_GL_TEXT_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_GL_TEXT_RENDERER))
 
 #define PANGO_GL_TEXT_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_GL_TEXT_RENDERER, PangoGLTextRendererClass))
@@ -86,92 +83,25 @@ struct _PangoGLTextRendererPrivate {
 	OevGLES::GLTextRenderer* glTextRender;
 };
 
+
+G_DEFINE_TYPE_WITH_PRIVATE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_TYPE_RENDERER)
+
+#define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
+
 static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
 					       PangoFont        *font,
 					       PangoGlyph        glyph,
 					       double            x,
 					       double            y){
 
-	FT_Face ftFace = pango_ft2_font_get_face(font);
+	if (PANGO_IS_GL_TEXT_RENDERER(renderer)) {
+		PangoGLTextRenderer* pangoGLTextRenderer = PANGO_GL_TEXT_RENDERER(renderer);
 
-#if defined HAVE_LOG4CXX_H
-
-	if (logger->isDebugEnabled()){
-		PangoFontDescription* fontDesc = pango_font_describe(font);
-
-		if (fontDesc) {
-
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Glyph " << glyph
-					<< ", font family " << pango_font_description_get_family(fontDesc)
-					<< ", size = " << (static_cast<double>(pango_font_description_get_size(fontDesc))/PANGO_SCALE)
-					<< (pango_font_description_get_size_is_absolute(fontDesc)?"Pixel" : "pt")
-					<< " at position " << x << ',' << y
-					<< " Pointer font = " << reinterpret_cast<void*>(font)
-					<< " , ftFace = " << reinterpret_cast<void*>(ftFace)
-					);
-
-
-			auto rc = FT_Load_Glyph(ftFace, glyph, FT_LOAD_RENDER);
-			LOG4CXX_DEBUG(logger,"\tFT_Load_Glyph returned "<< rc);
-
-			if (rc == 0) {
-				LOG4CXX_DEBUG(logger,"\t Glyph " << glyph << " height= " << (static_cast<double>(ftFace->glyph->metrics.height) / (1 << 6))
-						<< " width = " << (static_cast<double>(ftFace->glyph->metrics.width) / (1 << 6))
-						<< " bitmap_left = " << ftFace->glyph->bitmap_left
-						<< " bitmap_top = " << ftFace->glyph->bitmap_top
-						<< " bitmap.num_grays = " << ftFace->glyph->bitmap.num_grays
-						<< " bitmap.width = " << ftFace->glyph->bitmap.width
-						<< " bitmap.rows = " << ftFace->glyph->bitmap.rows
-						);
-			}
-
-
-			pango_font_description_free(fontDesc);
-		}
-
-		{
-			  int x_start, x_limit;
-			  int y_start, y_limit;
-			  int ixoff = floor (x + 0.5);
-			  int iyoff = floor (y + 0.5);
-			  int ix, iy;
-			  int src , dest;
-
-
-			  x_start = MAX (0, - (ixoff + ftFace->glyph-> bitmap_left));
-			  x_limit = MIN ((int) ftFace->glyph->bitmap.width,
-					 (int) (1024 - (ixoff + ftFace->glyph->bitmap_left)));
-
-			  y_start = MAX (0,  - (iyoff - ftFace->glyph->bitmap_top));
-			  y_limit = MIN ((int) ftFace->glyph->bitmap.rows,
-					 (int) (1024 - (iyoff - ftFace->glyph->bitmap_top)));
-
-			  src =
-			    y_start * ftFace->glyph->bitmap.pitch;
-
-			  dest =
-			    (y_start + iyoff - ftFace->glyph->bitmap_top) * 1024 +
-			    x_start + ixoff + ftFace->glyph->bitmap_left;
-
-
-			  LOG4CXX_DEBUG(logger,"\tglyph-> bitmap_left = " << ftFace->glyph-> bitmap_left
-					  << " glyph->bitmap.width = " << ftFace->glyph->bitmap.width
-					  << " glyph->bitmap_top = " << ftFace->glyph->bitmap_top
-					  << " glyph->bitmap.rows = " << ftFace->glyph->bitmap.rows
-					  << " glyph->bitmap.pitch = " << ftFace->glyph->bitmap.pitch
-					  << " ixoff = " << ixoff
-					  << " iyoff = " << iyoff
-					  << " x_start = " << x_start
-					  << " x_limit = " << x_limit
-					  << " y_start = " << y_start
-					  << " y_limit = " << y_limit
-					  << " src offset = " << src
-					  << " dest offs (pitch 1024) = " << dest
-					  );
-		}
+		pangoGLTextRenderer->priv->glTextRender->draw_glyph(
+				font,
+				glyph,
+				x,y);
 	}
-
-#endif // #if defined HAVE_LOG4CXX_H
 
 }
 
@@ -195,7 +125,6 @@ static void pango_gl_text_renderer_draw_trapezoid (PangoRenderer    *renderer,
 
 }
 
-G_DEFINE_TYPE_WITH_PRIVATE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_TYPE_RENDERER)
 
 static void
 pango_gl_text_renderer_init (PangoGLTextRenderer *self /* G_GNUC_UNUSED*/) {
@@ -235,7 +164,7 @@ static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* 
 	return ret;
 }
 
-// ===============================================================================================
+// ===== End private PangoGLTextRendererClass glib based stuff =============================
 
 namespace OevGLES {
 
@@ -361,19 +290,115 @@ void GLTextRenderer::renderLayoutSubpixel(int x, int y) {
 	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
 }
 
+void GLTextRenderer::draw_glyph (
+			PangoFont        *font,
+			PangoGlyph        glyph,
+			double            x,
+			double            y) {
+
+	FT_Face ftFace = pango_ft2_font_get_face(font);
+
+
+#if defined HAVE_LOG4CXX_H
+
+
+	if (logger->isDebugEnabled()){
+		PangoFontDescription* fontDesc = pango_font_describe(font);
+
+		if (fontDesc) {
+
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Glyph " << glyph
+					<< ", font family " << pango_font_description_get_family(fontDesc)
+					<< ", size = " << (static_cast<double>(pango_font_description_get_size(fontDesc))/PANGO_SCALE)
+					<< (pango_font_description_get_size_is_absolute(fontDesc)?"Pixel" : "pt")
+					<< " at position " << x << ',' << y
+					<< " Pointer font = " << reinterpret_cast<void*>(font)
+					<< " , ftFace = " << reinterpret_cast<void*>(ftFace)
+					);
+
+
+			auto rc = FT_Load_Glyph(ftFace, glyph, FT_LOAD_RENDER);
+			LOG4CXX_DEBUG(logger,"\tFT_Load_Glyph returned "<< rc);
+
+			if (rc == 0) {
+				LOG4CXX_DEBUG(logger,"\t Glyph " << glyph << " height= " << (static_cast<double>(ftFace->glyph->metrics.height) / (1 << 6))
+						<< " width = " << (static_cast<double>(ftFace->glyph->metrics.width) / (1 << 6))
+						<< " bitmap_left = " << ftFace->glyph->bitmap_left
+						<< " bitmap_top = " << ftFace->glyph->bitmap_top
+						<< " bitmap.num_grays = " << ftFace->glyph->bitmap.num_grays
+						<< " bitmap.width = " << ftFace->glyph->bitmap.width
+						<< " bitmap.rows = " << ftFace->glyph->bitmap.rows
+						);
+			}
+
+
+			pango_font_description_free(fontDesc);
+		}
+
+		{
+			  int x_start, x_limit;
+			  int y_start, y_limit;
+			  int ixoff = floor (x + 0.5);
+			  int iyoff = floor (y + 0.5);
+			  int ix, iy;
+			  int src , dest;
+
+
+			  x_start = MAX (0, - (ixoff + ftFace->glyph-> bitmap_left));
+			  x_limit = MIN ((int) ftFace->glyph->bitmap.width,
+					 (int) (1024 - (ixoff + ftFace->glyph->bitmap_left)));
+
+			  y_start = MAX (0,  - (iyoff - ftFace->glyph->bitmap_top));
+			  y_limit = MIN ((int) ftFace->glyph->bitmap.rows,
+					 (int) (1024 - (iyoff - ftFace->glyph->bitmap_top)));
+
+			  src =
+			    y_start * ftFace->glyph->bitmap.pitch;
+
+			  dest =
+			    (y_start + iyoff - ftFace->glyph->bitmap_top) * 1024 +
+			    x_start + ixoff + ftFace->glyph->bitmap_left;
+
+
+			  LOG4CXX_DEBUG(logger,"\tglyph-> bitmap_left = " << ftFace->glyph-> bitmap_left
+					  << " glyph->bitmap.width = " << ftFace->glyph->bitmap.width
+					  << " glyph->bitmap_top = " << ftFace->glyph->bitmap_top
+					  << " glyph->bitmap.rows = " << ftFace->glyph->bitmap.rows
+					  << " glyph->bitmap.pitch = " << ftFace->glyph->bitmap.pitch
+					  << " ixoff = " << ixoff
+					  << " iyoff = " << iyoff
+					  << " x_start = " << x_start
+					  << " x_limit = " << x_limit
+					  << " y_start = " << y_start
+					  << " y_limit = " << y_limit
+					  << " src offset = " << src
+					  << " dest offs (pitch 1024) = " << dest
+					  );
+		}
+	}
+
+#endif // #if defined HAVE_LOG4CXX_H
+}
+
 void GLTextRenderer::setFontSize(double sizePoints) {
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": sizePoints = " << sizePoints);
 	pango_font_description_set_size(fontDescr,(static_cast<gint>(sizePoints*PANGO_SCALE)));
 	pango_layout_set_font_description(pangoLayout,fontDescr);
 }
 
 void GLTextRenderer::setFonts(std::string fontNames) {
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": fontNames = " << fontNames);
 	fonts = fontNames;
 	pango_font_description_set_family(fontDescr,fonts.c_str());
 	pango_layout_set_font_description(pangoLayout,fontDescr);
 }
 
 double GLTextRenderer::getFontSize() {
-	return static_cast<double>(pango_font_description_get_size(fontDescr)) / PANGO_SCALE;
+	double ret = static_cast<double>(pango_font_description_get_size(fontDescr)) / PANGO_SCALE;
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": ret = " << ret);
+
+	return ret;
 }
 
 } /* namespace OevGLES */
