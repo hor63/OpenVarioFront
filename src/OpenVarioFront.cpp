@@ -104,7 +104,7 @@ int main(int argint,char** argv) {
 
 			glTextRend.setFontSize(12);
 			glTextRend.setText(
-					  "01234567890"
+					  "01234567891"
 					);
 
 			glTextRend.renderLayout();
@@ -114,7 +114,7 @@ int main(int argint,char** argv) {
 
 			glTextRend.setFontSize(10);
 			glTextRend.setText(
-					  "01234567890"
+					  "01234567892"
 					);
 
 			glTextRend.renderLayout();
@@ -124,7 +124,7 @@ int main(int argint,char** argv) {
 
 			glTextRend.setFontSize(12);
 			glTextRend.setText(
-					  "012345678901"
+					  "012345678903"
 					);
 
 			glTextRend.renderLayout();
@@ -132,9 +132,8 @@ int main(int argint,char** argv) {
 		{
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
-			glTextRend.setFontSize(10);
 			glTextRend.setText(
-					  "01234567890"
+					  "01234567894"
 					);
 			glTextRend.setFontSize(10);
 
