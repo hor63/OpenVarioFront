@@ -1,11 +1,11 @@
 /*
- * GLTextGlobals.h
+ * GLTextPangoCPPWrappers.cpp
  *
- *  Created on: Aug 10, 2024
+ *  Created on: Oct 5, 2024
  *      Author: hor
  *
- *  Holds the global PangoFT2 fontmap and the Pango context.
- *  It exists only once (singleton).
+ *	Simple C++ wrappers around Pango classes which take care of glib object lifetime
+ *	but allow simple copy and move by using the glib reference count where possible.
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2024 Kai Horstmann
@@ -26,35 +26,10 @@
  *
  */
 
-#ifndef GLTEXTRENDER_GLTEXTGLOBALS_H_
-#define GLTEXTRENDER_GLTEXTGLOBALS_H_
-
 #include "GLTextPangoCPPWrappers.h"
 
 namespace OevGLES {
 
-class GLTextGlobals {
-public:
-	GLTextGlobals();
-	virtual ~GLTextGlobals();
 
-	void init();
+} // namespace OevGLES {
 
-	CppPangoFontMap getFontMap() {
-		return fontMap;
-	}
-
-	CppPangoContext getPangoContext() {
-		return pangoContext;
-	}
-
-private:
-
-	CppPangoFontMap fontMap;
-	CppPangoContext pangoContext;
-
-};
-
-} /* namespace OevGLES */
-
-#endif /* GLTEXTRENDER_GLTEXTGLOBALS_H_ */

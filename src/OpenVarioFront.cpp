@@ -77,8 +77,6 @@ int main(int argint,char** argv) {
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 		OevGLES::GLTextGlobals glTextGlob;
 
-		glTextGlob.init();
-
 		{
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
 

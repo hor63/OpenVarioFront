@@ -41,41 +41,18 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-GLTextGlobals::GLTextGlobals() {
+GLTextGlobals::GLTextGlobals()
+	:fontMap(),
+	 pangoContext(pangoContext)
+	{
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextGlobals");
 	}
 #endif
 
-}
-
-GLTextGlobals::~GLTextGlobals() {
-
-	if (pangoContext) {
-		g_object_unref(pangoContext);
-		pangoContext = nullptr;
-	}
-
-	if (fontMap) {
-		g_object_unref(fontMap);
-		fontMap = nullptr;
-	}
-
-}
-
-void GLTextGlobals::init() {
-
-	if (!fontMap) {
-		fontMap = pango_ft2_font_map_new();
-	}
-
-	if (!pangoContext && fontMap) {
-		pangoContext = pango_font_map_create_context (fontMap);
-	}
-
 #if defined HAVE_LOG4CXX_H
-	if (pangoContext) {
+	if (static_cast<PangoContext*>(pangoContext)) {
 		PangoFontFamily** families = nullptr;
 		int numFamilies = 0;
 
@@ -126,6 +103,10 @@ void GLTextGlobals::init() {
 	}
 
 #endif // #if defined HAVE_LOG4CXX_H
+
+}
+
+GLTextGlobals::~GLTextGlobals() {
 
 }
 
