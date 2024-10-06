@@ -49,9 +49,13 @@ public:
 		}
 	}
 
-	CppGObj (GObj* source)
+	CppGObj (GObj* source,bool increaseReference)
 	: gObj {source}
-	{}
+	{
+		if (increaseReference) {
+			g_object_ref(gObj);
+		}
+	}
 
 	CppGObj (const CppGObj& source)
 	:gObj{source.gObj}
@@ -65,6 +69,26 @@ public:
 	{
 		// Move the pointer; do not increase the GObject ref count
 		source.gObj = nullptr;
+	}
+
+	CppGObj<GObj>& operator = (const CppGObj<GObj>& source) {
+		if (gObj) {
+			g_object_unref(gObj);
+		}
+		gObj = source.gObj;
+		g_object_ref(gObj);
+
+		return *this;
+	}
+
+	CppGObj<GObj>& operator = (CppGObj<GObj>&& source) {
+		if (gObj) {
+			g_object_unref(gObj);
+		}
+		gObj = source.gObj;
+		source.gObj = nullptr;
+
+		return *this;
 	}
 
 	operator GObj* () {
