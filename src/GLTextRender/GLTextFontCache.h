@@ -32,6 +32,8 @@
 #ifndef GLTEXTRENDER_GLTEXTFONTCACHE_H_
 #define GLTEXTRENDER_GLTEXTFONTCACHE_H_
 
+#include "GLTextPangoCPPWrappers.h"
+
 namespace OevGLES {
 
 class GLTextFontCache;
@@ -40,6 +42,9 @@ class GLTextFontCacheItem {
 public:
 	GLTextFontCacheItem();
 	virtual ~GLTextFontCacheItem();
+
+private:
+	PangoFontDescription *fontDesc = nullptr;
 };
 
 

@@ -33,13 +33,24 @@
 
 namespace OevGLES {
 
+GLTextFontCacheItem::GLTextFontCacheItem() {
+
+
+}
+
+GLTextFontCacheItem::~GLTextFontCacheItem() {
+	if (fontDesc) {
+		pango_font_description_free(fontDesc);
+		fontDesc = nullptr;
+	}
+}
+
 GLTextFontCache::GLTextFontCache() {
-	// TODO Auto-generated constructor stub
+
 
 }
 
 GLTextFontCache::~GLTextFontCache() {
-	// TODO Auto-generated destructor stub
 }
 
 } /* namespace OevGLES */
