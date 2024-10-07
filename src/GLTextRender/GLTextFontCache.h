@@ -32,26 +32,93 @@
 #ifndef GLTEXTRENDER_GLTEXTFONTCACHE_H_
 #define GLTEXTRENDER_GLTEXTFONTCACHE_H_
 
+#include <unordered_map>
+
 #include "GLTextPangoCPPWrappers.h"
 
 namespace OevGLES {
 
 class GLTextFontCache;
 
-class GLTextFontCacheItem {
+class GLTextFontCacheItem final {
 public:
 	GLTextFontCacheItem();
-	virtual ~GLTextFontCacheItem();
+	GLTextFontCacheItem(PangoFont* font) {
+		fontDesc = pango_font_describe(font);
+		fontDescHash = pango_font_description_hash(fontDesc);
+	}
+	~GLTextFontCacheItem() {
+		if (fontDesc != nullptr) {
+			pango_font_description_free(fontDesc);
+			fontDesc = nullptr;
+		}
+	}
+
+	GLTextFontCacheItem(const GLTextFontCacheItem& source) = delete;
+	/*{
+		fontDesc = pango_font_description_copy(source.fontDesc);
+		fontDescHash = source.fontDescHash;
+	}*/
+
+	GLTextFontCacheItem(GLTextFontCacheItem&& source) {
+		fontDesc = source.fontDesc;
+		source.fontDesc = nullptr;
+		fontDescHash = source.fontDescHash;
+	}
+
+	GLTextFontCacheItem& operator = (const GLTextFontCacheItem& source) = delete;
+	/*{
+		fontDesc = pango_font_description_copy(source.fontDesc);
+		fontDescHash = source.fontDescHash;
+		return *this;
+	}*/
+
+	GLTextFontCacheItem& operator = (GLTextFontCacheItem&& source) {
+		fontDesc = source.fontDesc;
+		source.fontDesc = nullptr;
+		fontDescHash = source.fontDescHash;
+		return *this;
+	}
+
+	PangoFontDescription *getFontDesc() {
+		return fontDesc;
+	}
+
+	guint getFontDescHash() {
+		return fontDescHash;
+	}
 
 private:
 	PangoFontDescription *fontDesc = nullptr;
+	guint fontDescHash = 0;
 };
 
-
-class GLTextFontCache {
+class GLTextFontCache final {
 public:
-	GLTextFontCache();
-	virtual ~GLTextFontCache();
+	GLTextFontCache() {};
+	~GLTextFontCache() {};
+
+	GLTextFontCacheItem* getCacheItem (PangoFont* font) {
+		GLTextFontCacheItem* result = nullptr;
+		PangoFcFont* fcFont = PANGO_FC_FONT(font);
+
+		auto iter = fontCache.find(pango_font_description_hash(fcFont->description));
+
+		if (iter == fontCache.end()) {
+			GLTextFontCacheItem newCacheItem(font);
+			auto fontHash = newCacheItem.getFontDescHash();
+			auto insRes = fontCache.insert(std::pair<guint,GLTextFontCacheItem>(fontHash,std::move(newCacheItem)));
+
+			iter = insRes.first;
+		}
+
+		result = &iter->second;
+
+		return result;
+	}
+
+private:
+	std::unordered_map<guint,GLTextFontCacheItem> fontCache;
 };
 
 } /* namespace OevGLES */
