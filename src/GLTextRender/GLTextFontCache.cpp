@@ -36,4 +36,23 @@
 
 namespace OevGLES {
 
+GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
+	GLTextFontCacheItem* result = nullptr;
+	PangoFcFont* fcFont = PANGO_FC_FONT(font);
+
+	auto iter = fontCache.find(pango_font_description_hash(fcFont->description));
+
+	if (iter == fontCache.end()) {
+		GLTextFontCacheItem newCacheItem(font);
+		auto fontHash = newCacheItem.getFontDescHash();
+		auto insRes = fontCache.insert(std::pair<guint,GLTextFontCacheItem>(fontHash,std::move(newCacheItem)));
+
+		iter = insRes.first;
+	}
+
+	result = &iter->second;
+
+	return result;
+}
+
 } /* namespace OevGLES */
