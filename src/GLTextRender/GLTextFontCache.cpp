@@ -32,25 +32,61 @@
 #  include <config.h>
 #endif
 
+#include "OVFCommon.h"
+
 #include "GLTextFontCache.h"
 
 namespace OevGLES {
+
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
+
+GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font) {
+
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextRenderer");
+	}
+#endif
+
+	fontDesc = pango_font_describe(font);
+	fontDescHash = pango_font_description_hash(fontDesc);
+	fontMetrics = pango_font_get_metrics(font, nullptr);
+}
+
+GLTextFontCache::GLTextFontCache()
+{
+
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextRenderer");
+	}
+#endif
+
+}
+
 
 GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
 	GLTextFontCacheItem* result = nullptr;
 	PangoFcFont* fcFont = PANGO_FC_FONT(font);
 
-	auto iter = fontCache.find(pango_font_description_hash(fcFont->description));
+	auto range = fontCache.equal_range(pango_font_description_hash(fcFont->description));
 
-	if (iter == fontCache.end()) {
+	for (auto iter = range.first;iter != range.second; ++iter){
+		if (pango_font_description_equal(fcFont->description, iter->second.getFontDesc())) {
+			result = &iter->second;
+			break;
+		}
+	}
+
+	if (result == nullptr) {
 		GLTextFontCacheItem newCacheItem(font);
 		auto fontHash = newCacheItem.getFontDescHash();
 		auto insRes = fontCache.insert(std::pair<guint,GLTextFontCacheItem>(fontHash,std::move(newCacheItem)));
 
-		iter = insRes.first;
+		result = &(insRes->second);
 	}
-
-	result = &iter->second;
 
 	return result;
 }

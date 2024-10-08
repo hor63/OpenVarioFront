@@ -43,14 +43,17 @@ class GLTextFontCache;
 class GLTextFontCacheItem final {
 public:
 	GLTextFontCacheItem();
-	GLTextFontCacheItem(PangoFont* font) {
-		fontDesc = pango_font_describe(font);
-		fontDescHash = pango_font_description_hash(fontDesc);
-	}
+	GLTextFontCacheItem(PangoFont* font);
+
 	~GLTextFontCacheItem() {
 		if (fontDesc != nullptr) {
 			pango_font_description_free(fontDesc);
 			fontDesc = nullptr;
+		}
+
+		if (fontMetrics != nullptr) {
+			pango_font_metrics_unref(fontMetrics);
+			fontMetrics = nullptr;
 		}
 	}
 
@@ -91,17 +94,18 @@ public:
 private:
 	PangoFontDescription *fontDesc = nullptr;
 	guint fontDescHash = 0;
+	PangoFontMetrics* fontMetrics = nullptr;
 };
 
 class GLTextFontCache final {
 public:
-	GLTextFontCache() {};
+	GLTextFontCache();
 	~GLTextFontCache() {};
 
 	GLTextFontCacheItem* getCacheItem (PangoFont* font);
 
 private:
-	std::unordered_map<guint,GLTextFontCacheItem> fontCache;
+	std::unordered_multimap<guint,GLTextFontCacheItem> fontCache;
 };
 
 } /* namespace OevGLES */
