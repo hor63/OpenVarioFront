@@ -51,10 +51,24 @@ GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font)
 
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextRenderer");
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextFontCache");
 	}
 #endif
 
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": "
+			<< "\n\tfont family = " << pango_font_description_get_family(fontDesc)
+			<< "\n\tfont gravity = " << pango_font_description_get_gravity(fontDesc)
+			<< "\n\tfont size = " << pango_font_description_get_size(fontDesc) / static_cast<double>(PANGO_SCALE)
+			<< "\n\tfont style = " << pango_font_description_get_style(fontDesc)
+			<< "\n\tfont weight = " << pango_font_description_get_weight(fontDesc)
+			);
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "\t fontmetrics : "
+			<< "\n\t height = " << pango_font_metrics_get_height(fontMetrics) / static_cast<double>(PANGO_SCALE)
+			<< "\n\t ascent = " << pango_font_metrics_get_ascent(fontMetrics) / static_cast<double>(PANGO_SCALE)
+			<< "\n\t descent = " << pango_font_metrics_get_descent(fontMetrics) / static_cast<double>(PANGO_SCALE)
+			<< "\n\t approx_char_width = " << pango_font_metrics_get_approximate_char_width(fontMetrics) / static_cast<double>(PANGO_SCALE)
+			<< "\n\t approx_digit_width = " << pango_font_metrics_get_approximate_digit_width(fontMetrics) / static_cast<double>(PANGO_SCALE)
+			);
 }
 
 GLTextFontCache::GLTextFontCache()
@@ -62,7 +76,7 @@ GLTextFontCache::GLTextFontCache()
 
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextRenderer");
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextFontCache");
 	}
 #endif
 
@@ -78,11 +92,14 @@ GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
 	for (auto iter = range.first;iter != range.second; ++iter){
 		if (pango_font_description_equal(fcFont->description, iter->second.getFontDesc())) {
 			result = &iter->second;
+			LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Found record in the cache.");
+
 			break;
 		}
 	}
 
 	if (result == nullptr) {
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Found no record in the cache. Create and insert an new one.");
 		GLTextFontCacheItem newCacheItem(font);
 		auto fontHash = newCacheItem.getFontDescHash();
 		auto insRes = fontCache.insert(std::pair<guint,GLTextFontCacheItem>(fontHash,std::move(newCacheItem)));

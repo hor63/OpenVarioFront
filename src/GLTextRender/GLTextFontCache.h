@@ -60,10 +60,10 @@ public:
 
 
 	GLTextFontCacheItem(GLTextFontCacheItem&& source)
-	: pangoFont {source.pangoFont},
+	: pangoFont {std::move(source.pangoFont)},
 	  fontDesc {source.fontDesc},
-	  fontDescHash {source.fontDescHash},
-	  fontMetrics {source.fontMetrics}
+	  fontDescHash {std::move(source.fontDescHash)},
+	  fontMetrics {std::move(source.fontMetrics)}
 	{
 		source.fontDesc = nullptr;
 	}

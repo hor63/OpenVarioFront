@@ -46,7 +46,7 @@ public:
 
 	~CppGObj (){
 		if (gObj != nullptr) {
-			g_object_unref(gObj);
+			decrementRef();
 			gObj = nullptr;
 		}
 	}
@@ -82,6 +82,7 @@ public:
 
 		return *this;
 	}
+
 
 	CppGObj<GObj>& operator = (CppGObj<GObj>&& source) {
 		if (gObj) {

@@ -29,7 +29,8 @@
 #ifndef GLTEXTRENDER_GLTEXTGLOBALS_H_
 #define GLTEXTRENDER_GLTEXTGLOBALS_H_
 
-#include "GLTextPangoCPPWrappers.h"
+#include "GLTextFontCache.h"
+
 
 namespace OevGLES {
 
@@ -48,10 +49,15 @@ public:
 		return pangoContext;
 	}
 
+	GLTextFontCache&	getFontCache () {
+		return fontCache;
+	}
+
 private:
 
 	CppPangoFontMap fontMap;
 	CppPangoContext pangoContext;
+	GLTextFontCache	fontCache;
 
 };
 

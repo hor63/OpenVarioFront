@@ -297,7 +297,16 @@ void GLTextRenderer::draw_glyph (
 			double            y) {
 
 	FT_Face ftFace = pango_ft2_font_get_face(font);
+	GLTextFontCacheItem* fontCacheItem;
 
+	if (font == previousFont) {
+		fontCacheItem = previousCacheItem;
+	} else {
+		previousFont = font;
+		fontCacheItem = previousCacheItem = globals.getFontCache().getCacheItem(font);
+	}
+
+	(void)fontCacheItem;
 
 #if defined HAVE_LOG4CXX_H
 
