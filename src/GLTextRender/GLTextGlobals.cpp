@@ -42,8 +42,8 @@ static log4cxx::LoggerPtr logger = 0;
 #endif
 
 GLTextGlobals::GLTextGlobals()
-	:fontMap(),
-	 pangoContext(fontMap)
+	:fontMap(pango_ft2_font_map_new(),false),
+	 pangoContext(pango_font_map_create_context (fontMap),false)
 	{
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
