@@ -50,11 +50,6 @@ public:
 			pango_font_description_free(fontDesc);
 			fontDesc = nullptr;
 		}
-
-		if (fontMetrics != nullptr) {
-			pango_font_metrics_unref(fontMetrics);
-			fontMetrics = nullptr;
-		}
 	}
 
 	GLTextFontCacheItem(const GLTextFontCacheItem& source) = delete;
@@ -63,10 +58,14 @@ public:
 		fontDescHash = source.fontDescHash;
 	}*/
 
-	GLTextFontCacheItem(GLTextFontCacheItem&& source) {
-		fontDesc = source.fontDesc;
+
+	GLTextFontCacheItem(GLTextFontCacheItem&& source)
+	: pangoFont {source.pangoFont},
+	  fontDesc {source.fontDesc},
+	  fontDescHash {source.fontDescHash},
+	  fontMetrics {source.fontMetrics}
+	{
 		source.fontDesc = nullptr;
-		fontDescHash = source.fontDescHash;
 	}
 
 	GLTextFontCacheItem& operator = (const GLTextFontCacheItem& source) = delete;
@@ -77,6 +76,9 @@ public:
 	}*/
 
 	GLTextFontCacheItem& operator = (GLTextFontCacheItem&& source) {
+		if (fontDesc != nullptr) {
+			pango_font_description_free(fontDesc);
+		}
 		fontDesc = source.fontDesc;
 		source.fontDesc = nullptr;
 		fontDescHash = source.fontDescHash;
@@ -92,9 +94,10 @@ public:
 	}
 
 private:
-	PangoFontDescription *fontDesc = nullptr;
+	CppPangoFont pangoFont;
+	PangoFontDescription* fontDesc;
 	guint fontDescHash = 0;
-	PangoFontMetrics* fontMetrics = nullptr;
+	CppPangoFontMetrics fontMetrics;
 };
 
 class GLTextFontCache final {

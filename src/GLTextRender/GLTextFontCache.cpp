@@ -42,7 +42,12 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font) {
+GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font)
+: pangoFont (font,true),
+  fontDesc { pango_font_describe(font)},
+  fontDescHash {pango_font_description_hash(fontDesc)},
+  fontMetrics {pango_font_get_metrics(pangoFont, nullptr),false}
+{
 
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -50,9 +55,6 @@ GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font) {
 	}
 #endif
 
-	fontDesc = pango_font_describe(font);
-	fontDescHash = pango_font_description_hash(fontDesc);
-	fontMetrics = pango_font_get_metrics(font, nullptr);
 }
 
 GLTextFontCache::GLTextFontCache()

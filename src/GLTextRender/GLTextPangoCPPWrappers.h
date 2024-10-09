@@ -38,9 +38,11 @@ class CppGObj {
 
 public:
 
-	CppGObj ()
+	CppGObj () = delete;
+	/*
 	:gObj (nullptr)
 	{}
+	*/
 
 	~CppGObj (){
 		if (gObj != nullptr) {
@@ -53,7 +55,7 @@ public:
 	: gObj {source}
 	{
 		if (increaseReference) {
-			g_object_ref(gObj);
+			incrementRef();
 		}
 	}
 
@@ -61,7 +63,7 @@ public:
 	:gObj{source.gObj}
 	{
 		// Copy the pointer but increase the GObject ref count
-		g_object_ref(gObj);
+		incrementRef();
 	}
 
 	CppGObj (CppGObj&& source)
@@ -73,17 +75,17 @@ public:
 
 	CppGObj<GObj>& operator = (const CppGObj<GObj>& source) {
 		if (gObj) {
-			g_object_unref(gObj);
+			decrementRef ();
 		}
 		gObj = source.gObj;
-		g_object_ref(gObj);
+		incrementRef();
 
 		return *this;
 	}
 
 	CppGObj<GObj>& operator = (CppGObj<GObj>&& source) {
 		if (gObj) {
-			g_object_unref(gObj);
+			decrementRef ();
 		}
 		gObj = source.gObj;
 		source.gObj = nullptr;
@@ -103,35 +105,37 @@ public:
 		return gObj;
 	}
 
+	void incrementRef() {
+		g_object_ref(gObj);
+	}
+
+	void decrementRef () {
+		g_object_unref(gObj);
+	}
+
 protected:
 
 	GObj* gObj;
 };
 
-class CppPangoFontMap : public CppGObj<PangoFontMap> {
-public:
-	CppPangoFontMap ()
-	{
-		gObj = pango_ft2_font_map_new();
-	}
-};
+using CppPangoFontMap = CppGObj<PangoFontMap>;
 
-class CppPangoContext : public CppGObj<PangoContext> {
-public:
+using CppPangoContext = CppGObj<PangoContext>;
 
-	CppPangoContext () = delete;
+template <>
+CppGObj<PangoFont>::CppGObj();
 
-	CppPangoContext (PangoFontMap* fontMap) {
-		gObj = pango_font_map_create_context (fontMap);
-	}
-};
+using CppPangoFont = CppGObj<PangoFont>;
 
-class CppPangoFont : public CppGObj<PangoFont> {
-public:
+using CppPangoFontdescription = CppGObj<PangoFontDescription>;
 
-	CppPangoFont () = delete;
+template <>
+void CppGObj<PangoFontMetrics>::incrementRef();
 
-};
+template <>
+void CppGObj<PangoFontMetrics>::decrementRef();
+
+using CppPangoFontMetrics = CppGObj<PangoFontMetrics>;
 
 } // namespace OevGLES {
 

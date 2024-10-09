@@ -34,5 +34,16 @@
 namespace OevGLES {
 
 
+template <>
+void CppGObj<PangoFontMetrics>::incrementRef() {
+	pango_font_metrics_ref (gObj);
+}
+
+template <>
+void CppGObj<PangoFontMetrics>::decrementRef() {
+	pango_font_metrics_unref (gObj);
+}
+
+
 } // namespace OevGLES {
 
