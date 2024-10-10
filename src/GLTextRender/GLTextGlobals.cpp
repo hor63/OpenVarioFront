@@ -65,6 +65,9 @@ GLTextGlobals::GLTextGlobals()
 			g_free(families);
 		}
 
+		// a point is a pixel
+		pango_ft2_font_map_set_resolution(PANGO_FT2_FONT_MAP(static_cast<PangoFontMap*>(fontMap)),72.0,72.0);
+
 		auto fontDesc = pango_context_get_font_description(pangoContext);
 		if (fontDesc) {
 			LOG4CXX_DEBUG(logger, "Default font family = " << pango_font_description_get_family(fontDesc)
