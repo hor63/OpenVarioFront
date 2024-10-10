@@ -50,40 +50,16 @@ public:
 			pango_font_description_free(fontDesc);
 			fontDesc = nullptr;
 		}
+		freetypeFace = nullptr;
 	}
 
 	GLTextFontCacheItem(const GLTextFontCacheItem& source) = delete;
-	/*{
-		fontDesc = pango_font_description_copy(source.fontDesc);
-		fontDescHash = source.fontDescHash;
-	}*/
 
-
-	GLTextFontCacheItem(GLTextFontCacheItem&& source)
-	: pangoFont {std::move(source.pangoFont)},
-	  fontDesc {source.fontDesc},
-	  fontDescHash {std::move(source.fontDescHash)},
-	  fontMetrics {std::move(source.fontMetrics)}
-	{
-		source.fontDesc = nullptr;
-	}
+	GLTextFontCacheItem(GLTextFontCacheItem&& source);
 
 	GLTextFontCacheItem& operator = (const GLTextFontCacheItem& source) = delete;
-	/*{
-		fontDesc = pango_font_description_copy(source.fontDesc);
-		fontDescHash = source.fontDescHash;
-		return *this;
-	}*/
 
-	GLTextFontCacheItem& operator = (GLTextFontCacheItem&& source) {
-		if (fontDesc != nullptr) {
-			pango_font_description_free(fontDesc);
-		}
-		fontDesc = source.fontDesc;
-		source.fontDesc = nullptr;
-		fontDescHash = source.fontDescHash;
-		return *this;
-	}
+	GLTextFontCacheItem& operator = (GLTextFontCacheItem&& source);
 
 	PangoFontDescription *getFontDesc() {
 		return fontDesc;
@@ -95,6 +71,7 @@ public:
 
 private:
 	CppPangoFont pangoFont;
+	FT_Face freetypeFace = nullptr;
 	PangoFontDescription* fontDesc;
 	guint fontDescHash = 0;
 	CppPangoFontMetrics fontMetrics;

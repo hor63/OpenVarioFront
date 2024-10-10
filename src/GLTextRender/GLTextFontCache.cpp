@@ -44,6 +44,7 @@ static log4cxx::LoggerPtr logger = 0;
 
 GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font)
 : pangoFont (font,true),
+  freetypeFace {pango_ft2_font_get_face(pangoFont)},
   fontDesc { pango_font_describe(font)},
   fontDescHash {pango_font_description_hash(fontDesc)},
   fontMetrics {pango_font_get_metrics(pangoFont, nullptr),false}
@@ -70,6 +71,32 @@ GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font)
 			<< "\n\t approx_digit_width = " << pango_font_metrics_get_approximate_digit_width(fontMetrics) / static_cast<double>(PANGO_SCALE)
 			);
 }
+
+GLTextFontCacheItem::GLTextFontCacheItem(GLTextFontCacheItem&& source)
+: pangoFont {std::move(source.pangoFont)},
+  freetypeFace {source.freetypeFace},
+  fontDesc {source.fontDesc},
+  fontDescHash {std::move(source.fontDescHash)},
+  fontMetrics {std::move(source.fontMetrics)}
+{
+	source.freetypeFace = nullptr;
+	source.fontDesc = nullptr;
+}
+
+GLTextFontCacheItem& GLTextFontCacheItem::operator = (GLTextFontCacheItem&& source) {
+	pangoFont = std::move(source.pangoFont);
+	freetypeFace = source.freetypeFace;
+	source.freetypeFace = nullptr;
+	if (fontDesc != nullptr) {
+		pango_font_description_free(fontDesc);
+	}
+	fontDesc = source.fontDesc;
+	source.fontDesc = nullptr;
+	fontDescHash = source.fontDescHash;
+	fontMetrics = std::move(source.fontMetrics);
+	return *this;
+}
+
 
 GLTextFontCache::GLTextFontCache()
 {
