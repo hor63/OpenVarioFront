@@ -78,6 +78,18 @@ int main(int argint,char** argv) {
 		OevGLES::GLTextGlobals glTextGlob;
 
 		{
+			std::string sampleString = pango_language_get_sample_string (pango_language_get_default());
+			OevGLES::GLTextRenderer glTextRend (glTextGlob);
+
+			glTextRend.setFontSize(12);
+			glTextRend.setText(sampleString);
+
+			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
+
+			glTextRend.renderLayout();
+		}
+
+		{
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
 			glTextRend.setFontSize(12);
@@ -95,6 +107,8 @@ int main(int argint,char** argv) {
 					"îêôû°ß-="
 					);
 
+			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
+
 			glTextRend.renderLayout();
 		}
 		{
@@ -104,6 +118,8 @@ int main(int argint,char** argv) {
 			glTextRend.setText(
 					  "01234567891"
 					);
+
+			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
 
 			glTextRend.renderLayout();
 		}
@@ -115,6 +131,8 @@ int main(int argint,char** argv) {
 					  "01234567892"
 					);
 
+			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
+
 			glTextRend.renderLayout();
 		}
 		{
@@ -125,6 +143,8 @@ int main(int argint,char** argv) {
 					  "012345678903"
 					);
 
+			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
+
 			glTextRend.renderLayout();
 		}
 		{
@@ -134,6 +154,8 @@ int main(int argint,char** argv) {
 					  "01234567894"
 					);
 			glTextRend.setFontSize(10);
+
+			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
 
 			glTextRend.renderLayout();
 		}

@@ -47,6 +47,10 @@ public:
 
 	void setText (const std::string& str);
 
+	const std::string& getText() const {
+		return text;
+	}
+
 	void setFontSize (double sizePoints);
 	void setFonts(std::string fontNames);
 
