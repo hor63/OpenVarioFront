@@ -108,10 +108,7 @@ TextureData::TextureData( TextureData const &source)
 	  bytesPerTexel{source.bytesPerTexel}
 
 {
-	if (data) {
-		delete data;
-		data = 0;
-	}
+	data = nullptr;
 
 	if (source.lenData > 0 && source.data != 0) {
 		data = new char[lenData];
