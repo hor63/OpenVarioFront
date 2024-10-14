@@ -97,6 +97,8 @@ TextureData::TextureData(
 		break;
 	}
 
+	lenData = width * height * bytesPerTexel;
+
 }
 
 TextureData::TextureData( TextureData const &source)
@@ -110,24 +112,69 @@ TextureData::TextureData( TextureData const &source)
 {
 	data = nullptr;
 
-	if (source.lenData > 0 && source.data != 0) {
-		data = new char[lenData];
+	if (source.lenData > 0 && source.data != nullptr) {
+		data = new uint8_t[lenData];
 		memcpy (data,source.data,lenData);
 	}
+
+}
+
+TextureData::TextureData( TextureData&& source)
+: width{source.width},
+  height{source.height},
+  glFormat{source.glFormat},
+  dataType{source.dataType},
+  data {source.data},
+  lenData{source.lenData},
+  bytesPerTexel{source.bytesPerTexel}
+
+{
+
+	source.width = 0;
+	source.height = 0;
+	source.glFormat = UndefFormat;
+	source.dataType = undefType;
+
+	source.data = nullptr;
+	source.lenData = 0;
+	source.bytesPerTexel = 0;
 
 }
 
 void *TextureData::getDataPtr() {
 
 	if (!data) {
-		lenData = width * height * bytesPerTexel;
-		data = new char[lenData];
+		data = new uint8_t[lenData];
 		memset(data,0,lenData);
 	}
 
 	return data;
 
 }
+
+TextureData& TextureData::operator = ( TextureData&& source) {
+
+	width			= source.width;
+	height			= source.height;
+	glFormat		= source.glFormat;
+	dataType		= source.dataType;
+	data			= source.data;
+	lenData			= source.lenData;
+	bytesPerTexel	= source.bytesPerTexel;
+
+	source.width = 0;
+	source.height = 0;
+	source.glFormat = UndefFormat;
+	source.dataType = undefType;
+
+	source.data = nullptr;
+	source.lenData = 0;
+	source.bytesPerTexel = 0;
+
+	return *this;
+
+}
+
 
 void const *TextureData::getDataPtr () const {
 
@@ -136,16 +183,15 @@ void const *TextureData::getDataPtr () const {
 }
 
 void TextureData::writeData (
-		void * const newData,
+		void* const newData,
 		GLuint newDataLength) {
-
-	if (!data) {
-		lenData = width * height * bytesPerTexel;
-		data = new char[lenData];
-	}
 
 	if (newDataLength != lenData) {
 		throw TextureException ("TextureData::writeData: dataLength is different from the internally computed buffer length!");
+	}
+
+	if (!data) {
+		data = new uint8_t[lenData];
 	}
 
 	memcpy(data,newData,lenData);

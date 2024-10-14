@@ -97,12 +97,32 @@ public:
 	 */
 	TextureData( TextureData const &source);
 
+	/** \brief Move constructor
+	 *
+	 * The buffer pointer is moved to the present object.
+	 * The buffer of the source object is set to nullptr, all other members are invalidated.
+	 *
+	 * @param source Source buffer object.
+	 */
+	TextureData( TextureData&& source);
+
 	/** \brief destructor
 	 *
 	 * Deletes the internal buffer.
 	 * Pointers to the buffer obtained with \ref getDataPtr point to invalid data afterwards. Do not use any more.
 	 */
 	virtual ~TextureData();
+
+	/** \brief Move assignment operator
+	 *
+	 * The buffer pointer is moved to the present object.
+	 * The buffer of the source object is set to nullptr, all other members are invalidated.
+	 *
+	 * @param source Source buffer object.
+	 */
+	TextureData& operator = ( TextureData&& source);
+
+
 
 	/** \brief Returns pointer to the internal texture data buffer
 	 *
@@ -193,7 +213,7 @@ private:
 	GlFormat glFormat = UndefFormat;	///< \see GlFormat
 	DataType dataType = undefType;		///< \see DataType
 
-	char *data = 0;						///< Pointer to the internal data buffer
+	uint8_t *data = nullptr;			///< Pointer to the internal data buffer
 	GLuint lenData = 0;					///< Length of \ref data in *bytes*
 	GLuint bytesPerTexel = 0;			///< Bytes per texel in the buffer
 
