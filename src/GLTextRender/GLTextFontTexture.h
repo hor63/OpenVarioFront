@@ -4,12 +4,6 @@
  *  Created on: Oct 16, 2024
  *      Author: hor
  *
- *   Manages a GL texture which contains the images of a number of glyphs of a font.
- *   The glyphs are arranged in lines with 1 pixel space to the edges and 2 pixels between the glyphs
- *   Besides the actual texture which is managed by a GLTexture member the class stores the glyph
- *   positions and sizes of the current line as well as the previous line.
- *   This allows precise positioning of new glyhps above the glyphs of the previous line below.
- *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2024 Kai Horstmann
  *
@@ -36,24 +30,24 @@
 #include <forward_list>
 
 #include <GLTextFontCache.h>
+#include <GLTexture.h>
 
 namespace OevGLES {
 
 class GLTextFontCacheItem;
 
+/** \brief Manages a GL texture which contains the images of a number of glyphs of a font.
+ *
+ *   The glyphs are arranged in lines with 1 pixel space to the edges and 2 pixels between the glyphs
+ *   Besides the actual texture which is managed by a GLTexture member the class stores the glyph
+ *   positions and sizes of the current line as well as the previous line.
+ *   This allows precise positioning of new glyhps above the glyphs of the previous line below.
+ *
+ */
 class GLTextFontTexture {
 public:
 
-	struct GlyphBox {
-		PangoGlyph glyphIndex;
-
-		uint16_t x, y;
-		uint16_t heigth, width;
-	};
-
-	using GlyphBoxList = std::forward_list<TextureGlyphBox>;
-
-	GLTextFontTexture();
+	GLTextFontTexture(GLTextFontCacheItem& cacheItem,GLuint sizeXY);
 	GLTextFontTexture(const GLTextFontTexture &other) = delete;
 	GLTextFontTexture(GLTextFontTexture &&other);
 	virtual ~GLTextFontTexture();
@@ -62,10 +56,38 @@ public:
 
 private:
 
+	struct GlyphBox {
+		GLuint x; //< left edge
+		GLuint xRight; // right edge; = x+width
+		GLuint y; // << top edge
+		GLuint yTop; // << top edge; = y+height
+		GLuint width;	//< with of the bounding box of the glyph in the texture.
+						// It is 2 pixels wider than the glyph image.
+						// The glyph image is nestled with one pixel of margin to each edge
+		GLuint height;	// height of the bounding box of the glyph in the texture.
+							// It is 2 pixels wider than the glyph image.
+							// The glyph image is nestled with one pixel of margin to each edge
+		GlyphBox (
+				GLuint x,
+				GLuint y,
+				GLuint width,
+				GLuint height
+				) :
+					x{x},
+					width{width},
+					xRight{x+width},
+					y{y},
+					height{height},
+					yTop{y+height}
+					{}
+	};
+	using GlyphBoxList = std::forward_list<GlyphBox>;
+
 	GLTextFontCacheItem& fontCacheItem;
 
-	GlyphBoxList previousLine;
-	GlyphBoxList currentLine;
+	GlyphBoxList previousGlyphLine;
+	GlyphBoxList currentGlyphLine;
+
 };
 
 

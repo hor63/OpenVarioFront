@@ -33,8 +33,10 @@
 
 namespace OevGLES {
 
-GLTextFontTexture::GLTextFontTexture() {
-	// TODO Auto-generated constructor stub
+GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem& cacheItem,GLuint sizeXY)
+:fontCacheItem{cacheItem}
+{
+
 
 }
 
@@ -42,14 +44,12 @@ GLTextFontTexture::~GLTextFontTexture() {
 	// TODO Auto-generated destructor stub
 }
 
-GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other) {
+GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
+:fontCacheItem{other.fontCacheItem}
+{
 	// TODO Auto-generated constructor stub
 
 }
 
-GLTextFontTexture::GLTextFontTexture(const GLTextFontTexture &other) {
-	// TODO Auto-generated constructor stub
-
-}
 
 } /* namespace OevGLES */
