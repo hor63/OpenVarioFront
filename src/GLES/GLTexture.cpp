@@ -38,11 +38,39 @@ GLTexture::GLTexture() {
 
 }
 
+GLTexture::GLTexture (GLTexture&& source) :
+			textureHandle {source.textureHandle},
+			minFilterType {source.minFilterType},
+			magFilterType {source.magFilterType},
+			wrapS {source.wrapS},
+			wrapT {source.wrapT}
+			{
+	source.textureHandle = 0;
+}
+
+
 
 GLTexture::~GLTexture() {
 	if (textureHandle != 0) {
 		glDeleteTextures(1,&textureHandle);
 	}
+}
+
+GLTexture& GLTexture::operator = (GLTexture&& source) {
+
+	if (textureHandle != 0) {
+		glDeleteTextures(1,&textureHandle);
+	}
+
+	textureHandle = source.textureHandle;
+	minFilterType = source.minFilterType;
+	magFilterType = source.magFilterType;
+	wrapS = source.wrapS;
+	wrapT = source.wrapT;
+
+	source.textureHandle = 0;
+
+	return *this;
 }
 
 void GLTexture::createTextureHandle() {

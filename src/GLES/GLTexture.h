@@ -48,7 +48,13 @@ public:
 	};
 
 	GLTexture();
+	GLTexture (GLTexture const & source) = delete;
+	GLTexture (GLTexture&& source);
 	virtual ~GLTexture();
+
+	GLTexture& operator = (GLTexture const& source) = delete;
+	GLTexture& operator = (GLTexture&& source);
+
 
 	/** \brief set the texture data format and type from the texturedata object
 	 *
