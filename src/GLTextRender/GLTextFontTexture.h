@@ -47,7 +47,37 @@ class GLTextFontCacheItem;
 class GLTextFontTexture {
 public:
 
-	GLTextFontTexture(GLTextFontCacheItem& cacheItem,GLuint sizeXY);
+	static uint32_t constexpr textureDimension = 256;
+
+	struct GlyphBBox {
+		int32_t xLeft; //< left edge
+		int32_t yBottom; // << bottom edge
+		int32_t xRight; // right edge
+		int32_t yTop; // << top edge
+
+		GlyphBBox (
+				int32_t xLeft,
+				int32_t yBottom,
+				int32_t xRight,
+				int32_t yTop
+				) :
+					xLeft{xLeft},
+					yBottom{yBottom},
+					xRight{xRight},
+					yTop{yTop}
+		{}
+
+		/// Create an invalid BBox
+		GlyphBBox() :
+			xLeft{-1},
+			yBottom{-1},
+			xRight{-1},
+			yTop{-1}
+			{}
+	};
+	using GlyphBBoxList = std::forward_list<GlyphBBox>;
+
+	GLTextFontTexture(GLTextFontCacheItem* cacheItem,int32_t sizeXY);
 	GLTextFontTexture(const GLTextFontTexture &other) = delete;
 	GLTextFontTexture(GLTextFontTexture &&other);
 	virtual ~GLTextFontTexture();
@@ -56,38 +86,14 @@ public:
 
 private:
 
-	struct GlyphBox {
-		GLuint x; //< left edge
-		GLuint xRight; // right edge; = x+width
-		GLuint y; // << top edge
-		GLuint yTop; // << top edge; = y+height
-		GLuint width;	//< with of the bounding box of the glyph in the texture.
-						// It is 2 pixels wider than the glyph image.
-						// The glyph image is nestled with one pixel of margin to each edge
-		GLuint height;	// height of the bounding box of the glyph in the texture.
-							// It is 2 pixels wider than the glyph image.
-							// The glyph image is nestled with one pixel of margin to each edge
-		GlyphBox (
-				GLuint x,
-				GLuint y,
-				GLuint width,
-				GLuint height
-				) :
-					x{x},
-					width{width},
-					xRight{x+width},
-					y{y},
-					height{height},
-					yTop{y+height}
-					{}
-	};
-	using GlyphBoxList = std::forward_list<GlyphBox>;
 
-	GLTextFontCacheItem& fontCacheItem;
+	GLTextFontCacheItem* fontCacheItem;
 
-	GlyphBoxList previousGlyphLine;
-	GlyphBoxList currentGlyphLine;
+	GlyphBBoxList previousGlyphLine;
+	GlyphBBoxList currentGlyphLine;
 
+	GLTexture texture;
+	TextureData textureData;
 };
 
 
