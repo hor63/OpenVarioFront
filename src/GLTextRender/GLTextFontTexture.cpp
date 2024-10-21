@@ -33,22 +33,37 @@
 
 namespace OevGLES {
 
-GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem& cacheItem,GLuint sizeXY)
-:fontCacheItem{cacheItem}
+GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem* cacheItem,int32_t sizeXY)
+:fontCacheItem{cacheItem},
+ textureData (textureDimension, textureDimension, TextureData::Luminance, TextureData::Byte)
 {
-
 
 }
 
 GLTextFontTexture::~GLTextFontTexture() {
-	// TODO Auto-generated destructor stub
 }
 
 GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
-:fontCacheItem{other.fontCacheItem}
+:fontCacheItem {other.fontCacheItem},
+ previousGlyphLine {std::move(previousGlyphLine)},
+ currentGlyphLine {std::move(currentGlyphLine)},
+ texture {std::move(other.texture)},
+ textureData {std::move(other.textureData)}
 {
-	// TODO Auto-generated constructor stub
+}
 
+GLTextFontTexture& GLTextFontTexture::operator = (GLTextFontTexture &&other)
+{
+
+	fontCacheItem  = other.fontCacheItem;
+	previousGlyphLine = std::move(previousGlyphLine);
+	currentGlyphLine = std::move(currentGlyphLine);
+	texture = std::move(other.texture);
+	textureData = std::move(other.textureData);
+
+	other.fontCacheItem = nullptr;
+
+	return (*this);
 }
 
 
