@@ -123,9 +123,6 @@ using CppPangoFontMap = CppGObj<PangoFontMap>;
 
 using CppPangoContext = CppGObj<PangoContext>;
 
-template <>
-CppGObj<PangoFont>::CppGObj();
-
 using CppPangoFont = CppGObj<PangoFont>;
 
 using CppPangoFontdescription = CppGObj<PangoFontDescription>;
