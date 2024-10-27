@@ -27,10 +27,10 @@
 #define GLTEXTRENDER_GLTEXTFONTTEXTURE_H_
 
 #include <cstdint>
-#include <forward_list>
+#include <list>
 
-#include <GLTextFontCache.h>
-#include <GLTexture.h>
+#include "GLTextFontCache.h"
+#include "GLES/GLTexture.h"
 
 namespace OevGLES {
 
@@ -89,7 +89,7 @@ public:
 		}
 
 	};
-	using GlyphBBoxList = std::forward_list<GlyphBBox>;
+	using GlyphBBoxList = std::list<GlyphBBox>;
 
 	GLTextFontTexture(GLTextFontCacheItem* cacheItem,int32_t sizeXY);
 	GLTextFontTexture(const GLTextFontTexture &other) = delete;
