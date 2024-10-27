@@ -49,6 +49,8 @@ public:
 
 	static uint32_t constexpr textureDimension = 256;
 
+	/// X-Coordinates go left->right in x-direction
+	/// and bottom->up in y-direction
 	struct GlyphBBox {
 		int32_t xLeft; //< left edge
 		int32_t yBottom; // << bottom edge
@@ -74,6 +76,18 @@ public:
 			xRight{-1},
 			yTop{-1}
 			{}
+
+		bool isValid(){
+			return yTop >= 0 && xRight >= 0;
+		}
+
+		int32_t height() {
+			return yTop - yBottom;
+		}
+		int32_t width() {
+			return xRight - xLeft;
+		}
+
 	};
 	using GlyphBBoxList = std::forward_list<GlyphBBox>;
 
