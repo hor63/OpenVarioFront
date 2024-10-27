@@ -35,10 +35,12 @@
 #include <unordered_map>
 
 #include "GLTextPangoCPPWrappers.h"
+#include "GLTextFontTexture.h"
 
 namespace OevGLES {
 
 class GLTextFontCache;
+class GLTextFontTexture;
 
 class GLTextFontCacheItem final {
 public:
@@ -69,12 +71,16 @@ public:
 		return fontDescHash;
 	}
 
+	void addGlyphToTexture(PangoGlyph glyphIndex);
+
 private:
 	CppPangoFont pangoFont;
 	FT_Face freetypeFace = nullptr;
 	PangoFontDescription* fontDesc;
 	guint fontDescHash = 0;
 	CppPangoFontMetrics fontMetrics;
+
+	std::list<GLTextFontTexture> textureList;
 };
 
 class GLTextFontCache final {

@@ -77,10 +77,12 @@ GLTextFontCacheItem::GLTextFontCacheItem(GLTextFontCacheItem&& source)
   freetypeFace {source.freetypeFace},
   fontDesc {source.fontDesc},
   fontDescHash {std::move(source.fontDescHash)},
-  fontMetrics {std::move(source.fontMetrics)}
+  fontMetrics {std::move(source.fontMetrics)},
+  textureList {std::move(source.textureList)}
 {
 	source.freetypeFace = nullptr;
 	source.fontDesc = nullptr;
+	source.textureList.clear();
 }
 
 GLTextFontCacheItem& GLTextFontCacheItem::operator = (GLTextFontCacheItem&& source) {
@@ -94,6 +96,9 @@ GLTextFontCacheItem& GLTextFontCacheItem::operator = (GLTextFontCacheItem&& sour
 	source.fontDesc = nullptr;
 	fontDescHash = source.fontDescHash;
 	fontMetrics = std::move(source.fontMetrics);
+	textureList.clear();
+	textureList = std::move(source.textureList);
+	source.textureList.clear();
 	return *this;
 }
 
@@ -135,6 +140,12 @@ GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
 	}
 
 	return result;
+}
+
+void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Glyph index = " << glyphIndex);
+	LOG4CXX_DEBUG(logger,"\tfor font family " << freetypeFace->family_name << ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f));
+
 }
 
 } /* namespace OevGLES */
