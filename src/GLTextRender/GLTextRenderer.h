@@ -123,8 +123,9 @@ private:
 						* It is therefore much more efficient to render the expected glyphs once in \ref BUILD_GLYPH_CACHE_ONLY mode
 						* at the start.
 						*
+						*/
 
-		BUILD_GLYPH_CACHE_ONLY	/**< \brief Only build the font textures but do not render the text to the display.
+		BUILD_GLYPH_CACHE_ONLY,	/**< \brief Only build the font textures but do not render the text to the display.
 								 *
 								 * This is much more efficient because in render mode the texture must be
 								 * uploaded into the GPU for each added character immediately.
@@ -138,12 +139,14 @@ private:
 	std::string text;
 	std::string fonts;
 
+	RenderMode renderMode = RENDER_GLYPHS;
+
 	PangoLayout* pangoLayout = nullptr;
 	PangoFontDescription* fontDescr = nullptr;
 	PangoGLTextRenderer* pangoTextRenderer;
 
 	PangoFont* previousFont = nullptr;
-	GLTextFontCacheItem* previousCacheItem = nullptr;
+	GLTextFontCacheItem* fontCacheItem = nullptr;
 
 	GLTextGlobals& globals;
 };
