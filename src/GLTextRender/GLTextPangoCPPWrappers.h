@@ -125,7 +125,7 @@ using CppPangoContext = CppGObj<PangoContext>;
 
 using CppPangoFont = CppGObj<PangoFont>;
 
-using CppPangoFontdescription = CppGObj<PangoFontDescription>;
+// using CppPangoFontdescription = CppGObj<PangoFontDescription>;
 
 template <>
 void CppGObj<PangoFontMetrics>::incrementRef();
