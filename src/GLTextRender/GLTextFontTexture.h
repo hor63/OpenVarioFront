@@ -36,6 +36,8 @@ namespace OevGLES {
 
 class GLTextFontCacheItem;
 
+struct GLTextGlyphBBox;
+
 /** \brief Manages a GL texture which contains the images of a number of glyphs of a font.
  *
  *   The glyphs are arranged in lines with 1 pixel space to the edges and 2 pixels between the glyphs
@@ -49,47 +51,7 @@ public:
 
 	static uint32_t constexpr textureDimension = 256;
 
-	/// X-Coordinates go left->right in x-direction
-	/// and bottom->up in y-direction
-	struct GlyphBBox {
-		int32_t xLeft; //< left edge
-		int32_t yBottom; // << bottom edge
-		int32_t xRight; // right edge
-		int32_t yTop; // << top edge
-
-		GlyphBBox (
-				int32_t xLeft,
-				int32_t yBottom,
-				int32_t xRight,
-				int32_t yTop
-				) :
-					xLeft{xLeft},
-					yBottom{yBottom},
-					xRight{xRight},
-					yTop{yTop}
-		{}
-
-		/// Create an invalid BBox
-		GlyphBBox() :
-			xLeft{-1},
-			yBottom{-1},
-			xRight{-1},
-			yTop{-1}
-			{}
-
-		bool isValid(){
-			return yTop >= 0 && xRight >= 0;
-		}
-
-		int32_t height() {
-			return yTop - yBottom;
-		}
-		int32_t width() {
-			return xRight - xLeft;
-		}
-
-	};
-	using GlyphBBoxList = std::list<GlyphBBox>;
+	using GlyphBBoxList = std::list<GLTextGlyphBBox>;
 
 	GLTextFontTexture(GLTextFontCacheItem* cacheItem,int32_t sizeXY);
 	GLTextFontTexture(const GLTextFontTexture &other) = delete;
@@ -97,6 +59,12 @@ public:
 	virtual ~GLTextFontTexture();
 	GLTextFontTexture& operator=(const GLTextFontTexture &other) = delete;
 	GLTextFontTexture& operator=(GLTextFontTexture &&other);
+
+	GLTextGlyphBBox addGlyphToTexture(FT_Bitmap& glyphBitmap );
+
+	bool isFull() {
+		return full;
+	}
 
 private:
 
@@ -108,6 +76,8 @@ private:
 
 	GLTexture texture;
 	TextureData textureData;
+
+	bool full = false;
 };
 
 

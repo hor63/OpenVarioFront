@@ -303,45 +303,14 @@ void GLTextRenderer::draw_glyph (
 		fontCacheItem = globals.getFontCache().getCacheItem(font);
 	}
 
-	if (renderMode == BUILD_GLYPH_CACHE_ONLY) {
+	//if (renderMode == BUILD_GLYPH_CACHE_ONLY) {
 		fontCacheItem->addGlyphToTexture(glyph);
-	}
+	//}
 
-#if defined HAVE_LOG4CXX_H
+#if 0
 
 
 	if (logger->isDebugEnabled()){
-		PangoFontDescription* fontDesc = pango_font_describe(font);
-
-		if (fontDesc) {
-
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Glyph " << glyph
-					<< ", font family " << pango_font_description_get_family(fontDesc)
-					<< ", size = " << (static_cast<double>(pango_font_description_get_size(fontDesc))/PANGO_SCALE)
-					<< (pango_font_description_get_size_is_absolute(fontDesc)?"Pixel" : "pt")
-					<< " at position " << x << ',' << y
-					<< " Pointer font = " << reinterpret_cast<void*>(font)
-					<< " , ftFace = " << reinterpret_cast<void*>(ftFace)
-					);
-
-
-			auto rc = FT_Load_Glyph(ftFace, glyph, FT_LOAD_RENDER);
-			LOG4CXX_DEBUG(logger,"\tFT_Load_Glyph returned "<< rc);
-
-			if (rc == 0) {
-				LOG4CXX_DEBUG(logger,"\t Glyph " << glyph << " height= " << (static_cast<double>(ftFace->glyph->metrics.height) / (1 << 6))
-						<< " width = " << (static_cast<double>(ftFace->glyph->metrics.width) / (1 << 6))
-						<< " bitmap_left = " << ftFace->glyph->bitmap_left
-						<< " bitmap_top = " << ftFace->glyph->bitmap_top
-						<< " bitmap.num_grays = " << ftFace->glyph->bitmap.num_grays
-						<< " bitmap.width = " << ftFace->glyph->bitmap.width
-						<< " bitmap.rows = " << ftFace->glyph->bitmap.rows
-						);
-			}
-
-
-			pango_font_description_free(fontDesc);
-		}
 
 		{
 			  int x_start, x_limit;

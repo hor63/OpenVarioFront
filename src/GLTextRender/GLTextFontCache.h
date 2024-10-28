@@ -41,6 +41,76 @@ namespace OevGLES {
 
 class GLTextFontCache;
 class GLTextFontTexture;
+class GLTextFontCacheItem;
+
+/// X-Coordinates go left->right in x-direction
+/// and bottom->up in y-direction
+struct GLTextGlyphBBox {
+	int32_t xLeft; //< left edge
+	int32_t yBottom; // << bottom edge
+	int32_t xRight; // right edge
+	int32_t yTop; // << top edge
+
+	GLTextGlyphBBox (
+			int32_t xLeft,
+			int32_t yBottom,
+			int32_t xRight,
+			int32_t yTop
+			) :
+				xLeft{xLeft},
+				yBottom{yBottom},
+				xRight{xRight},
+				yTop{yTop}
+	{}
+
+	/// Create an invalid BBox
+	GLTextGlyphBBox() :
+		xLeft{-1},
+		yBottom{-1},
+		xRight{-1},
+		yTop{-1}
+		{}
+
+	bool isValid(){
+		return yTop >= 0 && xRight >= 0;
+	}
+
+	int32_t height() {
+		return yTop - yBottom;
+	}
+	int32_t width() {
+		return xRight - xLeft;
+	}
+
+};
+
+
+struct GLTextFontCacheGlyphItem {
+
+	GLTextFontCacheGlyphItem(
+			PangoGlyph glyphIndex,
+			GLTextFontCacheItem& cacheItem,
+			GLTextFontTexture& texture,
+			GLTextGlyphBBox texturePosition,
+			FT_Glyph_Metrics glyphMetrics
+			) :
+				glyphIndex {glyphIndex},
+				cacheItem {cacheItem},
+				texture {texture},
+				texturePosition {texturePosition},
+				glyphMetrics {glyphMetrics}
+				{}
+
+	PangoGlyph glyphIndex;
+
+	GLTextFontCacheItem& cacheItem;
+	GLTextFontTexture& texture;
+
+	GLTextGlyphBBox texturePosition;
+
+	FT_Glyph_Metrics glyphMetrics;
+
+};
 
 class GLTextFontCacheItem final {
 public:
@@ -81,6 +151,7 @@ private:
 	CppPangoFontMetrics fontMetrics;
 
 	std::list<GLTextFontTexture> textureList;
+	std::unordered_map<PangoGlyph,GLTextFontCacheGlyphItem> glyphMap;
 };
 
 class GLTextFontCache final {

@@ -143,8 +143,61 @@ GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
 }
 
 void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Glyph index = " << glyphIndex);
-	LOG4CXX_DEBUG(logger,"\tfor font family " << freetypeFace->family_name << ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f));
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Glyph index = " << glyphIndex
+			<< " for font family " << freetypeFace->family_name
+			<< ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f));
+
+	auto foundGlyph = glyphMap.find(glyphIndex);
+	if (foundGlyph != glyphMap.end()) {
+		// I have this glyph already cached.
+		LOG4CXX_DEBUG(logger,"\tFound the glyph in the cache. Nothing to do.");
+		return;
+	}
+
+	// The glyph had not been cached.
+	// Load the glyph and render it
+	auto ftRet = FT_Load_Glyph(freetypeFace, glyphIndex, FT_LOAD_DEFAULT);
+	if (ftRet != 0) {
+		LOG4CXX_ERROR (logger,__PRETTY_FUNCTION__ << ": Could not load glyph with index " << glyphIndex
+				<< " for font family " << freetypeFace->family_name
+				<< ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f)
+				<< ". Error is " << ftRet);
+		return;
+	}
+
+	LOG4CXX_DEBUG (logger,"\tLoaded the glyph successfully. Glyph size = "
+			<< freetypeFace->glyph->metrics.width/64.0f << "x" << freetypeFace->glyph->metrics.height/64.0f
+			<< ", Bearing x = " << freetypeFace->glyph->metrics.horiBearingX/64.0f
+			<< ", y = " << freetypeFace->glyph->metrics.horiBearingY/64.0f);
+
+	ftRet = FT_Render_Glyph(freetypeFace->glyph,FT_RENDER_MODE_NORMAL);
+	if (ftRet != 0) {
+		LOG4CXX_ERROR (logger,__PRETTY_FUNCTION__ << ": Could not render glyph with index " << glyphIndex
+				<< " for font family " << freetypeFace->family_name
+				<< ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f)
+				<< ". Error is " << ftRet);
+		return;
+	}
+
+	LOG4CXX_DEBUG (logger,"\tRendered the glyph succesfully. Width ="
+			<< freetypeFace->glyph->bitmap.width
+			<< ", height = " << freetypeFace->glyph->bitmap.rows
+			<< ", pitch = " << freetypeFace->glyph->bitmap.pitch
+			<< ", num_grays = " << freetypeFace->glyph->bitmap.num_grays
+			);
+
+	GLTextGlyphBBox textureBBox;
+	for (auto&& texture: textureList){
+		if (!texture.isFull()) {
+			textureBBox = texture.addGlyphToTexture(freetypeFace->glyph->bitmap);
+
+			if (textureBBox.isValid()) {
+				break;
+			}
+		}
+	}
+
+#warning Add a new texture to the list when textureBBOx is invalid here, and add the glyph image to the new texture.
 
 }
 
