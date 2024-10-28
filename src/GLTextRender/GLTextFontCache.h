@@ -76,7 +76,7 @@ public:
 private:
 	CppPangoFont pangoFont;
 	FT_Face freetypeFace = nullptr;
-	PangoFontDescription* fontDesc;
+	PangoFontDescription* fontDesc = nullptr;
 	guint fontDescHash = 0;
 	CppPangoFontMetrics fontMetrics;
 
