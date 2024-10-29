@@ -49,7 +49,7 @@ struct GLTextGlyphBBox;
 class GLTextFontTexture {
 public:
 
-	static uint32_t constexpr textureDimension = 256;
+	static int32_t constexpr textureDimension = 256;
 
 	using GlyphBBoxList = std::list<GLTextGlyphBBox>;
 

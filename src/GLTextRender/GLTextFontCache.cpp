@@ -192,12 +192,22 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 			textureBBox = texture.addGlyphToTexture(freetypeFace->glyph->bitmap);
 
 			if (textureBBox.isValid()) {
+				LOG4CXX_DEBUG (logger,"\tAdded the glyph to the texture. Exit texture list loop.");
 				break;
+			} else {
+				LOG4CXX_DEBUG (logger,"\tCould not add the glyph to the texture. Continue with the loop.");
 			}
+		} else {
+			LOG4CXX_DEBUG (logger,"\tThe texture is full. Continue with the loop.");
 		}
 	}
 
-#warning Add a new texture to the list when textureBBOx is invalid here, and add the glyph image to the new texture.
+	if (!textureBBox.isValid()) {
+		auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(this,GLTextFontTexture::textureDimension));
+		textureBBox = newItem->addGlyphToTexture(freetypeFace->glyph->bitmap);
+
+		LOG4CXX_DEBUG (logger,"\tAdd a new texture. Glyph validity = " << textureBBox.isValid());
+	}
 
 }
 

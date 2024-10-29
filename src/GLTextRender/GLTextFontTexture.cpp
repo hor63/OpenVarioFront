@@ -66,5 +66,22 @@ GLTextFontTexture& GLTextFontTexture::operator = (GLTextFontTexture &&other)
 	return (*this);
 }
 
+GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
+	GLTextGlyphBBox ret;
+	int32_t textureBoxWidth = glyphBitmap.width + 2;
+	int32_t textureBoxHeight = glyphBitmap.rows + 2;
+	int32_t leftPos = 0;
+	int32_t rightPos = textureBoxWidth;
+	int32_t bottomPos = 0;
+	int32_t topPos = textureBoxHeight;
+
+	// determine the left position in the current line when there is anything in it.
+	if (!currentGlyphLine.empty()) {
+		auto lastItem = currentGlyphLine.back();
+		leftPos = lastItem.xRight + 1;
+	}
+
+	return ret;
+}
 
 } /* namespace OevGLES */
