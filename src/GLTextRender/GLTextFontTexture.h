@@ -78,6 +78,12 @@ private:
 	TextureData textureData;
 
 	bool full = false;
+	/// Determines if the local texture buffer is not synchronized with the GL texture data.
+	bool dirty = true;
+
+	// count the rows being filled for diagnostics purposes.
+	int rowNum = 0;
+
 };
 
 
