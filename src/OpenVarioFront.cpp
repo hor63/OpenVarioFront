@@ -81,7 +81,7 @@ int main(int argint,char** argv) {
 			std::string sampleString = pango_language_get_sample_string (pango_language_get_default());
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
-			glTextRend.setFontSize(12);
+			glTextRend.setFontSize(40);
 			glTextRend.setText(sampleString);
 
 			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
@@ -92,7 +92,7 @@ int main(int argint,char** argv) {
 		{
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
-			glTextRend.setFontSize(12);
+			glTextRend.setFontSize(40);
 			glTextRend.setText(
 					  "01234567890"
 					"\nABCDEFGHIJK"
@@ -114,7 +114,7 @@ int main(int argint,char** argv) {
 		{
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
-			glTextRend.setFontSize(12);
+			glTextRend.setFontSize(40);
 			glTextRend.setText(
 					  "01234567891"
 					);
