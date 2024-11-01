@@ -61,10 +61,13 @@ GLTextFontTexture::~GLTextFontTexture() {
 
 GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
 :fontCacheItem {other.fontCacheItem},
- previousGlyphLine {std::move(previousGlyphLine)},
- currentGlyphLine {std::move(currentGlyphLine)},
+ previousGlyphLine {std::move(other.previousGlyphLine)},
+ currentGlyphLine {std::move(other.currentGlyphLine)},
  texture {std::move(other.texture)},
- textureData {std::move(other.textureData)}
+ textureData {std::move(other.textureData)},
+ full {other.full},
+ dirty {other.dirty},
+ rowNum {other.rowNum}
 {
 }
 
@@ -87,9 +90,7 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
 	int32_t textureBoxWidth = glyphBitmap.width + 2;
 	int32_t textureBoxHeight = glyphBitmap.rows + 2;
 	int32_t leftPos = 0;
-	int32_t rightPos;
 	int32_t bottomPos = 0;
-	int32_t topPos = textureBoxHeight;
 
 	if (full) {
 		LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": Texture is already full.");
@@ -102,7 +103,7 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
 		leftPos = lastItem.xRight + 1;
 	}
 
-	rightPos = leftPos + textureBoxWidth;
+	int32_t rightPos = leftPos + textureBoxWidth - 1;
 
 	if (rightPos >= textureData.getWidth()) {
 		// The current line is full. Start a new line.
@@ -149,8 +150,8 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
 			break;
 		}
 		// Now I have a glyph under me
-		LOG4CXX_DEBUG(logger,"\tGot a glyph under me. xPos = "
-				<< prevLineIter->xLeft << ", " << prevLineIter->xLeft
+		LOG4CXX_DEBUG(logger,"\tGot a glyph under me. x = "
+				<< prevLineIter->xLeft << "," << prevLineIter->xRight
 				<< ", top = " << prevLineIter->yTop
 				);
 
@@ -161,7 +162,7 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
 		++prevLineIter;
 	}
 
-	topPos = bottomPos + textureBoxHeight;
+	int32_t topPos = bottomPos + textureBoxHeight - 1;
 
 	if (topPos < textureData.getHeight()) {
 		// The glyph fits into the texture.
@@ -173,12 +174,18 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
 		LOG4CXX_DEBUG(logger,"\tFound a place for the glyph at "
 				<< ret.xLeft << "," << ret.yBottom
 				<< "  " << ret.xRight << "," << ret.yTop
+				<< ", texture BBox at "
+				<< leftPos << "," << bottomPos
+				<< " " << rightPos << "," << topPos
 				);
 
 		// Store the new texture BBox in the current line.
 		currentGlyphLine.push_back(GLTextGlyphBBox(leftPos, bottomPos, rightPos, topPos));
 
 		dirty = true;
+
+		copyGlyphImageToTexture(ret,glyphBitmap);
+
 	} else {
 		LOG4CXX_DEBUG(logger,"\tGlyph does not fit. TopPos " << topPos
 				<< " is above the texture height " << textureData.getHeight()
@@ -188,6 +195,15 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
 	}
 
 	return ret;
+}
+
+void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_Bitmap const& glyphBitmap ) {
+	uint8_t* source;
+	uint8_t* dest;
+	int strideSource;
+	int strideDest;
+	int numLines;
+	int numRows;
 }
 
 } /* namespace OevGLES */

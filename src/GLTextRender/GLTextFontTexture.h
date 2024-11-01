@@ -84,6 +84,8 @@ private:
 	// count the rows being filled for diagnostics purposes.
 	int rowNum = 0;
 
+	void copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_Bitmap const& glyphBitmap );
+)
 };
 
 
