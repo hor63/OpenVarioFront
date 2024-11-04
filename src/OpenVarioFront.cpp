@@ -160,6 +160,8 @@ int main(int argint,char** argv) {
 			glTextRend.renderLayout();
 		}
 
+		glTextGlob.getFontCache().exportTextureBitmaps();
+
 		SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 // Not in SDL3	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 	    SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1");

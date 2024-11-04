@@ -201,25 +201,84 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 }
 
 void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_GlyphSlot glyphSlot ) {
-	uint8_t* source;
-	uint8_t* dest;
-	int strideSource;
-	int strideDest;
-	int numLines;
-	int numRows;
 	FT_Bitmap myBitmap;
+	FT_Bitmap* bitmapPtr ;
 
 	FT_Bitmap_Init( &myBitmap);
 
-	myBitmap.pitch = -1;
-
 	if (glyphSlot->bitmap.pixel_mode != FT_PIXEL_MODE_GRAY || glyphSlot->bitmap.num_grays != 256) {
 		FT_Bitmap_Convert(glyphSlot->library, &glyphSlot->bitmap, &myBitmap, 1);
+		bitmapPtr = &myBitmap;
 	} else {
-		FT_Bitmap_Copy(glyphSlot->library, &glyphSlot->bitmap, &myBitmap);
+		bitmapPtr = &glyphSlot->bitmap;
+	}
+
+	int numLines = bitmapPtr->rows;
+	int numColumns = bitmapPtr->width;
+
+	// Use negative bitmap pitch because a GL texture goes from bottom to top
+	// but a positive Freetype pitch indicates top to bottom
+	int strideSource = -bitmapPtr->pitch;
+	int strideDest = textureData.getWidth();
+
+	uint8_t* source;
+	if (strideSource < 0) {
+		source = reinterpret_cast<uint8_t*>(bitmapPtr->buffer) - (strideSource * (numLines-1));
+	} else {
+		source = reinterpret_cast<uint8_t*>(bitmapPtr->buffer);
+	}
+
+	uint8_t* dest = reinterpret_cast<uint8_t*>(textureData.getDataPtr())
+			+ glyphCoord.yBottom * strideDest
+			+ glyphCoord.xLeft;
+
+	// Now copy the stuff.
+	if (glyphSlot->bitmap.num_grays == 256) {
+		for (int i = 0;i < numLines; ++i) {
+			for (int k = 0; k < numColumns; ++k) {
+				dest[k] = source[k];
+			}
+			dest += strideDest;
+			source += strideSource;
+		}
+	} else {
+		float normalizeFactor = 255.0f / static_cast<float>(glyphSlot->bitmap.num_grays);
+		for (int i = 0;i < numLines; ++i) {
+			for (int k = 0; k < numColumns; ++k) {
+				auto val = source[k] * normalizeFactor;
+				if (val > 255.0f){
+					val = 255.0f;
+				}
+				dest[k] = static_cast<uint8_t>(val);
+			}
+			dest += strideDest;
+			source += strideSource;
+		}
+
 	}
 
 	FT_Bitmap_Done(glyphSlot->library, &myBitmap);
+}
+
+void GLTextFontTexture::exportTextureBitmap(int bitmapNumber) {
+
+	std::ostringstream str;
+	std::FILE* outFile;
+
+	str << pango_font_description_get_family(fontCacheItem->getFontDesc())
+			<< "_" << (pango_font_description_get_size(fontCacheItem->getFontDesc()) / PANGO_SCALE)
+			<< "_" << textureData.getWidth() << "x" << textureData.getHeight()
+			<< "_" << bitmapNumber
+			<< ".data";
+
+	outFile = std::fopen(str.str().c_str(), "wb");
+
+	if (outFile) {
+		std::fwrite (textureData.getDataPtr(), sizeof(uint8_t), textureData.getDataBufferLength(), outFile);
+		std::fclose(outFile);
+		outFile = nullptr;
+	}
+
 }
 
 } /* namespace OevGLES */

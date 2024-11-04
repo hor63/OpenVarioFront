@@ -66,6 +66,8 @@ public:
 		return full;
 	}
 
+	void exportTextureBitmap(int bitmapNumber);
+
 private:
 
 

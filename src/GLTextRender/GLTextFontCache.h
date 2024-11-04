@@ -143,6 +143,8 @@ public:
 
 	void addGlyphToTexture(PangoGlyph glyphIndex);
 
+	void exportTextureBitmaps();
+
 private:
 	CppPangoFont pangoFont;
 	FT_Face freetypeFace = nullptr;
@@ -160,6 +162,8 @@ public:
 	~GLTextFontCache() {};
 
 	GLTextFontCacheItem* getCacheItem (PangoFont* font);
+
+	void exportTextureBitmaps();
 
 private:
 	std::unordered_multimap<guint,GLTextFontCacheItem> fontCache;

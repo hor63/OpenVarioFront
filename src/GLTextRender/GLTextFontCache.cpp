@@ -103,45 +103,6 @@ GLTextFontCacheItem& GLTextFontCacheItem::operator = (GLTextFontCacheItem&& sour
 }
 
 
-GLTextFontCache::GLTextFontCache()
-{
-
-#if defined HAVE_LOG4CXX_H
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextFontCache");
-	}
-#endif
-
-}
-
-
-GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
-	GLTextFontCacheItem* result = nullptr;
-	PangoFcFont* fcFont = PANGO_FC_FONT(font);
-
-	auto range = fontCache.equal_range(pango_font_description_hash(fcFont->description));
-
-	for (auto iter = range.first;iter != range.second; ++iter){
-		if (pango_font_description_equal(fcFont->description, iter->second.getFontDesc())) {
-			result = &iter->second;
-			LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Found record in the cache.");
-
-			break;
-		}
-	}
-
-	if (result == nullptr) {
-		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Found no record in the cache. Create and insert an new one.");
-		GLTextFontCacheItem newCacheItem(font);
-		auto fontHash = newCacheItem.getFontDescHash();
-		auto insRes = fontCache.insert(std::pair<guint,GLTextFontCacheItem>(fontHash,std::move(newCacheItem)));
-
-		result = &(insRes->second);
-	}
-
-	return result;
-}
-
 void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Glyph index = " << glyphIndex
 			<< " for font family " << freetypeFace->family_name
@@ -210,5 +171,63 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 	}
 
 }
+
+void GLTextFontCacheItem::exportTextureBitmaps() {
+
+	int i = 0;
+	for (auto textureItem = textureList.begin(); textureItem != textureList.end(); ++textureItem){
+		textureItem->exportTextureBitmap(i);
+		++i;
+	}
+
+}
+
+
+GLTextFontCache::GLTextFontCache()
+{
+
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTextRender.GLTextFontCache");
+	}
+#endif
+
+}
+
+
+GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
+	GLTextFontCacheItem* result = nullptr;
+	PangoFcFont* fcFont = PANGO_FC_FONT(font);
+
+	auto range = fontCache.equal_range(pango_font_description_hash(fcFont->description));
+
+	for (auto iter = range.first;iter != range.second; ++iter){
+		if (pango_font_description_equal(fcFont->description, iter->second.getFontDesc())) {
+			result = &iter->second;
+			LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Found record in the cache.");
+
+			break;
+		}
+	}
+
+	if (result == nullptr) {
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Found no record in the cache. Create and insert an new one.");
+		GLTextFontCacheItem newCacheItem(font);
+		auto fontHash = newCacheItem.getFontDescHash();
+		auto insRes = fontCache.insert(std::pair<guint,GLTextFontCacheItem>(fontHash,std::move(newCacheItem)));
+
+		result = &(insRes->second);
+	}
+
+	return result;
+}
+
+void GLTextFontCache::exportTextureBitmaps() {
+
+	for (auto cacheItem = fontCache.begin();cacheItem != fontCache.end();++cacheItem) {
+		cacheItem->second.exportTextureBitmaps();
+	}
+}
+
 
 } /* namespace OevGLES */
