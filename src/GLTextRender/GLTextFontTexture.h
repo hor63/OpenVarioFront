@@ -60,7 +60,7 @@ public:
 	GLTextFontTexture& operator=(const GLTextFontTexture &other) = delete;
 	GLTextFontTexture& operator=(GLTextFontTexture &&other);
 
-	GLTextGlyphBBox addGlyphToTexture(FT_Bitmap& glyphBitmap );
+	GLTextGlyphBBox addGlyphToTexture(FT_GlyphSlot glyphSlot);
 
 	bool isFull() {
 		return full;
@@ -84,8 +84,8 @@ private:
 	// count the rows being filled for diagnostics purposes.
 	int rowNum = 0;
 
-	void copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_Bitmap const& glyphBitmap );
-)
+	void copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_GlyphSlot glyphSlot );
+
 };
 
 

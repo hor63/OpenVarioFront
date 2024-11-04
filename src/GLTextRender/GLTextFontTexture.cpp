@@ -36,6 +36,8 @@
 
 #include "GLTextFontTexture.h"
 
+#include FT_BITMAP_H
+
 namespace OevGLES {
 
 
@@ -85,8 +87,9 @@ GLTextFontTexture& GLTextFontTexture::operator = (GLTextFontTexture &&other)
 	return (*this);
 }
 
-GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
+GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	GLTextGlyphBBox ret; // is initially invalid.
+	FT_Bitmap &glyphBitmap = glyphSlot->bitmap;
 	int32_t textureBoxWidth = glyphBitmap.width + 2;
 	int32_t textureBoxHeight = glyphBitmap.rows + 2;
 	int32_t leftPos = 0;
@@ -184,7 +187,7 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
 
 		dirty = true;
 
-		copyGlyphImageToTexture(ret,glyphBitmap);
+		copyGlyphImageToTexture(ret,glyphSlot);
 
 	} else {
 		LOG4CXX_DEBUG(logger,"\tGlyph does not fit. TopPos " << topPos
@@ -197,13 +200,26 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_Bitmap &glyphBitmap) {
 	return ret;
 }
 
-void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_Bitmap const& glyphBitmap ) {
+void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_GlyphSlot glyphSlot ) {
 	uint8_t* source;
 	uint8_t* dest;
 	int strideSource;
 	int strideDest;
 	int numLines;
 	int numRows;
+	FT_Bitmap myBitmap;
+
+	FT_Bitmap_Init( &myBitmap);
+
+	myBitmap.pitch = -1;
+
+	if (glyphSlot->bitmap.pixel_mode != FT_PIXEL_MODE_GRAY || glyphSlot->bitmap.num_grays != 256) {
+		FT_Bitmap_Convert(glyphSlot->library, &glyphSlot->bitmap, &myBitmap, 1);
+	} else {
+		FT_Bitmap_Copy(glyphSlot->library, &glyphSlot->bitmap, &myBitmap);
+	}
+
+	FT_Bitmap_Done(glyphSlot->library, &myBitmap);
 }
 
 } /* namespace OevGLES */
