@@ -91,7 +91,7 @@ struct GLTextFontCacheGlyphItem {
 			PangoGlyph glyphIndex,
 			GLTextFontCacheItem& cacheItem,
 			GLTextFontTexture& texture,
-			GLTextGlyphBBox texturePosition,
+			GLTextGlyphBBox const& texturePosition,
 			FT_Glyph_Metrics glyphMetrics
 			) :
 				glyphIndex {glyphIndex},
