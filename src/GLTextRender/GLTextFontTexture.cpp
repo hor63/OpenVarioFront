@@ -93,7 +93,7 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	int32_t textureBoxWidth = glyphBitmap.width + 2;
 	int32_t textureBoxHeight = glyphBitmap.rows + 2;
 	int32_t leftPos = 0;
-	int32_t bottomPos = 0;
+	int32_t bottomPos = topPosPreviousLines;
 
 	if (full) {
 		LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": Texture is already full.");
@@ -110,10 +110,7 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 
 	if (rightPos >= textureData.getWidth()) {
 		// The current line is full. Start a new line.
-		previousGlyphLine.clear();
-		previousGlyphLine = std::move(currentGlyphLine);
-		currentGlyphLine.clear();
-		++rowNum;
+		startNewGlyphLine();
 
 		LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": rightPos = " << rightPos
 				<< " is right off the texture at " << textureData.getWidth()
@@ -122,7 +119,7 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 
 		// now reset the horizontal positions back to the start of the new line.
 		leftPos = 0;
-		rightPos = leftPos + textureBoxWidth;
+		rightPos = textureBoxWidth - 1;
 	}
 
 	LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": leftPos = " << leftPos
@@ -198,6 +195,52 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	}
 
 	return ret;
+}
+
+void GLTextFontTexture::startNewGlyphLine() {
+
+	// look for the top of any glyphs in previousGlyphLine in the gap between the rightmost glyph
+	// in currentGlyphLine and the right edge of the texture.
+	int32_t leftGapEdge = 0;
+
+	if (!currentGlyphLine.empty()) {
+		auto rightGlyph = currentGlyphLine.back();
+		leftGapEdge = rightGlyph.xRight;
+	}
+
+	LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__
+			<< ": leftGapEdge = " << leftGapEdge);
+
+	if (!previousGlyphLine.empty()) {
+		auto floorGlyph = previousGlyphLine.end();
+		--floorGlyph;
+		for (;;) {
+
+			if (floorGlyph->xRight > leftGapEdge) {
+				LOG4CXX_DEBUG(logger,"\tGlyph is in the gap with xRight = " << floorGlyph->xRight);
+				if (floorGlyph->yTop >= topPosPreviousLines) {
+					topPosPreviousLines = floorGlyph->yTop + 1;
+					LOG4CXX_DEBUG(logger,"\tNew topPosPreviousLines = " << topPosPreviousLines);
+				}
+			} else {
+				// This glyph is left to the gap.
+				LOG4CXX_DEBUG(logger,"\tGlyph is left of the gap with xRight = " << floorGlyph->xRight);
+				break;
+			}
+
+			if (floorGlyph == previousGlyphLine.begin()) {
+				break;
+			}
+
+			--floorGlyph;
+		}
+	}
+
+	previousGlyphLine.clear();
+	previousGlyphLine = std::move(currentGlyphLine);
+	currentGlyphLine.clear();
+	++rowNum;
+
 }
 
 void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_GlyphSlot glyphSlot ) {

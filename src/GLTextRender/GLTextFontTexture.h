@@ -83,10 +83,29 @@ private:
 	/// Determines if the local texture buffer is not synchronized with the GL texture data.
 	bool dirty = true;
 
-	// count the rows being filled for diagnostics purposes.
+	/** \brief Determine how low a glyph can be positioned when \ref previousGlyphLine does not determine a lower limit.
+	 *
+	 * It can happen that there is a gap left between the rightmost glyph in \ref previousGlyphLine and the right edge of the texture.
+	 * When a narrow glyph is placed very close to the right edge it may be right of the rightmost glyph in \ref previousGlyphLine.
+	 * Therefore this glyph would be placed at the very bottom of the texture thus overwriting a glyph lying there.
+	 * This value here ensures that a glyph which "falls though the cracks" does not drop to the bottom overwriting a random glyph at
+	 * the bottom right of the texture.
+	 *
+	 */
+	int32_t topPosPreviousLines = 0;
+
+	// count the rows being filled for diagnostics and debugging purposes.
 	int rowNum = 0;
 
 	void copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_GlyphSlot glyphSlot );
+
+	/** \brief Moves the content of \ref currentGlyphLine to \ref previousGlyphLine.
+	 *
+	 * First re-calculates \ref topPosPreviousLines for \ref previousGlyphLine before its content is being overwritten.
+	 * Then moves the content of \ref currentGlyphLine to \ref previousGlyphLine.
+	 * Finally clears \ref currentGlyphLine.
+	 */
+	void startNewGlyphLine();
 
 };
 
