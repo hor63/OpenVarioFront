@@ -217,6 +217,9 @@ GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
 		auto insRes = fontCache.insert(std::pair<guint,GLTextFontCacheItem>(fontHash,std::move(newCacheItem)));
 
 		result = &(insRes->second);
+
+		// Add the Tofu glyph from the start.
+		result->addGlyphToTexture(0);
 	}
 
 	return result;
