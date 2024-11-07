@@ -146,7 +146,7 @@ private:
 	PangoGLTextRenderer* pangoTextRenderer;
 
 	PangoFont* previousFont = nullptr;
-	GLTextFontCacheItem* fontCacheItem = nullptr;
+	GLTextFontCacheItem* previousFontCacheItem = nullptr;
 
 	GLTextGlobals& globals;
 };

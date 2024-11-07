@@ -300,11 +300,11 @@ void GLTextRenderer::draw_glyph (
 
 	if (font != previousFont) {
 		previousFont = font;
-		fontCacheItem = globals.getFontCache().getCacheItem(font);
+		previousFontCacheItem = globals.getFontCache().getCacheItem(font);
 	}
 
 	//if (renderMode == BUILD_GLYPH_CACHE_ONLY) {
-		fontCacheItem->addGlyphToTexture(glyph);
+		previousFontCacheItem->addGlyphToTexture(glyph);
 	//}
 
 #if 0
