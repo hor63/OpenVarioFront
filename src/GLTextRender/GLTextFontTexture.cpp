@@ -46,7 +46,7 @@ static log4cxx::LoggerPtr logger = 0;
 #endif
 
 
-GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem* cacheItem,int32_t sizeXY)
+GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t sizeXY)
 :fontCacheItem{cacheItem},
  textureData (textureDimension, textureDimension, TextureData::Luminance, TextureData::Byte)
 {
@@ -71,20 +71,6 @@ GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
  dirty {other.dirty},
  rowNum {other.rowNum}
 {
-}
-
-GLTextFontTexture& GLTextFontTexture::operator = (GLTextFontTexture &&other)
-{
-
-	fontCacheItem  = other.fontCacheItem;
-	previousGlyphLine = std::move(previousGlyphLine);
-	currentGlyphLine = std::move(currentGlyphLine);
-	texture = std::move(other.texture);
-	textureData = std::move(other.textureData);
-
-	other.fontCacheItem = nullptr;
-
-	return (*this);
 }
 
 GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
@@ -308,8 +294,8 @@ void GLTextFontTexture::exportTextureBitmap(int bitmapNumber) {
 	std::ostringstream str;
 	std::FILE* outFile;
 
-	str << pango_font_description_get_family(fontCacheItem->getFontDesc())
-			<< "_" << (pango_font_description_get_size(fontCacheItem->getFontDesc()) / PANGO_SCALE)
+	str << pango_font_description_get_family(fontCacheItem.getFontDesc())
+			<< "_" << (pango_font_description_get_size(fontCacheItem.getFontDesc()) / PANGO_SCALE)
 			<< "_" << textureData.getWidth() << "x" << textureData.getHeight()
 			<< "_" << bitmapNumber
 			<< ".data";

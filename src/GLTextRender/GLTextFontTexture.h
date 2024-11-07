@@ -53,12 +53,12 @@ public:
 
 	using GlyphBBoxList = std::list<GLTextGlyphBBox>;
 
-	GLTextFontTexture(GLTextFontCacheItem* cacheItem,int32_t sizeXY);
+	GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t sizeXY);
 	GLTextFontTexture(const GLTextFontTexture &other) = delete;
 	GLTextFontTexture(GLTextFontTexture &&other);
 	virtual ~GLTextFontTexture();
 	GLTextFontTexture& operator=(const GLTextFontTexture &other) = delete;
-	GLTextFontTexture& operator=(GLTextFontTexture &&other);
+	GLTextFontTexture& operator=(GLTextFontTexture &&other) = delete;
 
 	GLTextGlyphBBox addGlyphToTexture(FT_GlyphSlot glyphSlot);
 
@@ -71,7 +71,7 @@ public:
 private:
 
 
-	GLTextFontCacheItem* fontCacheItem;
+	GLTextFontCacheItem& fontCacheItem;
 
 	GlyphBBoxList previousGlyphLine;
 	GlyphBBoxList currentGlyphLine;

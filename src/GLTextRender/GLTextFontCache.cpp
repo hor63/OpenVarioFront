@@ -164,7 +164,7 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 	}
 
 	if (!textureBBox.isValid()) {
-		auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(this,GLTextFontTexture::textureDimension));
+		auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,GLTextFontTexture::textureDimension));
 		textureBBox = newItem->addGlyphToTexture(freetypeFace->glyph);
 
 		LOG4CXX_DEBUG (logger,"\tAdd a new texture. Glyph validity = " << textureBBox.isValid());
