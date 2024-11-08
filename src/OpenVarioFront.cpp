@@ -89,7 +89,7 @@ int main(int argint,char** argv) {
 			glTextRend.renderLayout();
 			glTextRend.setFontSize(10);
 			glTextRend.renderLayout();
-			glTextRend.setFontSize(20);
+			glTextRend.setFontSize(24);
 			glTextRend.renderLayout();
 
 			glTextRend.setFontSize(12);
@@ -101,7 +101,7 @@ int main(int argint,char** argv) {
 
 			glTextRend.setFontSize(40);
 			glTextRend.setText(
-					  "01234567890"
+					  "0123456789||0"
 					"\nABCDEFGHIJK"
 					"\nLMNOPQRSTUV"
 					"\nWXZYabcdefg"
@@ -119,7 +119,9 @@ int main(int argint,char** argv) {
 			glTextRend.renderLayout();
 			glTextRend.setFontSize(10);
 			glTextRend.renderLayout();
-			glTextRend.setFontSize(20);
+			glTextRend.setFontSize(24);
+			glTextRend.renderLayout();
+			glTextRend.setFontSize(30);
 			glTextRend.renderLayout();
 
 			glTextRend.setFontSize(12);
@@ -138,7 +140,9 @@ int main(int argint,char** argv) {
 			glTextRend.renderLayout();
 			glTextRend.setFontSize(10);
 			glTextRend.renderLayout();
-			glTextRend.setFontSize(20);
+			glTextRend.setFontSize(24);
+			glTextRend.renderLayout();
+			glTextRend.setFontSize(30);
 			glTextRend.renderLayout();
 
 			glTextRend.setFontSize(12);
@@ -157,7 +161,9 @@ int main(int argint,char** argv) {
 			glTextRend.renderLayout();
 			glTextRend.setFontSize(10);
 			glTextRend.renderLayout();
-			glTextRend.setFontSize(20);
+			glTextRend.setFontSize(24);
+			glTextRend.renderLayout();
+			glTextRend.setFontSize(30);
 			glTextRend.renderLayout();
 
 			glTextRend.setFontSize(12);
@@ -176,7 +182,9 @@ int main(int argint,char** argv) {
 			glTextRend.renderLayout();
 			glTextRend.setFontSize(10);
 			glTextRend.renderLayout();
-			glTextRend.setFontSize(20);
+			glTextRend.setFontSize(24);
+			glTextRend.renderLayout();
+			glTextRend.setFontSize(30);
 			glTextRend.renderLayout();
 
 			glTextRend.setFontSize(12);
@@ -195,7 +203,9 @@ int main(int argint,char** argv) {
 			glTextRend.renderLayout();
 			glTextRend.setFontSize(10);
 			glTextRend.renderLayout();
-			glTextRend.setFontSize(20);
+			glTextRend.setFontSize(24);
+			glTextRend.renderLayout();
+			glTextRend.setFontSize(30);
 			glTextRend.renderLayout();
 
 			glTextRend.setFontSize(12);
