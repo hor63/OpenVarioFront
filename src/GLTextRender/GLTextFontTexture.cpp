@@ -48,7 +48,7 @@ static log4cxx::LoggerPtr logger = 0;
 
 GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t sizeXY)
 :fontCacheItem{cacheItem},
- textureData (textureDimension, textureDimension, TextureData::Luminance, TextureData::Byte)
+ textureData (sizeXY, sizeXY, TextureData::Luminance, TextureData::Byte)
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
