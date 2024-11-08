@@ -148,9 +148,11 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 			);
 
 	GLTextGlyphBBox textureBBox;
-	for (auto&& texture: textureList){
-		if (!texture.isFull()) {
-			textureBBox = texture.addGlyphToTexture(freetypeFace->glyph);
+	GLTextFontTexture *texture = nullptr;
+	for (auto textureListItem = textureList.begin();textureListItem != textureList.end();++textureListItem){
+		texture = textureListItem.operator ->();
+		if (!texture->isFull()) {
+			textureBBox = texture->addGlyphToTexture(freetypeFace->glyph);
 
 			if (textureBBox.isValid()) {
 				LOG4CXX_DEBUG (logger,"\tAdded the glyph to the texture. Exit texture list loop.");
@@ -167,9 +169,14 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 		auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,GLTextFontTexture::textureDimension));
 		textureBBox = newItem->addGlyphToTexture(freetypeFace->glyph);
 
+		texture = newItem.operator ->();
+
 		LOG4CXX_DEBUG (logger,"\tAdd a new texture. Glyph validity = " << textureBBox.isValid());
 	}
 
+	if (textureBBox.isValid() && texture != nullptr) {
+		glyphMap.insert(std::pair(glyphIndex,GLTextFontCacheGlyphItem(glyphIndex, *this, *texture, textureBBox, freetypeFace->glyph->metrics)));
+	}
 }
 
 void GLTextFontCacheItem::exportTextureBitmaps() {
