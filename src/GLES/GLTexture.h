@@ -60,7 +60,9 @@ public:
 	 *
 	 * You can use the method to only load the highest level of a texture or subsequently the entire mipmap chain.
 	 * Loading the complete mipmap chain correctly is your responsibility.
-	 * Else
+	 * Else only load default level 0, and use \ref generateMipmap() to create the mipmaps for you.
+	 *
+	 *	After the call the texture is being unbound.
 	 *
 	 * @param textureData Texture data, format and type in a neat package. The object is only used during this call, and can be discarded afterwards.
 	 * @param mipMapLevel Mip level used by glTexImage2D(). Upper, most detailed level is 0 which is the minimum, and always required.
@@ -68,6 +70,8 @@ public:
 	void setTextureData (TextureData const &textureData,GLint mipMapLevel = 0);
 
 	/** \brief Let GL generate the mipmap chain for the texture.
+	 *
+	 *	After the call the texture is being unbound.
 	 *
 	 */
 	void generateMipmap();
@@ -136,6 +140,8 @@ public:
 	 * This method sets the active texture unit to textureUnit, binds the texture to the texture unit,
 	 * assigns it to the uniform location which was bound by the GL program.
 	 * The function also sets the filter and wrapping mode.
+	 *
+	 * After the call this texture remains bound. You are responsible for un-binding after use.
 	 *
 	 * @param textureUnit One of the constants GL_TEXTURE0, GL_TEXTURE1...
 	 * @param textureUnitNo The numeric number of the texture unit. Must align with textureUnit. Pass 0 for GL_TEXTURE0, 1 for GL_TEXTURE1...

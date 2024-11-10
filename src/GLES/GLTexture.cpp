@@ -88,12 +88,32 @@ void GLTexture::createTextureHandle() {
 
 void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel)
 {
+	GLint packAlignment = 8;
 	createTextureHandle();
 
 	glBindTexture(GL_TEXTURE_2D,textureHandle);
 
-	glPixelStorei(GL_PACK_ALIGNMENT,1);
-	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+	//
+	if (textureData.getWidth() & 1) {
+		packAlignment = 1;
+	} else {
+		if (textureData.getWidth() & 2) {
+			packAlignment = 2;
+		} else {
+
+			if (textureData.getWidth() & 4) {
+				packAlignment = 4;
+			} else {
+				packAlignment = 8;
+	}	}	}
+
+	GLint orgPackAlignment = 4;
+	GLint orgUnPackAlignment = 4;
+	glGetIntegerv(GL_PACK_ALIGNMENT,&orgPackAlignment);
+	glGetIntegerv(GL_UNPACK_ALIGNMENT,&orgUnPackAlignment);
+
+	glPixelStorei(GL_PACK_ALIGNMENT,packAlignment);
+	glPixelStorei(GL_UNPACK_ALIGNMENT,packAlignment);
 	glTexImage2D(
 			GL_TEXTURE_2D,
 			mipMapLevel,
@@ -106,6 +126,11 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 			textureData.getDataPtr()
 			);
 
+	glPixelStorei(GL_PACK_ALIGNMENT,orgPackAlignment);
+	glPixelStorei(GL_UNPACK_ALIGNMENT,orgUnPackAlignment);
+
+	glBindTexture(GL_TEXTURE_2D,0);
+
 }
 
 void GLTexture::generateMipmap()
@@ -114,6 +139,8 @@ void GLTexture::generateMipmap()
 	glBindTexture(GL_TEXTURE_2D,textureHandle);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D,0);
 }
 
 void GLTexture::setMinificationFilter(TextureFilter filterType)
