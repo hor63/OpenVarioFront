@@ -48,7 +48,6 @@ private:
 };
 
 class NativeWindowException :public ExceptionBase {
-
 public:
 	NativeWindowException(char const *description)
 		:ExceptionBase {description}
@@ -57,7 +56,6 @@ public:
 };
 
 class EGLException :public ExceptionBase {
-
 public:
 	EGLException(char const *description)
 		:ExceptionBase {description}
@@ -65,7 +63,6 @@ public:
 };
 
 class ShaderException :public ExceptionBase {
-
 public:
 	ShaderException(char const *description)
 		:ExceptionBase {description}
@@ -73,7 +70,6 @@ public:
 };
 
 class ProgramException :public ExceptionBase {
-
 public:
 	ProgramException(char const *description)
 		:ExceptionBase {description}
@@ -81,7 +77,6 @@ public:
 };
 
 class TextureException :public ExceptionBase {
-
 public:
 	TextureException(char const *description)
 		:ExceptionBase {description}
@@ -89,9 +84,15 @@ public:
 };
 
 class PngReaderException :public ExceptionBase {
-
 public:
 	PngReaderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class GLTextRenderException :public ExceptionBase {
+public:
+	GLTextRenderException(char const *description)
 		:ExceptionBase {description}
 		{}
 };
