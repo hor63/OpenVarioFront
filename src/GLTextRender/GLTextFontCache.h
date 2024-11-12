@@ -43,9 +43,10 @@ class GLTextFontCache;
 class GLTextFontTexture;
 class GLTextFontCacheItem;
 
-/// X-Coordinates go left->right in x-direction
-/// and bottom->up in y-direction
-struct GLTextGlyphBBox {
+/// Coordinates follow OpenGL convention>
+/// X-coordinates go left->right.\n
+/// Y-coordinates go bottom->up.
+struct GLTextGlyphBBox final {
 	int32_t xLeft; //< left edge
 	int32_t yBottom; // << bottom edge
 	int32_t xRight; // right edge
@@ -69,8 +70,14 @@ struct GLTextGlyphBBox {
 		yBottom{-1},
 		xRight{-1},
 		yTop{-1}
-		{}
+	{}
 
+	/**
+		 * @fn bool isValid()
+	 * @brief
+	 *
+	 * @return true when the x and y coordinates of the top-left corner are both >= 0
+	 */
 	bool isValid(){
 		return yTop >= 0 && xRight >= 0;
 	}
@@ -84,7 +91,11 @@ struct GLTextGlyphBBox {
 
 };
 
-
+/**
+ * @struct GLTextFontCacheGlyphItem
+ * @brief Holds data of a glyph image with reference to the texture and the position within that texture
+ *
+ */
 struct GLTextFontCacheGlyphItem {
 
 	GLTextFontCacheGlyphItem(
@@ -112,6 +123,14 @@ struct GLTextFontCacheGlyphItem {
 
 };
 
+/**
+ * @class GLTextFontCacheItem
+ * @brief Represents one font on which glyphs can be rendered.
+ *
+ * Initially an object of this class is being created for one PangFont instance.
+ * Different PangoFont instances will reuse this object when the content of the font's PangFontDescription is equal.
+ *
+ */
 class GLTextFontCacheItem final {
 public:
 	GLTextFontCacheItem();
@@ -125,24 +144,73 @@ public:
 		freetypeFace = nullptr;
 	}
 
+	/// @fn  GLTextFontCacheItem(const GLTextFontCacheItem&)
+	/// @brief deleted: You cannot copy instances.
+	///
+	/// @param source The instance you still cannot copy D:
 	GLTextFontCacheItem(const GLTextFontCacheItem& source) = delete;
 
+	/// @fn  GLTextFontCacheItem(GLTextFontCacheItem&&)
+	/// @brief Move constructor. Source loses references to the Pango font, the font face,
+	/// the font description. Contents of textures list and glyph map are moved to the target.
+	///
+	/// @param source Instance whose content is taken over and remains empty, and with nullptr values for the pointers.
 	GLTextFontCacheItem(GLTextFontCacheItem&& source);
 
+	/// @fn GLTextFontCacheItem operator =&(const GLTextFontCacheItem&)
+	/// @brief deleted: You cannot copy instances.
+	///
+	/// @param source The instance you still cannot copy D:
+	/// @return Reference to the copy target
 	GLTextFontCacheItem& operator = (const GLTextFontCacheItem& source) = delete;
 
+	/// @fn GLTextFontCacheItem operator =&(GLTextFontCacheItem&&)
+	/// @brief Move constructor. Source loses references to the Pango font, the font face,
+	/// the font description. Contents of textures list and glyph map are moved to the target.
+	///
+	/// @param source Instance whose content is taken over and remains empty, and with nullptr values for the pointers.
+	/// @return reference to the target.
 	GLTextFontCacheItem& operator = (GLTextFontCacheItem&& source);
 
+	/// @fn PangoFontDescription getFontDesc*()
+	/// @brief Return the font description of the associated PangoFont
+	///
+	/// This instance retains ownership of the font description.
+	///
+	/// @return the font description of the associated PangoFont.
 	PangoFontDescription *getFontDesc() {
 		return fontDesc;
 	}
 
+	/// @fn guint getFontDescHash()
+	/// @brief hash value of the font description of the associated PangoFont.
+	///
+	/// @return hash value of the font description of the associated PangoFont.
 	guint getFontDescHash() {
 		return fontDescHash;
 	}
 
+	/// @fn void addGlyphToTexture(PangoGlyph)
+	/// @brief Add a glyph image to one of the textures of this instance when it did not exist before.
+	///
+	/// The glyph index is the index within the font, not a Unicode code point. Pango provides that index
+	/// in the render callback. Otherwise you need to retrieve the index for the code point from the font yourself.
+	///
+	/// @param glyphIndex Index of the glyph within the associated font.
 	void addGlyphToTexture(PangoGlyph glyphIndex);
 
+	/// @fn void exportTextureBitmaps()
+	/// @brief Writes the texture bitmaps as raw data files.
+	///
+	/// The call is for diagnostic and debugging purposes.\n
+	/// It writes a file with the raw bitmap data as 8-bit grey scale values.
+	/// The file name contains the font family and the pixel sizes in width and height and an index number
+	/// because one FontCacheItem can have more than one texture to hold all glyphs.
+	///
+	/// Please note that the bitmap is stored in GL order, i.e. bottom to top.\n
+	/// You can open and view it for example with gimp, but expect the content to be displayed upside down.
+	///
+	///
 	void exportTextureBitmaps();
 
 private:
