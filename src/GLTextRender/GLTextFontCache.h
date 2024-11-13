@@ -133,7 +133,13 @@ struct GLTextFontCacheGlyphItem {
  */
 class GLTextFontCacheItem final {
 public:
-	GLTextFontCacheItem();
+	GLTextFontCacheItem() = delete;
+	/// @fn  GLTextFontCacheItem(PangoFont*)
+	/// @brief Constructor for a given PangoFont
+	///
+	/// The font is stored internally; its references count is incremented and decremented in the destructor.
+	///
+	/// @param font Pointer to a PangoFont object.
 	GLTextFontCacheItem(PangoFont* font);
 
 	~GLTextFontCacheItem() {
@@ -214,13 +220,28 @@ public:
 	void exportTextureBitmaps();
 
 private:
+	/// @brief Reference to the PangoFont. Reference count is increased during the liftime of this object.
 	CppPangoFont pangoFont;
+	/// @brief Freetype font associated with \reef pangoFont
 	FT_Face freetypeFace = nullptr;
+	/// @brief font description of pangoFont at the time of object creation.
+	///
+	/// This is a copy of the internal description of \ref pangoFont and owned by this.
+	/// It will remain constant even if the description of pangoFont is being modified.
 	PangoFontDescription* fontDesc = nullptr;
+	/// @brief Cached hash value of \ref fontDesc.
 	guint fontDescHash = 0;
+	/// @brief Font metrics of \ref pangoFont as at the time of creation of this. It is a copy.
 	CppPangoFontMetrics fontMetrics;
 
+	/// @brief List of textures which hold the glyph images.
 	std::list<GLTextFontTexture> textureList;
+	/// @brief Map of glyphs which have already been rendered.
+	///
+	/// For each rendered glyph is identified by its index into the font.
+	///
+	/// For each glyph the reference of the texture where it resides,
+	/// the measures and position in the texture are provided.
 	std::unordered_map<PangoGlyph,GLTextFontCacheGlyphItem> glyphMap;
 };
 
