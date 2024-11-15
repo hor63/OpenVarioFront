@@ -43,9 +43,15 @@ class GLTextFontCache;
 class GLTextFontTexture;
 class GLTextFontCacheItem;
 
-/// Coordinates follow OpenGL convention>
-/// X-coordinates go left->right.\n
-/// Y-coordinates go bottom->up.
+/**
+ *  \brief Bounding box in pixel for a glyph image in a texture
+ *
+ *  Coordinates follow OpenGL convention
+ *  X-coordinates go left->right.\n
+ *  Y-coordinates go bottom->up.
+ *
+ *  An invalid BBox is indicated by negative coordinates of the upper right corner.
+ */
 struct GLTextGlyphBBox final {
 	int32_t xLeft; //< left edge
 	int32_t yBottom; // << bottom edge
@@ -64,7 +70,7 @@ struct GLTextGlyphBBox final {
 				yTop{yTop}
 	{}
 
-	/// Create an invalid BBox
+	/// \brief Creates an invalid BBox
 	GLTextGlyphBBox() :
 		xLeft{-1},
 		yBottom{-1},
@@ -73,8 +79,7 @@ struct GLTextGlyphBBox final {
 	{}
 
 	/**
-		 * @fn bool isValid()
-	 * @brief
+	 * @brief A BBox is valid when the coordinates of the top right corner are positive.
 	 *
 	 * @return true when the x and y coordinates of the top-left corner are both >= 0
 	 */
@@ -92,7 +97,6 @@ struct GLTextGlyphBBox final {
 };
 
 /**
- * @struct GLTextFontCacheGlyphItem
  * @brief Holds data of a glyph image with reference to the texture and the position within that texture
  *
  */
@@ -115,16 +119,18 @@ struct GLTextFontCacheGlyphItem {
 	PangoGlyph glyphIndex;
 
 	GLTextFontCacheItem& cacheItem;
+	/// \brief The texture where the glyph image resides.
 	GLTextFontTexture& texture;
 
+	/// \brief Position of the glyph within the texture referenced in \ref texture
 	GLTextGlyphBBox texturePosition;
 
+	/// \brief FreeType glyph metrics
 	FT_Glyph_Metrics glyphMetrics;
 
 };
 
 /**
- * @class GLTextFontCacheItem
  * @brief Represents one font on which glyphs can be rendered.
  *
  * Initially an object of this class is being created for one PangFont instance.
@@ -133,13 +139,15 @@ struct GLTextFontCacheGlyphItem {
  */
 class GLTextFontCacheItem final {
 public:
+	/// \brief Default constructor is deleted.
 	GLTextFontCacheItem() = delete;
-	/// @fn  GLTextFontCacheItem(PangoFont*)
-	/// @brief Constructor for a given PangoFont
-	///
-	/// The font is stored internally; its references count is incremented and decremented in the destructor.
-	///
-	/// @param font Pointer to a PangoFont object.
+	/**
+	 *  @brief Constructor for a given PangoFont
+	 *
+	 *  The font is stored internally; its references count is incremented and decremented in the destructor.
+	 *
+	 *  @param font Pointer to a PangoFont object.
+	 */
 	GLTextFontCacheItem(PangoFont* font);
 
 	~GLTextFontCacheItem() {
@@ -150,73 +158,80 @@ public:
 		freetypeFace = nullptr;
 	}
 
-	/// @fn  GLTextFontCacheItem(const GLTextFontCacheItem&)
-	/// @brief deleted: You cannot copy instances.
-	///
-	/// @param source The instance you still cannot copy D:
+	/**
+	 *  @brief deleted: You cannot copy instances.
+	 *
+	 *  @param source The instance you still cannot copy D:
+	 */
 	GLTextFontCacheItem(const GLTextFontCacheItem& source) = delete;
 
-	/// @fn  GLTextFontCacheItem(GLTextFontCacheItem&&)
-	/// @brief Move constructor. Source loses references to the Pango font, the font face,
-	/// the font description. Contents of textures list and glyph map are moved to the target.
-	///
-	/// @param source Instance whose content is taken over and remains empty, and with nullptr values for the pointers.
+	/**
+	 *  @brief Move constructor. Source loses references to the Pango font, the font face,
+	 *  the font description. Contents of textures list and glyph map are moved to the target.
+	 *
+	 *  @param source Instance whose content is taken over and remains empty, and with nullptr values for the pointers.
+	 */
 	GLTextFontCacheItem(GLTextFontCacheItem&& source);
 
-	/// @fn GLTextFontCacheItem operator =&(const GLTextFontCacheItem&)
-	/// @brief deleted: You cannot copy instances.
-	///
-	/// @param source The instance you still cannot copy D:
-	/// @return Reference to the copy target
+	/**
+	 *  @brief deleted: You cannot copy instances.
+	 *
+	 *  @param source The instance you still cannot copy D:
+	 *  @return Reference to the copy target
+	 */
 	GLTextFontCacheItem& operator = (const GLTextFontCacheItem& source) = delete;
 
-	/// @fn GLTextFontCacheItem operator =&(GLTextFontCacheItem&&)
-	/// @brief Move constructor. Source loses references to the Pango font, the font face,
-	/// the font description. Contents of textures list and glyph map are moved to the target.
-	///
-	/// @param source Instance whose content is taken over and remains empty, and with nullptr values for the pointers.
-	/// @return reference to the target.
+	/**
+	 *  @brief Move constructor. Source loses references to the Pango font, the font face,
+	 *  the font description. Contents of textures list and glyph map are moved to the target.
+	 *
+	 *  @param source Instance whose content is taken over and remains empty, and with nullptr values for the pointers.
+	 *  @return Reference to the target.
+	 */
 	GLTextFontCacheItem& operator = (GLTextFontCacheItem&& source);
 
-	/// @fn PangoFontDescription getFontDesc*()
-	/// @brief Return the font description of the associated PangoFont
-	///
-	/// This instance retains ownership of the font description.
-	///
-	/// @return the font description of the associated PangoFont.
+	/**
+	 *  @brief Return the font description of the associated PangoFont
+	 *
+	 *  This instance retains ownership of the font description.
+	 *
+	 *  @return the font description of the associated PangoFont.
+	 */
 	PangoFontDescription *getFontDesc() {
 		return fontDesc;
 	}
 
-	/// @fn guint getFontDescHash()
-	/// @brief hash value of the font description of the associated PangoFont.
-	///
-	/// @return hash value of the font description of the associated PangoFont.
+	/**
+	 *  @brief hash value of the font description of the associated PangoFont.
+	 *
+	 *  @return hash value of the font description of the associated PangoFont.
+	 */
 	guint getFontDescHash() {
 		return fontDescHash;
 	}
 
-	/// @fn void addGlyphToTexture(PangoGlyph)
-	/// @brief Add a glyph image to one of the textures of this instance when it did not exist before.
-	///
-	/// The glyph index is the index within the font, not a Unicode code point. Pango provides that index
-	/// in the render callback. Otherwise you need to retrieve the index for the code point from the font yourself.
-	///
-	/// @param glyphIndex Index of the glyph within the associated font.
+	/**
+	 *  @brief Add a glyph image to one of the textures of this instance when it did not exist before.
+	 *
+	 *  The glyph index is the index within the font, not a Unicode code point. Pango provides that index
+	 *  in the render callback. Otherwise you need to retrieve the index for the code point from the font yourself.
+	 *
+	 *  @param glyphIndex Index of the glyph within the associated font.
+	 */
 	void addGlyphToTexture(PangoGlyph glyphIndex);
 
-	/// @fn void exportTextureBitmaps()
-	/// @brief Writes the texture bitmaps as raw data files.
-	///
-	/// The call is for diagnostic and debugging purposes.\n
-	/// It writes a file with the raw bitmap data as 8-bit grey scale values.
-	/// The file name contains the font family and the pixel sizes in width and height and an index number
-	/// because one FontCacheItem can have more than one texture to hold all glyphs.
-	///
-	/// Please note that the bitmap is stored in GL order, i.e. bottom to top.\n
-	/// You can open and view it for example with gimp, but expect the content to be displayed upside down.
-	///
-	///
+	/**
+	 *  @brief Writes the texture bitmaps as raw data files.
+	 *
+	 *  The call is for diagnostic and debugging purposes.\n
+	 *  It writes a file with the raw bitmap data as 8-bit grey scale values.
+	 *  The file name contains the font family and the pixel sizes in width and height and an index number
+	 *  because one FontCacheItem can have more than one texture to hold all glyphs.
+	 *
+	 *  Please note that the bitmap is stored in GL order, i.e. bottom to top.\n
+	 *  You can open and view it for example with gimp, but expect the content to be displayed upside down.
+	 *
+	 */
 	void exportTextureBitmaps();
 
 private:
@@ -224,10 +239,12 @@ private:
 	CppPangoFont pangoFont;
 	/// @brief Freetype font associated with \reef pangoFont
 	FT_Face freetypeFace = nullptr;
-	/// @brief font description of pangoFont at the time of object creation.
-	///
-	/// This is a copy of the internal description of \ref pangoFont and owned by this.
-	/// It will remain constant even if the description of pangoFont is being modified.
+	/**
+	 *  @brief font description of pangoFont at the time of object creation.
+	 *
+	 *  This is a copy of the internal description of \ref pangoFont and owned by this.
+	 *  It will remain constant even if the description of pangoFont is being modified.
+	 */
 	PangoFontDescription* fontDesc = nullptr;
 	/// @brief Cached hash value of \ref fontDesc.
 	guint fontDescHash = 0;
@@ -236,22 +253,48 @@ private:
 
 	/// @brief List of textures which hold the glyph images.
 	std::list<GLTextFontTexture> textureList;
-	/// @brief Map of glyphs which have already been rendered.
-	///
-	/// For each rendered glyph is identified by its index into the font.
-	///
-	/// For each glyph the reference of the texture where it resides,
-	/// the measures and position in the texture are provided.
+	/**
+	 *  @brief Map of glyphs which have already been rendered.
+	 *
+	 *  For each rendered glyph is identified by its index into the font.
+	 *
+	 *  For each glyph the reference of the texture where it resides,
+	 *  the measures and position in the texture are provided.
+	 */
 	std::unordered_map<PangoGlyph,GLTextFontCacheGlyphItem> glyphMap;
 };
 
+/**
+ *  @brief Map of font cache items which store images of glyphs for the different fonts.
+ *
+ * Sole purpose of the class is holding the font map which hold textures with glyph images.
+ */
 class GLTextFontCache final {
 public:
 	GLTextFontCache();
 	~GLTextFontCache() {};
 
+	/**
+	 *  @brief Returns a cache item for a given font. Creates a new one when there
+	 *  is no one yet in the cache.
+	 *
+	 *  The criteria to find a cache item is the hash value and equality of
+	 *  the font description of \p font, not the identity of the pointer to \p font.\n
+	 *  If no matching item can be found a new one is created, and inserted into \ref fontCache.
+	 *
+	 *  When a new cache item is created the glyph for index 0 is immadiately added.
+	 *  The glyph with index 0 is the invalid glypgh, typically the empty box
+	 *  (i.e. the Tofu glyph).
+	 *
+	 *  @param font The Pango font which is passed in the glyph render callback
+	 *  @return A cache item for \p font.
 	GLTextFontCacheItem* getCacheItem (PangoFont* font);
 
+	/**
+	 *  @brief  Writes the texture bitmaps of all \ref fontCache items as raw data files.
+	 *
+	 *  @see \ref GLTextFontCacheItem::exportTextureBitmaps()
+	 */
 	void exportTextureBitmaps();
 
 private:
