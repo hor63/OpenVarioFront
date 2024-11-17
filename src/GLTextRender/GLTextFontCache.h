@@ -288,6 +288,7 @@ public:
 	 *
 	 *  @param font The Pango font which is passed in the glyph render callback
 	 *  @return A cache item for \p font.
+	 */
 	GLTextFontCacheItem* getCacheItem (PangoFont* font);
 
 	/**
