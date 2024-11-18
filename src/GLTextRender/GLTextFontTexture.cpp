@@ -76,9 +76,9 @@ GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
 GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	GLTextGlyphBBox ret; // is initially invalid.
 	FT_Bitmap &glyphBitmap = glyphSlot->bitmap;
-	int32_t textureBoxWidth = glyphBitmap.width + 2;
-	int32_t textureBoxHeight = glyphBitmap.rows + 2;
-	int32_t leftPos = 0;
+	int32_t textureBoxWidth = glyphBitmap.width + 1;
+	int32_t textureBoxHeight = glyphBitmap.rows + 1;
+	int32_t leftPos = 1;
 	int32_t bottomPos = topPosPreviousLines;
 
 	if (full) {
@@ -104,8 +104,8 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 				);
 
 		// now reset the horizontal positions back to the start of the new line.
-		leftPos = 0;
-		rightPos = textureBoxWidth - 1;
+		leftPos = 1;
+		rightPos = textureBoxWidth;
 	}
 
 	LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": leftPos = " << leftPos
@@ -153,9 +153,9 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	if (topPos < textureData.getHeight()) {
 		// The glyph fits into the texture.
 		// Set the return to the glyph coordinates within the texture.
-		ret.xLeft = leftPos + 1;
+		ret.xLeft = leftPos;
 		ret.xRight = rightPos -1;
-		ret.yBottom = bottomPos + 1;
+		ret.yBottom = bottomPos;
 		ret.yTop = topPos - 1;
 		LOG4CXX_DEBUG(logger,"\tFound a place for the glyph at "
 				<< ret.xLeft << "," << ret.yBottom

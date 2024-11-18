@@ -40,7 +40,7 @@ struct GLTextGlyphBBox;
 
 /** \brief Manages a GL texture which contains the images of a number of glyphs of a font.
  *
- *   The glyphs are arranged in lines with 1 pixel space to the edges and 2 pixels between the glyphs
+ *   The glyphs are arranged in lines with 1 pixel space to the edges and between the glyphs
  *   Besides the actual texture which is managed by a GLTexture member the class stores the glyph
  *   positions and sizes of the current line as well as the previous line.
  *   This allows precise positioning of new glyhps above the glyphs of the previous line below.
@@ -92,7 +92,7 @@ private:
 	 * the bottom right of the texture.
 	 *
 	 */
-	int32_t topPosPreviousLines = 0;
+	int32_t topPosPreviousLines = 1;
 
 	// count the rows being filled for diagnostics and debugging purposes.
 	int rowNum = 0;
