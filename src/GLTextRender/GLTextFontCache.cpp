@@ -131,51 +131,74 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 			<< ", Bearing x = " << freetypeFace->glyph->metrics.horiBearingX/64.0f
 			<< ", y = " << freetypeFace->glyph->metrics.horiBearingY/64.0f);
 
-	ftRet = FT_Render_Glyph(freetypeFace->glyph,FT_RENDER_MODE_NORMAL);
-	if (ftRet != 0) {
-		LOG4CXX_ERROR (logger,__PRETTY_FUNCTION__ << ": Could not render glyph with index " << glyphIndex
-				<< " for font family " << freetypeFace->family_name
-				<< ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f)
-				<< ". Error is " << ftRet);
-		return;
-	}
-
-	LOG4CXX_DEBUG (logger,"\tRendered the glyph succesfully. Width ="
-			<< freetypeFace->glyph->bitmap.width
-			<< ", height = " << freetypeFace->glyph->bitmap.rows
-			<< ", pitch = " << freetypeFace->glyph->bitmap.pitch
-			<< ", num_grays = " << freetypeFace->glyph->bitmap.num_grays
-			);
-
 	GLTextGlyphBBox textureBBox;
 	GLTextFontTexture *texture = nullptr;
-	for (auto textureListItem = textureList.begin();textureListItem != textureList.end();++textureListItem){
+	bool renderGlyph = true;
+
+	// Check if the glyph should be rendered at all.
+	// When width or height is 0 it is not to be rendered.
+	if (freetypeFace->glyph->metrics.height == 0 || freetypeFace->glyph->metrics.height == 0) {
+		// do not render the glyph. Skip over rendering it.
+
+		LOG4CXX_DEBUG (logger,"\tGlyph image is empty. Glyph will not be rendered."
+				);
+
+		textureBBox.xLeft = textureBBox.xRight = 0;
+		textureBBox.yBottom = textureBBox.yTop = 0;
+		renderGlyph = false;
+		// Obtain any texture there should be always one for the cache item
+		auto textureListItem = textureList.begin();
 		texture = textureListItem.operator ->();
-		if (!texture->isFull()) {
-			textureBBox = texture->addGlyphToTexture(freetypeFace->glyph);
 
-			if (textureBBox.isValid()) {
-				LOG4CXX_DEBUG (logger,"\tAdded the glyph to the texture. Exit texture list loop.");
-				break;
-			} else {
-				LOG4CXX_DEBUG (logger,"\tCould not add the glyph to the texture. Continue with the loop.");
-			}
-		} else {
-			LOG4CXX_DEBUG (logger,"\tThe texture is full. Continue with the loop.");
+	} else {
+		// Glyph can be rendered.
+		ftRet = FT_Render_Glyph(freetypeFace->glyph,FT_RENDER_MODE_NORMAL);
+		if (ftRet != 0) {
+			LOG4CXX_ERROR (logger,__PRETTY_FUNCTION__ << ": Could not render glyph with index " << glyphIndex
+					<< " for font family " << freetypeFace->family_name
+					<< ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f)
+					<< ". Error is " << ftRet);
+			return;
 		}
-	}
 
-	if (!textureBBox.isValid()) {
-		auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,GLTextFontTexture::textureDimension));
-		textureBBox = newItem->addGlyphToTexture(freetypeFace->glyph);
+		LOG4CXX_DEBUG (logger,"\tRendered the glyph succesfully. Width ="
+				<< freetypeFace->glyph->bitmap.width
+				<< ", height = " << freetypeFace->glyph->bitmap.rows
+				<< ", pitch = " << freetypeFace->glyph->bitmap.pitch
+				<< ", num_grays = " << freetypeFace->glyph->bitmap.num_grays
+				);
 
-		texture = newItem.operator ->();
+		for (auto textureListItem = textureList.begin();textureListItem != textureList.end();++textureListItem){
+			texture = textureListItem.operator ->();
+			if (!texture->isFull()) {
+				textureBBox = texture->addGlyphToTexture(freetypeFace->glyph);
 
-		LOG4CXX_DEBUG (logger,"\tAdd a new texture. Glyph validity = " << textureBBox.isValid());
-	}
+				if (textureBBox.isValid()) {
+					LOG4CXX_DEBUG (logger,"\tAdded the glyph to the texture. Exit texture list loop.");
+					break;
+				} else {
+					LOG4CXX_DEBUG (logger,"\tCould not add the glyph to the texture. Continue with the loop.");
+				}
+			} else {
+				LOG4CXX_DEBUG (logger,"\tThe texture is full. Continue with the loop.");
+			}
+		}
+
+		if (!textureBBox.isValid()) {
+			// An invalid BBox means there was no existing texture where the glyph would fit.
+			// Therefore create a new one and insert it into the list.
+			auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,GLTextFontTexture::textureDimension));
+
+			texture = newItem.operator ->();
+			textureBBox = newItem->addGlyphToTexture(freetypeFace->glyph);
+
+			LOG4CXX_DEBUG (logger,"\tAdd a new texture. Glyph validity = " << textureBBox.isValid());
+		}
+
+	} // Glyph can be rendered.
 
 	if (textureBBox.isValid() && texture != nullptr) {
-		glyphMap.insert(std::pair(glyphIndex,GLTextFontCacheGlyphItem(glyphIndex, *this, *texture, textureBBox, freetypeFace->glyph->metrics)));
+		glyphMap.insert(std::pair(glyphIndex,GLTextFontCacheGlyphItem(glyphIndex, *this, *texture, textureBBox, freetypeFace->glyph->metrics,renderGlyph)));
 	}
 }
 

@@ -107,13 +107,15 @@ struct GLTextFontCacheGlyphItem {
 			GLTextFontCacheItem& cacheItem,
 			GLTextFontTexture& texture,
 			GLTextGlyphBBox const& texturePosition,
-			FT_Glyph_Metrics glyphMetrics
+			FT_Glyph_Metrics glyphMetrics,
+			bool renderGlyph
 			) :
 				glyphIndex {glyphIndex},
 				cacheItem {cacheItem},
 				texture {texture},
 				texturePosition {texturePosition},
-				glyphMetrics {glyphMetrics}
+				glyphMetrics {glyphMetrics},
+				renderGlyph{renderGlyph}
 				{}
 
 	PangoGlyph glyphIndex;
@@ -127,6 +129,17 @@ struct GLTextFontCacheGlyphItem {
 
 	/// \brief FreeType glyph metrics
 	FT_Glyph_Metrics glyphMetrics;
+
+	///
+	/** \brief Shall this glyph be rendered to the canvas at all?
+	 *
+	 * Some glyphs have an image dimension of 0, i.e. there is no image to be rendered.
+	 * Example are the various white-space characters which still take up space
+	 * in a rendered text, but have no image content.
+	 * Such glyphs are just skipped in the rendering process.
+	 * But I still need to store this information in the cache lists.
+	 */
+	bool renderGlyph;
 
 };
 
