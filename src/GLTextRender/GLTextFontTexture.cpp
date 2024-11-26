@@ -89,12 +89,12 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	// determine the left position in the current line when there is anything in it.
 	if (!currentGlyphLine.empty()) {
 		auto lastItem = currentGlyphLine.back();
-		leftPos = lastItem.xRight + 1;
+		leftPos = lastItem.xRight;
 	}
 
-	int32_t rightPos = leftPos + textureBoxWidth - 1;
+	int32_t rightPos = leftPos + textureBoxWidth;
 
-	if (rightPos >= textureData.getWidth()) {
+	if (rightPos > textureData.getWidth()) {
 		// The current line is full. Start a new line.
 		startNewGlyphLine();
 
@@ -128,7 +128,7 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	}
 
 	while (prevLineIter != previousGlyphLine.end()) {
-		if (prevLineIter->xLeft > rightPos) {
+		if (prevLineIter->xLeft >= rightPos) {
 			LOG4CXX_DEBUG(logger,"\tThis glyph is to the right, xLeft = "
 					<< prevLineIter->xLeft
 					<< ". Leave the loops.");
@@ -141,16 +141,16 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 				<< ", top = " << prevLineIter->yTop
 				);
 
-		if (prevLineIter->yTop >= bottomPos) {
-			bottomPos = prevLineIter->yTop + 1;
+		if (prevLineIter->yTop > bottomPos) {
+			bottomPos = prevLineIter->yTop;
 		}
 
 		++prevLineIter;
 	}
 
-	int32_t topPos = bottomPos + textureBoxHeight - 1;
+	int32_t topPos = bottomPos + textureBoxHeight;
 
-	if (topPos < textureData.getHeight()) {
+	if (topPos <= textureData.getHeight()) {
 		// The glyph fits into the texture.
 		// Set the return to the glyph coordinates within the texture.
 		ret.xLeft = leftPos;
