@@ -86,6 +86,11 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 		return ret;
 	}
 
+	LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": Add glyph with size "
+			<< glyphBitmap.width
+			<< 'x' << glyphBitmap.rows
+			);
+
 	// determine the left position in the current line when there is anything in it.
 	if (!currentGlyphLine.empty()) {
 		auto lastItem = currentGlyphLine.back();
@@ -98,17 +103,17 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 		// The current line is full. Start a new line.
 		startNewGlyphLine();
 
-		LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": rightPos = " << rightPos
+		LOG4CXX_DEBUG(logger,"\trightPos = " << rightPos
 				<< " is right off the texture at " << textureData.getWidth()
 				<< ". Start a new line."
 				);
 
 		// now reset the horizontal positions back to the start of the new line.
 		leftPos = 1;
-		rightPos = textureBoxWidth;
+		rightPos = 1 + textureBoxWidth;
 	}
 
-	LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": leftPos = " << leftPos
+	LOG4CXX_DEBUG(logger,"\tleftPos = " << leftPos
 			<< ", rightPos = " << rightPos
 			<< " in row " << rowNum);
 
