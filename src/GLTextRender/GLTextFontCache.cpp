@@ -123,6 +123,7 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 				<< " for font family " << freetypeFace->family_name
 				<< ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f)
 				<< ". Error is " << ftRet);
+		addGlyphAsTofu(glyphIndex);
 		return;
 	}
 
@@ -158,6 +159,7 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 					<< " for font family " << freetypeFace->family_name
 					<< ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f)
 					<< ". Error is " << ftRet);
+			addGlyphAsTofu(glyphIndex);
 			return;
 		}
 
@@ -199,6 +201,27 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 
 	if (textureBBox.isValid() && texture != nullptr) {
 		glyphMap.insert(std::pair(glyphIndex,GLTextFontCacheGlyphItem(glyphIndex, *this, *texture, textureBBox, freetypeFace->glyph->metrics,renderGlyph)));
+	}
+}
+
+void GLTextFontCacheItem::addGlyphAsTofu(PangoGlyph glyphIndex) {
+
+	if (glyphIndex == 0) {
+		// Ups! I cannot even load the Tofu glyph.
+		// Provide a dummy glyph image
+	} else {
+		// look up the tofu glyph information
+		auto tofuGlyphInfo = glyphMap.find(glyphIndex);
+		if (tofuGlyphInfo == glyphMap.end()) {
+			// No tofu glyph image had been added yet.
+			addGlyphToTexture(0);
+			// Now the Tofu image is guaranteed to exist.
+			tofuGlyphInfo = glyphMap.find(glyphIndex);
+		}
+
+		// Add the tofu glyph image for the new glyph index
+		glyphMap.insert(std::pair(glyphIndex,GLTextFontCacheGlyphItem(glyphIndex, *this,  tofuGlyphInfo->second.texture, tofuGlyphInfo->second.texturePosition, tofuGlyphInfo->second.glyphMetrics,true)));
+
 	}
 }
 

@@ -83,14 +83,14 @@ struct GLTextGlyphBBox final {
 	 *
 	 * @return true when the x and y coordinates of the top-left corner are both >= 0
 	 */
-	bool isValid(){
+	bool isValid() const {
 		return yTop >= 0 && xRight >= 0;
 	}
 
-	int32_t height() {
+	int32_t height() const {
 		return yTop - yBottom;
 	}
-	int32_t width() {
+	int32_t width() const {
 		return xRight - xLeft;
 	}
 
@@ -275,6 +275,20 @@ private:
 	 *  the measures and position in the texture are provided.
 	 */
 	std::unordered_map<PangoGlyph,GLTextFontCacheGlyphItem> glyphMap;
+
+	/**
+	 *  @brief Add the Tofu glyph image for a glyph index.
+	 *
+	 *  When the glyph for a given index cannot be loaded, or the glyph
+	 *  can be loaded, but cannot be rendered \ref addGlyphToTexture() calls this
+	 *  function.
+	 *
+	 *  The function ensures that the application does not enter an endless recursive
+	 *  loop if even the tofu glyph (index 0) cannot be loaded.
+	 *
+	 *  @param glyphIndex Index of the glyph within the associated font.
+	 */
+	void addGlyphAsTofu(PangoGlyph glyphIndex);
 };
 
 /**
