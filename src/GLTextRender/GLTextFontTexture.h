@@ -62,7 +62,7 @@ public:
 
 	GLTextGlyphBBox addGlyphToTexture(FT_GlyphSlot glyphSlot);
 
-	bool isFull() {
+	bool isFull() const {
 		return full;
 	}
 
@@ -106,6 +106,18 @@ private:
 	 * Finally clears \ref currentGlyphLine.
 	 */
 	void startNewGlyphLine();
+
+	/** \brief Add a new rectangle in the texture and return its coordinates
+	 *
+	 *	If the rectangle does not fit into the texture \ref full is being set \p true.
+	 *
+	 * \param width Width in pixel
+	 * \param height Height in pixel
+	 * \return The coordinates (bounding box) of the rectangle in the texture.
+	 *   Check validity of the return value. When it is invalid no space could be
+	 *   found in this texture for a rectangle of the given size.
+	 */
+	GLTextGlyphBBox addNewRectangle(int32_t width, int32_t height);
 
 };
 

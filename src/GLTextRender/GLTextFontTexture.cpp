@@ -78,8 +78,6 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	FT_Bitmap &glyphBitmap = glyphSlot->bitmap;
 	int32_t textureBoxWidth = glyphBitmap.width + 1;
 	int32_t textureBoxHeight = glyphBitmap.rows + 1;
-	int32_t leftPos = 1;
-	int32_t bottomPos = topPosPreviousLines;
 
 	if (full) {
 		LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__ << ": Texture is already full.");
@@ -91,98 +89,27 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 			<< 'x' << glyphBitmap.rows
 			);
 
-	// determine the left position in the current line when there is anything in it.
-	if (!currentGlyphLine.empty()) {
-		auto lastItem = currentGlyphLine.back();
-		leftPos = lastItem.xRight;
-	}
+	ret = addNewRectangle(textureBoxWidth,textureBoxHeight);
 
-	int32_t rightPos = leftPos + textureBoxWidth;
-
-	if (rightPos > textureData.getWidth()) {
-		// The current line is full. Start a new line.
-		startNewGlyphLine();
-
-		LOG4CXX_DEBUG(logger,"\trightPos = " << rightPos
-				<< " is right off the texture at " << textureData.getWidth()
-				<< ". Start a new line."
-				);
-
-		// now reset the horizontal positions back to the start of the new line.
-		leftPos = 1;
-		rightPos = 1 + textureBoxWidth;
-	}
-
-	LOG4CXX_DEBUG(logger,"\tleftPos = " << leftPos
-			<< ", rightPos = " << rightPos
-			<< " in row " << rowNum);
-
-	// now run through the previous line to find the first glyph which is under the current glyph
-	// to determine the height in the texture
-	auto prevLineIter = previousGlyphLine.begin();
-	while (prevLineIter != previousGlyphLine.end()) {
-		// Look for the first glyph which is under the current one.
-		if (prevLineIter->xRight >= leftPos) {
-			// I found the first glyph in the previous line under the current one
-			break;
-		}
-		LOG4CXX_DEBUG(logger,"\tThis glyph is still to the left, its xRight = "
-				<< prevLineIter->xRight);
-
-		++prevLineIter;
-	}
-
-	while (prevLineIter != previousGlyphLine.end()) {
-		if (prevLineIter->xLeft >= rightPos) {
-			LOG4CXX_DEBUG(logger,"\tThis glyph is to the right, xLeft = "
-					<< prevLineIter->xLeft
-					<< ". Leave the loops.");
-
-			break;
-		}
-		// Now I have a glyph under me
-		LOG4CXX_DEBUG(logger,"\tGot a glyph under me. x = "
-				<< prevLineIter->xLeft << "," << prevLineIter->xRight
-				<< ", top = " << prevLineIter->yTop
-				);
-
-		if (prevLineIter->yTop > bottomPos) {
-			bottomPos = prevLineIter->yTop;
-		}
-
-		++prevLineIter;
-	}
-
-	int32_t topPos = bottomPos + textureBoxHeight;
-
-	if (topPos <= textureData.getHeight()) {
+	if (ret.isValid()) {
 		// The glyph fits into the texture.
+
 		// Set the return to the glyph coordinates within the texture.
-		ret.xLeft = leftPos;
-		ret.xRight = rightPos -1;
-		ret.yBottom = bottomPos;
-		ret.yTop = topPos - 1;
+		// ret contains the box within the texture.
+		// the bounding box of the glyph is one pixel smaller.
+
+		ret.xRight --;
+		ret.yTop --;
+
 		LOG4CXX_DEBUG(logger,"\tFound a place for the glyph at "
 				<< ret.xLeft << "," << ret.yBottom
 				<< "  " << ret.xRight << "," << ret.yTop
-				<< ", texture BBox at "
-				<< leftPos << "," << bottomPos
-				<< " " << rightPos << "," << topPos
 				);
-
-		// Store the new texture BBox in the current line.
-		currentGlyphLine.push_back(GLTextGlyphBBox(leftPos, bottomPos, rightPos, topPos));
-
-		dirty = true;
 
 		copyGlyphImageToTexture(ret,glyphSlot);
 
 	} else {
-		LOG4CXX_DEBUG(logger,"\tGlyph does not fit. TopPos " << topPos
-				<< " is above the texture height " << textureData.getHeight()
-				<< ". Declare the texture full."
-				);
-		full = true;
+		LOG4CXX_DEBUG(logger,"\tGlyph does not fit. The texture is full.");
 	}
 
 	return ret;
@@ -291,7 +218,117 @@ void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoor
 
 	}
 
+	dirty = true;
+
 	FT_Bitmap_Done(glyphSlot->library, &myBitmap);
+}
+
+GLTextGlyphBBox GLTextFontTexture::addNewRectangle(int32_t width, int32_t height) {
+	GLTextGlyphBBox ret;
+	int32_t leftPos = 1;
+	int32_t bottomPos = topPosPreviousLines;
+
+	LOG4CXX_DEBUG(logger,"" << __PRETTY_FUNCTION__
+			<< ": width = " << width
+			<< ", height = " << height);
+
+	if (full) {
+		LOG4CXX_DEBUG(logger,"\tTexture is full. Return immediately.");
+		return ret;
+	}
+
+	// determine the left position in the current line when there is anything in it.
+	if (!currentGlyphLine.empty()) {
+		auto lastItem = currentGlyphLine.back();
+		leftPos = lastItem.xRight;
+	}
+
+	int32_t rightPos = leftPos + width;
+
+	if (rightPos > textureData.getWidth()) {
+		// The current line is full. Start a new line.
+		startNewGlyphLine();
+
+		LOG4CXX_DEBUG(logger,"\trightPos = " << rightPos
+				<< " is right off the texture at " << textureData.getWidth()
+				<< ". Start a new line."
+				);
+
+		// now reset the horizontal positions back to the start of the new line.
+		leftPos = 1;
+		rightPos = 1 + width;
+	}
+
+	LOG4CXX_DEBUG(logger,"\tleftPos = " << leftPos
+			<< ", rightPos = " << rightPos
+			<< " in row " << rowNum);
+
+	// now run through the previous line to find the first glyph which is under the current glyph
+	// to determine the height in the texture
+	auto prevLineIter = previousGlyphLine.begin();
+	while (prevLineIter != previousGlyphLine.end()) {
+		// Look for the first glyph which is under the current one.
+		if (prevLineIter->xRight >= leftPos) {
+			// I found the first glyph in the previous line under the current one
+			break;
+		}
+		LOG4CXX_DEBUG(logger,"\tThis glyph is still to the left, its xRight = "
+				<< prevLineIter->xRight);
+
+		++prevLineIter;
+	}
+
+	while (prevLineIter != previousGlyphLine.end()) {
+		if (prevLineIter->xLeft >= rightPos) {
+			LOG4CXX_DEBUG(logger,"\tThis glyph is to the right, xLeft = "
+					<< prevLineIter->xLeft
+					<< ". Leave the loops.");
+
+			break;
+		}
+		// Now I have a glyph under me
+		LOG4CXX_DEBUG(logger,"\tGot a glyph under me. x = "
+				<< prevLineIter->xLeft << "," << prevLineIter->xRight
+				<< ", top = " << prevLineIter->yTop
+				);
+
+		if (prevLineIter->yTop > bottomPos) {
+			bottomPos = prevLineIter->yTop;
+		}
+
+		++prevLineIter;
+	}
+
+	int32_t topPos = bottomPos + height;
+
+	if (topPos <= textureData.getHeight()) {
+		// The glyph fits into the texture.
+		// Set the return to the glyph coordinates within the texture.
+		ret.xLeft = leftPos;
+		ret.xRight = rightPos;
+		ret.yBottom = bottomPos;
+		ret.yTop = topPos;
+
+		// Store the new texture BBox in the current line.
+		currentGlyphLine.push_back(ret);
+
+		LOG4CXX_DEBUG(logger,"\tFound a place for the glyph at "
+				<< ret.xLeft << "," << ret.yBottom
+				<< "  " << ret.xRight << "," << ret.yTop
+				<< ", texture BBox at "
+				<< leftPos << "," << bottomPos
+				<< " " << rightPos << "," << topPos
+				);
+
+	} else {
+
+		full = true;
+		LOG4CXX_DEBUG(logger,"\tCould not fit the glyph into the texture."
+				<< " topPos = " << topPos
+				<< "is higher then the texture height = " << textureData.getHeight());
+	}
+
+	return ret;
 }
 
 void GLTextFontTexture::exportTextureBitmap(int bitmapNumber) {
