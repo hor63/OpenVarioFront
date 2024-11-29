@@ -44,7 +44,7 @@ static log4cxx::LoggerPtr logger = 0;
 GLTextGlobals::GLTextGlobals()
 	:fontMap{pango_ft2_font_map_new(),false},
 	 pangoContext{pango_font_map_create_context (fontMap),false},
-	 fontCache {pangoContext}
+	 fontCache {this}
 	{
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -66,8 +66,7 @@ GLTextGlobals::GLTextGlobals()
 			g_free(families);
 		}
 
-		// a point is a pixel
-		pango_ft2_font_map_set_resolution(PANGO_FT2_FONT_MAP(static_cast<PangoFontMap*>(fontMap)),72.0,72.0);
+		pango_ft2_font_map_set_resolution(PANGO_FT2_FONT_MAP(static_cast<PangoFontMap*>(fontMap)),resX,resY);
 
 		auto fontDesc = pango_context_get_font_description(pangoContext);
 		if (fontDesc) {
@@ -111,6 +110,15 @@ GLTextGlobals::GLTextGlobals()
 }
 
 GLTextGlobals::~GLTextGlobals() {
+
+}
+
+void GLTextGlobals::setResolutionDPI(double resolutionX,double resolutionY) {
+
+	resX = resolutionX;
+	resY = resolutionY;
+
+	pango_ft2_font_map_set_resolution(PANGO_FT2_FONT_MAP(static_cast<PangoFontMap*>(fontMap)),resX,resY);
 
 }
 

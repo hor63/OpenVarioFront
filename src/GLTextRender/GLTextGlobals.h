@@ -29,6 +29,7 @@
 #ifndef GLTEXTRENDER_GLTEXTGLOBALS_H_
 #define GLTEXTRENDER_GLTEXTGLOBALS_H_
 
+#include "GLTextPangoCPPWrappers.h"
 #include "GLTextFontCache.h"
 
 
@@ -51,12 +52,27 @@ public:
 		return fontCache;
 	}
 
+	void setResolutionDPI(double resolutionX,double resolutionY);
+
+	double resolutionDpiX() {
+		return resX;
+	}
+	double resolutionDpiY() {
+		return resY;
+	}
+
 private:
 
 	CppPangoFontMap fontMap;
 	CppPangoContext pangoContext;
 	GLTextFontCache	fontCache;
 
+	/// Resolution in DPI
+	///
+	/// Initial one point is one pixel.
+	double resX = 72.0;
+	/// \see resX
+	double resY = 72.0;
 };
 
 } /* namespace OevGLES */
