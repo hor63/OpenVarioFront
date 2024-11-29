@@ -161,7 +161,7 @@ public:
 	 *
 	 *  @param font Pointer to a PangoFont object.
 	 */
-	GLTextFontCacheItem(PangoFont* font);
+	GLTextFontCacheItem(PangoFont* font, CppPangoContext pangoContext);
 
 	~GLTextFontCacheItem() {
 		if (fontDesc != nullptr) {
@@ -248,6 +248,8 @@ public:
 	void exportTextureBitmaps();
 
 private:
+	CppPangoContext pangoContext;
+
 	/// @brief Reference to the PangoFont. Reference count is increased during the liftime of this object.
 	CppPangoFont pangoFont;
 	/// @brief Freetype font associated with \reef pangoFont
@@ -289,6 +291,14 @@ private:
 	 *  @param glyphIndex Index of the glyph within the associated font.
 	 */
 	void addGlyphAsTofu(PangoGlyph glyphIndex);
+
+	/** \brief Add a self-rendered Tofu glyph based on global font metrics
+	 *
+	 * The tofu glyph (index = 0) could not be loaded or rendered.
+	 * Therefore render an own glyph with a frame. Size is based on the font metrics
+	 * for the entire font.
+	 */
+	void addFallbackTofuGlyph();
 };
 
 /**
@@ -298,7 +308,7 @@ private:
  */
 class GLTextFontCache final {
 public:
-	GLTextFontCache();
+	GLTextFontCache(CppPangoContext pangoContext);
 	~GLTextFontCache() {};
 
 	/**
@@ -327,6 +337,7 @@ public:
 
 private:
 	std::unordered_multimap<guint,GLTextFontCacheItem> fontCache;
+	CppPangoContext pangoContext;
 };
 
 } /* namespace OevGLES */

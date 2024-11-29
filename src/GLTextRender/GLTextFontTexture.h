@@ -61,6 +61,7 @@ public:
 	GLTextFontTexture& operator=(GLTextFontTexture &&other) = delete;
 
 	GLTextGlyphBBox addGlyphToTexture(FT_GlyphSlot glyphSlot);
+	GLTextGlyphBBox addFallbackTofuGlyphToTexture(int32_t width,int32_t height);
 
 	bool isFull() const {
 		return full;

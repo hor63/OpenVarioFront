@@ -42,8 +42,9 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font)
+GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font, CppPangoContext pangoContext)
 : pangoFont (font,true),
+  pangoContext{pangoContext},
   freetypeFace {pango_ft2_font_get_face(pangoFont)},
   fontDesc { pango_font_describe(font)},
   fontDescHash {pango_font_description_hash(fontDesc)},
@@ -74,6 +75,7 @@ GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font)
 
 GLTextFontCacheItem::GLTextFontCacheItem(GLTextFontCacheItem&& source)
 : pangoFont {std::move(source.pangoFont)},
+  pangoContext {std::move(source.pangoContext)},
   freetypeFace {source.freetypeFace},
   fontDesc {source.fontDesc},
   fontDescHash {std::move(source.fontDescHash)},
@@ -87,6 +89,7 @@ GLTextFontCacheItem::GLTextFontCacheItem(GLTextFontCacheItem&& source)
 
 GLTextFontCacheItem& GLTextFontCacheItem::operator = (GLTextFontCacheItem&& source) {
 	pangoFont = std::move(source.pangoFont);
+	pangoContext = std::move(source.pangoContext);
 	freetypeFace = source.freetypeFace;
 	source.freetypeFace = nullptr;
 	if (fontDesc != nullptr) {
@@ -208,7 +211,8 @@ void GLTextFontCacheItem::addGlyphAsTofu(PangoGlyph glyphIndex) {
 
 	if (glyphIndex == 0) {
 		// Ups! I cannot even load the Tofu glyph.
-		// Provide a dummy glyph image
+		// Provide a dummy glyph image based on font metrics.
+		addFallbackTofuGlyph();
 	} else {
 		// look up the tofu glyph information
 		auto tofuGlyphInfo = glyphMap.find(glyphIndex);
@@ -225,6 +229,18 @@ void GLTextFontCacheItem::addGlyphAsTofu(PangoGlyph glyphIndex) {
 	}
 }
 
+void GLTextFontCacheItem::addFallbackTofuGlyph() {
+	int32_t width;
+	int32_t height;
+#warning store resolution set in the FT2FontMap, and use it here.
+	float pixelPerPoint = 1.0;
+
+	width = fontMetrics->approximate_char_width / 64;
+	height = fontMetrics->ascent / 64;
+
+	addFallbackTofuGlyphToTexture(width,height);
+}
+
 void GLTextFontCacheItem::exportTextureBitmaps() {
 
 	int i = 0;
@@ -236,7 +252,8 @@ void GLTextFontCacheItem::exportTextureBitmaps() {
 }
 
 
-GLTextFontCache::GLTextFontCache()
+GLTextFontCache::GLTextFontCache(CppPangoContext pangoContext)
+ : pangoContext {pangoContext}
 {
 
 #if defined HAVE_LOG4CXX_H
