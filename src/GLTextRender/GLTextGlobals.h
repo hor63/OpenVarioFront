@@ -39,8 +39,6 @@ public:
 	GLTextGlobals();
 	virtual ~GLTextGlobals();
 
-	void init();
-
 	CppPangoFontMap getFontMap() {
 		return fontMap;
 	}
