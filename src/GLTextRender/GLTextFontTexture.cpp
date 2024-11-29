@@ -34,6 +34,7 @@
 
 #include "OVFCommon.h"
 
+#include "GLTextGlobals.h"
 #include "GLTextFontTexture.h"
 
 #include FT_BITMAP_H

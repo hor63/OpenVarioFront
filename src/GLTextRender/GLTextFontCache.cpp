@@ -34,6 +34,7 @@
 
 #include "OVFCommon.h"
 
+#include "GLTextGlobals.h"
 #include "GLTextFontCache.h"
 
 namespace OevGLES {
@@ -42,9 +43,9 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font, CppPangoContext pangoContext)
+GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font, GLTextGlobals* globals)
 : pangoFont (font,true),
-  pangoContext{pangoContext},
+  globals{globals},
   freetypeFace {pango_ft2_font_get_face(pangoFont)},
   fontDesc { pango_font_describe(font)},
   fontDescHash {pango_font_description_hash(fontDesc)},
@@ -75,13 +76,14 @@ GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font, CppPangoContext pangoC
 
 GLTextFontCacheItem::GLTextFontCacheItem(GLTextFontCacheItem&& source)
 : pangoFont {std::move(source.pangoFont)},
-  pangoContext {std::move(source.pangoContext)},
+  globals {source.globals},
   freetypeFace {source.freetypeFace},
   fontDesc {source.fontDesc},
   fontDescHash {std::move(source.fontDescHash)},
   fontMetrics {std::move(source.fontMetrics)},
   textureList {std::move(source.textureList)}
 {
+	source.globals = nullptr;
 	source.freetypeFace = nullptr;
 	source.fontDesc = nullptr;
 	source.textureList.clear();
@@ -89,7 +91,8 @@ GLTextFontCacheItem::GLTextFontCacheItem(GLTextFontCacheItem&& source)
 
 GLTextFontCacheItem& GLTextFontCacheItem::operator = (GLTextFontCacheItem&& source) {
 	pangoFont = std::move(source.pangoFont);
-	pangoContext = std::move(source.pangoContext);
+	globals = source.globals;
+	source.globals = nullptr;
 	freetypeFace = source.freetypeFace;
 	source.freetypeFace = nullptr;
 	if (fontDesc != nullptr) {
@@ -238,7 +241,7 @@ void GLTextFontCacheItem::addFallbackTofuGlyph() {
 	width = fontMetrics->approximate_char_width / 64;
 	height = fontMetrics->ascent / 64;
 
-	addFallbackTofuGlyphToTexture(width,height);
+	// addFallbackTofuGlyphToTexture(width,height);
 }
 
 void GLTextFontCacheItem::exportTextureBitmaps() {
@@ -252,8 +255,8 @@ void GLTextFontCacheItem::exportTextureBitmaps() {
 }
 
 
-GLTextFontCache::GLTextFontCache(CppPangoContext pangoContext)
- : pangoContext {pangoContext}
+GLTextFontCache::GLTextFontCache(GLTextGlobals* globals)
+ : globals {globals}
 {
 
 #if defined HAVE_LOG4CXX_H
@@ -282,7 +285,7 @@ GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
 
 	if (result == nullptr) {
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Found no record in the cache. Create and insert an new one.");
-		GLTextFontCacheItem newCacheItem(font);
+		GLTextFontCacheItem newCacheItem(font,globals);
 		auto fontHash = newCacheItem.getFontDescHash();
 		auto insRes = fontCache.insert(std::pair<guint,GLTextFontCacheItem>(fontHash,std::move(newCacheItem)));
 

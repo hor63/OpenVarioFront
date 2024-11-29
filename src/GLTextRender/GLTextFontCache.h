@@ -34,11 +34,13 @@
 
 #include <unordered_map>
 
+#include "GLTextGlobals.h"
 #include "GLTextPangoCPPWrappers.h"
 #include "GLTextFontTexture.h"
 
 namespace OevGLES {
 
+class GLTextGlobals;
 class GLTextFontCache;
 class GLTextFontTexture;
 class GLTextFontCacheItem;
@@ -161,7 +163,7 @@ public:
 	 *
 	 *  @param font Pointer to a PangoFont object.
 	 */
-	GLTextFontCacheItem(PangoFont* font, CppPangoContext pangoContext);
+	GLTextFontCacheItem(PangoFont* font, GLTextGlobals* globals);
 
 	~GLTextFontCacheItem() {
 		if (fontDesc != nullptr) {
@@ -248,7 +250,7 @@ public:
 	void exportTextureBitmaps();
 
 private:
-	CppPangoContext pangoContext;
+	GLTextGlobals* globals;
 
 	/// @brief Reference to the PangoFont. Reference count is increased during the liftime of this object.
 	CppPangoFont pangoFont;
@@ -308,7 +310,7 @@ private:
  */
 class GLTextFontCache final {
 public:
-	GLTextFontCache(CppPangoContext pangoContext);
+	GLTextFontCache(GLTextGlobals* globals);
 	~GLTextFontCache() {};
 
 	/**
@@ -337,7 +339,7 @@ public:
 
 private:
 	std::unordered_multimap<guint,GLTextFontCacheItem> fontCache;
-	CppPangoContext pangoContext;
+	GLTextGlobals* globals;
 };
 
 } /* namespace OevGLES */
