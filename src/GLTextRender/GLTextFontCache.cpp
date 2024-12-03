@@ -222,19 +222,21 @@ void GLTextFontCacheItem::addGlyphAsTofu(PangoGlyph glyphIndex) {
 		if (tofuGlyphInfo == glyphMap.end()) {
 			// No tofu glyph image had been added yet.
 			addGlyphToTexture(0);
-			// Now the Tofu image is guaranteed to exist.
+			// Now the Tofu image *should* (tm) exist
 			tofuGlyphInfo = glyphMap.find(glyphIndex);
 		}
 
-		// Add the tofu glyph image for the new glyph index
-		glyphMap.insert(std::pair(glyphIndex,GLTextFontCacheGlyphItem(glyphIndex, *this,  tofuGlyphInfo->second.texture, tofuGlyphInfo->second.texturePosition, tofuGlyphInfo->second.glyphMetrics,true)));
-
+		if (tofuGlyphInfo != glyphMap.end()) {
+			// Add the tofu glyph image for the new glyph index
+			glyphMap.insert(std::pair(glyphIndex,GLTextFontCacheGlyphItem(glyphIndex, *this,  tofuGlyphInfo->second.texture, tofuGlyphInfo->second.texturePosition, tofuGlyphInfo->second.glyphMetrics,true)));
+		}
 	}
 }
 
 void GLTextFontCacheItem::addFallbackTofuGlyph() {
 	int32_t tofuWidth = pango_font_metrics_get_approximate_char_width (fontMetrics) / PANGO_SCALE;
-	int32_t tofuHeight = pango_font_metrics_get_ascent (fontMetrics) / PANGO_SCALE;
+	// Use only 2/3 of the ascent. This is about the height of the real tofu glyph with index 0.
+	int32_t tofuHeight = pango_font_metrics_get_ascent (fontMetrics) * 2 / 3 / PANGO_SCALE;
 
 	LOG4CXX_DEBUG (logger,"" << __PRETTY_FUNCTION__<< ":");
 
@@ -246,8 +248,46 @@ void GLTextFontCacheItem::addFallbackTofuGlyph() {
 			<< ", ascent " << fontMetrics->ascent / PANGO_SCALE
 			<< ", tofuHeight = " << tofuHeight);
 
-	for (auto&& texture: textureList) {
-		auto glyphBox = texture.addFallbackTofuGlyphToTexture(tofuWidth, tofuHeight);
+	GLTextGlyphBBox glyphBox;
+	GLTextFontTexture *texture = nullptr;
+
+	for (auto textureListItem = textureList.begin();textureListItem != textureList.end(); ++textureListItem) {
+		texture = textureListItem.operator ->();
+		glyphBox = texture->addFallbackTofuGlyphToTexture(tofuWidth, tofuHeight);
+		if (glyphBox.isValid()) {
+			break;
+		}
+	}
+
+	if (!glyphBox.isValid()) {
+		// An invalid BBox means there was no existing texture where the glyph would fit.
+		// Therefore create a new one and insert it into the list.
+		auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,GLTextFontTexture::textureDimension));
+
+		texture = newItem.operator ->();
+		glyphBox = texture->addFallbackTofuGlyphToTexture(tofuWidth, tofuHeight);
+
+		LOG4CXX_DEBUG (logger,"\tAdd a new texture. Glyph validity = " << glyphBox.isValid());
+	}
+
+	if (glyphBox.isValid() && texture != nullptr) {
+		// Put your own fake glyph metrics together.
+		FT_Glyph_Metrics glyphMetrics {
+		    tofuWidth, // FT_Pos  width;
+		    tofuHeight,// FT_Pos  height;
+
+			0,// FT_Pos  horiBearingX;
+			0,// FT_Pos  horiBearingY;
+			tofuWidth + 1,// FT_Pos  horiAdvance;
+
+		    0,// FT_Pos  vertBearingX;
+		    0,// FT_Pos  vertBearingY;
+		    tofuHeight + 1// FT_Pos  vertAdvance;
+
+		};
+		// Add the self-drawn tofu glyph as index 0 to the map.
+		glyphMap.insert(std::pair(0,GLTextFontCacheGlyphItem(0, *this, *texture, glyphBox, glyphMetrics,true)));
+
 	}
 }
 
@@ -300,7 +340,6 @@ GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
 
 		// Add the Tofu glyph from the start.
 		result->addGlyphToTexture(0);
-		result->addFallbackTofuGlyph();
 	}
 
 	return result;
