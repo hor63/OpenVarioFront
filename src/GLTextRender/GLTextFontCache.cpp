@@ -233,15 +233,22 @@ void GLTextFontCacheItem::addGlyphAsTofu(PangoGlyph glyphIndex) {
 }
 
 void GLTextFontCacheItem::addFallbackTofuGlyph() {
-	int32_t width;
-	int32_t height;
-#warning store resolution set in the FT2FontMap, and use it here.
-	float pixelPerPoint = 1.0;
+	int32_t tofuWidth = pango_font_metrics_get_approximate_char_width (fontMetrics) / PANGO_SCALE;
+	int32_t tofuHeight = pango_font_metrics_get_ascent (fontMetrics) / PANGO_SCALE;
 
-	width = fontMetrics->approximate_char_width / 64;
-	height = fontMetrics->ascent / 64;
+	LOG4CXX_DEBUG (logger,"" << __PRETTY_FUNCTION__<< ":");
 
-	// addFallbackTofuGlyphToTexture(width,height);
+	LOG4CXX_DEBUG (logger,"\tresolutionDpiX = " << globals->resolutionDpiX()
+			<< ", approximate_char_width " << fontMetrics->approximate_char_width / PANGO_SCALE
+			<< ", tofuWidth = " << tofuWidth);
+
+	LOG4CXX_DEBUG (logger,"\tresolutionDpiY = " << globals->resolutionDpiY()
+			<< ", ascent " << fontMetrics->ascent / PANGO_SCALE
+			<< ", tofuHeight = " << tofuHeight);
+
+	for (auto&& texture: textureList) {
+		auto glyphBox = texture.addFallbackTofuGlyphToTexture(tofuWidth, tofuHeight);
+	}
 }
 
 void GLTextFontCacheItem::exportTextureBitmaps() {
@@ -293,6 +300,7 @@ GLTextFontCacheItem* GLTextFontCache::getCacheItem (PangoFont* font) {
 
 		// Add the Tofu glyph from the start.
 		result->addGlyphToTexture(0);
+		result->addFallbackTofuGlyph();
 	}
 
 	return result;

@@ -116,6 +116,35 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	return ret;
 }
 
+GLTextGlyphBBox GLTextFontTexture::addFallbackTofuGlyphToTexture(int32_t width,int32_t height) {
+	GLTextGlyphBBox ret; // is initially invalid.
+
+	ret = addNewRectangle(width + 1,height + 1);
+
+	if (ret.isValid()) {
+		// The glyph fits into the texture.
+
+		// Set the return to the glyph coordinates within the texture.
+		// ret contains the box within the texture.
+		// the bounding box of the glyph is one pixel smaller.
+
+		ret.xRight --;
+		ret.yTop --;
+
+		LOG4CXX_DEBUG(logger,"\tFound a place for the tofu rectangle at "
+				<< ret.xLeft << "," << ret.yBottom
+				<< "  " << ret.xRight << "," << ret.yTop
+				);
+
+		drawTofuGlyphImageToTexture(ret);
+
+	} else {
+		LOG4CXX_DEBUG(logger,"\tGlyph does not fit. The texture is full.");
+	}
+
+
+	return ret;
+}
 void GLTextFontTexture::startNewGlyphLine() {
 
 	// look for the top of any glyphs in previousGlyphLine in the gap between the rightmost glyph
@@ -162,7 +191,7 @@ void GLTextFontTexture::startNewGlyphLine() {
 
 }
 
-void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_GlyphSlot glyphSlot ) {
+void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const glyphCoord, FT_GlyphSlot glyphSlot ) {
 	FT_Bitmap myBitmap;
 	FT_Bitmap* bitmapPtr ;
 
@@ -222,6 +251,30 @@ void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoor
 	dirty = true;
 
 	FT_Bitmap_Done(glyphSlot->library, &myBitmap);
+}
+
+void GLTextFontTexture::drawTofuGlyphImageToTexture(GLTextGlyphBBox const glyphCoord) {
+
+	int numLines = glyphCoord.height();
+	int numColumns = glyphCoord.width();
+
+	int strideDest = textureData.getWidth();
+
+	uint8_t* dest = reinterpret_cast<uint8_t*>(textureData.getDataPtr())
+			+ glyphCoord.yBottom * strideDest
+			+ glyphCoord.xLeft;
+
+	// Now copy the stuff.
+	for (int i = 0;i < numLines; ++i) {
+		for (int k = 0; k < numColumns; ++k) {
+			dest[k] = source[k];
+		}
+		dest += strideDest;
+		source += strideSource;
+	}
+
+	dirty = true;
+
 }
 
 GLTextGlyphBBox GLTextFontTexture::addNewRectangle(int32_t width, int32_t height) {

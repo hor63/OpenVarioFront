@@ -98,7 +98,22 @@ private:
 	// count the rows being filled for diagnostics and debugging purposes.
 	int rowNum = 0;
 
+	/** \brief Copy the rendered glyph image from the freetype bitmap to the texture
+	 *
+	 * Sets \ref dirty true.
+	 *
+	 * \param glyphCoord Destination coordinates where the glyph image is to be drawn.
+	 * \param glyphSlot The Freetype glyph slot with the loaded glyph and the rendered glyph image
+	 */
 	void copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_GlyphSlot glyphSlot );
+
+	/** \brief Draws a rectangle with a line one pixel wide, i.e. the Tofu.
+	 *
+	 * Sets \ref dirty true.
+	 *
+	 * \param glyphCoord Corners of
+	 */
+	void drawTofuGlyphImageToTexture(GLTextGlyphBBox const glyphCoord);
 
 	/** \brief Moves the content of \ref currentGlyphLine to \ref previousGlyphLine.
 	 *

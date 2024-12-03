@@ -153,6 +153,7 @@ struct GLTextFontCacheGlyphItem {
  *
  */
 class GLTextFontCacheItem final {
+	friend class GLTextFontCache;
 public:
 	/// \brief Default constructor is deleted.
 	GLTextFontCacheItem() = delete;
