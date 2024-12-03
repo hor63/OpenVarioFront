@@ -264,13 +264,21 @@ void GLTextFontTexture::drawTofuGlyphImageToTexture(GLTextGlyphBBox const glyphC
 			+ glyphCoord.yBottom * strideDest
 			+ glyphCoord.xLeft;
 
-	// Now copy the stuff.
-	for (int i = 0;i < numLines; ++i) {
-		for (int k = 0; k < numColumns; ++k) {
-			dest[k] = source[k];
-		}
+	// Draw the bottom line
+	for (int k = 0; k < numColumns; ++k) {
+		dest[k] = 0xff;
+	}
+	dest += strideDest;
+
+	// Draw the left and right vertical lines
+	for (int i = 1;i < numLines - 1; ++i) {
+		*dest = 0xff;
+		dest[numColumns - 1] = 0xff;
 		dest += strideDest;
-		source += strideSource;
+	}
+	// Draw the top line
+	for (int k = 0; k < numColumns; ++k) {
+		dest[k] = 0xff;
 	}
 
 	dirty = true;

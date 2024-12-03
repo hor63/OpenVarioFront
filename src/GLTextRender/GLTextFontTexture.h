@@ -105,7 +105,7 @@ private:
 	 * \param glyphCoord Destination coordinates where the glyph image is to be drawn.
 	 * \param glyphSlot The Freetype glyph slot with the loaded glyph and the rendered glyph image
 	 */
-	void copyGlyphImageToTexture(GLTextGlyphBBox const& glyphCoord, FT_GlyphSlot glyphSlot );
+	void copyGlyphImageToTexture(GLTextGlyphBBox const glyphCoord, FT_GlyphSlot glyphSlot );
 
 	/** \brief Draws a rectangle with a line one pixel wide, i.e. the Tofu.
 	 *
