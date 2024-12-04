@@ -77,6 +77,8 @@ int main(int argint,char** argv) {
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 		OevGLES::GLTextGlobals glTextGlob;
 
+		glTextGlob.setResolutionDPI(96, 96);
+
 		{
 			std::string sampleString = pango_language_get_sample_string (pango_language_get_default());
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
@@ -224,6 +226,7 @@ int main(int argint,char** argv) {
 		OevGLES::SDLRenderSurface SDLSurface;
 		LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
 		SDLSurface.createRenderSurface(640,480,PACKAGE_STRING);
+
 		LOG4CXX_INFO(logger,"Create the diffuse light program");
 
 		AnalogHandRenderer hand;
