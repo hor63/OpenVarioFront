@@ -57,6 +57,8 @@ GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t size
 	}
 #endif
 
+	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << "Create font texture with square pixel size " << sizeXY);
+
 }
 
 GLTextFontTexture::~GLTextFontTexture() {
@@ -399,7 +401,7 @@ void GLTextFontTexture::exportTextureBitmap(int bitmapNumber) {
 	std::FILE* outFile;
 
 	str << pango_font_description_get_family(fontCacheItem.getFontDesc())
-			<< "_" << (pango_font_description_get_size(fontCacheItem.getFontDesc()) / PANGO_SCALE)
+			<< "_" << (static_cast<double>(pango_font_description_get_size(fontCacheItem.getFontDesc())) / PANGO_SCALE)
 			<< "_" << textureData.getWidth() << "x" << textureData.getHeight()
 			<< "_" << bitmapNumber
 			<< ".data";

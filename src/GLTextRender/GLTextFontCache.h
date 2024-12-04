@@ -269,6 +269,18 @@ private:
 	/// @brief Font metrics of \ref pangoFont as at the time of creation of this. It is a copy.
 	CppPangoFontMetrics fontMetrics;
 
+	/** \brief Size of the texture.
+	 *
+	 * The size is always a potency of 2.
+	 * Width and height are identical, i.e. the texture is square.
+	 * The texture size is being determined that >= 30 average sized glyphs fit into the texture.
+	 * Goal is to have max. three textures per font. At four textures the next texture size would already be almost full.
+	 * The texture size is hard capped at 1024x1024 pixel.
+	 */
+	int32_t textureSizePixel;
+
+
+
 	/// @brief List of textures which hold the glyph images.
 	std::list<GLTextFontTexture> textureList;
 	/**

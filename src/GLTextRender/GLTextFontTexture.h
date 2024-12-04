@@ -49,8 +49,6 @@ struct GLTextGlyphBBox;
 class GLTextFontTexture {
 public:
 
-	static int32_t constexpr textureDimension = 128;
-
 	using GlyphBBoxList = std::list<GLTextGlyphBBox>;
 
 	GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t sizeXY);

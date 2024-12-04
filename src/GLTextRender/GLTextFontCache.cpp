@@ -65,13 +65,36 @@ GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font, GLTextGlobals* globals
 			<< "\n\tfont style = " << pango_font_description_get_style(fontDesc)
 			<< "\n\tfont weight = " << pango_font_description_get_weight(fontDesc)
 			);
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "\t fontmetrics : "
+	LOG4CXX_DEBUG(logger,"\tfontmetrics : "
 			<< "\n\t height = " << pango_font_metrics_get_height(fontMetrics) / static_cast<double>(PANGO_SCALE)
 			<< "\n\t ascent = " << pango_font_metrics_get_ascent(fontMetrics) / static_cast<double>(PANGO_SCALE)
 			<< "\n\t descent = " << pango_font_metrics_get_descent(fontMetrics) / static_cast<double>(PANGO_SCALE)
 			<< "\n\t approx_char_width = " << pango_font_metrics_get_approximate_char_width(fontMetrics) / static_cast<double>(PANGO_SCALE)
 			<< "\n\t approx_digit_width = " << pango_font_metrics_get_approximate_digit_width(fontMetrics) / static_cast<double>(PANGO_SCALE)
 			);
+
+	// Add 1 to width and height due to the 1 pixel extra space.
+	// This may seem insignificant but is a real factor for small fonts (10 pt and smaller).
+	auto areaGlyph = (1 + pango_font_metrics_get_ascent(fontMetrics) / static_cast<double>(PANGO_SCALE)) *
+			(1 + pango_font_metrics_get_approximate_char_width(fontMetrics) / static_cast<double>(PANGO_SCALE));
+
+	textureSizePixel = 32;
+	for (;;) {
+		LOG4CXX_DEBUG(logger,"\tTheoretic glyphs per "
+				<< textureSizePixel << 'x' << textureSizePixel << " texture = "
+				<< (textureSizePixel*textureSizePixel/areaGlyph));
+		if ((textureSizePixel*textureSizePixel/areaGlyph) > 40.0) {
+			break;
+		}
+		if (textureSizePixel >= 1024) {
+			break;
+		}
+
+		textureSizePixel *= 2;
+	}
+
+	LOG4CXX_DEBUG(logger,"\tUse textures with size " << textureSizePixel << 'x' << textureSizePixel);
+
 }
 
 GLTextFontCacheItem::GLTextFontCacheItem(GLTextFontCacheItem&& source)
@@ -81,7 +104,8 @@ GLTextFontCacheItem::GLTextFontCacheItem(GLTextFontCacheItem&& source)
   fontDesc {source.fontDesc},
   fontDescHash {std::move(source.fontDescHash)},
   fontMetrics {std::move(source.fontMetrics)},
-  textureList {std::move(source.textureList)}
+  textureList {std::move(source.textureList)},
+  textureSizePixel{source.textureSizePixel}
 {
 	source.globals = nullptr;
 	source.freetypeFace = nullptr;
@@ -195,7 +219,7 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 		if (!textureBBox.isValid()) {
 			// An invalid BBox means there was no existing texture where the glyph would fit.
 			// Therefore create a new one and insert it into the list.
-			auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,GLTextFontTexture::textureDimension));
+			auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,textureSizePixel));
 
 			texture = newItem.operator ->();
 			textureBBox = newItem->addGlyphToTexture(freetypeFace->glyph);
@@ -262,7 +286,7 @@ void GLTextFontCacheItem::addFallbackTofuGlyph() {
 	if (!glyphBox.isValid()) {
 		// An invalid BBox means there was no existing texture where the glyph would fit.
 		// Therefore create a new one and insert it into the list.
-		auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,GLTextFontTexture::textureDimension));
+		auto newItem = textureList.insert(textureList.begin(),GLTextFontTexture(*this,textureSizePixel));
 
 		texture = newItem.operator ->();
 		glyphBox = texture->addFallbackTofuGlyphToTexture(tofuWidth, tofuHeight);
