@@ -83,18 +83,11 @@ int main(int argint,char** argv) {
 			std::string sampleString = pango_language_get_sample_string (pango_language_get_default());
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
-			glTextRend.setFontSize(40);
+			glTextRend.setFontSize(36);
 			glTextRend.setText(sampleString);
 
 			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
 
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(10);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(24);
-			glTextRend.renderLayout();
-
-			glTextRend.setFontSize(12);
 			glTextRend.renderLayout();
 		}
 
