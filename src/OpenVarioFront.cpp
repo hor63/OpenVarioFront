@@ -213,7 +213,8 @@ int main(int argint,char** argv) {
 // Not in SDL3	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 	    SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1");
 
-		SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
+// SDL_INIT_TIMER was removed from SDL3.
+		SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
 
 		OevGLES::SDLRenderSurface SDLSurface;
