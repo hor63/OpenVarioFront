@@ -195,17 +195,17 @@ PKG_CHECK_MODULES([HARFBUZZ_GOBJ], [harfbuzz-gobject])
 #PKG_CHECK_MODULES([], [])
 
 
-#PKG_CHECK_MODULES([PANGO], [pango])
-#AC_SUBST([PANGO_CFLAGS])
-#AC_SUBST([PANGO_LIBS])
+PKG_CHECK_MODULES([PANGO], [pango])
+AC_SUBST([PANGO_CFLAGS])
+AC_SUBST([PANGO_LIBS])
 
-#PKG_CHECK_MODULES([PANGO_FT2], [pangoft2])
-PANGO_FT2_CFLAGS="${GLIB_CFLAGS} \
-	${FONTCONFIG_CFLAGS} ${GOBJECT_CFLAGS} ${FRIBIDI_CFLAGS} ${LIBTHAI_CFLAGS} ${HARFBUZZ_GOBJ_CFLAGS} \
-	${GIO_CFLAGS} ${GLIB_CFLAGS} ${_CFLAGS} ${HARFBUZZ_CFLAGS} -I`cd "$srcdir";pwd`/3rdParty/pango -I`pwd`/3rdParty/pango"
-PANGO_FT2_LIBS="`pwd`/3rdParty/pango/pango/libpangoft2-1.0.a `pwd`/3rdParty/pango/pango/libpango-1.0.a \
-	 ${_LIBS} ${_LIBS} ${HARFBUZZ_GOBJ_LIBS} ${LIBTHAI_LIBS} ${FRIBIDI_LIBS} ${FONTCONFIG_LIBS} \
-	 ${HARFBUZZ_CFLAGS} ${GIO_LIBS} ${GOBJECT_LIBS} ${GLIB_LIBS}"
+PKG_CHECK_MODULES([PANGO_FT2], [pangoft2])
+#PANGO_FT2_CFLAGS="${GLIB_CFLAGS} \
+#	${FONTCONFIG_CFLAGS} ${GOBJECT_CFLAGS} ${FRIBIDI_CFLAGS} ${LIBTHAI_CFLAGS} ${HARFBUZZ_GOBJ_CFLAGS} \
+#	${GIO_CFLAGS} ${GLIB_CFLAGS} ${_CFLAGS} ${HARFBUZZ_CFLAGS} -I`cd "$srcdir";pwd`/3rdParty/pango -I`pwd`/3rdParty/pango"
+#PANGO_FT2_LIBS="`pwd`/3rdParty/pango/pango/libpangoft2-1.0.a `pwd`/3rdParty/pango/pango/libpango-1.0.a \
+#	 ${_LIBS} ${_LIBS} ${HARFBUZZ_GOBJ_LIBS} ${LIBTHAI_LIBS} ${FRIBIDI_LIBS} ${FONTCONFIG_LIBS} \
+#	 ${HARFBUZZ_CFLAGS} ${GIO_LIBS} ${GOBJECT_LIBS} ${GLIB_LIBS}"
 AC_SUBST([PANGO_FT2_CFLAGS])
 AC_SUBST([PANGO_FT2_LIBS])
 
@@ -237,9 +237,9 @@ cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
     -DCMAKE_BUILD_TYPE=Debug -DSDL_STATIC=ON -DSDL_SHARED=OFF \
     -DCMAKE_C_FLAGS="-Og -g3" -DCMAKE_CXX_FLAGS="-Og -g3"  -DCMAKE_LD_FLAGS="-Og -g3" -DCMAKE_SHARED_LINKER_FLAGS="-Og -g3"
 
-AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
-CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango
-( cd ./3rdParty/pango ; 
-  CC="$CC" CXX="$CXX" meson configure -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
-   -Ddefault_library=both -Doptimization=g -Ddebug=true ) 
+#AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
+#CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango
+#( cd ./3rdParty/pango ; 
+#  CC="$CC" CXX="$CXX" meson configure -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
+#   -Ddefault_library=both -Doptimization=g -Ddebug=true ) 
 

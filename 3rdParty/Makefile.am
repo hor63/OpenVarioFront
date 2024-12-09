@@ -17,18 +17,20 @@
 
 
 
-all: SDL-build pango-build
+#all: SDL-build pango-build
+all: SDL-build
 
 SDL-build:
 	$(MAKE) -C SDL all VERBOSE=$(V)
 
-pango-build:
-	cd pango; ninja -v
+#pango-build:
+#	cd pango; ninja -v
 
-clean: SDL-clean pango-clean
+#clean: SDL-clean pango-clean
+clean: SDL-clean
 
 SDL-clean:
 	$(MAKE) -C SDL clean VERBOSE=$(V)
 
-pango-clean:
-	cd pango; ninja clean -v
+#pango-clean:
+#	cd pango; ninja clean -v
