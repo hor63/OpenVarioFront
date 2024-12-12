@@ -7,4 +7,4 @@
 	url = https://github.com/hor63/SDL.git
 [submodule "3rdParty/pango"]
 	path = 3rdParty/pango
-	url = https://gitlab.gnome.org/GNOME/pango.git
+	url = https://github.com/hor63/pango.git
