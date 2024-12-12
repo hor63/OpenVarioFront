@@ -238,10 +238,14 @@ cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
     -DCMAKE_C_FLAGS="-Og -g3" -DCMAKE_CXX_FLAGS="-Og -g3"  -DCMAKE_LD_FLAGS="-Og -g3" -DCMAKE_SHARED_LINKER_FLAGS="-Og -g3"
 
 AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
-CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango
-( cd ./3rdParty/pango ; 
-  CC="$CC" CXX="$CXX" meson configure -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
+CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
+   -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
    -Ddefault_library=both -Dprefer_static=true -Doptimization=g -Ddebug=true \
    -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
-   -Dharfbuzz:default_library=both ) 
+   -Dharfbuzz:default_library=both 
+#( cd ./3rdParty/pango ; 
+#  CC="$CC" CXX="$CXX" meson configure -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
+#   -Ddefault_library=both -Dprefer_static=true -Doptimization=g -Ddebug=true \
+#   -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
+#   -Dharfbuzz:default_library=both ) 
 
