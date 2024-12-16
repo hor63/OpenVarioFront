@@ -232,20 +232,19 @@ AC_OUTPUT
 AS_ECHO(["configure: creating directory doc/doxygen"]) 
 AS_MKDIR_P(doc/doxygen)
 
+AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
+CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
+   -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
+   -Ddefault_library=both -Doptimization=g -Ddebug=true \
+   -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
+   -Dharfbuzz:default_library=both \
+   -Dbuild-testsuite=false -Dbuild-examples=false \
+   -Dcpp_args=-DHB_NO_OT_FONT -Dc_args=-DHB_NO_OT_FONT \
+   -Dprefix=$prefix
+   
 AS_ECHO(["configure: Use cmake to create the Makefile for SDL"]) 
 cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
     -DCMAKE_BUILD_TYPE=Debug -DSDL_STATIC=ON -DSDL_SHARED=OFF \
     -DCMAKE_C_FLAGS="-Og -g3" -DCMAKE_CXX_FLAGS="-Og -g3"  -DCMAKE_LD_FLAGS="-Og -g3" -DCMAKE_SHARED_LINKER_FLAGS="-Og -g3"
 
-AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
-CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
-   -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
-   -Ddefault_library=both -Dprefer_static=true -Doptimization=g -Ddebug=true \
-   -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
-   -Dharfbuzz:default_library=both 
-#( cd ./3rdParty/pango ; 
-#  CC="$CC" CXX="$CXX" meson configure -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
-#   -Ddefault_library=both -Dprefer_static=true -Doptimization=g -Ddebug=true \
-#   -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
-#   -Dharfbuzz:default_library=both ) 
 
