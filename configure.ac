@@ -185,27 +185,29 @@ AC_SUBST([LIBPNG_LIBS])
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
 PKG_CHECK_MODULES([GIO], [gio-2.0])
-PKG_CHECK_MODULES([HARFBUZZ], [harfbuzz])
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig])
 PKG_CHECK_MODULES([GOBJECT], [gobject-2.0])
 PKG_CHECK_MODULES([FRIBIDI], [fribidi])
 PKG_CHECK_MODULES([LIBTHAI], [libthai])
-PKG_CHECK_MODULES([HARFBUZZ_GOBJ], [harfbuzz-gobject])
-#PKG_CHECK_MODULES([], [])
-#PKG_CHECK_MODULES([], [])
 
+#PKG_CHECK_MODULES([HARFBUZZ], [harfbuzz])
+HARFBUZZ_CFLAGS=-I`cd "$srcdir";pwd`/3rdParty/pango/subprojects/harfbuzz/src
+HARFBUZZ_LIBS=`pwd`/3rdParty/pango/subprojects/harfbuzz/src/libharfbuzz.a
+
+#PKG_CHECK_MODULES([HARFBUZZ_GOBJ], [harfbuzz-gobject])
+HARFBUZZ_GOBJ_LIBS=`pwd`/3rdParty/pango/subprojects/harfbuzz/src/libharfbuzz-gobject.a
 
 PKG_CHECK_MODULES([PANGO], [pango])
 AC_SUBST([PANGO_CFLAGS])
 AC_SUBST([PANGO_LIBS])
 
-PKG_CHECK_MODULES([PANGO_FT2], [pangoft2])
-#PANGO_FT2_CFLAGS="${GLIB_CFLAGS} \
-#	${FONTCONFIG_CFLAGS} ${GOBJECT_CFLAGS} ${FRIBIDI_CFLAGS} ${LIBTHAI_CFLAGS} ${HARFBUZZ_GOBJ_CFLAGS} \
-#	${GIO_CFLAGS} ${GLIB_CFLAGS} ${_CFLAGS} ${HARFBUZZ_CFLAGS} -I`cd "$srcdir";pwd`/3rdParty/pango -I`pwd`/3rdParty/pango"
-#PANGO_FT2_LIBS="`pwd`/3rdParty/pango/pango/libpangoft2-1.0.a `pwd`/3rdParty/pango/pango/libpango-1.0.a \
-#	 ${_LIBS} ${_LIBS} ${HARFBUZZ_GOBJ_LIBS} ${LIBTHAI_LIBS} ${FRIBIDI_LIBS} ${FONTCONFIG_LIBS} \
-#	 ${HARFBUZZ_CFLAGS} ${GIO_LIBS} ${GOBJECT_LIBS} ${GLIB_LIBS}"
+#PKG_CHECK_MODULES([PANGO_FT2], [pangoft2])
+PANGO_FT2_CFLAGS="${GLIB_CFLAGS} \
+	${FONTCONFIG_CFLAGS} ${GOBJECT_CFLAGS} ${FRIBIDI_CFLAGS} ${LIBTHAI_CFLAGS} ${HARFBUZZ_GOBJ_CFLAGS} \
+	${GIO_CFLAGS} ${GLIB_CFLAGS} ${HARFBUZZ_CFLAGS} -I`cd "$srcdir";pwd`/3rdParty/pango -I`pwd`/3rdParty/pango"
+PANGO_FT2_LIBS="`pwd`/3rdParty/pango/pango/libpangoft2-1.0.a `pwd`/3rdParty/pango/pango/libpango-1.0.a \
+	${LIBTHAI_LIBS} ${FRIBIDI_LIBS} ${FONTCONFIG_LIBS} \
+	${HARFBUZZ_GOBJ_LIBS} ${HARFBUZZ_LIBS} ${GIO_LIBS} ${GOBJECT_LIBS} ${GLIB_LIBS}"
 AC_SUBST([PANGO_FT2_CFLAGS])
 AC_SUBST([PANGO_FT2_LIBS])
 
@@ -237,7 +239,7 @@ CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdPart
    -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
    -Ddefault_library=both -Doptimization=g -Ddebug=true \
    -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
-   -Dharfbuzz:default_library=both \
+   -Dharfbuzz:default_library=static \
    -Dbuild-testsuite=false -Dbuild-examples=false \
    -Dcpp_args=-DHB_NO_OT_FONT -Dc_args=-DHB_NO_OT_FONT \
    -Dprefix=$prefix
