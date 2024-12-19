@@ -35,6 +35,11 @@
 
 namespace OevGLES {
 
+/**
+ * \brief Holder of the entire object hierarchy needed to implement the font and
+ * glyph cache used to render text with OpenGL.
+ *
+ */
 class GLTextGlobals {
 public:
 	GLTextGlobals();
@@ -70,6 +75,10 @@ private:
 	/// Resolution in DPI
 	///
 	/// Initial one point is one pixel.
+	///
+	/// I need to store the resolutions here because I can set the resolutions in
+	/// a \p PangoFT2FontMap but I cannot retrieve the effective resolution with
+	/// the PangoFT2FontMap API.
 	double resX = 72.0;
 	/// \see resX
 	double resY = 72.0;

@@ -34,8 +34,9 @@
 
 namespace OevGLES {
 
-class GLTextFontCacheItem;
 
+// Forward declarations
+class GLTextFontCacheItem;
 struct GLTextGlyphBBox;
 
 /** \brief Manages a GL texture which contains the images of a number of glyphs of a font.
@@ -51,35 +52,129 @@ public:
 
 	using GlyphBBoxList = std::list<GLTextGlyphBBox>;
 
+	/** \brief Constructor
+	 *
+	 * Constructs one texture of a cache item.
+	 * The texture will hold multiple glyph images for the font.
+	 *
+	 * The texture is always square.
+	 *
+	 * \param cacheItem: Back reference to the owning cache item
+	 * \param sizeXY: Size of the texture in x and y direction
+	 */
 	GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t sizeXY);
 	GLTextFontTexture(const GLTextFontTexture &other) = delete;
+
+	/** \brief Move constructor
+	 *
+	 * All movable class items are moved from other to this.
+	 *
+	 * \param other Source object. Contents are moved to the new object here
+	 */
 	GLTextFontTexture(GLTextFontTexture &&other);
 	virtual ~GLTextFontTexture();
 	GLTextFontTexture& operator=(const GLTextFontTexture &other) = delete;
 	GLTextFontTexture& operator=(GLTextFontTexture &&other) = delete;
 
+	/** \brief Adds the image of a glyph to the texture when there is enough space.
+	 *
+	 * Look for enough free space for the glyph image calling addNewRectangle().
+	 * If enough free space is available copy the glyph into the texture calling
+	 * copyGlyphImageToTexture().
+	 *
+	 * \param glyphSlot Contains size information, and the glyph image itself
+	 * \return Coordinates of the glyph image within the texture.
+	 * Use the method isValid() to check if the glyph was added, or if the texture
+	 * is full, and the glyph did not fit any more.
+	 */
 	GLTextGlyphBBox addGlyphToTexture(FT_GlyphSlot glyphSlot);
+
+	/** \brief Draw a tofu glyph youself in the texture with the given size
+	 *
+	 * The emergency fallback when not even the tofu glyph (index 0) of a font
+	 * cannot be rendered.
+	 * The method draws a rectangle with one pixel width height and width at a free
+	 * place in the texture.
+	 *
+	 * \param width Width of the tofu glyph in pixel
+	 * \param height Height of the tofu glyph in pixel
+	 * \return Coordinates of the glyph image within the texture.
+	 * Use the method isValid() to check if the glyph was added, or if the texture
+	 * is full, and the glyph did not fit any more.
+	 */
 	GLTextGlyphBBox addFallbackTofuGlyphToTexture(int32_t width,int32_t height);
 
+	/** \brief Check if the texture is assumed to be full
+	 *
+	 * The texture is assumed to be full when the previous attempt to add a glyph
+	 * failed due to lack of space.
+	 * This is speed optimized but not for maximum utilization of the texture area.
+	 * A particularly tall character (e.g. "J" may not fit but smaller glyphs may very well.
+	 *
+	 * \return True when the previous attempt to add a glyph failed due to lack of
+	 * space.
+	 */
 	bool isFull() const {
 		return full;
 	}
 
+
+	/** \brief Save the texture as a raw bitmap
+	 *
+	 * Used for debugging and analysis of the glyph placing algorithm only.
+	 *
+	 * Saves the texture as raw bitmap with suffix .data.
+	 * The name is formed from the font face name, the font and bitmap size,
+	 * and the bitmap number of the owning \ref fontCacheItem.
+	 * One example of a file name is \p Noto \p Sans_12_128x128_0.data
+	 *
+	 * \param bitmapNumber Number of the texture within the owning \ref fontCacheItem
+	 */
 	void exportTextureBitmap(int bitmapNumber);
 
 private:
 
 
+	/// \brief The owning cache item, representing one font.
 	GLTextFontCacheItem& fontCacheItem;
 
+	/** \brief previous line of glyphs
+	 *
+	 * The previous line of glyphs is used to the determine the bottom of the glyphs
+	 * which are added to \ref currentGlyphLine.
+	 * The bottom of a new glyph is determined by the top of the glyphs in this list
+	 * which are actually below the new glyph to optimize space usage.
+	 *
+	 * Initially this list is of course empty, i.e. any new glyph will be placed
+	 * at the bottom of the texture.
+	 *
+	 */
 	GlyphBBoxList previousGlyphLine;
+
+	/** \ brief The current (topmost) line of glyphs
+	 *
+	 * New glyphs are added right to the last glyph in the list.
+	 */
 	GlyphBBoxList currentGlyphLine;
 
+	/// \brief The GL texture which is eventually used to render the glyph images to the screen
 	GLTexture texture;
+
+	/** \brief The data object which manages the texture data for \ref texture.
+	 *
+	 * I am copying the glyph images directly into the memory buffer provided by
+	 * this member.
+	 */
 	TextureData textureData;
 
+	/// \brief When a glyph does not fit into the texture I assume it is full.
+	///
+	/// When true any attempt to adding a glyph is immediately rejected.
 	bool full = false;
-	/// Determines if the local texture buffer is not synchronized with the GL texture data.
+	/// \brief Determines if the local texture buffer is not synchronized with the GL texture data.
+	///
+	/// If true the data in \ref textureData must be uploaded into \texture before rendering
+	/// to the screen.
 	bool dirty = true;
 
 	/** \brief Determine how low a glyph can be positioned when \ref previousGlyphLine does not determine a lower limit.
@@ -93,7 +188,7 @@ private:
 	 */
 	int32_t topPosPreviousLines = 1;
 
-	// count the rows being filled for diagnostics and debugging purposes.
+	/// count the rows being filled for diagnostics and debugging purposes.
 	int rowNum = 0;
 
 	/** \brief Copy the rendered glyph image from the freetype bitmap to the texture
@@ -107,9 +202,13 @@ private:
 
 	/** \brief Draws a rectangle with a line one pixel wide, i.e. the Tofu.
 	 *
+	 * The fallback of fallbacks. When even the standard tofu glyph of a font with
+	 * index 0 cannot be loaded I am frawing this emergency glyph my self in into
+	 * the texture bitmap.
+	 *
 	 * Sets \ref dirty true.
 	 *
-	 * \param glyphCoord Corners of
+	 * \param glyphCoord Corners of the tofo box to draw.
 	 */
 	void drawTofuGlyphImageToTexture(GLTextGlyphBBox const glyphCoord);
 

@@ -163,6 +163,7 @@ public:
 	 *  The font is stored internally; its references count is incremented and decremented in the destructor.
 	 *
 	 *  @param font Pointer to a PangoFont object.
+	 *  @param globals Back pointer to the globals object which owns the font cache.
 	 */
 	GLTextFontCacheItem(PangoFont* font, GLTextGlobals* globals);
 
@@ -255,7 +256,7 @@ private:
 
 	/// @brief Reference to the PangoFont. Reference count is increased during the liftime of this object.
 	CppPangoFont pangoFont;
-	/// @brief Freetype font associated with \reef pangoFont
+	/// @brief Freetype font associated with \ref pangoFont
 	FT_Face freetypeFace = nullptr;
 	/**
 	 *  @brief font description of pangoFont at the time of object creation.
@@ -334,8 +335,8 @@ public:
 	 *  the font description of \p font, not the identity of the pointer to \p font.\n
 	 *  If no matching item can be found a new one is created, and inserted into \ref fontCache.
 	 *
-	 *  When a new cache item is created the glyph for index 0 is immadiately added.
-	 *  The glyph with index 0 is the invalid glypgh, typically the empty box
+	 *  When a new cache item is created the glyph for index 0 is immediately added.
+	 *  The glyph with index 0 is the invalid glyph, typically the empty box
 	 *  (i.e. the Tofu glyph).
 	 *
 	 *  @param font The Pango font which is passed in the glyph render callback
@@ -351,7 +352,18 @@ public:
 	void exportTextureBitmaps();
 
 private:
+	/** @brief Map of all cached fonts with glyph images
+	 *
+	 * A font is a font face at a specific size, style... in the sense of a \ref PangoFont
+	 * in contrast to a PangoFontFace
+	 *
+	 * The key is the hash value of the \ref PangoFontDesctiption belonging to the font.
+	*/
 	std::unordered_multimap<guint,GLTextFontCacheItem> fontCache;
+
+	/** @brief Back reference to the globals to which this font cache belongs.
+	 *
+	 */
 	GLTextGlobals* globals;
 };
 

@@ -33,6 +33,16 @@
 
 namespace OevGLES {
 
+/** \brief C++ template wrapper class for managing gObject objects
+ *
+ * The class takes in the pointer to a gObject object, and managed the reference count
+ * internally, and thus also the life time of the gObject itself.
+ *
+ * All operations must be done via the accessor functions to the \ref gObj pointer.
+ * There are no wrappers around the gObject methods
+ *
+ * \tparam GObj gObject class (i.e. a C struct) name to be wrapped.
+ */
 template <typename GObj>
 class CppGObj {
 
@@ -44,6 +54,11 @@ public:
 	{}
 	*/
 
+	/** \brief The destructor just decrements the \ref gObj reference pointer.
+	 *
+	 * The gObject lib itself destroys the object itself when the reference counter
+	 * becomes 0.
+	 */
 	~CppGObj (){
 		if (gObj != nullptr) {
 			decrementRef();
@@ -51,6 +66,11 @@ public:
 		}
 	}
 
+	/** \brief
+	 *
+	 * \param source
+	 * \param increaseReference
+	 */
 	CppGObj (GObj* source,bool increaseReference)
 	: gObj {source}
 	{
