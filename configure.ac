@@ -241,7 +241,6 @@ CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdPart
    -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
    -Dharfbuzz:default_library=static \
    -Dbuild-testsuite=false -Dbuild-examples=false \
-   -Dcpp_args=-DHB_NO_OT_FONT -Dc_args=-DHB_NO_OT_FONT \
    -Dprefix=$prefix
    
 AS_ECHO(["configure: Use cmake to create the Makefile for SDL"]) 
