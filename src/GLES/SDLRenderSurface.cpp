@@ -47,7 +47,7 @@ SDLRenderSurface::SDLRenderSurface()
 		{
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("OpenVarioFront.EGLRenderSurface");
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.SDLRenderSurface");
 	}
 #endif
 
@@ -80,7 +80,19 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
+	int swapInterval = -2;
+	SDL_GL_GetSwapInterval(&swapInterval);
+	LOG4CXX_DEBUG(logger,"SDL_GL_GetSwapInterval returns "
+			<< swapInterval);
 
+	int RenderWidth = -1, RenderHeight = -1;
+	SDL_GetWindowSizeInPixels(nativeWindow,&RenderWidth,&RenderHeight);
+	LOG4CXX_DEBUG(logger,"Window size = " << RenderWidth
+			<< "x" << RenderHeight);
+
+	auto videoDriverName = SDL_GetCurrentVideoDriver();
+	LOG4CXX_DEBUG(logger,"Name of the video driver = "
+			<<  videoDriverName);
 
 }
 
