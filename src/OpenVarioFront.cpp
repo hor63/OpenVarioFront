@@ -68,13 +68,6 @@ int main(int argint,char** argv) {
 
 
     try {
-		OevGLES::Vec4 camPos = {3,4,20,1};
-		OevGLES::Vec3 up = {0,1,0};
-		OevGLES::Vec3 origin = {0,0,0};
-		OevGLES::Vec4 lightDir4;
-		OevGLES::Vec3 lightDir;
-		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
-		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 		OevGLES::GLTextGlobals glTextGlob;
 
 		glTextGlob.setResolutionDPI(96, 96);
@@ -232,6 +225,13 @@ int main(int argint,char** argv) {
 
 		GLfloat k = 0.0f;
 		OevGLES::Mat4 modelMatrixBack = OevGLES::Mat4::Identity();
+		OevGLES::Vec4 camPos = {3,4,80,1};
+		OevGLES::Vec3 up = {0,1,0};
+		OevGLES::Vec3 origin = {0,0,0};
+		OevGLES::Vec4 lightDir4;
+		OevGLES::Vec3 lightDir;
+		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
+		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 
 		std::cout << "Extensions are : " << glGetString(GL_EXTENSIONS) << std::endl;
 //		std::cout << "Pointer to glBindVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glBindVertexArrayOES")) << std::endl;
@@ -249,7 +249,7 @@ int main(int argint,char** argv) {
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
 			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(i) * camPos).block<3,1>(0,0),origin,up);
-			OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(5,35,320.0/240.0,66);
+			OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(75,85,320.0/240.0,40);
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVPMatrix = projMatrix * viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVMatrixBack = viewMatrix * modelMatrixBack;
