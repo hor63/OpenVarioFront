@@ -36,7 +36,9 @@
 
 #include "GLTextGlobals.h"
 #include "GLTextPangoCPPWrappers.h"
+#include "GLTextGlyphBBox.h"
 #include "GLTextFontTexture.h"
+
 
 namespace OevGLES {
 
@@ -46,88 +48,36 @@ class GLTextFontTexture;
 class GLTextFontCacheItem;
 
 /**
- *  \brief Bounding box in pixel for a glyph image in a texture
- *
- *  Coordinates follow OpenGL convention
- *  X-coordinates go left->right.\n
- *  Y-coordinates go bottom->up.
- *
- *  An invalid BBox is indicated by negative coordinates of the upper right corner.
- */
-struct GLTextGlyphBBox final {
-	int32_t xLeft; //< left edge
-	int32_t yBottom; // << bottom edge
-	int32_t xRight; // right edge
-	int32_t yTop; // << top edge
-
-	GLTextGlyphBBox (
-			int32_t xLeft,
-			int32_t yBottom,
-			int32_t xRight,
-			int32_t yTop
-			) :
-				xLeft{xLeft},
-				yBottom{yBottom},
-				xRight{xRight},
-				yTop{yTop}
-	{}
-
-	/// \brief Creates an invalid BBox
-	GLTextGlyphBBox() :
-		xLeft{-1},
-		yBottom{-1},
-		xRight{-1},
-		yTop{-1}
-	{}
-
-	/**
-	 * @brief A BBox is valid when the coordinates of the top right corner are positive.
-	 *
-	 * @return true when the x and y coordinates of the top-left corner are both >= 0
-	 */
-	bool isValid() const {
-		return yTop >= 0 && xRight >= 0;
-	}
-
-	int32_t height() const {
-		return yTop - yBottom;
-	}
-	int32_t width() const {
-		return xRight - xLeft;
-	}
-
-};
-
-/**
  * @brief Holds data of a glyph image with reference to the texture and the position within that texture
  *
  */
 struct GLTextFontCacheGlyphItem {
 
+
 	GLTextFontCacheGlyphItem(
 			PangoGlyph glyphIndex,
 			GLTextFontCacheItem& cacheItem,
 			GLTextFontTexture& texture,
-			GLTextGlyphBBox const& texturePosition,
+			GLTextGlyphBBoxI const& texturePosition,
 			FT_Glyph_Metrics glyphMetrics,
 			bool renderGlyph
-			) :
-				glyphIndex {glyphIndex},
-				cacheItem {cacheItem},
-				texture {texture},
-				texturePosition {texturePosition},
-				glyphMetrics {glyphMetrics},
-				renderGlyph{renderGlyph}
-				{}
+			);
 
 	PangoGlyph glyphIndex;
 
+	/// \brief The font cache item to which this glyph resides.
+	///
+	/// There is one cache item for each unique PangoFont.
 	GLTextFontCacheItem& cacheItem;
 	/// \brief The texture where the glyph image resides.
 	GLTextFontTexture& texture;
 
 	/// \brief Position of the glyph within the texture referenced in \ref texture
-	GLTextGlyphBBox texturePosition;
+	GLTextGlyphBBoxI texturePosition;
+
+	/// \brief Position in the texture from 0.0 to 1.0 normalized to the
+	///   texture dimensions.
+	GLTextGlyphBBoxF texturePositionNormalized;
 
 	/// \brief FreeType glyph metrics
 	FT_Glyph_Metrics glyphMetrics;

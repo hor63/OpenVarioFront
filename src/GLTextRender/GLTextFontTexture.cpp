@@ -76,8 +76,8 @@ GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
 {
 }
 
-GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
-	GLTextGlyphBBox ret; // is initially invalid.
+GLTextGlyphBBoxI GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
+	GLTextGlyphBBoxI ret; // is initially invalid.
 	FT_Bitmap &glyphBitmap = glyphSlot->bitmap;
 	int32_t textureBoxWidth = glyphBitmap.width + 1;
 	int32_t textureBoxHeight = glyphBitmap.rows + 1;
@@ -118,8 +118,8 @@ GLTextGlyphBBox GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	return ret;
 }
 
-GLTextGlyphBBox GLTextFontTexture::addFallbackTofuGlyphToTexture(int32_t width,int32_t height) {
-	GLTextGlyphBBox ret; // is initially invalid.
+GLTextGlyphBBoxI GLTextFontTexture::addFallbackTofuGlyphToTexture(int32_t width,int32_t height) {
+	GLTextGlyphBBoxI ret; // is initially invalid.
 
 	ret = addNewRectangle(width + 1,height + 1);
 
@@ -193,7 +193,7 @@ void GLTextFontTexture::startNewGlyphLine() {
 
 }
 
-void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const glyphCoord, FT_GlyphSlot glyphSlot ) {
+void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBoxI const glyphCoord, FT_GlyphSlot glyphSlot ) {
 	FT_Bitmap myBitmap;
 	FT_Bitmap* bitmapPtr ;
 
@@ -255,7 +255,7 @@ void GLTextFontTexture::copyGlyphImageToTexture(GLTextGlyphBBox const glyphCoord
 	FT_Bitmap_Done(glyphSlot->library, &myBitmap);
 }
 
-void GLTextFontTexture::drawTofuGlyphImageToTexture(GLTextGlyphBBox const glyphCoord) {
+void GLTextFontTexture::drawTofuGlyphImageToTexture(GLTextGlyphBBoxI const glyphCoord) {
 
 	int numLines = glyphCoord.height();
 	int numColumns = glyphCoord.width();
@@ -287,8 +287,8 @@ void GLTextFontTexture::drawTofuGlyphImageToTexture(GLTextGlyphBBox const glyphC
 
 }
 
-GLTextGlyphBBox GLTextFontTexture::addNewRectangle(int32_t width, int32_t height) {
-	GLTextGlyphBBox ret;
+GLTextGlyphBBoxI GLTextFontTexture::addNewRectangle(int32_t width, int32_t height) {
+	GLTextGlyphBBoxI ret;
 	int32_t leftPos = 1;
 	int32_t bottomPos = topPosPreviousLines;
 

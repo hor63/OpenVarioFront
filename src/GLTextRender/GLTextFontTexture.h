@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <list>
 
+#include "GLTextGlyphBBox.h"
 #include "GLTextFontCache.h"
 #include "GLES/GLTexture.h"
 
@@ -37,7 +38,7 @@ namespace OevGLES {
 
 // Forward declarations
 class GLTextFontCacheItem;
-struct GLTextGlyphBBox;
+
 
 /** \brief Manages a GL texture which contains the images of a number of glyphs of a font.
  *
@@ -50,7 +51,7 @@ struct GLTextGlyphBBox;
 class GLTextFontTexture {
 public:
 
-	using GlyphBBoxList = std::list<GLTextGlyphBBox>;
+	using GlyphBBoxList = std::list<GLTextGlyphBBoxI>;
 
 	/** \brief Constructor
 	 *
@@ -87,7 +88,7 @@ public:
 	 * Use the method isValid() to check if the glyph was added, or if the texture
 	 * is full, and the glyph did not fit any more.
 	 */
-	GLTextGlyphBBox addGlyphToTexture(FT_GlyphSlot glyphSlot);
+	GLTextGlyphBBoxI addGlyphToTexture(FT_GlyphSlot glyphSlot);
 
 	/** \brief Draw a tofu glyph youself in the texture with the given size
 	 *
@@ -102,7 +103,7 @@ public:
 	 * Use the method isValid() to check if the glyph was added, or if the texture
 	 * is full, and the glyph did not fit any more.
 	 */
-	GLTextGlyphBBox addFallbackTofuGlyphToTexture(int32_t width,int32_t height);
+	GLTextGlyphBBoxI addFallbackTofuGlyphToTexture(int32_t width,int32_t height);
 
 	/** \brief Check if the texture is assumed to be full
 	 *
@@ -131,6 +132,17 @@ public:
 	 * \param bitmapNumber Number of the texture within the owning \ref fontCacheItem
 	 */
 	void exportTextureBitmap(int bitmapNumber);
+
+	/// \see \ref textureData
+	TextureData& getTextureData () {
+		return textureData;
+	}
+
+	/// \see \ref texture
+	GLTexture& getTexture () {
+		return texture;
+	}
+
 
 private:
 
@@ -198,7 +210,7 @@ private:
 	 * \param glyphCoord Destination coordinates where the glyph image is to be drawn.
 	 * \param glyphSlot The Freetype glyph slot with the loaded glyph and the rendered glyph image
 	 */
-	void copyGlyphImageToTexture(GLTextGlyphBBox const glyphCoord, FT_GlyphSlot glyphSlot );
+	void copyGlyphImageToTexture(GLTextGlyphBBoxI const glyphCoord, FT_GlyphSlot glyphSlot );
 
 	/** \brief Draws a rectangle with a line one pixel wide, i.e. the Tofu.
 	 *
@@ -210,7 +222,7 @@ private:
 	 *
 	 * \param glyphCoord Corners of the tofo box to draw.
 	 */
-	void drawTofuGlyphImageToTexture(GLTextGlyphBBox const glyphCoord);
+	void drawTofuGlyphImageToTexture(GLTextGlyphBBoxI const glyphCoord);
 
 	/** \brief Moves the content of \ref currentGlyphLine to \ref previousGlyphLine.
 	 *
@@ -230,7 +242,7 @@ private:
 	 *   Check validity of the return value. When it is invalid no space could be
 	 *   found in this texture for a rectangle of the given size.
 	 */
-	GLTextGlyphBBox addNewRectangle(int32_t width, int32_t height);
+	GLTextGlyphBBoxI addNewRectangle(int32_t width, int32_t height);
 
 };
 

@@ -43,6 +43,50 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
+
+GLTextFontCacheGlyphItem::GLTextFontCacheGlyphItem (
+		PangoGlyph glyphIndex,
+		GLTextFontCacheItem& cacheItem,
+		GLTextFontTexture& texture,
+		GLTextGlyphBBoxI const& texturePosition,
+		FT_Glyph_Metrics glyphMetrics,
+		bool renderGlyph
+		) :
+			glyphIndex {glyphIndex},
+			cacheItem {cacheItem},
+			texture {texture},
+			texturePosition {texturePosition},
+			texturePositionNormalized {
+				static_cast<float>(texturePosition.xLeft) /
+					static_cast<float>(texture.getTextureData().getWidth()),
+				static_cast<float>(texturePosition.yBottom) /
+					static_cast<float>(texture.getTextureData().getHeight()),
+				static_cast<float>(texturePosition.xRight) /
+					static_cast<float>(texture.getTextureData().getWidth()),
+				static_cast<float>(texturePosition.yTop) /
+					static_cast<float>(texture.getTextureData().getHeight())
+			},
+			glyphMetrics {glyphMetrics},
+			renderGlyph{renderGlyph}
+{
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": "
+			<< " New glyph index = " << glyphIndex
+			<< ", pos = " << texturePosition.xLeft
+			<< "x" << texturePosition.yBottom
+			<< " " << texturePosition.xRight
+			<< "x" << texturePosition.yTop
+			);
+	LOG4CXX_DEBUG(logger,
+			   "\tNormalized position = " << texturePositionNormalized.xLeft
+			<< "x" << texturePositionNormalized.yBottom
+			<< " " << texturePositionNormalized.xRight
+			<< "x" << texturePositionNormalized.yTop
+			);
+
+
+}
+
 GLTextFontCacheItem::GLTextFontCacheItem(PangoFont* font, GLTextGlobals* globals)
 : pangoFont (font,true),
   globals{globals},
@@ -162,7 +206,7 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 			<< ", Bearing x = " << freetypeFace->glyph->metrics.horiBearingX/64.0f
 			<< ", y = " << freetypeFace->glyph->metrics.horiBearingY/64.0f);
 
-	GLTextGlyphBBox textureBBox;
+	GLTextGlyphBBoxI textureBBox;
 	GLTextFontTexture *texture = nullptr;
 	bool renderGlyph = true;
 
@@ -272,7 +316,7 @@ void GLTextFontCacheItem::addFallbackTofuGlyph() {
 			<< ", ascent " << fontMetrics->ascent / PANGO_SCALE
 			<< ", tofuHeight = " << tofuHeight);
 
-	GLTextGlyphBBox glyphBox;
+	GLTextGlyphBBoxI glyphBox;
 	GLTextFontTexture *texture = nullptr;
 
 	for (auto textureListItem = textureList.begin();textureListItem != textureList.end(); ++textureListItem) {
