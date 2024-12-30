@@ -31,7 +31,6 @@
 
 #include "OVFCommon.h"
 
-
 #include "GLES/SDLRenderSurface.h"
 #include "GLES/ExceptionBase.h"
 
@@ -93,6 +92,17 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 	auto videoDriverName = SDL_GetCurrentVideoDriver();
 	LOG4CXX_DEBUG(logger,"Name of the video driver = "
 			<<  videoDriverName);
+
+	struct ViewportCoords {
+		GLint x; GLint y;
+		GLint width; GLint height;
+	} viewportCoords;
+
+	glGetIntegerv (GL_VIEWPORT, &viewportCoords.x);
+	LOG4CXX_DEBUG(logger,"Viewport pos = "
+			<< viewportCoords.x << 'x' << viewportCoords.y
+			<< ", size = " << viewportCoords.width << 'x' << viewportCoords.height
+			);
 
 }
 
