@@ -212,20 +212,29 @@ int main(int argint,char** argv) {
 
 		OevGLES::SDLRenderSurface SDLSurface;
 		LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
-		SDLSurface.createRenderSurface(640,480,PACKAGE_STRING);
+		SDLSurface.createRenderSurface(640,640,PACKAGE_STRING);
 
 		LOG4CXX_INFO(logger,"Create the diffuse light program");
 
 		AnalogHandRenderer hand;
 		SquareTextureRenderer varioBackground;
 
+		int windowWidth = -1, windowHeight = -1;
+		SDL_GetWindowSize(SDLSurface.getNativeWindow(),&windowWidth,&windowHeight);
 
 		hand.setupVertexBuffers();
 		varioBackground.setupVertexBuffers();
 
+		// The arc tan in degrees is 0.5
+		// With this angle, and the 0-plane=2*width, and near=width,
+		// and far=3*width one unit in client space is one pixel on the screen
+		// in the 0-plane (z=0)
+		static constexpr double apertureAngleQuarterDeg = 26.565051177;
+
 		GLfloat k = 0.0f;
 		OevGLES::Mat4 modelMatrixBack = OevGLES::Mat4::Identity();
-		OevGLES::Vec4 camPos = {3,4,80,1};
+		// OevGLES::Vec4 camPos = {3,4,static_cast<float>(windowWidth*2),1};
+		OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowWidth*2),1};
 		OevGLES::Vec3 up = {0,1,0};
 		OevGLES::Vec3 origin = {0,0,0};
 		OevGLES::Vec4 lightDir4;
@@ -249,7 +258,8 @@ int main(int argint,char** argv) {
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
 			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(i) * camPos).block<3,1>(0,0),origin,up);
-			OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(75,85,320.0/240.0,40);
+			OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowWidth,windowWidth*3,
+					static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngleQuarterDeg);
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVPMatrix = projMatrix * viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVMatrixBack = viewMatrix * modelMatrixBack;

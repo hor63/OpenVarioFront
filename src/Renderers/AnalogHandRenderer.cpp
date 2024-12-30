@@ -41,32 +41,32 @@ AnalogHandRenderer::AnalogHandRenderer()
 	    // The normals are computed in the constructor body
 	  vertexArray {
 		// 0 triangle
-		 0.0f, 0.0f,0.5f,1.0f, // Pos 0
+		 0.0f, 0.0f,13.0f,1.0f, // Pos 0
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
-		10.0f, 0.0f,0.0f,1.0f, // Pos 1
+		256.0f, 0.0f,0.0f,1.0f, // Pos 1
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
-		 0.0f, 1.0f,0.0f,1.0f, // Pos 2
+		 0.0f, 26.0f,0.0f,1.0f, // Pos 2
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
 		// 1st triangle
-		 0.0f, 0.0f,0.5f,1.0f, // Pos 0
+		 0.0f, 0.0f,13.0f,1.0f, // Pos 0
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
-		 0.0f,-1.0f,0.0f,1.0f, // Pos 1
+		 0.0f,-26.0f,0.0f,1.0f, // Pos 1
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
-		10.0f, 0.0f,0.0f,1.0f, // Pos 2
+		256.0f, 0.0f,0.0f,1.0f, // Pos 2
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
 		// 2nd triangle
-		 0.0f, 0.0f,0.5f,1.0f, // Pos 0
+		 0.0f, 0.0f,13.0f,1.0f, // Pos 0
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
-		 0.0f, 1.0f,0.0f,1.0f, // Pos 1
+		 0.0f, 26.0f,0.0f,1.0f, // Pos 1
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
-		-1.0f, 0.0f,0.0f,1.0f, // Pos 2
+		-26.0f, 0.0f,0.0f,1.0f, // Pos 2
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
 		// 3rd triangle
-		 0.0f, 0.0f,0.5f,1.0f, // Pos 0
+		 0.0f, 0.0f,13.0f,1.0f, // Pos 0
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
-		-1.0f, 0.0f,0.0f,1.0f, // Pos 1
+		-26.0f, 0.0f,0.0f,1.0f, // Pos 1
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
-		 0.0f,-1.0f,0.0f,1.0f, // Pos 2
+		 0.0f,-26.0f,0.0f,1.0f, // Pos 2
 		 0.0f, 0.0f,0.0f,0.0f // Normal 2
 	}
 	{

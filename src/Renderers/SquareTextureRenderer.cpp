@@ -53,13 +53,13 @@ SquareTextureRenderer::SquareTextureRenderer()
 	 */
 	  vertexArray {
 		// Vertex0
-		 10.0f,-10.0f,-1.0f,1.0f,	// Pos 0
+		 256.0f,-256.0f,-26.0f,1.0f,	// Pos 0
 		 1.0f,  0.0f,				// Texture coordinate 0
-		 10.0f, 10.0f,-1.0f,1.0f,	// Pos 1
+		 256.0f, 256.0f,-26.0f,1.0f,	// Pos 1
 		 1.0f, 1.0f,				// Texture coordinate 1
-		-10.0f, 10.0f,-1.0f,1.0f,	// Pos 2
+		-256.0f, 256.0f,-26.0f,1.0f,	// Pos 2
 		 0.0f, 1.0f,				// Texture coordinate 2
-		-10.0f,-10.0f,-1.0f,1.0f,	// Pos 3
+		-256.0f,-256.0f,-26.0f,1.0f,	// Pos 3
 		 0.0f, 0.0f					// Texture coordinate 3
 	}
 	{
