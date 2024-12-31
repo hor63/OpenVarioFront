@@ -42,6 +42,28 @@ namespace OevGLES {
 
 class GLTextRenderer {
 public:
+	enum RenderMode {
+		RENDER_GLYPHS, /**< \brief Render glyphs to the screen. If needed add missing glyphs to the font bitmaps.
+						*
+						* This mode will always work. However it can be highly inefficient because every glyph
+						* which has not been rendered before must be added to a texture, and the texture been uploaded
+						* into GPU memory again.\n
+						* It is therefore much more efficient to render the expected glyphs once in \ref BUILD_GLYPH_CACHE_ONLY mode
+						* at the start.
+						*
+						*/
+
+		BUILD_GLYPH_CACHE_ONLY,	/**< \brief Only build the font textures but do not render the text to the display.
+								 *
+								 * This is much more efficient because in render mode the texture must be
+								 * uploaded into the GPU for each added character immediately.
+								 * In BUILD_GLYPH_CACHE_ONLY mode the textures are being build up in the client memory only.
+								 * When switching to Render mode all modified textures are being uploaded into GPU memory.
+								 *
+								 * Please note that caching glyphs in this mode applies for the given font face its attributes and size only.
+								 */
+	};
+
 
 	GLTextRenderer(GLTextGlobals& glob);
 	virtual ~GLTextRenderer();
@@ -105,36 +127,30 @@ public:
 					  int          x = 0,
 					  int          y = 0);
 
+	/** \brief Callback from a Pango.Layout rendering text
+	 *
+	 * \param font Pango font to render a glyph.
+	 * \param glyph The glyph index in \p font.
+	 * \param x Position of the glyph (can be fractions of a pixel)
+	 * \param y Position of the glyph (can be fractions of a pixel)
+	 *
+	 *  \see [Pango.Renderer.draw_glyph](https://docs.gtk.org/Pango/vfunc.Renderer.draw_glyph.html)
+	 */
 	void draw_glyph (
 			PangoFont           *font,
 			PangoGlyph          glyph,
 			double              x,
 			double              y);
 
+	void setRenderMode(RenderMode mode) {
+		renderMode = mode;
+	}
+
+	RenderMode getRenderMode () {
+		return renderMode;
+	}
+
 private:
-
-
-	enum RenderMode {
-		RENDER_GLYPHS, /**< \brief Render glyphs to the screen. If needed add missing glyphs to the font bitmaps.
-						*
-						* This mode will always work. However it can be highly inefficient because every glyph
-						* which has not been rendered before must be added to a texture, and the texture been uploaded
-						* into GPU memory again.\n
-						* It is therefore much more efficient to render the expected glyphs once in \ref BUILD_GLYPH_CACHE_ONLY mode
-						* at the start.
-						*
-						*/
-
-		BUILD_GLYPH_CACHE_ONLY,	/**< \brief Only build the font textures but do not render the text to the display.
-								 *
-								 * This is much more efficient because in render mode the texture must be
-								 * uploaded into the GPU for each added character immediately.
-								 * In BUILD_GLYPH_CACHE_ONLY mode the textures are being build up in the client memory only.
-								 * When switching to Render mode all modified textures are being uploaded into GPU memory.
-								 *
-								 * Please note that caching glyphs in this mode applies for the given font face its attributes and size only.
-								 */
-	};
 
 	std::string text;
 	std::string fonts;
@@ -149,7 +165,7 @@ private:
 	GLTextFontCacheItem* previousFontCacheItem = nullptr;
 
 	GLTextGlobals& globals;
-};
+}; // class GLTextRenderer
 
 } /* namespace OevGLES */
 
