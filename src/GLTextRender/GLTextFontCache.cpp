@@ -278,6 +278,31 @@ void GLTextFontCacheItem::addGlyphToTexture(PangoGlyph glyphIndex) {
 	}
 }
 
+GLTextFontCacheGlyphItem const& GLTextFontCacheItem::getGlyphInfo (PangoGlyph glyphIndex) {
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Glyph index = " << glyphIndex
+			<< " for font family " << freetypeFace->family_name
+			<< ", size " << (static_cast<float>(freetypeFace->size->metrics.height)/64.0f));
+
+	auto foundGlyph = glyphMap.find(glyphIndex);
+	if (foundGlyph != glyphMap.end()) {
+		// I have this glyph already cached.
+		LOG4CXX_DEBUG(logger,"\tFound the glyph in the cache. I'm done here.");
+		return foundGlyph->second;
+	}
+
+	LOG4CXX_DEBUG(logger,"\tThe glyph did not yet exist in the cache. Add it.");
+
+	// The glyph does not yet exist. Add it.
+	addGlyphToTexture(glyphIndex);
+
+	// The glyph is guaranteed to exist now. (and be it as the tofu glyph)
+	foundGlyph = glyphMap.find(glyphIndex);
+	return foundGlyph->second;
+
+
+}
+
+
 void GLTextFontCacheItem::addGlyphAsTofu(PangoGlyph glyphIndex) {
 
 	if (glyphIndex == 0) {

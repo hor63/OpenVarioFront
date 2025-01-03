@@ -188,6 +188,20 @@ public:
 	void addGlyphToTexture(PangoGlyph glyphIndex);
 
 	/**
+	 *  @brief Retrieve the information about texture, location within and size of a glyph
+	 *
+	 *  When the glyph did not exist before in any of the textures of the associated font
+	 *  it will be added by calling \ref addGlyphToTexture.
+	 *
+	 *  The glyph index is the index within the font, not a Unicode code point. Pango provides that index
+	 *  in the render callback. Otherwise you need to retrieve the index for the code point from the font yourself.
+	 *
+	 *  @param glyphIndex Index of the glyph within the associated font.
+	 *  @return Reference to the glyph cache information.
+	 */
+	GLTextFontCacheGlyphItem const & getGlyphInfo (PangoGlyph glyphIndex);
+
+	/**
 	 *  @brief Writes the texture bitmaps as raw data files.
 	 *
 	 *  The call is for diagnostic and debugging purposes.\n
