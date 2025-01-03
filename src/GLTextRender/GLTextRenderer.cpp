@@ -281,12 +281,13 @@ void GLTextRenderer::setText (const std::string& str){
 
 }
 
-void GLTextRenderer::renderLayout(int x, int y) {
-	renderLayoutSubpixel (x * PANGO_SCALE, y * PANGO_SCALE);
+void GLTextRenderer::renderLayout(int x, int y, RenderMode renderMode) {
+	renderLayoutSubpixel (x * PANGO_SCALE, y * PANGO_SCALE, renderMode);
 
 }
 
-void GLTextRenderer::renderLayoutSubpixel(int x, int y) {
+void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
+	this->renderMode = renderMode;
 	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
 }
 
@@ -296,16 +297,35 @@ void GLTextRenderer::draw_glyph (
 			double            x,
 			double            y) {
 
+#if 0
 	FT_Face ftFace = pango_ft2_font_get_face(font);
+#endif
 
 	if (font != previousFont) {
 		previousFont = font;
 		previousFontCacheItem = globals.getFontCache().getCacheItem(font);
 	}
 
-	//if (renderMode == BUILD_GLYPH_CACHE_ONLY) {
+	if (renderMode == BUILD_GLYPH_CACHE_ONLY) {
 		previousFontCacheItem->addGlyphToTexture(glyph);
-	//}
+	} else {
+		auto glyphInfo = previousFontCacheItem->getGlyphInfo(glyph);
+		  if (glyphInfo.renderGlyph) {
+			  LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+					  << "Texture position of glyph " << glyph << " = "
+					  << glyphInfo.texturePosition.xLeft << 'x'
+					  << glyphInfo.texturePosition.yBottom << ' '
+					  << glyphInfo.texturePosition.xRight << 'x'
+					  << glyphInfo.texturePosition.yTop
+					  );
+
+			  LOG4CXX_DEBUG(logger, "\tDraw the glyph to "
+					  << x << ',' << y);
+		  } else {
+			  LOG4CXX_DEBUG(logger, "\tGlyph " << glyph << " is invisible.");
+		  }
+
+	}
 
 #if 0
 

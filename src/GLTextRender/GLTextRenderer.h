@@ -74,7 +74,17 @@ public:
 		return text;
 	}
 
+	/** \brief Set the font size
+	 *
+	 * \param sizePoints Font size in points (what else 🙃)
+	 */
 	void setFontSize (double sizePoints);
+
+	/** \brief Set the font name or list of font names to choose from
+	 *
+	 * \param fontNames Name of the font family, or comma separated list of font families to choose from
+	 * \see [Pango.FontDescription.set_family](https://docs.gtk.org/Pango/method.FontDescription.set_family.html)
+	 */
 	void setFonts(std::string fontNames);
 
 	double getFontSize();
@@ -95,12 +105,14 @@ public:
 	 *
 	 * @x: the X position of the left of the layout (in pixels)
 	 * @y: the Y position of the top of the layout (in pixels)
+	 * @renderMode: Whether to only build up the glyph cache or actually render a text to the screen
 	 *
 	 */
 	void
 	renderLayout (
 			 int          x = 0,
-			 int          y = 0);
+			 int          y = 0,
+			 RenderMode   renderMode = RENDER_GLYPHS);
 
 	/** \brief Render the text into the GLES context
 	 *
@@ -119,13 +131,14 @@ public:
 	 *
 	 * @x: the X position of the left of the layout (in Pango units)
 	 * @y: the Y position of the top of the layout (in Pango units)
-	 *
+	 * @renderMode: Whether to only build up the glyph cache or actually render a text to the screen
 	 *
 	 */
 	void
 	renderLayoutSubpixel (
 					  int          x = 0,
-					  int          y = 0);
+					  int          y = 0,
+						 RenderMode   renderMode = RENDER_GLYPHS);
 
 	/** \brief Callback from a Pango.Layout rendering text
 	 *
@@ -141,14 +154,6 @@ public:
 			PangoGlyph          glyph,
 			double              x,
 			double              y);
-
-	void setRenderMode(RenderMode mode) {
-		renderMode = mode;
-	}
-
-	RenderMode getRenderMode () {
-		return renderMode;
-	}
 
 private:
 
