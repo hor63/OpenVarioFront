@@ -31,6 +31,8 @@
 #include <string>
 
 #include "GLTextGlobals.h"
+#include "GLPrograms/GLProgTextTexture.h"
+#include "Renderers/RendererBase.h"
 
 
 // forward declarations for private types within the module.
@@ -103,9 +105,9 @@ public:
 	 *
 	 * The text is being rendered into a \p PangoLayout with a special GL renderer object
 	 *
-	 * @x: the X position of the left of the layout (in pixels)
-	 * @y: the Y position of the top of the layout (in pixels)
-	 * @renderMode: Whether to only build up the glyph cache or actually render a text to the screen
+	 * \param x: the X position of the left of the layout (in pixels)
+	 * \param y: the Y position of the top of the layout (in pixels)
+	 * \param renderMode: Whether to only build up the glyph cache or actually render a text to the screen
 	 *
 	 */
 	void
@@ -129,9 +131,9 @@ public:
 	 *
 	 * The text is being rendered into a \p PangoLayout with a special GL renderer object
 	 *
-	 * @x: the X position of the left of the layout (in Pango units)
-	 * @y: the Y position of the top of the layout (in Pango units)
-	 * @renderMode: Whether to only build up the glyph cache or actually render a text to the screen
+	 * \param x: the X position of the left of the layout (in Pango units)
+	 * \param y: the Y position of the top of the layout (in Pango units)
+	 * \param renderMode: Whether to only build up the glyph cache or actually render a text to the screen
 	 *
 	 */
 	void
@@ -170,6 +172,8 @@ private:
 	GLTextFontCacheItem* previousFontCacheItem = nullptr;
 
 	GLTextGlobals& globals;
+
+
 }; // class GLTextRenderer
 
 } /* namespace OevGLES */

@@ -147,7 +147,7 @@ public:
 	/** \brief Writes data into the texture data buffer
 	 *
 	 * The method is supposed to fill the entire texture.
-	 * \ref dataLength is compared with the internally computed length of the buffer. If there is a mismatch an exception is thrown.
+	 * \p dataLength is compared with the internally computed length of the buffer. If there is a mismatch an exception is thrown.
 	 *
 	 * If you want to update parts of the texture obtain the pointer to the internal buffer with \ref getDataPtr, and work on the buffer data yourself.
 	 *

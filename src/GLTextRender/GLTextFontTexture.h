@@ -185,7 +185,7 @@ private:
 	bool full = false;
 	/// \brief Determines if the local texture buffer is not synchronized with the GL texture data.
 	///
-	/// If true the data in \ref textureData must be uploaded into \texture before rendering
+	/// If true the data in \ref textureData must be uploaded into \ref texture before rendering
 	/// to the screen.
 	bool dirty = true;
 

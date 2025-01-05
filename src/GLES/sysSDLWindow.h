@@ -37,9 +37,8 @@ class SDLNativeWindow {
 public:
 
 	SDLNativeWindow () {}
-	/** \brief The destructor will implicitly close and destroz an open native window if it was open.
+	/** \brief The destructor will implicitly close and destroy an open native window if it was open.
 	 *
-	 * \see \ref openNativeWindow()
 	 * \see \ref closeNativeWindow()
 	 */
 	~SDLNativeWindow();
@@ -50,7 +49,7 @@ public:
 
 	/** \brief Opens a native Window with OpenGL ES2 capabilities via SDL
 	 *
-	 * The function obtains the default system display, and opens a window with the passed dimensions \ref width and \ref height.
+	 * The function obtains the default system display, and opens a window with the passed dimensions \p width and \p height.
 	 * If width and heights are both 0 the function tries to open the window full-screen.
 	 *
 	 * @param[in] width Width of the window in the display dimension, usually in Pixel

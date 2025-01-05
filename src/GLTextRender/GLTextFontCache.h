@@ -318,10 +318,13 @@ public:
 private:
 	/** @brief Map of all cached fonts with glyph images
 	 *
-	 * A font is a font face at a specific size, style... in the sense of a \ref PangoFont
+	 * A font is a font face at a specific size, style... in the sense of a
+	 * [Pango.Font](https://docs.gtk.org/Pango/class.Font.html)
 	 * in contrast to a PangoFontFace
 	 *
-	 * The key is the hash value of the \ref PangoFontDesctiption belonging to the font.
+	 * The key is the hash value of the
+	 * [Pango.FontDescription](https://docs.gtk.org/Pango/struct.FontDescription.html)
+	 * belonging to the font.
 	*/
 	std::unordered_multimap<guint,GLTextFontCacheItem> fontCache;
 

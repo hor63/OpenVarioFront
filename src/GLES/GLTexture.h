@@ -95,8 +95,8 @@ public:
 
 	/** \brief Set filter for magnification of the texture, i.e. texture texels are larger than screen pixels
 	 *
-	 * @param filterType Only Nearest or Linear of the \ref TextureFilter enums are allowed here. Otherwise exception.
-	 * @throws \ref TextureException
+	 * \param filterType Only Nearest or Linear of the \ref TextureFilter enums are allowed here. Otherwise exception.
+	 * \throws TextureException
 	 */
 	void setMagnificationFilter (TextureFilter filterType);
 
@@ -114,8 +114,8 @@ public:
 	 *
 	 * Default wrap mode is ClampToEdge.
 	 *
-	 * @param wrapS Wrap mode in the S-dimension
-	 * @param wrapT Wrap mode in the T-dimension
+	 * \param wrapModeS Wrap mode in the S-dimension
+	 * \param wrapModeT Wrap mode in the T-dimension
 	 */
 	void setWrapMode (TextureWrapMode wrapModeS, TextureWrapMode wrapModeT);
 

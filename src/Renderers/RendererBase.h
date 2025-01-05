@@ -49,18 +49,23 @@ public:
 
 	/** \brief Setup the vertex arrays, calculate normals... and setup VBOs
 	 *
+	 * Pure virtual interface
+	 *
 	 */
 	virtual void setupVertexBuffers () = 0;
 
 	/** \brief Draw the rendered object.
 	 *
-	 * To be generic
+	 * Pure virtual interface
 	 *
-	 * @param modelMatrix Model matrix, moves the object around from model to world space
-	 * @param viewMatrix View matrix, used to move from world to eye space
-	 * @param ProjMatrix Projection matrix, used to create the 3-dimensional effects on a 2D screen
-	 * @param MVMatrix Model-View Matrix
-	 * @param MVPMatrix Model/View/Projection matrix
+	 * \param modelMatrix Model matrix, moves the object around from model to world space
+	 * \param viewMatrix View matrix, used to move from world to eye space
+	 * \param ProjMatrix Projection matrix, used to create the 3-dimensional effects on a 2D screen
+	 * \param MVMatrix Model-View Matrix
+	 * \param MVPMatrix Model/View/Projection matrix
+	 * \param lightDir Direction to the light source, normalized
+	 * \param lightColor Color of the light source, normalized color values.
+	 * \param ambientLightColor Color of the ambient light, normalized color values.
 	 */
 	virtual void draw(
 			OevGLES::Mat4 const &modelMatrix,
