@@ -29,6 +29,7 @@
 #define GLTEXTRENDER_GLTEXTRENDERER_H_
 
 #include <string>
+#include <vector>
 
 #include "GLTextGlobals.h"
 #include "GLPrograms/GLProgTextTexture.h"
@@ -42,7 +43,7 @@ typedef struct _PangoGLTextRenderer PangoGLTextRenderer;
 
 namespace OevGLES {
 
-class GLTextRenderer {
+class GLTextRenderer: public RendererBase  {
 public:
 	enum RenderMode {
 		RENDER_GLYPHS, /**< \brief Render glyphs to the screen. If needed add missing glyphs to the font bitmaps.
@@ -66,6 +67,16 @@ public:
 								 */
 	};
 
+	/// \brief vertex buffer structure of one vertex of a glyph box
+	struct GlGlyphCornerVertexStruct {
+		GLfloat vertexPosition [4];
+		GLfloat texturePosition [2];
+	};
+
+	/// \brief vertex buffer structure of a glyph box with four corners
+	struct GlGlyphVertexStruct {
+		GlGlyphCornerVertexStruct vertex [4];
+	};
 
 	GLTextRenderer(GLTextGlobals& glob);
 	virtual ~GLTextRenderer();
@@ -157,6 +168,21 @@ public:
 			double              x,
 			double              y);
 
+	/// \see RendererBase::setupVertexBuffers()
+	virtual void setupVertexBuffers () override;
+
+	/// \see RendererBase::draw()
+	virtual void draw(
+				OevGLES::Mat4 const &modelMatrix,
+				OevGLES::Mat4 const &viewMatrix,
+				OevGLES::Mat4 const &ProjMatrix,
+				OevGLES::Mat4 const &MVMatrix,
+				OevGLES::Mat4 const &MVPMatrix,
+				OevGLES::Vec3 const &lightDir,
+				OevGLES::Vec4 const &lightColor,
+				OevGLES::Vec4 const &ambientLightColor
+				) override;
+
 private:
 
 	std::string text;
@@ -173,6 +199,15 @@ private:
 
 	GLTextGlobals& globals;
 
+	GLProgTextTexture* textTextureProgram = nullptr;
+
+	GLuint vertexBufferHandle = 0;
+
+	/// \brief The rectangle which circumfences the text box as drawn.
+	PangoRectangle inkRect = {-1,-1,-1,-1};
+	PangoRectangle logicalRect = {-1,-1,-1,-1};
+
+	std::vector<GlGlyphVertexStruct> vertexVector;
 
 }; // class GLTextRenderer
 

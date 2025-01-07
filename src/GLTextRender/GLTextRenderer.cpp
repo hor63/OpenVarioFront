@@ -288,7 +288,26 @@ void GLTextRenderer::renderLayout(int x, int y, RenderMode renderMode) {
 
 void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
 	this->renderMode = renderMode;
+
+	pango_layout_get_extents (pangoLayout,&inkRect,&logicalRect);
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+			<< ": Layout ink bounding box topLeft = "
+			<< (static_cast<double>(inkRect.x)/PANGO_SCALE) << 'x'
+			<< (static_cast<double>(inkRect.y)/PANGO_SCALE)
+			<< " size = "
+			<< (static_cast<double>(inkRect.width)/PANGO_SCALE) << 'x'
+			<< (static_cast<double>(inkRect.height)/PANGO_SCALE)
+			);
+	LOG4CXX_DEBUG(logger,"\tLayout logical bounding box topLeft = "
+			<< (static_cast<double>(logicalRect.x)/PANGO_SCALE) << 'x'
+			<< (static_cast<double>(logicalRect.y)/PANGO_SCALE)
+			<< " size = "
+			<< (static_cast<double>(logicalRect.width)/PANGO_SCALE) << 'x'
+			<< (static_cast<double>(logicalRect.height)/PANGO_SCALE)
+			);
+
 	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
+
 }
 
 void GLTextRenderer::draw_glyph (
@@ -306,26 +325,22 @@ void GLTextRenderer::draw_glyph (
 		previousFontCacheItem = globals.getFontCache().getCacheItem(font);
 	}
 
-	if (renderMode == BUILD_GLYPH_CACHE_ONLY) {
-		previousFontCacheItem->addGlyphToTexture(glyph);
+	auto glyphInfo = previousFontCacheItem->getGlyphInfo(glyph);
+	if (glyphInfo.renderGlyph) {
+		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+				<< "Texture position of glyph " << glyph << " = "
+				<< glyphInfo.texturePosition.xLeft << 'x'
+				<< glyphInfo.texturePosition.yBottom << ' '
+				<< glyphInfo.texturePosition.xRight << 'x'
+				<< glyphInfo.texturePosition.yTop
+				);
+
+		LOG4CXX_DEBUG(logger, "\tDraw the glyph to "
+				<< x << ',' << y);
 	} else {
-		auto glyphInfo = previousFontCacheItem->getGlyphInfo(glyph);
-		  if (glyphInfo.renderGlyph) {
-			  LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-					  << "Texture position of glyph " << glyph << " = "
-					  << glyphInfo.texturePosition.xLeft << 'x'
-					  << glyphInfo.texturePosition.yBottom << ' '
-					  << glyphInfo.texturePosition.xRight << 'x'
-					  << glyphInfo.texturePosition.yTop
-					  );
-
-			  LOG4CXX_DEBUG(logger, "\tDraw the glyph to "
-					  << x << ',' << y);
-		  } else {
-			  LOG4CXX_DEBUG(logger, "\tGlyph " << glyph << " is invisible.");
-		  }
-
+		LOG4CXX_DEBUG(logger, "\tGlyph " << glyph << " is invisible.");
 	}
+
 
 #if 0
 
@@ -396,6 +411,23 @@ double GLTextRenderer::getFontSize() {
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": ret = " << ret);
 
 	return ret;
+}
+
+void GLTextRenderer::setupVertexBuffers () {
+	/// todo: Fill method
+}
+
+void GLTextRenderer::draw(
+			OevGLES::Mat4 const &modelMatrix,
+			OevGLES::Mat4 const &viewMatrix,
+			OevGLES::Mat4 const &ProjMatrix,
+			OevGLES::Mat4 const &MVMatrix,
+			OevGLES::Mat4 const &MVPMatrix,
+			OevGLES::Vec3 const &lightDir,
+			OevGLES::Vec4 const &lightColor,
+			OevGLES::Vec4 const &ambientLightColor
+			) {
+	/// todo: Fill method
 }
 
 } /* namespace OevGLES */
