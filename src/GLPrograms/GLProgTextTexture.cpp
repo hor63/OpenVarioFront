@@ -71,13 +71,10 @@ const char* GLProgTextTexture::getVertexShaderCode() const {
 			"\n"
 			"attribute vec4 attVertexPos;\n"
 			"attribute vec2 attVertexTexture0Pos;"
-			"attribute vec4 attVertexColor;\n"
 			"\n"
-			"varying vec4 varFragColor;\n"
 			"varying vec2 varTexture0Pos;\n"
 			"\n"
 			"void main () { \n"
-			"	varFragColor = attVertexColor;\n"
 			"	varTexture0Pos = varTexture0Pos;\n"
 			"	gl_Position = unMvpMatrix * attVertexPos;\n"
 			"}\n";
@@ -89,12 +86,12 @@ const char* GLProgTextTexture::getFragmentShaderCode() const {
 			"precision mediump float;\n"
 			"\n"
 			"uniform sampler2D unTexture0;\n"
+			"uniform vec4 unFragColor;\n"
 			"\n"
-			"varying vec4 varFragColor;\n"
 			"varying vec2 varTexture0Pos;\n"
 			"\n"
 			"void main () {\n"
-			"	gl_FragColor = varFragColor * texture2D(unTexture0,varTexture0Pos);\n"
+			"	gl_FragColor = vec4 (unFragColor.rgb, texture2D(unTexture0,varTexture0Pos.r);\n"
 			"}\n";
 }
 
@@ -103,11 +100,11 @@ void OevGLES::GLProgTextTexture::retrieveShaderVariableInfo() {
 
 	// The uniforms
 	unMvpMatrixInfo			= *retrieveSingleUniformInfo("unMvpMatrix",unMvpMatrixLocation);
+	unVertexColorInfo		= *retrieveSingleAttributeInfo("unVertexColor",unVertexColorLocation);
 	unTexture0Info			= *retrieveSingleUniformInfo("unTexture0",unTexture0Location);
 
 	// The vertex attributes
 	attVertexPosInfo			= *retrieveSingleAttributeInfo("attVertexPos",attVertexPosLocation);
-	attVertexColorInfo			= *retrieveSingleAttributeInfo("attVertexColor",attVertexColorLocation);
 	attVertexTexture0PosInfo	= *retrieveSingleAttributeInfo("attVertexTexture0Pos",attVertexTexture0PosLocation);
 
 }

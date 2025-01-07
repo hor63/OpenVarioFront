@@ -73,6 +73,12 @@ public:
 		return unMvpMatrixLocation;
 	}
 
+	GLProgram::ShaderVariableInfo  const &getUnVertexColorInfo() const {
+		return unVertexColorInfo;
+	}
+	GLint getUnVertexColorLocation () const {
+		return unVertexColorLocation;
+	}
 
 	GLProgram::ShaderVariableInfo  const &getUnTexture0Info() const {
 		return unTexture0Info;
@@ -87,13 +93,6 @@ public:
 	}
 	GLint getVertexPosLocation () const {
 		return attVertexPosLocation;
-	}
-
-	GLProgram::ShaderVariableInfo  const &getAttVertexColorInfo() const {
-		return attVertexColorInfo;
-	}
-	GLint getAttVertexColorLocation () const {
-		return attVertexColorLocation;
 	}
 
 	GLProgram::ShaderVariableInfo  const &getAttVertexTexture0PosInfo() const {
@@ -121,6 +120,8 @@ private:
 	// The uniforms
 	GLProgram::ShaderVariableInfo	unMvpMatrixInfo;
 	GLint 							unMvpMatrixLocation = 0;
+	GLProgram::ShaderVariableInfo	unVertexColorInfo;
+	GLint							unVertexColorLocation = 0;
 	GLProgram::ShaderVariableInfo	unTexture0Info;
 	GLint							unTexture0Location = 0;
 
@@ -129,8 +130,6 @@ private:
 	GLint							attVertexPosLocation = 0;
 	GLProgram::ShaderVariableInfo	attVertexTexture0PosInfo;
 	GLint							attVertexTexture0PosLocation = 0;
-	GLProgram::ShaderVariableInfo	attVertexColorInfo;
-	GLint							attVertexColorLocation = 0;
 
 	/** \brief private constructor
 	 *
