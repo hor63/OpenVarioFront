@@ -39,7 +39,7 @@ namespace OevGLES {
 TextureData::~TextureData() {
 
 	if (data) {
-		delete data;
+		delete [] data;
 	}
 
 }
