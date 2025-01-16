@@ -22,8 +22,11 @@ bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
 OpenVarioFront_SOURCES=OpenVarioFront.cpp  
  
-OpenVarioFront_LDADD= Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a GLES/TexHelper/libOEV_TexHelper.a GLES/libOEV_GLES.a \
-	GLTextRender/libOEV_GLTextRender.a \
+OpenVarioFront_LDADD = GLTextRender/libOEV_GLTextRender.a \
+	Renderers/libOEV_Renderers.a \
+	GLPrograms/libOEV_GLPrograms.a \
+	GLES/TexHelper/libOEV_TexHelper.a \
+	GLES/libOEV_GLES.a \
 	-lGLESv2 ../3rdParty/SDL/libSDL3.a $(LOG4CXX_LIBS) \
 	$(PANGO_FT2_LIBS) \
 	$(FREETYPE2_LIBS) $(LIBPNG_LIBS) \
