@@ -28,6 +28,36 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE()
 AM_DEFAULT_VERBOSITY=0
 
+# Check if libdir was not overridden by the caller.
+# If libdir was not set manually, add architecture and OS to the default libdir
+# the same way as modern Linux distros do.
+if test "$libdir". == '${exec_prefix}/lib.'
+then
+	libdir="$libdir"/'${build_cpu}-${build_os}'
+
+    # Mimick the process to determine $prefix.
+    # I need the value already here for pkg-config.
+    # SDL3 is not yet part of Linux distributions. I need to compile it myself
+    if test "${exec_prefix}". == NONE.
+    then
+    	if test "${prefix}". == NONE.
+    	then
+    		pkg_config_prefix="${ac_default_prefix}"
+    	else
+    		pkg_config_prefix="${prefix}"
+    	fi
+    else
+    	pkg_config_prefix="${exec_prefix}"
+    fi
+
+    eval pkg_config_libdir="${pkg_config_prefix}/lib/${build_cpu}-${build_os}"
+else
+	eval pkg_config_libdir="${libdir}"
+fi
+
+# Search my libdir for pkg-config files first. Here I am expecting SDL3
+# after the first pass.
+export PKG_CONFIG_PATH="${pkg_config_libdir}/pkgconfig"
 
 AC_PROG_CXX
 AX_PROG_CXX_FOR_BUILD
@@ -179,35 +209,12 @@ PKG_CHECK_MODULES([LIBPNG], [libpng])
 AC_SUBST([LIBPNG_CFLAGS])
 AC_SUBST([LIBPNG_LIBS])
 
-#PKG_CHECK_MODULES([SDL3], [sdl3])
-#AC_SUBST([SDL3_CFLAGS])
-#AC_SUBST([SDL3_LIBS])
+PKG_CHECK_MODULES([SDL3], [sdl3],[SLD3FOUND=1],[SLD3FOUND=0])
+AC_SUBST([SDL3_CFLAGS])
+AC_SUBST([SDL3_LIBS])
 
-PKG_CHECK_MODULES([GLIB], [glib-2.0])
-PKG_CHECK_MODULES([GIO], [gio-2.0])
-PKG_CHECK_MODULES([FONTCONFIG], [fontconfig])
-PKG_CHECK_MODULES([GOBJECT], [gobject-2.0])
-PKG_CHECK_MODULES([FRIBIDI], [fribidi])
-PKG_CHECK_MODULES([LIBTHAI], [libthai])
 
-#PKG_CHECK_MODULES([HARFBUZZ], [harfbuzz])
-HARFBUZZ_CFLAGS=-I`cd "$srcdir";pwd`/3rdParty/pango/subprojects/harfbuzz/src
-HARFBUZZ_LIBS=`pwd`/3rdParty/pango/subprojects/harfbuzz/src/libharfbuzz.a
-
-#PKG_CHECK_MODULES([HARFBUZZ_GOBJ], [harfbuzz-gobject])
-HARFBUZZ_GOBJ_LIBS=`pwd`/3rdParty/pango/subprojects/harfbuzz/src/libharfbuzz-gobject.a
-
-PKG_CHECK_MODULES([PANGO], [pango])
-AC_SUBST([PANGO_CFLAGS])
-AC_SUBST([PANGO_LIBS])
-
-#PKG_CHECK_MODULES([PANGO_FT2], [pangoft2])
-PANGO_FT2_CFLAGS="${GLIB_CFLAGS} \
-	${FONTCONFIG_CFLAGS} ${GOBJECT_CFLAGS} ${FRIBIDI_CFLAGS} ${LIBTHAI_CFLAGS} ${HARFBUZZ_GOBJ_CFLAGS} \
-	${GIO_CFLAGS} ${GLIB_CFLAGS} ${HARFBUZZ_CFLAGS} -I`cd "$srcdir";pwd`/3rdParty/pango -I`pwd`/3rdParty/pango"
-PANGO_FT2_LIBS="`pwd`/3rdParty/pango/pango/libpangoft2-1.0.a `pwd`/3rdParty/pango/pango/libpango-1.0.a \
-	${LIBTHAI_LIBS} ${FRIBIDI_LIBS} ${FONTCONFIG_LIBS} \
-	${HARFBUZZ_GOBJ_LIBS} ${HARFBUZZ_LIBS} ${GIO_LIBS} ${GOBJECT_LIBS} ${GLIB_LIBS}"
+PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 pango harfbuzz])
 AC_SUBST([PANGO_FT2_CFLAGS])
 AC_SUBST([PANGO_FT2_LIBS])
 
@@ -237,15 +244,30 @@ AS_MKDIR_P(doc/doxygen)
 AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
 CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
    -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
-   -Ddefault_library=both -Doptimization=g -Ddebug=true \
+   -Ddefault_library=shared \
+   -Doptimization=g -Ddebug=true \
+   -Dharfbuzz:default_library=both \
    -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
-   -Dharfbuzz:default_library=static \
    -Dbuild-testsuite=false -Dbuild-examples=false \
-   -Dprefix=$prefix
+   -Dprefix="$pkg_config_prefix" \
+   -Dlibdir="$pkg_config_libdir"
+
    
 AS_ECHO(["configure: Use cmake to create the Makefile for SDL"]) 
 cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
-    -DCMAKE_BUILD_TYPE=Debug -DSDL_STATIC=ON -DSDL_SHARED=OFF \
-    -DCMAKE_C_FLAGS="-Og -g3" -DCMAKE_CXX_FLAGS="-Og -g3"  -DCMAKE_LD_FLAGS="-Og -g3" -DCMAKE_SHARED_LINKER_FLAGS="-Og -g3"
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_LIBDIR="$pkg_config_libdir" \
+    -DCMAKE_INSTALL_PREFIX="$pkg_config_prefix" \
+    -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+    -DCMAKE_LD_FLAGS="$LDFLAGS" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS"
+
+if test "$SLD3FOUND". != 1.
+then
+	echo ""
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "Please make SDL in 3rdParty/SDL first and install it with \"make install\""
+	echo "then please re-run $0"
+fi
+
 
 
