@@ -32,3 +32,12 @@ SDL-clean:
 
 pango-clean:
 	cd pango; ninja clean -v
+
+install: SDL-install pango-install
+
+SDL-install:
+	$(MAKE) -C SDL install
+
+pango-install:
+	cd pango; ninja install
+	
