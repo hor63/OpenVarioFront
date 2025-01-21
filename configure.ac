@@ -209,12 +209,59 @@ PKG_CHECK_MODULES([LIBPNG], [libpng])
 AC_SUBST([LIBPNG_CFLAGS])
 AC_SUBST([LIBPNG_LIBS])
 
+# When you do not find a working SDL3 installation
+# configure, build, and install it here right away
+# then finding the installed package is assured unless something with the build
+# process goes wrong, or particularly you cannot install the package in the destination.
+# This is standard when the prefix is the default /usr/local.
 PKG_CHECK_MODULES([SDL3], [sdl3],[SLD3FOUND=1],[SLD3FOUND=0])
+if test "$SLD3FOUND". != 1.
+then
+	cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
+	    -DCMAKE_BUILD_TYPE=Debug \
+	    -DCMAKE_INSTALL_LIBDIR="$pkg_config_libdir" \
+	    -DCMAKE_INSTALL_PREFIX="$pkg_config_prefix" \
+	    -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+	    -DCMAKE_LD_FLAGS="$LDFLAGS" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS"
+	    
+	make -j4 -C ./3rdParty/SDL
+	make -j4 -C ./3rdParty/SDL install
+
+	PKG_CHECK_MODULES([SDL3], [sdl3])
+fi
+
 AC_SUBST([SDL3_CFLAGS])
 AC_SUBST([SDL3_LIBS])
 
 
-PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 pango harfbuzz])
+# When you do not find a working very recent Pango installation
+# configure, build, and install it here right away
+# then finding the installed package is assured unless something with the build
+# process goes wrong, or particularly you cannot install the package in the destination.
+# This is standard when the prefix is the default /usr/local.
+PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 >= 1.55.5 pango  >= 1.55.5 harfbuzz],[PANGOFOUND=1],[PANGOFOUND=0])
+if test "${PANGOFOUND}". != 1.
+then
+	AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
+	CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
+	   -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
+	   -Ddefault_library=shared \
+	   -Doptimization=g -Ddebug=true \
+	   -Dharfbuzz:default_library=both \
+	   -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
+	   -Dbuild-testsuite=false -Dbuild-examples=false \
+	   -Dprefix="$pkg_config_prefix" \
+	   -Dlibdir="$pkg_config_libdir"
+
+	pushd 3rdParty/pango
+	ninja -j4
+	ninja install
+	popd
+
+	PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 >= 1.55.5 pango  >= 1.55.5 harfbuzz])
+
+fi
+
 AC_SUBST([PANGO_FT2_CFLAGS])
 AC_SUBST([PANGO_FT2_LIBS])
 
@@ -261,13 +308,6 @@ cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
     -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
     -DCMAKE_LD_FLAGS="$LDFLAGS" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS"
 
-if test "$SLD3FOUND". != 1.
-then
-	echo ""
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	echo "Please make SDL in 3rdParty/SDL first and install it with \"make install\""
-	echo "then please re-run $0"
-fi
 
 
 
