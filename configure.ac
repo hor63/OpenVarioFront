@@ -87,6 +87,11 @@ AC_SEARCH_LIBS([argp_parse],[],[AC_DEFINE([HAVE_ARGP_PARSE],[1],[Define to 1 if 
 AC_SEARCH_LIBS([getopt_long],[],[AC_DEFINE([HAVE_GETOPT_LONG],[1],[Define to 1 if the function getopt_long is available.])],[])
 AC_SEARCH_LIBS([getopt],[],[AC_DEFINE([HAVE_GETOPT],[1],[Define to 1 if the function getopt is available.])],[])
 
+# Get includes and linker options for EGL and OpenGL ES 2.0
+PKG_CHECK_MODULES([GLES2], [glesv2 egl])
+AC_SUBST([GLES2_CFLAGS])
+AC_SUBST([GLES2_LIBS])
+
 AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
 AC_SUBST([DLL_VISIBLE_CFLAGS])
 
@@ -219,6 +224,7 @@ if test "$SLD3FOUND". != 1.
 then
 	cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
 	    -DCMAKE_BUILD_TYPE=Debug \
+	    -DSDL_STATIC=OFF -DSDL_SHARED=ON \
 	    -DCMAKE_INSTALL_LIBDIR="$pkg_config_libdir" \
 	    -DCMAKE_INSTALL_PREFIX="$pkg_config_prefix" \
 	    -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
@@ -303,6 +309,7 @@ CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdPart
 AS_ECHO(["configure: Use cmake to create the Makefile for SDL"]) 
 cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
     -DCMAKE_BUILD_TYPE=Debug \
+    -DSDL_STATIC=OFF -DSDL_SHARED=ON \
     -DCMAKE_INSTALL_LIBDIR="$pkg_config_libdir" \
     -DCMAKE_INSTALL_PREFIX="$pkg_config_prefix" \
     -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
