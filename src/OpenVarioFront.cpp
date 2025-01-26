@@ -209,7 +209,6 @@ int main(int argint,char** argv) {
 // SDL_INIT_TIMER was removed from SDL3.
 		SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-
 		OevGLES::SDLRenderSurface SDLSurface;
 		LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
 		SDLSurface.createRenderSurface(640,640,PACKAGE_STRING);
@@ -243,6 +242,12 @@ int main(int argint,char** argv) {
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 
 		std::cout << "Extensions are : " << glGetString(GL_EXTENSIONS) << std::endl;
+		void* glGenVertexArraysOESPtr = reinterpret_cast<void*>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
+		std::cout << "glGenVertexArraysOESPtr = " << glGenVertexArraysOESPtr << std::endl;
+
+		glGenVertexArraysOESPtr = reinterpret_cast<void*>(SDL_GL_GetProcAddress("xx"));
+		std::cout << "glGenVertexArraysOESPtr = " << glGenVertexArraysOESPtr << std::endl;
+
 //		std::cout << "Pointer to glBindVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glBindVertexArrayOES")) << std::endl;
 //		std::cout << "Pointer to glDeleteVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glDeleteVertexArraysOES")) << std::endl;
 //		std::cout << "Pointer to glGenVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glGenVertexArraysOES")) << std::endl;
