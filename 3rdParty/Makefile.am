@@ -21,9 +21,11 @@ all: SDL-build pango-build
 
 SDL-build:
 	$(MAKE) -C SDL all VERBOSE=$(V)
+	$(MAKE) -C SDL install VERBOSE=$(V)
 
 pango-build:
 	cd pango; ninja -v
+	cd pango; ninja install
 
 clean: SDL-clean pango-clean
 
