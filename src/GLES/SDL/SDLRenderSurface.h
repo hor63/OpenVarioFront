@@ -1,5 +1,5 @@
 /*
- * EGLRenderSurface.h
+ * SDLRenderSurface.h
  *
  *  Created on: Apr 24, 2018
  *      Author: hor
@@ -26,15 +26,18 @@
 #ifndef GLES_EGLRENDERSURFACE_H_
 #define GLES_EGLRENDERSURFACE_H_
 
+#include "GLES/GLFramework.h"
 #include "GLES/sysSDLWindow.h"
 
 #include "SDL3/SDL_opengles2.h"
 
 namespace OevGLES {
 
+class GLFramework;
+
 class SDLRenderSurface {
+	friend class GLFramework;
 public:
-	SDLRenderSurface();
 
 	virtual ~SDLRenderSurface();
 
@@ -47,8 +50,13 @@ public:
 		return nativeWindow;
 	}
 
+	GLFramework& getGlFramework() {
+		return glFramework;
+	}
+
 protected:
 
+	GLFramework& glFramework;
 	SDLNativeWindow nativeWindow;
 
 	SDL_GLContext glContext = nullptr;
@@ -56,9 +64,11 @@ protected:
     GLint eglMajorVersion = 2;
     GLint eglMinorVersion = 0;
 
+	SDLRenderSurface(GLFramework& framework);
+
 };
 
-
+#include "GLES/GLFramework.h"
 
 } /* namespace OevGLES */
 

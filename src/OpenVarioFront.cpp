@@ -35,12 +35,11 @@
 
 #include "OVFCommon.h"
 
-#include "GLES/SDLRenderSurface.h"
+#include "GLES/GLFramework.h"
 #include "GLES/GLShader.h"
 #include "GLES/GLProgram.h"
 #include "Renderers/AnalogHandRenderer.h"
 #include "Renderers/SquareTextureRenderer.h"
-#include "GLTextRender/GLTextGlobals.h"
 #include "GLTextRender/GLTextRenderer.h"
 
 
@@ -68,7 +67,8 @@ int main(int argint,char** argv) {
 
 
     try {
-		OevGLES::GLTextGlobals glTextGlob;
+    	OevGLES::GLFramework glFramework;
+		OevGLES::GLTextGlobals& glTextGlob = glFramework.getGlTextGlob();
 
 		glTextGlob.setResolutionDPI(96, 96);
 
@@ -202,24 +202,14 @@ int main(int argint,char** argv) {
 
 		glTextGlob.getFontCache().exportTextureBitmaps();
 
-		SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
-// Not in SDL3	    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
-	    SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1");
 
-// SDL_INIT_TIMER was removed from SDL3.
-		SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-
-		OevGLES::SDLRenderSurface SDLSurface;
-		LOG4CXX_INFO(logger,"Create native window, eglSurface and eglContext.");
-		SDLSurface.createRenderSurface(640,640,PACKAGE_STRING);
-
-		LOG4CXX_INFO(logger,"Create the diffuse light program");
+		glFramework.createRenderSurface(640,640,PACKAGE_STRING);
 
 		AnalogHandRenderer hand;
 		SquareTextureRenderer varioBackground;
 
 		int windowWidth = -1, windowHeight = -1;
-		SDL_GetWindowSize(SDLSurface.getNativeWindow(),&windowWidth,&windowHeight);
+		SDL_GetWindowSize(glFramework.getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
 
 		hand.setupVertexBuffers();
 		varioBackground.setupVertexBuffers();
@@ -283,7 +273,7 @@ int main(int argint,char** argv) {
 
 			// sleep(3);
 
-			SDL_GL_SwapWindow(SDLSurface.getNativeWindow());
+			SDL_GL_SwapWindow(glFramework.getSDLSurface().getNativeWindow());
 
 			k += 1.0f;
 		}

@@ -31,8 +31,8 @@
 
 #include "OVFCommon.h"
 
-#include "GLES/SDLRenderSurface.h"
-#include "GLES/ExceptionBase.h"
+#include "GLFramework.h"
+#include "ExceptionBase.h"
 
 namespace OevGLES {
 
@@ -42,8 +42,9 @@ static log4cxx::LoggerPtr logger = 0;
 
 
 
-SDLRenderSurface::SDLRenderSurface()
-		{
+SDLRenderSurface::SDLRenderSurface(GLFramework& framework)
+	:glFramework{framework}
+{
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.SDLRenderSurface");

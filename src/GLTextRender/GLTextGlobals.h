@@ -35,14 +35,16 @@
 
 namespace OevGLES {
 
+class GLFramework;
+
 /**
  * \brief Holder of the entire object hierarchy needed to implement the font and
  * glyph cache used to render text with OpenGL.
  *
  */
 class GLTextGlobals {
+	friend class GLFramework;
 public:
-	GLTextGlobals();
 	virtual ~GLTextGlobals();
 
 	CppPangoFontMap getFontMap() {
@@ -66,12 +68,17 @@ public:
 		return resY;
 	}
 
+	GLFramework& getGlFramework() {
+		return glFramework;
+	}
+
 private:
+
+	GLFramework& glFramework;
 
 	CppPangoFontMap fontMap;
 	CppPangoContext pangoContext;
 	GLTextFontCache	fontCache;
-
 	/// Resolution in DPI
 	///
 	/// Initial one point is one pixel.
@@ -82,8 +89,14 @@ private:
 	double resX = 72.0;
 	/// \see resX
 	double resY = 72.0;
+
+	/// \brief Instances must only be created as members of \ref GLFramework
+	GLTextGlobals(GLFramework& framework);
+
 };
 
 } /* namespace OevGLES */
+
+#include "GLES/GLFramework.h"
 
 #endif /* GLTEXTRENDER_GLTEXTGLOBALS_H_ */
