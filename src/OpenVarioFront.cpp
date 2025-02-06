@@ -243,7 +243,7 @@ int main(int argint,char** argv) {
 //		std::cout << "Pointer to glGenVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glGenVertexArraysOES")) << std::endl;
 //		std::cout << "Pointer to glIsVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glIsVertexArrayOES")) << std::endl;
 
-		for (GLfloat i = 0.0f; i<360.0f;i += 0.1f) {
+		for (GLfloat rotationAngleDeg = 0.0f; rotationAngleDeg<360.0f;rotationAngleDeg += 0.1f) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
 				if (sdlEvent.type == SDL_EVENT_QUIT) {
@@ -252,7 +252,7 @@ int main(int argint,char** argv) {
 			}
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
-			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(i) * camPos).block<3,1>(0,0),origin,up);
+			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngleDeg) * camPos).block<3,1>(0,0),origin,up);
 			OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowWidth,windowWidth*3,
 					static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngleQuarterDeg);
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
@@ -261,7 +261,7 @@ int main(int argint,char** argv) {
 			OevGLES::Mat4 MVPMatrixBack = projMatrix * viewMatrix * modelMatrixBack;
 
 			// Light dir is in eye space, rotate the light with the viewers point of view
-			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(i) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});
+			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(rotationAngleDeg) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});
 			lightDir = lightDir4.block<3,1>(0,0);
 			lightDir.normalize();
 
