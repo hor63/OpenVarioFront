@@ -24,7 +24,7 @@ libOEV_GLTextRender_a_SOURCES = GLTextGlobals.cpp GLTextRenderer.cpp \
 	GLTextFontCache.cpp GLTextPangoCPPWrappers.cpp GLTextFontTexture.cpp
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
-	$(SDL3_CFLAGS) $(PANGO_FT2_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
+	$(FREETYPE2_CFLAGS) $(SDL3_CFLAGS) $(PANGO_FT2_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
 
 AM_LDFLAGS= $(LOG4CXX_LDFLAGS)
 
