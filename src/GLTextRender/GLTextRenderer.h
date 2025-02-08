@@ -78,7 +78,7 @@ public:
 		GlGlyphCornerVertexStruct vertex [4];
 	};
 
-	GLTextRenderer(GLTextGlobals& glob);
+	GLTextRenderer(GLTextGlobalsWeakPtr glob);
 	virtual ~GLTextRenderer();
 
 	void setText (const std::string& str);
@@ -197,7 +197,7 @@ private:
 	PangoFont* previousFont = nullptr;
 	GLTextFontCacheItem* previousFontCacheItem = nullptr;
 
-	GLTextGlobals& globals;
+	GLTextGlobalsWeakPtr globals;
 
 	GLProgTextTexture* textTextureProgram = nullptr;
 

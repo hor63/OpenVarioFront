@@ -18,9 +18,16 @@ static log4cxx::LoggerPtr logger = 0;
 #endif
 
 
+GLFrameworkSharedPtr GLFramework::createFramework() {
+	GLFrameworkSharedPtr ret ( new GLFramework);
+
+	ret->glTextGlob.reset (new GLTextGlobals(ret));
+
+	return ret;
+}
+
 GLFramework::GLFramework()
-	: glTextGlob{*this},
-	  sdlSurface{*this}
+	:sdlSurface{*this}
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {

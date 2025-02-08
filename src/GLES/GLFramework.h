@@ -10,19 +10,26 @@
 
 #include "OVFCommon.h"
 
+
 #include <GLES2/gl2platform.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-
 
 #include "SDL/SDLRenderSurface.h"
 #include "GLTextRender/GLTextGlobals.h"
 #include "GLTextRender/GLTextRenderer.h"
 
+#include "GLFrameWorkPtr.h"
+
 namespace OevGLES {
 
 class GLTextGlobals;
 class SDLRenderSurface;
+
+class GLFramework;
+
+using GLFrameworkWeakPtr = std::weak_ptr<GLFramework>;
+using GLFrameworkSharedPtr = std::shared_ptr<GLFramework>;
 
 class GLFramework final {
 public:
@@ -31,7 +38,8 @@ public:
 	PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = nullptr;
 	PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES = nullptr;
 
-	GLFramework();
+	static GLFrameworkSharedPtr createFramework();
+
 	~GLFramework();
 	GLFramework(const GLFramework &other) = delete;
 	GLFramework(GLFramework &&other) = delete;
@@ -47,7 +55,7 @@ public:
 	void createRenderSurface (GLint width, GLint height,
 			char const* windowName);
 
-	GLTextGlobals& getGlTextGlob () {
+	GLTextGlobalsWeakPtr getGlTextGlob () {
 		return glTextGlob;
 	}
 
@@ -61,11 +69,13 @@ public:
 
 private:
 
-	GLTextGlobals glTextGlob;
+	GLTextGlobalsSharedPtr glTextGlob;
 
 	SDLRenderSurface sdlSurface;
 
 	bool vertexArrayUsable = false;
+
+	GLFramework();
 
 };
 

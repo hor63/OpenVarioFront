@@ -29,9 +29,11 @@
 #ifndef GLTEXTRENDER_GLTEXTGLOBALS_H_
 #define GLTEXTRENDER_GLTEXTGLOBALS_H_
 
+
 #include "GLTextPangoCPPWrappers.h"
 #include "GLTextFontCache.h"
 
+#include "GLES/GLFrameWorkPtr.h"
 
 namespace OevGLES {
 
@@ -68,13 +70,13 @@ public:
 		return resY;
 	}
 
-	GLFramework& getGlFramework() {
+	GLFrameworkWeakPtr getGlFramework() {
 		return glFramework;
 	}
 
 private:
 
-	GLFramework& glFramework;
+	GLFrameworkWeakPtr glFramework;
 
 	CppPangoFontMap fontMap;
 	CppPangoContext pangoContext;
@@ -91,9 +93,12 @@ private:
 	double resY = 72.0;
 
 	/// \brief Instances must only be created as members of \ref GLFramework
-	GLTextGlobals(GLFramework& framework);
+	GLTextGlobals(GLFrameworkWeakPtr framework);
 
 };
+
+using GLTextGlobalsWeakPtr = std::weak_ptr<GLTextGlobals>;
+using GLTextGlobalsSharedPtr = std::shared_ptr<GLTextGlobals>;
 
 } /* namespace OevGLES */
 

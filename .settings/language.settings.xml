@@ -15,6 +15,7 @@
 						<entry kind="includePath" name="/OpenVarioFront/3rdParty/SDL/include">
 							<flag value="VALUE_WORKSPACE_PATH|RESOLVED"/>
 						</entry>
+						<entry kind="includePath" name="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
 						<entry kind="includePath" name="/usr/include/glib-2.0"/>
 						<entry kind="includePath" name="/OpenVarioFront/build/3rdParty/pango/pango">
 							<flag value="VALUE_WORKSPACE_PATH|RESOLVED"/>

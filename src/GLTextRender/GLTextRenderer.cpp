@@ -168,7 +168,7 @@ static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* 
 
 namespace OevGLES {
 
-GLTextRenderer::GLTextRenderer(GLTextGlobals& glob) :
+GLTextRenderer::GLTextRenderer(GLTextGlobalsWeakPtr glob) :
 		globals{glob}
 {
 #if defined HAVE_LOG4CXX_H
@@ -177,44 +177,51 @@ GLTextRenderer::GLTextRenderer(GLTextGlobals& glob) :
 	}
 #endif
 
-	pangoTextRenderer = pango_gl_text_renderer_new(this);
+	auto globalsPtr = globals.lock();
 
-	pangoLayout = pango_layout_new(globals.getPangoContext());
-	auto fDesc = pango_layout_get_font_description(pangoLayout);
-	if (fDesc == nullptr) {
-		fDesc = pango_context_get_font_description(globals.getPangoContext());
-	}
-	if (fDesc) {
-		fontDescr = pango_font_description_copy(fDesc);
-	} else {
-		fontDescr = pango_font_description_new();
-		fonts = "Noto Sans";
-		pango_font_description_set_family(fontDescr, fonts.c_str());
-		pango_font_description_set_size(fontDescr, 11*PANGO_SCALE);
-	}
+	if (globalsPtr) {
 
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": Initial font family = " << pango_font_description_get_family(fontDescr)
-			<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
-			<< " with style " << static_cast<int>(pango_font_description_get_style(fontDescr))
-			<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDescr)));
+		pangoTextRenderer = pango_gl_text_renderer_new(this);
 
-	PangoFontMask fontMask = pango_font_description_get_set_fields (fontDescr);
-	if (!(fontMask & PANGO_FONT_MASK_SIZE)){
-		pango_font_description_set_size(fontDescr, 11*PANGO_SCALE);
-	}
-	if (!(fontMask & PANGO_FONT_MASK_FAMILY)){
-		fonts = "Noto Sans";
-		pango_font_description_set_family(fontDescr,fonts.c_str());
-	} else {
-		fonts = pango_font_description_get_family(fontDescr);
-	}
-	pango_layout_set_font_description(pangoLayout,fontDescr);
+		pangoLayout = pango_layout_new(globalsPtr->getPangoContext());
+		auto fDesc = pango_layout_get_font_description(pangoLayout);
+		if (fDesc == nullptr) {
+			fDesc = pango_context_get_font_description(globalsPtr->getPangoContext());
+		}
+		if (fDesc) {
+			fontDescr = pango_font_description_copy(fDesc);
+		} else {
+			fontDescr = pango_font_description_new();
+			fonts = "Noto Sans";
+			pango_font_description_set_family(fontDescr, fonts.c_str());
+			pango_font_description_set_size(fontDescr, 11*PANGO_SCALE);
+		}
 
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-			<< ": Initial font family = " << fonts<<":"<<pango_font_description_get_family(fontDescr)
-			<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
-			<< " with style " << static_cast<int>(pango_font_description_get_style(fontDescr))
-			<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDescr)));
+		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": Initial font family = " << pango_font_description_get_family(fontDescr)
+				<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
+				<< " with style " << static_cast<int>(pango_font_description_get_style(fontDescr))
+				<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDescr)));
+
+		PangoFontMask fontMask = pango_font_description_get_set_fields (fontDescr);
+		if (!(fontMask & PANGO_FONT_MASK_SIZE)){
+			pango_font_description_set_size(fontDescr, 11*PANGO_SCALE);
+		}
+		if (!(fontMask & PANGO_FONT_MASK_FAMILY)){
+			fonts = "Noto Sans";
+			pango_font_description_set_family(fontDescr,fonts.c_str());
+		} else {
+			fonts = pango_font_description_get_family(fontDescr);
+		}
+		pango_layout_set_font_description(pangoLayout,fontDescr);
+
+		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+				<< ": Initial font family = " << fonts<<":"<<pango_font_description_get_family(fontDescr)
+				<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
+				<< " with style " << static_cast<int>(pango_font_description_get_style(fontDescr))
+				<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDescr)));
+	} else { // if (globalsPtr) {
+		LOG4CXX_WARN(logger, __PRETTY_FUNCTION__ << ": Member globals is gone.");
+	}
 }
 
 GLTextRenderer::~GLTextRenderer() {
@@ -320,76 +327,84 @@ void GLTextRenderer::draw_glyph (
 	FT_Face ftFace = pango_ft2_font_get_face(font);
 #endif
 
-	if (font != previousFont) {
-		previousFont = font;
-		previousFontCacheItem = globals.getFontCache().getCacheItem(font);
-	}
+	auto globalsPtr = globals.lock();
+	if (globalsPtr) {
 
-	auto glyphInfo = previousFontCacheItem->getGlyphInfo(glyph);
-	if (glyphInfo.renderGlyph) {
-		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-				<< "Texture position of glyph " << glyph << " = "
-				<< glyphInfo.texturePosition.xLeft << 'x'
-				<< glyphInfo.texturePosition.yBottom << ' '
-				<< glyphInfo.texturePosition.xRight << 'x'
-				<< glyphInfo.texturePosition.yTop
-				);
+		if (font != previousFont) {
+			previousFont = font;
+			previousFontCacheItem = globalsPtr->getFontCache().getCacheItem(font);
+		}
 
-		LOG4CXX_DEBUG(logger, "\tDraw the glyph to "
-				<< x << ',' << y);
-	} else {
-		LOG4CXX_DEBUG(logger, "\tGlyph " << glyph << " is invisible.");
-	}
+		auto glyphInfo = previousFontCacheItem->getGlyphInfo(glyph);
+		if (glyphInfo.renderGlyph) {
+			LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+					<< "Texture position of glyph " << glyph << " = "
+					<< glyphInfo.texturePosition.xLeft << 'x'
+					<< glyphInfo.texturePosition.yBottom << ' '
+					<< glyphInfo.texturePosition.xRight << 'x'
+					<< glyphInfo.texturePosition.yTop
+					);
+
+			LOG4CXX_DEBUG(logger, "\tDraw the glyph to "
+					<< x << ',' << y);
+		} else {
+			LOG4CXX_DEBUG(logger, "\tGlyph " << glyph << " is invisible.");
+		}
 
 
 #if 0
 
 
-	if (logger->isDebugEnabled()){
+		if (logger->isDebugEnabled()){
 
-		{
-			  int x_start, x_limit;
-			  int y_start, y_limit;
-			  int ixoff = floor (x + 0.5);
-			  int iyoff = floor (y + 0.5);
-			  int ix, iy;
-			  int src , dest;
-
-
-			  x_start = MAX (0, - (ixoff + ftFace->glyph-> bitmap_left));
-			  x_limit = MIN ((int) ftFace->glyph->bitmap.width,
-					 (int) (1024 - (ixoff + ftFace->glyph->bitmap_left)));
-
-			  y_start = MAX (0,  - (iyoff - ftFace->glyph->bitmap_top));
-			  y_limit = MIN ((int) ftFace->glyph->bitmap.rows,
-					 (int) (1024 - (iyoff - ftFace->glyph->bitmap_top)));
-
-			  src =
-			    y_start * ftFace->glyph->bitmap.pitch;
-
-			  dest =
-			    (y_start + iyoff - ftFace->glyph->bitmap_top) * 1024 +
-			    x_start + ixoff + ftFace->glyph->bitmap_left;
+			{
+				  int x_start, x_limit;
+				  int y_start, y_limit;
+				  int ixoff = floor (x + 0.5);
+				  int iyoff = floor (y + 0.5);
+				  int ix, iy;
+				  int src , dest;
 
 
-			  LOG4CXX_DEBUG(logger,"\tglyph-> bitmap_left = " << ftFace->glyph-> bitmap_left
-					  << " glyph->bitmap.width = " << ftFace->glyph->bitmap.width
-					  << " glyph->bitmap_top = " << ftFace->glyph->bitmap_top
-					  << " glyph->bitmap.rows = " << ftFace->glyph->bitmap.rows
-					  << " glyph->bitmap.pitch = " << ftFace->glyph->bitmap.pitch
-					  << " ixoff = " << ixoff
-					  << " iyoff = " << iyoff
-					  << " x_start = " << x_start
-					  << " x_limit = " << x_limit
-					  << " y_start = " << y_start
-					  << " y_limit = " << y_limit
-					  << " src offset = " << src
-					  << " dest offs (pitch 1024) = " << dest
-					  );
+				  x_start = MAX (0, - (ixoff + ftFace->glyph-> bitmap_left));
+				  x_limit = MIN ((int) ftFace->glyph->bitmap.width,
+						 (int) (1024 - (ixoff + ftFace->glyph->bitmap_left)));
+
+				  y_start = MAX (0,  - (iyoff - ftFace->glyph->bitmap_top));
+				  y_limit = MIN ((int) ftFace->glyph->bitmap.rows,
+						 (int) (1024 - (iyoff - ftFace->glyph->bitmap_top)));
+
+				  src =
+					y_start * ftFace->glyph->bitmap.pitch;
+
+				  dest =
+					(y_start + iyoff - ftFace->glyph->bitmap_top) * 1024 +
+					x_start + ixoff + ftFace->glyph->bitmap_left;
+
+
+				  LOG4CXX_DEBUG(logger,"\tglyph-> bitmap_left = " << ftFace->glyph-> bitmap_left
+						  << " glyph->bitmap.width = " << ftFace->glyph->bitmap.width
+						  << " glyph->bitmap_top = " << ftFace->glyph->bitmap_top
+						  << " glyph->bitmap.rows = " << ftFace->glyph->bitmap.rows
+						  << " glyph->bitmap.pitch = " << ftFace->glyph->bitmap.pitch
+						  << " ixoff = " << ixoff
+						  << " iyoff = " << iyoff
+						  << " x_start = " << x_start
+						  << " x_limit = " << x_limit
+						  << " y_start = " << y_start
+						  << " y_limit = " << y_limit
+						  << " src offset = " << src
+						  << " dest offs (pitch 1024) = " << dest
+						  );
+			}
 		}
-	}
 
 #endif // #if defined HAVE_LOG4CXX_H
+
+	} else { //if (globalsPtr) {
+		LOG4CXX_WARN(logger, __PRETTY_FUNCTION__ << ": Member globals is gone.");
+	}
+
 }
 
 void GLTextRenderer::setFontSize(double sizePoints) {

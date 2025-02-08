@@ -67,10 +67,11 @@ int main(int argint,char** argv) {
 
 
     try {
-    	OevGLES::GLFramework glFramework;
-		OevGLES::GLTextGlobals& glTextGlob = glFramework.getGlTextGlob();
+    	auto glFramework = OevGLES::GLFramework::createFramework();
+		auto glTextGlob = glFramework->getGlTextGlob();
+		auto glTextGlobPtr = glTextGlob.lock();
 
-		glTextGlob.setResolutionDPI(96, 96);
+		glTextGlobPtr->setResolutionDPI(96, 96);
 
 		{
 			std::string sampleString = pango_language_get_sample_string (pango_language_get_default());
@@ -200,16 +201,16 @@ int main(int argint,char** argv) {
 			glTextRend.renderLayout();
 		}
 
-		glTextGlob.getFontCache().exportTextureBitmaps();
+		glTextGlobPtr->getFontCache().exportTextureBitmaps();
 
 
-		glFramework.createRenderSurface(640,640,PACKAGE_STRING);
+		glFramework->createRenderSurface(640,640,PACKAGE_STRING);
 
 		AnalogHandRenderer hand;
 		SquareTextureRenderer varioBackground;
 
 		int windowWidth = -1, windowHeight = -1;
-		SDL_GetWindowSize(glFramework.getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
+		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
 
 		hand.setupVertexBuffers();
 		varioBackground.setupVertexBuffers();
@@ -273,7 +274,7 @@ int main(int argint,char** argv) {
 
 			// sleep(3);
 
-			SDL_GL_SwapWindow(glFramework.getSDLSurface().getNativeWindow());
+			SDL_GL_SwapWindow(glFramework->getSDLSurface().getNativeWindow());
 
 			k += 1.0f;
 		}
