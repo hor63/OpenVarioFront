@@ -197,11 +197,6 @@ GLTextRenderer::GLTextRenderer(GLTextGlobalsWeakPtr glob) :
 			pango_font_description_set_size(fontDescr, 11*PANGO_SCALE);
 		}
 
-		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": Initial font family = " << pango_font_description_get_family(fontDescr)
-				<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
-				<< " with style " << static_cast<int>(pango_font_description_get_style(fontDescr))
-				<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDescr)));
-
 		PangoFontMask fontMask = pango_font_description_get_set_fields (fontDescr);
 		if (!(fontMask & PANGO_FONT_MASK_SIZE)){
 			pango_font_description_set_size(fontDescr, 11*PANGO_SCALE);
@@ -215,10 +210,11 @@ GLTextRenderer::GLTextRenderer(GLTextGlobalsWeakPtr glob) :
 		pango_layout_set_font_description(pangoLayout,fontDescr);
 
 		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-				<< ": Initial font family = " << fonts<<":"<<pango_font_description_get_family(fontDescr)
+				<< ": Font family = " << fonts<<":"<<pango_font_description_get_family(fontDescr)
 				<< " with size " << (pango_font_description_get_size(fontDescr)/PANGO_SCALE)
 				<< " with style " << static_cast<int>(pango_font_description_get_style(fontDescr))
 				<< " with weight " << static_cast<int>(pango_font_description_get_weight(fontDescr)));
+
 	} else { // if (globalsPtr) {
 		LOG4CXX_WARN(logger, __PRETTY_FUNCTION__ << ": Member globals is gone.");
 	}
@@ -294,7 +290,16 @@ void GLTextRenderer::renderLayout(int x, int y, RenderMode renderMode) {
 }
 
 void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
+
+	auto charCount = pango_layout_get_character_count(pangoLayout);
 	this->renderMode = renderMode;
+
+	vertexVector.clear();
+	if (charCount > vertexVector.capacity()) {
+		vertexVector.reserve(charCount);
+	}
+
+	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
 
 	pango_layout_get_extents (pangoLayout,&inkRect,&logicalRect);
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
@@ -312,8 +317,7 @@ void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
 			<< (static_cast<double>(logicalRect.width)/PANGO_SCALE) << 'x'
 			<< (static_cast<double>(logicalRect.height)/PANGO_SCALE)
 			);
-
-	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
+	LOG4CXX_DEBUG (logger, "\tNumber of Unicode characters = " << pango_layout_get_character_count(pangoLayout));
 
 }
 
@@ -345,9 +349,102 @@ void GLTextRenderer::draw_glyph (
 					<< glyphInfo.texturePosition.yTop
 					);
 
+			LOG4CXX_DEBUG(logger,"\t"
+					<< "horiBearingX = " << glyphInfo.glyphMetrics.horiBearingX/64.0
+					<< " horiBearingY = " << glyphInfo.glyphMetrics.horiBearingY/64.0
+					<< " width = " << glyphInfo.glyphMetrics.width/64.0
+					<< " height = " << glyphInfo.glyphMetrics.height/64.0
+					);
+
 			LOG4CXX_DEBUG(logger, "\tDraw the glyph to "
 					<< x << ',' << y);
-		} else {
+
+			if (renderMode == RENDER_GLYPHS) {
+				GLfloat left = static_cast<GLfloat>(
+							static_cast<double>(glyphInfo.glyphMetrics.horiBearingX) / 64.0
+							+ x
+						);
+				GLfloat right = static_cast<GLfloat>(
+							static_cast<double>(glyphInfo.glyphMetrics.width) / 64.0
+							+ left
+						);
+
+				// Note that the Pango coordinates count y from top down,
+				// whereas OpenGL counts from bottom to top.
+				// Therefore I start the text box at 0 and let it grow downwards negative.
+				// I keep track of the overall bounding box, and lift the bottom of
+				// the entire box with the model matrix later up to 0.
+				GLfloat top = static_cast<GLfloat> (
+							static_cast<double>(glyphInfo.glyphMetrics.horiBearingY) / 64.0
+							- y
+						);
+				GLfloat bottom = static_cast<GLfloat> (
+							top
+							- static_cast<double> (glyphInfo.glyphMetrics.height) / 64.0
+						);
+
+				LOG4CXX_DEBUG(logger, "\tDraw the glyph box from "
+						<< left << 'x' << top
+						<< " to " << right << 'x' << bottom);
+
+				LOG4CXX_DEBUG(logger, "\tThe image is in the texture from "
+						<< glyphInfo.texturePositionNormalized.xLeft
+						<< 'x' << glyphInfo.texturePositionNormalized.yTop
+						<< " to " << glyphInfo.texturePositionNormalized.xRight
+						<< 'x' << glyphInfo.texturePositionNormalized.yBottom
+						);
+
+
+				vertexVector.push_back(GlGlyphVertexStruct {
+					.tri1TopLeft = GlGlyphCornerVertexStruct {
+							.vertexPosition = {left,top,0.0f,1.0f},
+							.texturePosition = {
+								glyphInfo.texturePositionNormalized.xLeft,
+								glyphInfo.texturePositionNormalized.yTop
+							}
+					},
+					.tri1BottomLeft = GlGlyphCornerVertexStruct {
+						.vertexPosition = {left,bottom,0.0f,1.0f},
+						.texturePosition = {
+							glyphInfo.texturePositionNormalized.xLeft,
+							glyphInfo.texturePositionNormalized.yBottom
+						}
+					},
+					.tri1BottomRight = GlGlyphCornerVertexStruct {
+						.vertexPosition = {right,bottom,0.0f,1.0f},
+						.texturePosition = {
+							glyphInfo.texturePositionNormalized.xLeft,
+							glyphInfo.texturePositionNormalized.yTop
+						}
+					},
+					.tri2TopLeft = GlGlyphCornerVertexStruct {
+						.vertexPosition = {left,top,0.0f,1.0f},
+						.texturePosition = {
+							glyphInfo.texturePositionNormalized.xLeft,
+							glyphInfo.texturePositionNormalized.yTop
+						}
+					},
+					.tri2BottomRight = GlGlyphCornerVertexStruct {
+						.vertexPosition = {right,bottom,0.0f,1.0f},
+						.texturePosition = {
+							glyphInfo.texturePositionNormalized.xRight,
+							glyphInfo.texturePositionNormalized.yBottom
+						}
+					},
+					.tri2TopRight = GlGlyphCornerVertexStruct {
+						.vertexPosition = {right,top,0.0f,1.0f},
+						.texturePosition = {
+							glyphInfo.texturePositionNormalized.xRight,
+							glyphInfo.texturePositionNormalized.yTop
+						}
+					}
+				});
+
+				LOG4CXX_DEBUG(logger,"vertexVector capacity = " << vertexVector.capacity()
+						<< ", number elements = " << vertexVector.size());
+			}
+
+		} else { // if (glyphInfo.renderGlyph)
 			LOG4CXX_DEBUG(logger, "\tGlyph " << glyph << " is invisible.");
 		}
 

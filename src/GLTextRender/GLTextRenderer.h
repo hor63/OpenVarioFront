@@ -73,10 +73,34 @@ public:
 		GLfloat texturePosition [2];
 	};
 
-	/// \brief vertex buffer structure of a glyph box with four corners
+	/** \brief vertex buffer structure of a glyph box with two triangles
+	 *
+	 * The vertexes are:
+	 * a. First triangle
+	 * 	0. Top left
+	 * 	1. Bottom left
+	 * 	2. Bottom right
+	 * b. Second triangle
+	 * 	3. Top Left
+	 * 	4. Bottom right
+	 * 	5. Top right
+	 *
+	 * 	This forms two triangles with vertexes in counter-clock oder.
+	 */
 	struct GlGlyphVertexStruct {
-		GlGlyphCornerVertexStruct vertex [4];
+		GlGlyphCornerVertexStruct tri1TopLeft;
+		GlGlyphCornerVertexStruct tri1BottomLeft;
+		GlGlyphCornerVertexStruct tri1BottomRight;
+		GlGlyphCornerVertexStruct tri2TopLeft;
+		GlGlyphCornerVertexStruct tri2BottomRight;
+		GlGlyphCornerVertexStruct tri2TopRight;
 	};
+
+
+	struct VertexBufferPerTexture {
+
+	};
+
 
 	GLTextRenderer(GLTextGlobalsWeakPtr glob);
 	virtual ~GLTextRenderer();

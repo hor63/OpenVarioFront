@@ -73,6 +73,9 @@ int main(int argint,char** argv) {
 
 		glTextGlobPtr->setResolutionDPI(96, 96);
 
+		glFramework->createRenderSurface(640,640,PACKAGE_STRING);
+
+
 		{
 			std::string sampleString = pango_language_get_sample_string (pango_language_get_default());
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
@@ -204,7 +207,6 @@ int main(int argint,char** argv) {
 		glTextGlobPtr->getFontCache().exportTextureBitmaps();
 
 
-		glFramework->createRenderSurface(640,640,PACKAGE_STRING);
 
 		AnalogHandRenderer hand;
 		SquareTextureRenderer varioBackground;
