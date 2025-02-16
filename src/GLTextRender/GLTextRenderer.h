@@ -30,10 +30,12 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "GLTextGlobals.h"
 #include "GLPrograms/GLProgTextTexture.h"
 #include "Renderers/RendererBase.h"
+
 
 
 // forward declarations for private types within the module.
@@ -98,6 +100,29 @@ public:
 
 
 	struct VertexBufferPerTexture {
+		std::vector<GlGlyphVertexStruct> vertexVector;
+
+		GLTextFontTexture& fontTexture;
+
+		GLuint vertexBufferHandle;
+
+		VertexBufferPerTexture(GLTextFontTexture& fontTexture, size_t vectorReserveSize)
+		: fontTexture{fontTexture},
+		  vertexBufferHandle{0}
+		{
+			vertexVector.reserve(vectorReserveSize);
+		}
+
+		VertexBufferPerTexture(VertexBufferPerTexture const& source) = delete;
+
+		VertexBufferPerTexture(VertexBufferPerTexture&& source)
+		: vertexVector {std::move(source.vertexVector)},
+		  fontTexture{source.fontTexture},
+		  vertexBufferHandle{source.vertexBufferHandle}
+		{}
+
+		VertexBufferPerTexture& operator = (VertexBufferPerTexture const& source) = delete;
+		VertexBufferPerTexture& operator = (VertexBufferPerTexture&& source) = delete;
 
 	};
 
@@ -225,13 +250,16 @@ private:
 
 	GLProgTextTexture* textTextureProgram = nullptr;
 
-	GLuint vertexBufferHandle = 0;
+	/// \brief Size to reserve the vertex vectors
+	///
+	/// Is being set each time in \ref renderLayoutSubpixel()
+	gint vertexVectorReserveSize = 1;
 
 	/// \brief The rectangle which circumfences the text box as drawn.
 	PangoRectangle inkRect = {-1,-1,-1,-1};
 	PangoRectangle logicalRect = {-1,-1,-1,-1};
 
-	std::vector<GlGlyphVertexStruct> vertexVector;
+	std::unordered_map<GLuint,VertexBufferPerTexture> vertextBufferPerTextureMap;
 
 }; // class GLTextRenderer
 

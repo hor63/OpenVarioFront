@@ -292,12 +292,25 @@ void GLTextRenderer::renderLayout(int x, int y, RenderMode renderMode) {
 void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
 
 	auto charCount = pango_layout_get_character_count(pangoLayout);
+	if (charCount < 1) {
+		return;
+	}
+
+	// Ensures that not more than the vectors are not being resized more than once,
+	// but does not waste excessive memory when there are more than one texture per
+	// font. Most fonts will not have more than 2 textures for the map.
+	// Chinese and Kanji are a totally different beast however.
+	vertexVectorReserveSize = charCount / 2 + 1;
+
 	this->renderMode = renderMode;
 
-	vertexVector.clear();
-	if (charCount > vertexVector.capacity()) {
-		vertexVector.reserve(charCount);
+
+	for (auto iter = vertextBufferPerTextureMap.begin();
+			iter!=vertextBufferPerTextureMap.end();
+			++iter){
+		iter->second.vertexVector.clear();
 	}
+
 
 	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
 
@@ -394,8 +407,23 @@ void GLTextRenderer::draw_glyph (
 						<< 'x' << glyphInfo.texturePositionNormalized.yBottom
 						);
 
+				auto textureIter = vertextBufferPerTextureMap.find(
+						glyphInfo.texture.getTexture().getTextureHandle());
+				if (textureIter == vertextBufferPerTextureMap.end()) {
+					auto newEntry = vertextBufferPerTextureMap.emplace(std::make_pair(
+							glyphInfo.texture.getTexture().getTextureHandle(),
+							VertexBufferPerTexture{glyphInfo.texture,
+						static_cast<size_t>(vertexVectorReserveSize)}));
 
-				vertexVector.push_back(GlGlyphVertexStruct {
+					LOG4CXX_DEBUG (logger,
+							"\tEmplace entry for vertex vector per texture list for texture "
+							<< glyphInfo.texture.getTexture().getTextureHandle()
+							<< ". Added a new entry = " << (newEntry.second?"Yes":"No"));
+
+					textureIter = newEntry.first;
+				}
+
+				textureIter->second.vertexVector.push_back(GlGlyphVertexStruct {
 					.tri1TopLeft = GlGlyphCornerVertexStruct {
 							.vertexPosition = {left,top,0.0f,1.0f},
 							.texturePosition = {
@@ -440,8 +468,10 @@ void GLTextRenderer::draw_glyph (
 					}
 				});
 
-				LOG4CXX_DEBUG(logger,"vertexVector capacity = " << vertexVector.capacity()
-						<< ", number elements = " << vertexVector.size());
+				LOG4CXX_DEBUG(logger,"vertexVector capacity = "
+						<< textureIter->second.vertexVector.capacity()
+						<< ", number elements = "
+						<< textureIter->second.vertexVector.size());
 			}
 
 		} else { // if (glyphInfo.renderGlyph)
