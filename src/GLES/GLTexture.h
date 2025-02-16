@@ -121,17 +121,23 @@ public:
 
 	/** \brief Convenience operator for gl-functions which use the texture ID as parameter
 	 *
+	 * Create a new texture handle if it did not exist before.
+	 *
 	 * @return GL texture ID
 	 */
 	operator GLuint () {
+		createTextureHandle();
 		return textureHandle;
 	}
 
 	/** \brief Return the GL texture ID.
 	 *
+	 * Create a new texture handle if it did not exist before.
+	 *
 	 * @return GL texture ID
 	 */
 	GLuint getTextureHandle () {
+		createTextureHandle();
 		return textureHandle;
 	}
 
