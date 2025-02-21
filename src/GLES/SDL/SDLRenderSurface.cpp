@@ -56,7 +56,7 @@ SDLRenderSurface::SDLRenderSurface(GLFramework& framework)
 
 SDLRenderSurface::~SDLRenderSurface() {
 
-
+	SDL_GL_DestroyContext(glContext);
 	nativeWindow.closeNativeWindow();
 }
 
@@ -109,6 +109,7 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 
 void SDLRenderSurface::makeContextCurrent() {
 
+	SDL_GL_MakeCurrent(nativeWindow, glContext);
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
 }

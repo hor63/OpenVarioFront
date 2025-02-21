@@ -105,6 +105,14 @@ public:
 	 */
 	GLTextGlyphBBoxI addFallbackTofuGlyphToTexture(int32_t width,int32_t height);
 
+	/** \brief Uploads glyph image data into the texture when changed
+	 *
+	 * Upload the glyph texture data into the GPU when the flag \ref dirty is \p true.
+	 * The flag \ref dirty is false after the call.
+	 *
+	 */
+	void syncTextureDataWithGPU();
+
 	/** \brief Check if the texture is assumed to be full
 	 *
 	 * The texture is assumed to be full when the previous attempt to add a glyph

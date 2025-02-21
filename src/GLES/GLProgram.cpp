@@ -256,7 +256,7 @@ void GLProgram::retrieveShaderVariableInfos() {
 			attributeMap.insert (ShaderVariableInfoPair(std::string(buf),ShaderVariableInfo(buf,type,i)));
 		}
 
-		delete buf;
+		delete [] buf;
 	}
 
 
@@ -290,7 +290,7 @@ void GLProgram::retrieveShaderVariableInfos() {
 
 		}
 
-		delete buf;
+		delete [] buf;
 	}
 
 

@@ -556,7 +556,23 @@ double GLTextRenderer::getFontSize() {
 }
 
 void GLTextRenderer::setupVertexBuffers () {
-	/// todo: Fill method
+
+	glProgram = GLProgTextTexture::getProgram();
+
+	glProgram->useProgram();
+
+
+	// Prepare all glyph image textures
+	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
+		if (iter->second.vertexVector.size() > 0) {
+			iter->second.fontTexture.syncTextureDataWithGPU();
+
+			glGenBuffers(1,&iter->second.vertexBufferHandle);
+			glBindBuffer(GL_ARRAY_BUFFER,iter->second.vertexBufferHandle);
+			glBufferData(GL_ARRAY_BUFFER,iter->second.vertexVector.size()*sizeof(GlGlyphVertexStruct),&iter->second.vertexVector[0],GL_STATIC_DRAW);
+		}
+	}
+
 }
 
 void GLTextRenderer::draw(
@@ -569,7 +585,13 @@ void GLTextRenderer::draw(
 			OevGLES::Vec4 const &lightColor,
 			OevGLES::Vec4 const &ambientLightColor
 			) {
-	/// todo: Fill method
+	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
+		if (iter->second.vertexVector.size() > 0) {
+			iter->second.fontTexture.syncTextureDataWithGPU();
+
+
+		}
+	}
 }
 
 } /* namespace OevGLES */

@@ -29,11 +29,24 @@
 
 #include <sstream>
 
+#include "OVFCommon.h"
+
 #include "GLPrograms/GLProgBase.h"
 
 namespace OevGLES {
 
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
+
+
 GLProgBase::GLProgBase() {
+
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLPrograms.GLProgBase");
+	}
+#endif
 
 }
 

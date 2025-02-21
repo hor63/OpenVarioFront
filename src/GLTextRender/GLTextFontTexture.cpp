@@ -416,4 +416,15 @@ void GLTextFontTexture::exportTextureBitmap(int bitmapNumber) {
 
 }
 
+void GLTextFontTexture::syncTextureDataWithGPU() {
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+			<<": dirty = " << dirty);
+
+	if (dirty) {
+		texture.setTextureData(textureData);
+		dirty = false;
+	}
+}
+
 } /* namespace OevGLES */

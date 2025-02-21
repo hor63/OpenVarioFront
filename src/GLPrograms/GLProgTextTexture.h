@@ -73,11 +73,11 @@ public:
 		return unMvpMatrixLocation;
 	}
 
-	GLProgram::ShaderVariableInfo  const &getUnVertexColorInfo() const {
-		return unVertexColorInfo;
+	GLProgram::ShaderVariableInfo  const &getUnFragColorInfo() const {
+		return unFragColorInfo;
 	}
-	GLint getUnVertexColorLocation () const {
-		return unVertexColorLocation;
+	GLint getUnFragColorLocation () const {
+		return unFragColorLocation;
 	}
 
 	GLProgram::ShaderVariableInfo  const &getUnTexture0Info() const {
@@ -95,11 +95,11 @@ public:
 		return attVertexPosLocation;
 	}
 
-	GLProgram::ShaderVariableInfo  const &getAttVertexTexture0PosInfo() const {
-		return attVertexTexture0PosInfo;
+	GLProgram::ShaderVariableInfo  const &getAttTexture0PosInfo() const {
+		return attTexture0PosInfo;
 	}
-	GLint getAttVertexTexture0PosLocation () const {
-		return attVertexTexture0PosLocation;
+	GLint getAttTexture0PosLocation () const {
+		return attTexture0PosLocation;
 	}
 
 
@@ -120,16 +120,16 @@ private:
 	// The uniforms
 	GLProgram::ShaderVariableInfo	unMvpMatrixInfo;
 	GLint 							unMvpMatrixLocation = 0;
-	GLProgram::ShaderVariableInfo	unVertexColorInfo;
-	GLint							unVertexColorLocation = 0;
+	GLProgram::ShaderVariableInfo	unFragColorInfo;
+	GLint							unFragColorLocation = 0;
 	GLProgram::ShaderVariableInfo	unTexture0Info;
 	GLint							unTexture0Location = 0;
 
 	// The vertex attributes
 	GLProgram::ShaderVariableInfo	attVertexPosInfo;
 	GLint							attVertexPosLocation = 0;
-	GLProgram::ShaderVariableInfo	attVertexTexture0PosInfo;
-	GLint							attVertexTexture0PosLocation = 0;
+	GLProgram::ShaderVariableInfo	attTexture0PosInfo;
+	GLint							attTexture0PosLocation = 0;
 
 	/** \brief private constructor
 	 *

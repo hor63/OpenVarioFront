@@ -248,7 +248,8 @@ private:
 
 	GLTextGlobalsWeakPtr globals;
 
-	GLProgTextTexture* textTextureProgram = nullptr;
+	GLProgTextTexture* glProgram = nullptr;
+	GLuint vertexBufferHandle = 0;
 
 	/// \brief Size to reserve the vertex vectors
 	///

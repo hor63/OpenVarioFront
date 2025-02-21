@@ -118,6 +118,8 @@ int main(int argint,char** argv) {
 
 			glTextRend.setFontSize(12);
 			glTextRend.renderLayout();
+
+			glTextRend.setupVertexBuffers();
 		}
 		{
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
