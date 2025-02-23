@@ -570,6 +570,8 @@ void GLTextRenderer::setupVertexBuffers () {
 			glGenBuffers(1,&iter->second.vertexBufferHandle);
 			glBindBuffer(GL_ARRAY_BUFFER,iter->second.vertexBufferHandle);
 			glBufferData(GL_ARRAY_BUFFER,iter->second.vertexVector.size()*sizeof(GlGlyphVertexStruct),&iter->second.vertexVector[0],GL_STATIC_DRAW);
+
+			glBindBuffer(GL_ARRAY_BUFFER,0);
 		}
 	}
 
@@ -588,6 +590,17 @@ void GLTextRenderer::draw(
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
 		if (iter->second.vertexVector.size() > 0) {
 			iter->second.fontTexture.syncTextureDataWithGPU();
+
+			glProgram->useProgram();
+
+			// Set the uniforms
+			glUniformMatrix4fv(glProgram->getUnMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
+
+			// Assign the texture to Texure engine 0, and set the sampler uniform accordingly
+			unFragColorLocation
+			varioBackgoundTexture.bindToUniformLocation(GL_TEXTURE0,0,glProgram->getTexture0Location());
+
+			unTexture0Location
 
 
 		}
