@@ -148,7 +148,6 @@ void SquareTextureRenderer::draw(
 	// Set the uniforms
 	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
 	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
-	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
 
 	glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
 	glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
@@ -160,7 +159,7 @@ void SquareTextureRenderer::draw(
 	glVertexAttrib4fv(glProgram->getVertexColorLocation(),textureBaseColor);
 
 	// set the vertex normal constant
-	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
 	glVertexAttrib4fv(glProgram->getVertexNormalLocation(),textureNormal);
 
 	// re-bind the buffer object
