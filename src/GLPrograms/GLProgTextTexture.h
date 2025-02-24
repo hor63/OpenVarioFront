@@ -91,7 +91,7 @@ public:
 	GLProgram::ShaderVariableInfo  const &getAttVertexPosInfo() const {
 		return attVertexPosInfo;
 	}
-	GLint getVertexPosLocation () const {
+	GLint getAttVertexPosLocation () const {
 		return attVertexPosLocation;
 	}
 
