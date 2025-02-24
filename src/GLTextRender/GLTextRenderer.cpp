@@ -587,20 +587,29 @@ void GLTextRenderer::draw(
 			OevGLES::Vec4 const &lightColor,
 			OevGLES::Vec4 const &ambientLightColor
 			) {
+
+	glProgram->useProgram();
+
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
 		if (iter->second.vertexVector.size() > 0) {
 			iter->second.fontTexture.syncTextureDataWithGPU();
 
-			glProgram->useProgram();
 
 			// Set the uniforms
 			glUniformMatrix4fv(glProgram->getUnMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
+			glUniform4fv(glProgram->getUnFragColorLocation(),1, &lightColor(0));
 
-			// Assign the texture to Texure engine 0, and set the sampler uniform accordingly
-			unFragColorLocation
-			varioBackgoundTexture.bindToUniformLocation(GL_TEXTURE0,0,glProgram->getTexture0Location());
+			iter->second.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE1, 1, glProgram->getUnTexture0Location());
 
-			unTexture0Location
+			// Now assign the attributes in the vertex buffer
+
+			// bind the vertex buffer which contains all vertex data: Model and texture coordinates
+			glBindBuffer(GL_ARRAY_BUFFER,iter->second.vertexBufferHandle);
+			glEnableVertexAttribArray(glProgram->getAttVertexPosLocation());
+			glVertexAttribPointer(glProgram->getAttVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,
+					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,vertexPosition)));
+			glVertexAttribPointer(glProgram->getAttVertexPosLocation(),texturePositionArrayLen,GL_FLOAT,
+					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,texturePosition)));
 
 
 		}

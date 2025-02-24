@@ -69,10 +69,13 @@ public:
 								 */
 	};
 
+	static constexpr size_t vertextPositionArrayLen = 4;
+	static constexpr size_t texturePositionArrayLen = 2;
+
 	/// \brief vertex buffer structure of one vertex of a glyph box
 	struct GlGlyphCornerVertexStruct {
-		GLfloat vertexPosition [4];
-		GLfloat texturePosition [2];
+		GLfloat vertexPosition [vertextPositionArrayLen];
+		GLfloat texturePosition [texturePositionArrayLen];
 	};
 
 	/** \brief vertex buffer structure of a glyph box with two triangles
