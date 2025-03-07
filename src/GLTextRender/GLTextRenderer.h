@@ -109,9 +109,13 @@ public:
 
 		GLuint vertexBufferHandle;
 
+		/// 3 vertexes per triangle, 6 vertexes per rectangular glyph
+		GLsizei numVertexes;
+
 		VertexBufferPerTexture(GLTextFontTexture& fontTexture, size_t vectorReserveSize)
 		: fontTexture{fontTexture},
-		  vertexBufferHandle{0}
+		  vertexBufferHandle{0},
+		  numVertexes{0}
 		{
 			vertexVector.reserve(vectorReserveSize);
 		}
@@ -121,7 +125,8 @@ public:
 		VertexBufferPerTexture(VertexBufferPerTexture&& source)
 		: vertexVector {std::move(source.vertexVector)},
 		  fontTexture{source.fontTexture},
-		  vertexBufferHandle{source.vertexBufferHandle}
+		  vertexBufferHandle{source.vertexBufferHandle},
+		  numVertexes{source.numVertexes}
 		{}
 
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture const& source) = delete;

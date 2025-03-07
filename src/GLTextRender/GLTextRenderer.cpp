@@ -309,6 +309,7 @@ void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
 			iter!=vertextBufferPerTextureMap.end();
 			++iter){
 		iter->second.vertexVector.clear();
+		iter->second.numVertexes = 0;
 	}
 
 
@@ -467,6 +468,7 @@ void GLTextRenderer::draw_glyph (
 						}
 					}
 				});
+				textureIter->second.numVertexes += 6;
 
 				LOG4CXX_DEBUG(logger,"vertexVector capacity = "
 						<< textureIter->second.vertexVector.capacity()
@@ -564,7 +566,7 @@ void GLTextRenderer::setupVertexBuffers () {
 
 	// Prepare all glyph image textures
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
-		if (iter->second.vertexVector.size() > 0) {
+		if (iter->second.numVertexes > 0) {
 			iter->second.fontTexture.syncTextureDataWithGPU();
 
 			glGenBuffers(1,&iter->second.vertexBufferHandle);
@@ -591,15 +593,16 @@ void GLTextRenderer::draw(
 	glProgram->useProgram();
 
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
-		if (iter->second.vertexVector.size() > 0) {
-			iter->second.fontTexture.syncTextureDataWithGPU();
+		VertexBufferPerTexture& vertexBuffer = iter->second;
+		if (vertexBuffer.numVertexes > 0) {
+			vertexBuffer.fontTexture.syncTextureDataWithGPU();
 
 
 			// Set the uniforms
 			glUniformMatrix4fv(glProgram->getUnMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
 			glUniform4fv(glProgram->getUnFragColorLocation(),1, &lightColor(0));
 
-			iter->second.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE1, 1, glProgram->getUnTexture0Location());
+			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE1, 1, glProgram->getUnTexture0Location());
 
 			// Now assign the attributes in the vertex buffer
 
@@ -608,10 +611,17 @@ void GLTextRenderer::draw(
 			glEnableVertexAttribArray(glProgram->getAttVertexPosLocation());
 			glVertexAttribPointer(glProgram->getAttVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,
 					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,vertexPosition)));
-			glVertexAttribPointer(glProgram->getAttVertexPosLocation(),texturePositionArrayLen,GL_FLOAT,
+			glEnableVertexAttribArray(glProgram->getAttTexture0PosLocation());
+			glVertexAttribPointer(glProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
 					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,texturePosition)));
 
+			// Now draw the glyphs as pairs of triangles.
+			glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.numVertexes);
 
+			// Reset bindings and assignment of the attribute buffers.
+			glDisableVertexAttribArray(glProgram->getAttVertexPosLocation());
+			glDisableVertexAttribArray(glProgram->getAttTexture0PosLocation());
+			glBindBuffer(GL_ARRAY_BUFFER,0);
 		}
 	}
 }
