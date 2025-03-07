@@ -248,6 +248,34 @@ int main(int argint,char** argv) {
 //		std::cout << "Pointer to glGenVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glGenVertexArraysOES")) << std::endl;
 //		std::cout << "Pointer to glIsVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glIsVertexArrayOES")) << std::endl;
 
+		OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowWidth,windowWidth*3,
+				static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngleQuarterDeg);
+
+		auto modelMatrixText = OevGLES::translationMatrix(0,400,20);
+		auto viewMatrixText = OevGLES::Mat4::Identity();
+		auto MVMatrixText = viewMatrixText * modelMatrixText;
+		auto MVPMatrixText = projMatrix * MVMatrixText;
+		OevGLES::GLTextRenderer glTextRend (glTextGlob);
+
+		glTextRend.setFontSize(40);
+		glTextRend.setText(
+				  "0123456789||0"
+				"\nABCDEFGHIJK"
+				"\nLMNOPQRSTUV"
+				"\nWXZYabcdefg"
+				"\nhijklmnopqr"
+				"\nstuvwxzy!@#"
+				"\n$%^&*()_+<>"
+				"\n[]{};'\\:\"|"
+				"\n,./?€üöäÜÖÄ"
+				"\níéóúêîôû^'´`"
+				"îêôû°ß-="
+				);
+
+		glTextRend.renderLayout();
+
+
+
 		for (GLfloat rotationAngleDeg = 0.0f; rotationAngleDeg<360.0f;rotationAngleDeg += 0.1f) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
@@ -257,9 +285,8 @@ int main(int argint,char** argv) {
 			}
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
+
 			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngleDeg) * camPos).block<3,1>(0,0),origin,up);
-			OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowWidth,windowWidth*3,
-					static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngleQuarterDeg);
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVPMatrix = projMatrix * viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVMatrixBack = viewMatrix * modelMatrixBack;
@@ -275,6 +302,8 @@ int main(int argint,char** argv) {
 
 			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
 			varioBackground.draw(modelMatrixBack,viewMatrix,projMatrix,MVMatrixBack,MVPMatrixBack,lightDir,lightColor,ambientLightColor);
+
+			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
 
 			// sleep(3);
 
