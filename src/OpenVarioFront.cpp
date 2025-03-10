@@ -251,10 +251,10 @@ int main(int argint,char** argv) {
 		OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowWidth,windowWidth*3,
 				static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngleQuarterDeg);
 
-		auto modelMatrixText = OevGLES::translationMatrix(0,400,20);
-		auto viewMatrixText = OevGLES::Mat4::Identity();
-		auto MVMatrixText = viewMatrixText * modelMatrixText;
-		auto MVPMatrixText = projMatrix * MVMatrixText;
+		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(0,400,20);
+		OevGLES::Mat4 viewMatrixText = OevGLES::Mat4::Identity();
+		OevGLES::Mat4 MVMatrixText = viewMatrixText * modelMatrixText;
+		OevGLES::Mat4 MVPMatrixText = projMatrix * MVMatrixText;
 		OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
 		glTextRend.setFontSize(40);
@@ -273,6 +273,7 @@ int main(int argint,char** argv) {
 				);
 
 		glTextRend.renderLayout();
+		glTextRend.setupVertexBuffers();
 
 
 
