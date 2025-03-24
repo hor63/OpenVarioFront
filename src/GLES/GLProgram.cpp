@@ -343,8 +343,16 @@ void GLProgram::detachFragmentShader() {
 
 		isLinked = false;
 	}
-
 }
+
+
+void GLProgram::useProgram() {
+
+	LOG4CXX_DEBUG(logger,"GLProgram::useProgram(): programHandle = " << programHandle);
+
+	glUseProgram(programHandle);
+}
+
 
 
 } /* namespace OevGLES */

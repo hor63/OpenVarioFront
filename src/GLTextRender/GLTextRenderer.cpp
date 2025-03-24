@@ -559,6 +559,8 @@ double GLTextRenderer::getFontSize() {
 
 void GLTextRenderer::setupVertexBuffers () {
 
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
+
 	glProgram = GLProgTextTexture::getProgram();
 
 	glProgram->useProgram();
@@ -566,16 +568,24 @@ void GLTextRenderer::setupVertexBuffers () {
 
 	// Prepare all glyph image textures
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
+
+		LOG4CXX_DEBUG(logger,"\tNumber vertexes per texture = " << iter->second.numVertexes);
+
 		if (iter->second.numVertexes > 0) {
 			iter->second.fontTexture.syncTextureDataWithGPU();
-
-			glGenBuffers(1,&iter->second.vertexBufferHandle);
+			if (iter->second.vertexBufferHandle == 0) {
+				glGenBuffers(1,&iter->second.vertexBufferHandle);
+			}
+			LOG4CXX_DEBUG(logger,"\tNumber vertex buffer handle = " << iter->second.vertexBufferHandle);
 			glBindBuffer(GL_ARRAY_BUFFER,iter->second.vertexBufferHandle);
-			glBufferData(GL_ARRAY_BUFFER,iter->second.vertexVector.size()*sizeof(GlGlyphVertexStruct),&iter->second.vertexVector[0],GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER,iter->second.vertexVector.size()*sizeof(GlGlyphVertexStruct),
+					&iter->second.vertexVector[0].tri1TopLeft.vertexPosition[0],
+					GL_STATIC_DRAW);
 
 			glBindBuffer(GL_ARRAY_BUFFER,0);
 		}
 	}
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<--End");
 
 }
 

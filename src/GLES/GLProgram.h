@@ -210,9 +210,7 @@ public:
 	/** \brief Use the program for subsequent rendering
 	 *
 	 */
-	void useProgram() {
-		glUseProgram(programHandle);
-	}
+	void useProgram();
 
 private:
 

@@ -119,7 +119,7 @@ int main(int argint,char** argv) {
 			glTextRend.setFontSize(12);
 			glTextRend.renderLayout();
 
-			glTextRend.setupVertexBuffers();
+			//glTextRend.setupVertexBuffers();
 		}
 		{
 			OevGLES::GLTextRenderer glTextRend (glTextGlob);
@@ -261,6 +261,7 @@ int main(int argint,char** argv) {
 		glTextRend.setText(
 				  "0123456789||0"
 				"\nABCDEFGHIJK"
+/*
 				"\nLMNOPQRSTUV"
 				"\nWXZYabcdefg"
 				"\nhijklmnopqr"
@@ -270,11 +271,13 @@ int main(int argint,char** argv) {
 				"\n,./?€üöäÜÖÄ"
 				"\níéóúêîôû^'´`"
 				"îêôû°ß-="
+*/
 				);
 
 		glTextRend.renderLayout();
 		glTextRend.setupVertexBuffers();
 
+		glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
 
 
 		for (GLfloat rotationAngleDeg = 0.0f; rotationAngleDeg<360.0f;rotationAngleDeg += 0.1f) {
@@ -304,7 +307,7 @@ int main(int argint,char** argv) {
 			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
 			varioBackground.draw(modelMatrixBack,viewMatrix,projMatrix,MVMatrixBack,MVPMatrixBack,lightDir,lightColor,ambientLightColor);
 
-			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
+//			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
 
 			// sleep(3);
 
