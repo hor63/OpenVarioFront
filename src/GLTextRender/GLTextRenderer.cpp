@@ -561,10 +561,32 @@ void GLTextRenderer::setupVertexBuffers () {
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
 
+	GLenum glErr = glGetError();
+
+	// Flush the error chain
+	while (glErr != GL_NO_ERROR) {
+		glErr = glGetError();
+	}
+
 	glProgram = GLProgTextTexture::getProgram();
+
+	if (logger->isDebugEnabled()) {
+		glErr = glGetError();
+		while (glErr != GL_NO_ERROR) {
+			LOG4CXX_DEBUG(logger, "\tGLerror in GLProgTextTexture::getProgram() = " << glErr);
+			glErr = glGetError();
+		}
+	}
 
 	glProgram->useProgram();
 
+	if (logger->isDebugEnabled()) {
+		glErr = glGetError();
+		while (glErr != GL_NO_ERROR) {
+			LOG4CXX_DEBUG(logger, "\tGLerror in glProgram->useProgram() = " << glErr);
+			glErr = glGetError();
+		}
+	}
 
 	// Prepare all glyph image textures
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
@@ -574,15 +596,52 @@ void GLTextRenderer::setupVertexBuffers () {
 		if (iter->second.numVertexes > 0) {
 			iter->second.fontTexture.syncTextureDataWithGPU();
 			if (iter->second.vertexBufferHandle == 0) {
+				LOG4CXX_DEBUG(logger,"\tCreate new vertex buffer handle");
 				glGenBuffers(1,&iter->second.vertexBufferHandle);
+				if (logger->isDebugEnabled()) {
+					glErr = glGetError();
+					while (glErr != GL_NO_ERROR) {
+						LOG4CXX_DEBUG(logger, "\tGLerror in glGenBuffers() = " << glErr);
+						glErr = glGetError();
+					}
+				}
 			}
-			LOG4CXX_DEBUG(logger,"\tNumber vertex buffer handle = " << iter->second.vertexBufferHandle);
+
+			LOG4CXX_DEBUG(logger,"\tVertex buffer handle = " << iter->second.vertexBufferHandle);
 			glBindBuffer(GL_ARRAY_BUFFER,iter->second.vertexBufferHandle);
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glGenBuffers() = " << glErr);
+					glErr = glGetError();
+				}
+			}
+
+			LOG4CXX_DEBUG(logger,"\tCall glBufferData (target = " << GL_ARRAY_BUFFER
+					<< ", size = " << (iter->second.vertexVector.size()*sizeof(GlGlyphVertexStruct))
+					<< ", data = " << reinterpret_cast<void*>(&iter->second.vertexVector[0].tri1TopLeft.vertexPosition[0])
+					<< ", usage = " << GL_STATIC_DRAW
+					<< ")");
+
 			glBufferData(GL_ARRAY_BUFFER,iter->second.vertexVector.size()*sizeof(GlGlyphVertexStruct),
 					&iter->second.vertexVector[0].tri1TopLeft.vertexPosition[0],
 					GL_STATIC_DRAW);
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glBufferData() = " << glErr);
+					glErr = glGetError();
+				}
+			}
 
 			glBindBuffer(GL_ARRAY_BUFFER,0);
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glBindBuffer(GL_ARRAY_BUFFER,0) = " << glErr);
+					glErr = glGetError();
+				}
+			}
 		}
 	}
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<--End");
@@ -599,41 +658,175 @@ void GLTextRenderer::draw(
 			OevGLES::Vec4 const &lightColor,
 			OevGLES::Vec4 const &ambientLightColor
 			) {
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
+
+	GLenum glErr = glGetError();
+
+	// Flush the error chain
+	while (glErr != GL_NO_ERROR) {
+		glErr = glGetError();
+	}
 
 	glProgram->useProgram();
 
+	if (logger->isDebugEnabled()) {
+		glErr = glGetError();
+		while (glErr != GL_NO_ERROR) {
+			LOG4CXX_DEBUG(logger, "\tGLerror in glProgram->useProgram() = " << glErr);
+			glErr = glGetError();
+		}
+	}
+
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
 		VertexBufferPerTexture& vertexBuffer = iter->second;
+
+		LOG4CXX_DEBUG(logger,"\tNumber vertexes per texture = " << vertexBuffer.numVertexes);
+
 		if (vertexBuffer.numVertexes > 0) {
 			vertexBuffer.fontTexture.syncTextureDataWithGPU();
 
 
 			// Set the uniforms
 			glUniformMatrix4fv(glProgram->getUnMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
-			glUniform4fv(glProgram->getUnFragColorLocation(),1, &lightColor(0));
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glUniformMatrix4fv = " << glErr);
+					glErr = glGetError();
+				}
+			}
 
-			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE0, 0, glProgram->getUnTexture0Location());
+			glUniform4fv(glProgram->getUnFragColorLocation(),1, &lightColor(0));
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glUniformMatrix4fv = " << glErr);
+					glErr = glGetError();
+				}
+			}
+
+			//vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE0, 0, glProgram->getUnTexture0Location());
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in getTexture().bindToUniformLocation() = " << glErr);
+					glErr = glGetError();
+				}
+			}
 
 			// Now assign the attributes in the vertex buffer
 
 			// bind the vertex buffer which contains all vertex data: Model and texture coordinates
 			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer.vertexBufferHandle);
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glBindBuffer() = " << glErr);
+					glErr = glGetError();
+				}
+			}
 			glEnableVertexAttribArray(glProgram->getAttVertexPosLocation());
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glEnableVertexAttribArray() = " << glErr);
+					glErr = glGetError();
+				}
+			}
 			glVertexAttribPointer(glProgram->getAttVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,
 					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,vertexPosition)));
-			glEnableVertexAttribArray(glProgram->getAttTexture0PosLocation());
-			glVertexAttribPointer(glProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
-					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,texturePosition)));
+			if (logger->isDebugEnabled()) {
+				LOG4CXX_DEBUG(logger,"\tCall glVertexAttribPointer (index = " << glProgram->getAttVertexPosLocation()
+						<< ", size = " << vertextPositionArrayLen
+						<< ", type = " << GL_FLOAT
+						<< ", normalized = " << GL_FALSE
+						<< ", stride = " << sizeof(GlGlyphCornerVertexStruct)
+						<< ", pointer = " << reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,vertexPosition))
+						<< ")");
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glVertexAttribPointer() = " << glErr);
+					glErr = glGetError();
+				}
+			}
+			//glEnableVertexAttribArray(glProgram->getAttTexture0PosLocation());
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glEnableVertexAttribArray() = " << glErr);
+					glErr = glGetError();
+				}
+			}
+			//glVertexAttribPointer(glProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
+			//		GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(4/*offsetof(GlGlyphCornerVertexStruct,texturePosition)*/));
+			LOG4CXX_DEBUG(logger,"\tCall glVertexAttribPointer (index = " << glProgram->getAttTexture0PosLocation()
+					<< ", size = " << texturePositionArrayLen
+					<< ", type = " << GL_FLOAT
+					<< ", normalized = " << GL_FALSE
+					<< ", stride = " << sizeof(GlGlyphCornerVertexStruct)
+					<< ", pointer = " << reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,texturePosition))
+					<< ")");
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glVertexAttribPointer() = " << glErr);
+					glErr = glGetError();
+				}
+			}
 
 			// Now draw the glyphs as pairs of triangles.
 			glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.numVertexes);
+			if (logger->isDebugEnabled()) {
+				glErr = glGetError();
+				while (glErr != GL_NO_ERROR) {
+					LOG4CXX_DEBUG(logger, "\tGLerror in glDrawArrays() = " << glErr);
+					glErr = glGetError();
+				}
+			}
 
+			if (logger->isTraceEnabled()) {
+
+				LOG4CXX_TRACE(logger,"\tvertexBuffer.vertexVector[0] Vertex positions = \n "
+						<< vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[0] << ", "
+						<< vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[1] << ", "
+						<< vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[2] << ", "
+						<< vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[3] << "\n"
+
+						<< vertexBuffer.vertexVector[0].tri1BottomLeft.vertexPosition[0] << ", "
+						<< vertexBuffer.vertexVector[0].tri1BottomLeft.vertexPosition[1] << ", "
+						<< vertexBuffer.vertexVector[0].tri1BottomLeft.vertexPosition[2] << ", "
+						<< vertexBuffer.vertexVector[0].tri1BottomLeft.vertexPosition[3] << "\n"
+
+						<< vertexBuffer.vertexVector[0].tri1BottomRight.vertexPosition[0] << ", "
+						<< vertexBuffer.vertexVector[0].tri1BottomRight.vertexPosition[1] << ", "
+						<< vertexBuffer.vertexVector[0].tri1BottomRight.vertexPosition[2] << ", "
+						<< vertexBuffer.vertexVector[0].tri1BottomRight.vertexPosition[3] << "\n"
+
+						<< vertexBuffer.vertexVector[0].tri2TopLeft.vertexPosition[0] << ", "
+						<< vertexBuffer.vertexVector[0].tri2TopLeft.vertexPosition[1] << ", "
+						<< vertexBuffer.vertexVector[0].tri2TopLeft.vertexPosition[2] << ", "
+						<< vertexBuffer.vertexVector[0].tri2TopLeft.vertexPosition[3] << "\n"
+
+						<< vertexBuffer.vertexVector[0].tri2BottomRight.vertexPosition[0] << ", "
+						<< vertexBuffer.vertexVector[0].tri2BottomRight.vertexPosition[1] << ", "
+						<< vertexBuffer.vertexVector[0].tri2BottomRight.vertexPosition[2] << ", "
+						<< vertexBuffer.vertexVector[0].tri2BottomRight.vertexPosition[3] << "\n"
+
+						<< vertexBuffer.vertexVector[0].tri2TopRight.vertexPosition[0] << ", "
+						<< vertexBuffer.vertexVector[0].tri2TopRight.vertexPosition[1] << ", "
+						<< vertexBuffer.vertexVector[0].tri2TopRight.vertexPosition[2] << ", "
+						<< vertexBuffer.vertexVector[0].tri2TopRight.vertexPosition[3]
+						);
+
+			}
 			// Reset bindings and assignment of the attribute buffers.
 			glDisableVertexAttribArray(glProgram->getAttVertexPosLocation());
 			glDisableVertexAttribArray(glProgram->getAttTexture0PosLocation());
 			glBindBuffer(GL_ARRAY_BUFFER,0);
 		}
 	}
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<-- End");
 }
 
 } /* namespace OevGLES */
