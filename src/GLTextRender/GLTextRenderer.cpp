@@ -442,8 +442,8 @@ void GLTextRenderer::draw_glyph (
 					.tri1BottomRight = GlGlyphCornerVertexStruct {
 						.vertexPosition = {right,bottom,0.0f,1.0f},
 						.texturePosition = {
-							glyphInfo.texturePositionNormalized.xLeft,
-							glyphInfo.texturePositionNormalized.yTop
+							glyphInfo.texturePositionNormalized.xRight,
+							glyphInfo.texturePositionNormalized.yBottom
 						}
 					},
 					.tri2TopLeft = GlGlyphCornerVertexStruct {
@@ -705,7 +705,7 @@ void GLTextRenderer::draw(
 				}
 			}
 
-			//vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE0, 0, glProgram->getUnTexture0Location());
+			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE1, 1, glProgram->getUnTexture0Location());
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {
@@ -749,7 +749,7 @@ void GLTextRenderer::draw(
 					glErr = glGetError();
 				}
 			}
-			//glEnableVertexAttribArray(glProgram->getAttTexture0PosLocation());
+			glEnableVertexAttribArray(glProgram->getAttTexture0PosLocation());
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {
@@ -757,8 +757,8 @@ void GLTextRenderer::draw(
 					glErr = glGetError();
 				}
 			}
-			//glVertexAttribPointer(glProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
-			//		GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(4/*offsetof(GlGlyphCornerVertexStruct,texturePosition)*/));
+			glVertexAttribPointer(glProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
+					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void const*>(offsetof(GlGlyphCornerVertexStruct,texturePosition)));
 			LOG4CXX_DEBUG(logger,"\tCall glVertexAttribPointer (index = " << glProgram->getAttTexture0PosLocation()
 					<< ", size = " << texturePositionArrayLen
 					<< ", type = " << GL_FLOAT
@@ -784,41 +784,6 @@ void GLTextRenderer::draw(
 				}
 			}
 
-			if (logger->isTraceEnabled()) {
-
-				LOG4CXX_TRACE(logger,"\tvertexBuffer.vertexVector[0] Vertex positions = \n "
-						<< vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[0] << ", "
-						<< vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[1] << ", "
-						<< vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[2] << ", "
-						<< vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[3] << "\n"
-
-						<< vertexBuffer.vertexVector[0].tri1BottomLeft.vertexPosition[0] << ", "
-						<< vertexBuffer.vertexVector[0].tri1BottomLeft.vertexPosition[1] << ", "
-						<< vertexBuffer.vertexVector[0].tri1BottomLeft.vertexPosition[2] << ", "
-						<< vertexBuffer.vertexVector[0].tri1BottomLeft.vertexPosition[3] << "\n"
-
-						<< vertexBuffer.vertexVector[0].tri1BottomRight.vertexPosition[0] << ", "
-						<< vertexBuffer.vertexVector[0].tri1BottomRight.vertexPosition[1] << ", "
-						<< vertexBuffer.vertexVector[0].tri1BottomRight.vertexPosition[2] << ", "
-						<< vertexBuffer.vertexVector[0].tri1BottomRight.vertexPosition[3] << "\n"
-
-						<< vertexBuffer.vertexVector[0].tri2TopLeft.vertexPosition[0] << ", "
-						<< vertexBuffer.vertexVector[0].tri2TopLeft.vertexPosition[1] << ", "
-						<< vertexBuffer.vertexVector[0].tri2TopLeft.vertexPosition[2] << ", "
-						<< vertexBuffer.vertexVector[0].tri2TopLeft.vertexPosition[3] << "\n"
-
-						<< vertexBuffer.vertexVector[0].tri2BottomRight.vertexPosition[0] << ", "
-						<< vertexBuffer.vertexVector[0].tri2BottomRight.vertexPosition[1] << ", "
-						<< vertexBuffer.vertexVector[0].tri2BottomRight.vertexPosition[2] << ", "
-						<< vertexBuffer.vertexVector[0].tri2BottomRight.vertexPosition[3] << "\n"
-
-						<< vertexBuffer.vertexVector[0].tri2TopRight.vertexPosition[0] << ", "
-						<< vertexBuffer.vertexVector[0].tri2TopRight.vertexPosition[1] << ", "
-						<< vertexBuffer.vertexVector[0].tri2TopRight.vertexPosition[2] << ", "
-						<< vertexBuffer.vertexVector[0].tri2TopRight.vertexPosition[3]
-						);
-
-			}
 			// Reset bindings and assignment of the attribute buffers.
 			glDisableVertexAttribArray(glProgram->getAttVertexPosLocation());
 			glDisableVertexAttribArray(glProgram->getAttTexture0PosLocation());

@@ -100,8 +100,8 @@ const char* GLProgTextTexture::getFragmentShaderCode() const {
 			"varying vec2 varTexture0Pos;\n"
 			"\n"
 			"void main () {\n"
-			//"	gl_FragColor = vec4 (unFragColor.rgb, texture2D(unTexture0,varTexture0Pos.r);\n"
-			"	gl_FragColor = vec4 (unFragColor.rgb ,1.0);\n"
+			//"	gl_FragColor = vec4 (unFragColor.rgb, texture2D(unTexture0,varTexture0Pos).r;\n"
+			"	gl_FragColor = vec4 (unFragColor.rgb*texture2D(unTexture0,varTexture0Pos).r ,1.0);\n"
 			"}\n";
 }
 
@@ -113,14 +113,14 @@ void OevGLES::GLProgTextTexture::retrieveShaderVariableInfo() {
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": index of unMvpMatrix = " << unMvpMatrixLocation);
 	unFragColorInfo			= *retrieveSingleUniformInfo("unFragColor",unFragColorLocation);
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": index of unFragColor = " << unFragColorLocation);
-	//unTexture0Info			= *retrieveSingleUniformInfo("unTexture0",unTexture0Location);
-	//LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": index of unTexture0 = " << unTexture0Location);
+	unTexture0Info			= *retrieveSingleUniformInfo("unTexture0",unTexture0Location);
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": index of unTexture0 = " << unTexture0Location);
 
 	// The vertex attributes
 	attVertexPosInfo			= *retrieveSingleAttributeInfo("attVertexPos",attVertexPosLocation);
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": index of attVertexPos = " << attVertexPosLocation);
-	//attTexture0PosInfo	= *retrieveSingleAttributeInfo("attTexture0Pos",attTexture0PosLocation);
-	//LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": index of attTexture0Pos = " << attTexture0PosLocation);
+	attTexture0PosInfo	= *retrieveSingleAttributeInfo("attTexture0Pos",attTexture0PosLocation);
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": index of attTexture0Pos = " << attTexture0PosLocation);
 
 }
 

@@ -226,7 +226,7 @@ int main(int argint,char** argv) {
 		static constexpr double apertureAngleQuarterDeg = 26.565051177;
 
 		GLfloat k = 0.0f;
-		OevGLES::Mat4 modelMatrixBack = OevGLES::Mat4::Identity();
+		OevGLES::Mat4 modelMatrixBack = OevGLES::translationMatrix(-0,0,-1);
 		// OevGLES::Vec4 camPos = {3,4,static_cast<float>(windowWidth*2),1};
 		OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowWidth*2),1};
 		OevGLES::Vec3 up = {0,1,0};
@@ -251,10 +251,10 @@ int main(int argint,char** argv) {
 		OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowWidth,windowWidth*3,
 				static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngleQuarterDeg);
 
-		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(0,400,20);
-		OevGLES::Mat4 viewMatrixText = OevGLES::Mat4::Identity();
+		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(-200,0,0);
+		OevGLES::Mat4 viewMatrixText = OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up);
 		OevGLES::Mat4 MVMatrixText = viewMatrixText * modelMatrixText;
-		OevGLES::Mat4 MVPMatrixText = projMatrix * MVMatrixText;
+		OevGLES::Mat4 MVPMatrixText = projMatrix * viewMatrixText * modelMatrixText;
 		OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
 		glTextRend.setFontSize(40);

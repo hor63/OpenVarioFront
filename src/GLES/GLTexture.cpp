@@ -28,13 +28,25 @@
 #  include <config.h>
 #endif
 
+#include "OVFCommon.h"
 
 #include "GLES/GLTexture.h"
 #include "GLES/ExceptionBase.h"
 
+
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
+
 namespace OevGLES {
 
 GLTexture::GLTexture() {
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLTexture");
+	}
+#endif
+
 
 }
 
@@ -75,9 +87,24 @@ GLTexture& GLTexture::operator = (GLTexture&& source) {
 
 void GLTexture::createTextureHandle() {
 
+	auto glError = glGetError();
+	// Flush the error queue
+	while (glError!= GL_NO_ERROR) {
+		glError = glGetError();
+	}
+
 	if (textureHandle == 0) {
 
 		glGenTextures(1,&textureHandle);
+
+		if (logger->isDebugEnabled()) {
+			glError = glGetError();
+			while (glError!= GL_NO_ERROR) {
+				LOG4CXX_DEBUG(logger,"Error in glGenTextures = " << glError);
+				glError = glGetError();
+			}
+
+		}
 
 		if (textureHandle == 0) {
 			throw TextureException("glGenTextures did not return a valid texture handle");
@@ -91,7 +118,24 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 	GLint packAlignment = 8;
 	createTextureHandle();
 
+	auto glError = glGetError();
+	// Flush the error queue
+	while (glError!= GL_NO_ERROR) {
+		glError = glGetError();
+	}
+
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": textureHandle = " << textureHandle);
+
 	glBindTexture(GL_TEXTURE_2D,textureHandle);
+	if (logger->isDebugEnabled()) {
+		glError = glGetError();
+		while (glError!= GL_NO_ERROR) {
+			LOG4CXX_DEBUG(logger,"\tError in glBindTexture = " << glError);
+			glError = glGetError();
+		}
+
+	}
 
 	//
 	if (textureData.getWidth() & 1) {
@@ -106,6 +150,7 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 			} else {
 				packAlignment = 8;
 	}	}	}
+	LOG4CXX_DEBUG(logger,"\tpackAlignment = " << packAlignment);
 
 	GLint orgPackAlignment = 4;
 	GLint orgUnPackAlignment = 4;
@@ -113,7 +158,23 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 	glGetIntegerv(GL_UNPACK_ALIGNMENT,&orgUnPackAlignment);
 
 	glPixelStorei(GL_PACK_ALIGNMENT,packAlignment);
+	if (logger->isDebugEnabled()) {
+		glError = glGetError();
+		while (glError!= GL_NO_ERROR) {
+			LOG4CXX_DEBUG(logger,"\tError in glPixelStorei(GL_PACK_ALIGNMENT...) =" << glError);
+			glError = glGetError();
+		}
+
+	}
 	glPixelStorei(GL_UNPACK_ALIGNMENT,packAlignment);
+	if (logger->isDebugEnabled()) {
+		glError = glGetError();
+		while (glError!= GL_NO_ERROR) {
+			LOG4CXX_DEBUG(logger,"\tError in glPixelStorei(GL_UNPACK_ALIGNMENT...) =" << glError);
+			glError = glGetError();
+		}
+
+	}
 	glTexImage2D(
 			GL_TEXTURE_2D,
 			mipMapLevel,
@@ -125,7 +186,23 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 			textureData.getDataType(),
 			textureData.getDataPtr()
 			);
+	if (logger->isDebugEnabled()) {
+		glError = glGetError();
+		while (glError!= GL_NO_ERROR) {
+			LOG4CXX_DEBUG(logger,"\tError in glTexImage2D) =" << glError);
+			glError = glGetError();
+		}
 
+	}
+	LOG4CXX_DEBUG(logger,"\t call glTexImage2D (target=" << std::hex << GL_TEXTURE_2D << std::dec
+			<< ", level="<< mipMapLevel
+			<< ", internalformat=0x" << std::hex << textureData.getGlFormat() << std::dec
+			<< ", width=" << textureData.getWidth()
+			<< ", height=textureData.getHeight()"<< textureData.getHeight()
+			<< ", border=0, format=0x" << std::hex << textureData.getGlFormat() << std::dec
+			<< ", type=0x" << std::hex << textureData.getDataType() << std::dec
+			<< ", pixels=" << textureData.getDataPtr()
+			<< ")");
 	glPixelStorei(GL_PACK_ALIGNMENT,orgPackAlignment);
 	glPixelStorei(GL_UNPACK_ALIGNMENT,orgUnPackAlignment);
 
