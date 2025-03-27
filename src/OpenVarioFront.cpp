@@ -73,142 +73,7 @@ int main(int argint,char** argv) {
 
 		glTextGlobPtr->setResolutionDPI(96, 96);
 
-		glFramework->createRenderSurface(640,640,PACKAGE_STRING);
-
-
-		{
-			std::string sampleString = pango_language_get_sample_string (pango_language_get_default());
-			OevGLES::GLTextRenderer glTextRend (glTextGlob);
-
-			glTextRend.setFontSize(36);
-			glTextRend.setText(sampleString);
-
-			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
-
-			glTextRend.renderLayout();
-		}
-
-		{
-			OevGLES::GLTextRenderer glTextRend (glTextGlob);
-
-			glTextRend.setFontSize(40);
-			glTextRend.setText(
-					  "0123456789||0"
-					"\nABCDEFGHIJK"
-					"\nLMNOPQRSTUV"
-					"\nWXZYabcdefg"
-					"\nhijklmnopqr"
-					"\nstuvwxzy!@#"
-					"\n$%^&*()_+<>"
-					"\n[]{};'\\:\"|"
-					"\n,./?€üöäÜÖÄ"
-					"\níéóúêîôû^'´`"
-					"îêôû°ß-="
-					);
-
-			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
-
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(10);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(24);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(30);
-			glTextRend.renderLayout();
-
-			glTextRend.setFontSize(12);
-			glTextRend.renderLayout();
-
-			//glTextRend.setupVertexBuffers();
-		}
-		{
-			OevGLES::GLTextRenderer glTextRend (glTextGlob);
-
-			glTextRend.setFontSize(40);
-			glTextRend.setText(
-					  "01234567891"
-					);
-
-			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
-
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(10);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(24);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(30);
-			glTextRend.renderLayout();
-
-			glTextRend.setFontSize(12);
-			glTextRend.renderLayout();
-		}
-		{
-			OevGLES::GLTextRenderer glTextRend (glTextGlob);
-
-			glTextRend.setFontSize(40);
-			glTextRend.setText(
-					  "01234567892"
-					);
-
-			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
-
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(10);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(24);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(30);
-			glTextRend.renderLayout();
-
-			glTextRend.setFontSize(12);
-			glTextRend.renderLayout();
-		}
-		{
-			OevGLES::GLTextRenderer glTextRend (glTextGlob);
-
-			glTextRend.setFontSize(40);
-			glTextRend.setText(
-					  "012345678903"
-					);
-
-			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
-
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(10);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(24);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(30);
-			glTextRend.renderLayout();
-
-			glTextRend.setFontSize(12);
-			glTextRend.renderLayout();
-		}
-		{
-			OevGLES::GLTextRenderer glTextRend (glTextGlob);
-
-			glTextRend.setText(
-					  "01234567894"
-					);
-			glTextRend.setFontSize(40);
-
-			LOG4CXX_INFO (logger,"Text to render at size "<< glTextRend.getFontSize() << " = " << glTextRend.getText());
-
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(10);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(24);
-			glTextRend.renderLayout();
-			glTextRend.setFontSize(30);
-			glTextRend.renderLayout();
-
-			glTextRend.setFontSize(12);
-			glTextRend.renderLayout();
-		}
-
-		glTextGlobPtr->getFontCache().exportTextureBitmaps();
-
-
+		glFramework->createRenderSurface(640,480,PACKAGE_STRING);
 
 		AnalogHandRenderer hand;
 		SquareTextureRenderer varioBackground;
@@ -219,22 +84,26 @@ int main(int argint,char** argv) {
 		hand.setupVertexBuffers();
 		varioBackground.setupVertexBuffers();
 
-		// The arc tan in degrees is 0.5
-		// With this angle, and the 0-plane=2*width, and near=width,
-		// and far=3*width one unit in client space is one pixel on the screen
-		// in the 0-plane (z=0)
-		static constexpr double apertureAngleQuarterDeg = 26.565051177;
-
 		GLfloat k = 0.0f;
 		OevGLES::Mat4 modelMatrixBack = OevGLES::translationMatrix(-0,0,-1);
 		// OevGLES::Vec4 camPos = {3,4,static_cast<float>(windowWidth*2),1};
-		OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowWidth*2),1};
+		OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowHeight*2),1};
 		OevGLES::Vec3 up = {0,1,0};
 		OevGLES::Vec3 origin = {0,0,0};
 		OevGLES::Vec4 lightDir4;
 		OevGLES::Vec3 lightDir;
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
+		OevGLES::Vec4 yellowColor {1.0f,1.0f,0.75f,1.0f};
+
+		// Assume the initial view point is excactly on the z-axix.
+		// My goal is to find the aperture angle at which from this viewpoint
+		// one coordinate unit in x or y direction is exactly one pixel.
+		// Thus with the aperture angle I see exactly the window height.
+		// To calculate the aperture angle the the ArcTan of
+		// (windowHeight/2) / viewerDistance
+		// is half of the aperture angle.
+		static double const apertureAngle = atan((windowHeight/2.0)/camPos(2,0)) * 360.0 / M_PI;
 
 		std::cout << "Extensions are : " << glGetString(GL_EXTENSIONS) << std::endl;
 		void* glGenVertexArraysOESPtr = reinterpret_cast<void*>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
@@ -248,19 +117,30 @@ int main(int argint,char** argv) {
 //		std::cout << "Pointer to glGenVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glGenVertexArraysOES")) << std::endl;
 //		std::cout << "Pointer to glIsVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glIsVertexArrayOES")) << std::endl;
 
-		OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowWidth,windowWidth*3,
-				static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngleQuarterDeg);
+		OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowHeight,windowHeight*3,
+				static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngle);
 
-		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(-200,0,0);
+		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(-320,240,0);
 		OevGLES::Mat4 viewMatrixText = OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up);
 		OevGLES::Mat4 MVMatrixText = viewMatrixText * modelMatrixText;
 		OevGLES::Mat4 MVPMatrixText = projMatrix * viewMatrixText * modelMatrixText;
 		OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
-		glTextRend.setFontSize(40);
+		glTextRend.setFontSize(20);
+		glTextRend.setFonts("Noto Sans");
 		glTextRend.setText(
-				  "0123456789||0"
-				"\nABCDEFGHIJK"
+				  "0123456789||0ABCDEFGHIJK"
+				"\n一个对此心怀恶意的流氓"
+				"\nคนชั่วที่คิดชั่วกับเรื่องนี้"
+				"\nএকজন দুর্বৃত্ত যে এটাকে"
+				"\n খারাপ মনে করে"
+				"\nمحتال يعتقد الشر في هذا"
+				"\nLMNOPQRSTUVWXZYabcdefg"
+				"\nhijklmnopqrstuvwxzy!@#"
+				"\n$%^&*()_+<>[]{};'\\:\"|"
+				"\n,./?€üöäÜÖÄ"
+				"\níéóúêîôû^'´`îêôû°ß-="
+
 /*
 				"\nLMNOPQRSTUV"
 				"\nWXZYabcdefg"
@@ -275,17 +155,23 @@ int main(int argint,char** argv) {
 				);
 
 		glTextRend.renderLayout();
+		glTextGlobPtr->getFontCache().exportTextureBitmaps();
+
 		glTextRend.setupVertexBuffers();
 
 		glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
 
 
-		for (GLfloat rotationAngleDeg = 0.0f; rotationAngleDeg<360.0f;rotationAngleDeg += 0.1f) {
+		for (GLfloat rotationAngleDeg = 0.0f; /*rotationAngleDeg<360.0f*/;rotationAngleDeg += 0.1f) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
 				if (sdlEvent.type == SDL_EVENT_QUIT) {
 					exit (0);
 				}
+			}
+
+			if (rotationAngleDeg >= 360.0f) {
+				rotationAngleDeg -= 360.0f;
 			}
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
@@ -307,7 +193,7 @@ int main(int argint,char** argv) {
 			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
 			varioBackground.draw(modelMatrixBack,viewMatrix,projMatrix,MVMatrixBack,MVPMatrixBack,lightDir,lightColor,ambientLightColor);
 
-			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
+			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, yellowColor, ambientLightColor);
 
 			// sleep(3);
 
