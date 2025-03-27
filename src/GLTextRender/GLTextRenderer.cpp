@@ -593,6 +593,9 @@ void GLTextRenderer::setupVertexBuffers () {
 
 		LOG4CXX_DEBUG(logger,"\tNumber vertexes per texture = " << iter->second.numVertexes);
 
+		iter->second.fontTexture.getTexture().setMagnificationFilter(GLTexture::Linear);
+		iter->second.fontTexture.getTexture().setMinificationFilter(GLTexture::Linear);
+
 		if (iter->second.numVertexes > 0) {
 			iter->second.fontTexture.syncTextureDataWithGPU();
 			if (iter->second.vertexBufferHandle == 0) {

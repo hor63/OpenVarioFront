@@ -115,6 +115,9 @@ void SquareTextureRenderer::setupVertexBuffers() {
 	varioBackgoundReader.readPngToTexture(texData);
 	varioBackgoundTexture.setTextureData(texData);
 
+	varioBackgoundTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
+	varioBackgoundTexture.setMinificationFilter(OevGLES::GLTexture::Linear);
+
 }
 
 void SquareTextureRenderer::draw(
