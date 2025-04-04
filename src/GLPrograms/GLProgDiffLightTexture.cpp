@@ -65,51 +65,57 @@ void GLProgDiffLightTexture::destroyProgram() {
 const char* GLProgDiffLightTexture::getVertexShaderCode() const {
 
 	return
-			"precision mediump float;\n"
-			"\n"
-			"// MVP matrix is used to transform points\n"
-			"uniform mat4 mvpMatrix;\n"
-			"\n"
-			"// MV matrix is used to transform normal vectors to eye space\n"
-			"uniform mat4 mvMatrix;\n"
-			"\n"
-			"// Light diretory vector is already in eye space\n"
-			"uniform vec3 lightDir;\n"
-			"uniform vec4 lightColor;\n"
-			"uniform vec4 ambientLightColor;\n"
-			"\n"
-			"attribute vec4 vertexPos;\n"
-			"attribute vec4 vertexNormal;\n"
-			"attribute vec4 vertexColor;\n"
-			"attribute vec2 vertexTexture0Pos;"
-			"\n"
-			"varying vec4 fragColor;\n"
-			"varying vec2 varyTexture0Pos;\n"
-			"\n"
-			"const float cZero = 0.0;"
-			"\n"
-			"void main () { \n"
-			"	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
-			"	\n"
-			"	fragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));\n"
-			"	varyTexture0Pos = vertexTexture0Pos;\n"
-			"	gl_Position = mvpMatrix * vertexPos;\n"
-			"}\n";
+R"(
+#version 100
+
+precision mediump float;
+
+// MVP matrix is used to transform points
+uniform mat4 mvpMatrix;
+
+// MV matrix is used to transform normal vectors to eye space
+uniform mat4 mvMatrix;
+
+// Light directory vector is already in eye space
+uniform vec3 lightDir;
+uniform vec4 lightColor;
+uniform vec4 ambientLightColor;
+
+attribute vec4 vertexPos;
+attribute vec4 vertexNormal;
+attribute vec4 vertexColor;
+attribute vec2 vertexTexture0Pos;
+
+varying vec4 fragColor;
+varying vec2 varyTexture0Pos;
+
+const float cZero = 0.0;
+
+void main () { 
+	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));
+	
+	fragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));
+	varyTexture0Pos = vertexTexture0Pos;
+	gl_Position = mvpMatrix * vertexPos;
+}
+)";
 
 }
 
 const char* GLProgDiffLightTexture::getFragmentShaderCode() const {
 	return
-			"precision mediump float;\n"
-			"\n"
-			"uniform sampler2D texture0;"
-			"\n"
-			"varying vec4 fragColor;\n"
-			"varying vec2 varyTexture0Pos;"
-			"\n"
-			"void main () {\n"
-			"	gl_FragColor = fragColor * texture2D(texture0,varyTexture0Pos);\n"
-			"}\n";
+R"(
+precision mediump float;
+
+uniform sampler2D texture0;
+
+varying vec4 fragColor;
+varying vec2 varyTexture0Pos;
+
+void main () {
+	gl_FragColor = fragColor * texture2D(texture0,varyTexture0Pos);
+}
+)";
 }
 
 

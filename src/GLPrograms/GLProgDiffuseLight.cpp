@@ -63,44 +63,53 @@ void GLProgDiffuseLight::destroyProgram() {
 const char* GLProgDiffuseLight::getVertexShaderCode() const {
 
 	return
-			"precision mediump float;\n"
-			"\n"
-			"// MVP matrix is used to transform points\n"
-			"uniform mat4 mvpMatrix;\n"
-			"\n"
-			"// MV matrix is used to transform normal vectors to eye space\n"
-			"uniform mat4 mvMatrix;\n"
-			"\n"
-			"// Light diretory vector is already in eye space\n"
-			"uniform vec3 lightDir;\n"
-			"uniform vec4 lightColor;\n"
-			"uniform vec4 ambientLightColor;\n"
-			"\n"
-			"attribute vec4 vertexPos;\n"
-			"attribute vec4 vertexNormal;\n"
-			"attribute vec4 vertexColor;\n"
-			"\n"
-			"varying vec4 fragColor;\n"
-			"\n"
-			"const float cZero = 0.0;"
-			"\n"
-			"void main () { \n"
-			"	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));\n"
-			"	\n"
-			"	fragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));\n"
-			"	gl_Position = mvpMatrix * vertexPos;\n"
-			"}\n";
+R"(
+#version 100
+
+precision mediump float;
+
+// MVP matrix is used to transform points
+uniform mat4 mvpMatrix;
+
+// MV matrix is used to transform normal vectors to eye space
+uniform mat4 mvMatrix;
+
+// Light directory vector is already in eye space
+uniform vec3 lightDir;
+uniform vec4 lightColor;
+uniform vec4 ambientLightColor;
+
+attribute vec4 vertexPos;
+attribute vec4 vertexNormal;
+attribute vec4 vertexColor;
+
+varying vec4 varFragColor;
+
+const float cZero = 0.0;
+
+void main () { 
+	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));
+	
+	varFragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));
+	gl_Position = mvpMatrix * vertexPos;
+}
+)";
 
 }
 
 const char* GLProgDiffuseLight::getFragmentShaderCode() const {
+
 	return
-			"precision mediump float;\n"
-			"varying vec4 fragColor;\n"
-			"\n"
-			"void main () {\n"
-			"	gl_FragColor = fragColor;\n"
-			"}\n";
+R"(
+#version 100
+
+precision mediump float;
+varying vec4 varFragColor;
+
+void main () {
+	gl_FragColor = varFragColor;
+};
+)";
 }
 
 

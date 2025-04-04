@@ -74,35 +74,40 @@ void GLProgTextTexture::destroyProgram() {
 const char* GLProgTextTexture::getVertexShaderCode() const {
 
 	return
-			"precision mediump float;\n"
-			"\n"
-			"uniform mat4 unMvpMatrix;\n"
-			"\n"
-			"attribute vec4 attVertexPos;\n"
-			"attribute vec2 attTexture0Pos;"
-			"\n"
-			"varying vec2 varTexture0Pos;\n"
-			"\n"
-			"void main () { \n"
-			"	varTexture0Pos = attTexture0Pos;\n"
-			"	gl_Position = unMvpMatrix * attVertexPos;\n"
-			"}\n";
+R"(
+#version 100
+precision mediump float;
+
+uniform mat4 unMvpMatrix;
+
+attribute vec4 attVertexPos;
+attribute vec2 attTexture0Pos;
+
+varying vec2 varTexture0Pos;
+
+void main () {
+	varTexture0Pos = attTexture0Pos;
+	gl_Position = unMvpMatrix * attVertexPos;
+}
+)";
 
 }
 
 const char* GLProgTextTexture::getFragmentShaderCode() const {
 	return
-			"precision mediump float;\n"
-			"\n"
-			"uniform sampler2D unTexture0;\n"
-			"uniform vec4 unFragColor;\n"
-			"\n"
-			"varying vec2 varTexture0Pos;\n"
-			"\n"
-			"void main () {\n"
-			//"	gl_FragColor = vec4 (unFragColor.rgb, texture2D(unTexture0,varTexture0Pos).r;\n"
-			"	gl_FragColor = vec4 (unFragColor.rgb*texture2D(unTexture0,varTexture0Pos).r ,1.0);\n"
-			"}\n";
+R"(
+#version 100
+precision mediump float;
+
+uniform sampler2D unTexture0;
+uniform vec4 unFragColor;
+
+varying vec2 varTexture0Pos;
+
+void main () {
+	gl_FragColor = vec4 (unFragColor.rgb, texture2D(unTexture0,varTexture0Pos).r);
+}
+)";
 }
 
 
