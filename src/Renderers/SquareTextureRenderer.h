@@ -31,6 +31,8 @@
 #include "Renderers/RendererBase.h"
 #include "GLES/GLTexture.h"
 
+namespace OevGLES {
+
 class SquareTextureRenderer : public RendererBase {
 public:
 	SquareTextureRenderer();
@@ -99,5 +101,7 @@ private:
 	OevGLES::GLTexture varioBackgoundTexture;
 
 };
+
+} // namespace OevGLES
 
 #endif /* SQUARETEXTURERENDERER_H_ */

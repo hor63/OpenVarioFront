@@ -35,6 +35,8 @@
 	static log4cxx::LoggerPtr logger = 0;
 #endif
 
+namespace OevGLES {
+
 SquareTextureRenderer::SquareTextureRenderer()
 	:
 	// Setup the positions
@@ -188,3 +190,4 @@ void SquareTextureRenderer::draw(
 
 }
 
+} // namespace OevGLES

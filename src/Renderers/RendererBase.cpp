@@ -29,9 +29,13 @@
 
 #include "Renderers/RendererBase.h"
 
+namespace OevGLES {
+
+
 RendererBase::RendererBase()
 { }
 
 RendererBase::~RendererBase() {
 }
 
+} // namespace OevGLES

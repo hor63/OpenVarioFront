@@ -35,6 +35,9 @@
 	static log4cxx::LoggerPtr logger;
 #endif
 
+namespace OevGLES {
+
+
 AnalogHandRenderer::AnalogHandRenderer()
 	:
 		// Setup the positions
@@ -189,3 +192,4 @@ void AnalogHandRenderer::draw(
 
 }
 
+} // namespace OevGLES

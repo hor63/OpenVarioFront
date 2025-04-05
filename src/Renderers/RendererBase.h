@@ -34,6 +34,109 @@
 
 #include "GLES/VecMat.h"
 
+namespace OevGLES {
+
+/** \brief Class which sets blending attributes with the constructor, and restores original values in the destructor
+ *
+ * Please note that the destination parameters are template parameters, assuming that your blending mode is fixed at compile time.
+ */
+template <GLboolean destBlendFlag = GL_TRUE,
+		GLint destFuncSRGB = GL_SRC_ALPHA,
+		GLint destFuncDRGB = GL_ONE_MINUS_SRC_ALPHA,
+		GLint destFuncSAlpha = GL_ONE,
+		GLint destFuncDAlpha = GL_ZERO,
+
+		GLint destEquationRGB = GL_FUNC_ADD,
+		GLint destEquationAlpha = GL_FUNC_ADD
+		>
+class BlendAttributeSetRestore {
+
+public:
+
+	BlendAttributeSetRestore() {
+
+		glGetIntegerv(GL_BLEND_SRC_RGB,&funcSRGB);
+		glGetIntegerv(GL_BLEND_SRC_ALPHA,&funcSAlpha);
+		glGetIntegerv(GL_BLEND_DST_RGB,&funcDRGB);
+		glGetIntegerv(GL_BLEND_DST_ALPHA,&funcDAlpha);
+
+		glGetIntegerv(GL_BLEND_EQUATION_RGB,&equationRGB);
+		glGetIntegerv(GL_BLEND_EQUATION_ALPHA,&equationAlpha);
+
+		if (
+				destFuncSRGB != funcSRGB ||
+				destFuncDRGB != funcDRGB ||
+				destFuncSAlpha != funcSAlpha ||
+				destFuncDAlpha != funcDAlpha ||
+				destEquationRGB != equationRGB ||
+				destEquationAlpha != equationAlpha
+		) {
+			doRestoreBlendAttributes = true;
+
+			glBlendFuncSeparate(
+					destFuncSRGB,
+					destFuncDRGB,
+					destFuncSAlpha,
+					destFuncDAlpha);
+
+			glBlendEquationSeparate(
+					destEquationRGB,
+					destEquationAlpha);
+
+		}
+
+		glGetBooleanv (GL_BLEND,&blendFlag);
+		if (blendFlag != destBlendFlag) {
+			doRestoreBlendFlag = true;
+			if (destBlendFlag == GL_TRUE) {
+				glEnable (GL_BLEND);
+			} else {
+				glDisable (GL_BLEND);
+			}
+		}
+
+	}
+
+	~BlendAttributeSetRestore(){
+		if (doRestoreBlendFlag ) {
+			if (blendFlag == GL_TRUE) {
+				glEnable (GL_BLEND);
+			} else {
+				glDisable (GL_BLEND);
+			}
+		}
+
+		if (doRestoreBlendAttributes) {
+
+			glBlendFuncSeparate(
+					funcSRGB,
+					funcDRGB,
+					funcSAlpha,
+					funcDAlpha);
+
+			glBlendEquationSeparate(
+					equationRGB,
+					equationAlpha);
+
+		}
+
+	}
+
+private:
+	GLboolean blendFlag = destBlendFlag;
+	bool doRestoreBlendFlag = false;
+
+	GLint funcSRGB = destFuncSRGB;
+	GLint funcDRGB = destFuncDRGB;
+	GLint funcSAlpha = destFuncSAlpha;
+	GLint funcDAlpha = destFuncDAlpha;
+
+	GLint equationRGB = destEquationRGB;
+	GLint equationAlpha = destEquationAlpha;
+
+	bool doRestoreBlendAttributes = false;
+};
+
 class RendererBase {
 public:
 
@@ -81,5 +184,7 @@ public:
 protected:
 
 };
+
+} // namespace OevGLES
 
 #endif /* RENDERERBASE_H_ */

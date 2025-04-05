@@ -778,15 +778,18 @@ void GLTextRenderer::draw(
 			}
 
 			// Now draw the glyphs as pairs of triangles.
-			glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.numVertexes);
-			if (logger->isDebugEnabled()) {
-				glErr = glGetError();
-				while (glErr != GL_NO_ERROR) {
-					LOG4CXX_DEBUG(logger, "\tGLerror in glDrawArrays() = " << glErr);
+			{
+				BlendAttributeSetRestore setAndRestoreBlendMode;
+
+				glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.numVertexes);
+				if (logger->isDebugEnabled()) {
 					glErr = glGetError();
+					while (glErr != GL_NO_ERROR) {
+						LOG4CXX_DEBUG(logger, "\tGLerror in glDrawArrays() = " << glErr);
+						glErr = glGetError();
+					}
 				}
 			}
-
 			// Reset bindings and assignment of the attribute buffers.
 			glDisableVertexAttribArray(glProgram->getAttVertexPosLocation());
 			glDisableVertexAttribArray(glProgram->getAttTexture0PosLocation());

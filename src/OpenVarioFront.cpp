@@ -75,8 +75,8 @@ int main(int argint,char** argv) {
 
 		glFramework->createRenderSurface(640,480,PACKAGE_STRING);
 
-		AnalogHandRenderer hand;
-		SquareTextureRenderer varioBackground;
+		OevGLES::AnalogHandRenderer hand;
+		OevGLES::SquareTextureRenderer varioBackground;
 
 		int windowWidth = -1, windowHeight = -1;
 		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);

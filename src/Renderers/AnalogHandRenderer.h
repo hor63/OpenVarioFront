@@ -29,6 +29,8 @@
 #include "GLPrograms/GLProgDiffuseLight.h"
 #include "Renderers/RendererBase.h"
 
+namespace OevGLES {
+
 class AnalogHandRenderer : public RendererBase {
 public:
 	AnalogHandRenderer();
@@ -85,5 +87,7 @@ private:
 
 
 };
+
+} // namespace OevGLES
 
 #endif /* ANALOGHANDRENDERER_H_ */
