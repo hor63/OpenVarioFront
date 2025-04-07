@@ -315,21 +315,15 @@ void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
 
 	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
 
-	pango_layout_get_extents (pangoLayout,&inkRect,&logicalRect);
+	pango_layout_get_extents (pangoLayout,&inkRect,nullptr);
+	pango_extents_to_pixels(&inkRect,nullptr);
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 			<< ": Layout ink bounding box topLeft = "
-			<< (static_cast<double>(inkRect.x)/PANGO_SCALE) << 'x'
-			<< (static_cast<double>(inkRect.y)/PANGO_SCALE)
-			<< " size = "
-			<< (static_cast<double>(inkRect.width)/PANGO_SCALE) << 'x'
-			<< (static_cast<double>(inkRect.height)/PANGO_SCALE)
-			);
-	LOG4CXX_DEBUG(logger,"\tLayout logical bounding box topLeft = "
-			<< (static_cast<double>(logicalRect.x)/PANGO_SCALE) << 'x'
-			<< (static_cast<double>(logicalRect.y)/PANGO_SCALE)
-			<< " size = "
-			<< (static_cast<double>(logicalRect.width)/PANGO_SCALE) << 'x'
-			<< (static_cast<double>(logicalRect.height)/PANGO_SCALE)
+			<< inkRect.x << 'x'
+			<< inkRect.y
+			<< ", size = "
+			<< inkRect.width << 'x'
+			<< inkRect.height
 			);
 	LOG4CXX_DEBUG (logger, "\tNumber of Unicode characters = " << pango_layout_get_character_count(pangoLayout));
 
@@ -479,56 +473,6 @@ void GLTextRenderer::draw_glyph (
 		} else { // if (glyphInfo.renderGlyph)
 			LOG4CXX_DEBUG(logger, "\tGlyph " << glyph << " is invisible.");
 		}
-
-
-#if 0
-
-
-		if (logger->isDebugEnabled()){
-
-			{
-				  int x_start, x_limit;
-				  int y_start, y_limit;
-				  int ixoff = floor (x + 0.5);
-				  int iyoff = floor (y + 0.5);
-				  int ix, iy;
-				  int src , dest;
-
-
-				  x_start = MAX (0, - (ixoff + ftFace->glyph-> bitmap_left));
-				  x_limit = MIN ((int) ftFace->glyph->bitmap.width,
-						 (int) (1024 - (ixoff + ftFace->glyph->bitmap_left)));
-
-				  y_start = MAX (0,  - (iyoff - ftFace->glyph->bitmap_top));
-				  y_limit = MIN ((int) ftFace->glyph->bitmap.rows,
-						 (int) (1024 - (iyoff - ftFace->glyph->bitmap_top)));
-
-				  src =
-					y_start * ftFace->glyph->bitmap.pitch;
-
-				  dest =
-					(y_start + iyoff - ftFace->glyph->bitmap_top) * 1024 +
-					x_start + ixoff + ftFace->glyph->bitmap_left;
-
-
-				  LOG4CXX_DEBUG(logger,"\tglyph-> bitmap_left = " << ftFace->glyph-> bitmap_left
-						  << " glyph->bitmap.width = " << ftFace->glyph->bitmap.width
-						  << " glyph->bitmap_top = " << ftFace->glyph->bitmap_top
-						  << " glyph->bitmap.rows = " << ftFace->glyph->bitmap.rows
-						  << " glyph->bitmap.pitch = " << ftFace->glyph->bitmap.pitch
-						  << " ixoff = " << ixoff
-						  << " iyoff = " << iyoff
-						  << " x_start = " << x_start
-						  << " x_limit = " << x_limit
-						  << " y_start = " << y_start
-						  << " y_limit = " << y_limit
-						  << " src offset = " << src
-						  << " dest offs (pitch 1024) = " << dest
-						  );
-			}
-		}
-
-#endif // #if defined HAVE_LOG4CXX_H
 
 	} else { //if (globalsPtr) {
 		LOG4CXX_WARN(logger, __PRETTY_FUNCTION__ << ": Member globals is gone.");
@@ -699,7 +643,7 @@ void GLTextRenderer::draw(
 				}
 			}
 
-			glUniform4fv(glProgram->getUnFragColorLocation(),1, &lightColor(0));
+			glUniform4fv(glProgram->getUnFragColorLocation(),1, &textColor(0));
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {

@@ -101,6 +101,14 @@ public:
 		GlGlyphCornerVertexStruct tri2TopRight;
 	};
 
+	struct GlRectVertextStruct {
+		GLfloat tri1TopLeft [vertextPositionArrayLen];
+		GLfloat tri1BottomLeft [vertextPositionArrayLen];
+		GLfloat tri1BottomRight [vertextPositionArrayLen];
+		GLfloat Tri2TopLeft [vertextPositionArrayLen];
+		GLfloat Tri2BottomRight [vertextPositionArrayLen];
+		GLfloat Tri2TopRight [vertextPositionArrayLen];
+	};
 
 	struct VertexBufferPerTexture {
 		std::vector<GlGlyphVertexStruct> vertexVector;
@@ -240,6 +248,30 @@ public:
 				OevGLES::Vec4 const &ambientLightColor
 				) override;
 
+	bool isDrawBackground() const {
+		return drawBackground;
+	}
+
+	void setDrawBackground(bool drawBackground = true) {
+		this->drawBackground = drawBackground;
+	}
+
+	const OevGLES::Vec4& getTextColor() const {
+		return textColor;
+	}
+
+	void setTextColor(const OevGLES::Vec4 &textColor) {
+		this->textColor = textColor;
+	}
+
+	const OevGLES::Vec4& getBackgroundColor() const {
+		return backgroundColor;
+	}
+
+	void setBackgroundColor(const OevGLES::Vec4 &backgroundColor) {
+		this->backgroundColor = backgroundColor;
+	}
+
 private:
 
 	std::string text;
@@ -264,9 +296,14 @@ private:
 	/// Is being set each time in \ref renderLayoutSubpixel()
 	gint vertexVectorReserveSize = 1;
 
-	/// \brief The rectangle which circumfences the text box as drawn.
+	OevGLES::Vec4 textColor = {1.0f,1.0f,1.0f,1.0f};
+	OevGLES::Vec4 backgroundColor = {0.0f,0.0f,0.0f,1.0f};
+	bool drawBackground = true;
+
+	/// \brief The rectangle which encloses the text box as drawn.
 	PangoRectangle inkRect = {-1,-1,-1,-1};
-	PangoRectangle logicalRect = {-1,-1,-1,-1};
+	/// \brief The vertexes of two triangles which form the enclosing rectangle
+	GlRectVertextStruct inkRectVertexes;
 
 	std::unordered_map<GLuint,VertexBufferPerTexture> vertextBufferPerTextureMap;
 

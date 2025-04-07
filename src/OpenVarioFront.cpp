@@ -94,7 +94,7 @@ int main(int argint,char** argv) {
 		OevGLES::Vec3 lightDir;
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
-		OevGLES::Vec4 yellowTransparentColor {1.0f,1.0f,0.75f,0.75f};
+		OevGLES::Vec4 whiteTransparentColor {1.0f,1.0f,1.0f,0.75f};
 
 		// Assume the initial view point is exactly on the z-axix.
 		// My goal is to find the aperture angle at which from this viewpoint
@@ -158,6 +158,7 @@ int main(int argint,char** argv) {
 		glTextGlobPtr->getFontCache().exportTextureBitmaps();
 
 		glTextRend.setupVertexBuffers();
+		glTextRend.setTextColor(whiteTransparentColor);
 
 		glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
 
@@ -193,7 +194,7 @@ int main(int argint,char** argv) {
 			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
 			varioBackground.draw(modelMatrixBack,viewMatrix,projMatrix,MVMatrixBack,MVPMatrixBack,lightDir,lightColor,ambientLightColor);
 
-			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, yellowTransparentColor, ambientLightColor);
+			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
 
 			// sleep(3);
 
