@@ -105,7 +105,7 @@ uniform vec4 unFragColor;
 varying vec2 varTexture0Pos;
 
 void main () {
-	gl_FragColor = vec4 (unFragColor.rgb, texture2D(unTexture0,varTexture0Pos).r);
+	gl_FragColor = vec4 (unFragColor.rgb, unFragColor.a * texture2D(unTexture0,varTexture0Pos).r);
 }
 )";
 }

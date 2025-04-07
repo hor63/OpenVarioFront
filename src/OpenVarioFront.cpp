@@ -94,9 +94,9 @@ int main(int argint,char** argv) {
 		OevGLES::Vec3 lightDir;
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
-		OevGLES::Vec4 yellowColor {1.0f,1.0f,0.75f,1.0f};
+		OevGLES::Vec4 yellowTransparentColor {1.0f,1.0f,0.75f,0.75f};
 
-		// Assume the initial view point is excactly on the z-axix.
+		// Assume the initial view point is exactly on the z-axix.
 		// My goal is to find the aperture angle at which from this viewpoint
 		// one coordinate unit in x or y direction is exactly one pixel.
 		// Thus with the aperture angle I see exactly the window height.
@@ -193,7 +193,7 @@ int main(int argint,char** argv) {
 			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
 			varioBackground.draw(modelMatrixBack,viewMatrix,projMatrix,MVMatrixBack,MVPMatrixBack,lightDir,lightColor,ambientLightColor);
 
-			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, yellowColor, ambientLightColor);
+			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, yellowTransparentColor, ambientLightColor);
 
 			// sleep(3);
 
