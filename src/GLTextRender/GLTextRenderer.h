@@ -78,6 +78,11 @@ public:
 		GLfloat texturePosition [texturePositionArrayLen];
 	};
 
+	struct GlRectangleCornerVertexStruct {
+		GLfloat vertexPosition [vertextPositionArrayLen];
+		GLfloat vertexNormal [vertextPositionArrayLen];
+	};
+
 	/** \brief vertex buffer structure of a glyph box with two triangles
 	 *
 	 * The vertexes are:
@@ -102,12 +107,12 @@ public:
 	};
 
 	struct GlRectVertextStruct {
-		GLfloat tri1TopLeft [vertextPositionArrayLen];
-		GLfloat tri1BottomLeft [vertextPositionArrayLen];
-		GLfloat tri1BottomRight [vertextPositionArrayLen];
-		GLfloat Tri2TopLeft [vertextPositionArrayLen];
-		GLfloat Tri2BottomRight [vertextPositionArrayLen];
-		GLfloat Tri2TopRight [vertextPositionArrayLen];
+		GlRectangleCornerVertexStruct tri1TopLeft;
+		GlRectangleCornerVertexStruct tri1BottomLeft;
+		GlRectangleCornerVertexStruct tri1BottomRight;
+		GlRectangleCornerVertexStruct tri2TopLeft;
+		GlRectangleCornerVertexStruct tri2BottomRight;
+		GlRectangleCornerVertexStruct tri2TopRight;
 	};
 
 	struct VertexBufferPerTexture {

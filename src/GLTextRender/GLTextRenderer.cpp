@@ -169,7 +169,33 @@ static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* 
 namespace OevGLES {
 
 GLTextRenderer::GLTextRenderer(GLTextGlobalsWeakPtr glob) :
-		globals{glob}
+		globals{glob},
+		inkRectVertexes {
+					.tri1TopLeft {GlRectangleCornerVertexStruct{
+						.vertexPosition {0.0f,1.0f,0.0f,1.0f},
+						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+					}},
+					.tri1BottomLeft {GlRectangleCornerVertexStruct{
+						.vertexPosition {0.0f,0.0f,0.0f,1.0f},
+						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+					}},
+					.tri1BottomRight {GlRectangleCornerVertexStruct{
+						.vertexPosition {1.0f,0.0f,0.0f,1.0f},
+						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+					}},
+					.tri2TopLeft {GlRectangleCornerVertexStruct{
+						.vertexPosition {0.0f,1.0f,0.0f,1.0f},
+						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+					}},
+					.tri2BottomRight {GlRectangleCornerVertexStruct{
+						.vertexPosition {1.0f,0.0f,0.0f,1.0f},
+						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+					}},
+					.tri2TopRight {GlRectangleCornerVertexStruct{
+						.vertexPosition {1.0f,1.0f,0.0f,1.0f},
+						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+					}}
+			}
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
