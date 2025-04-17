@@ -168,34 +168,38 @@ static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* 
 
 namespace OevGLES {
 
+/// Copy template for the vertexes data. The x and y corners must be adjusted to the actual size of the background rectangle of the text box
+static GLTextRenderer::GlRectVertextStruct constexpr textBackgroundRectVertexesTemplate = GLTextRenderer::GlRectVertextStruct{
+			.tri1TopLeft {GLTextRenderer::GlRectangleCornerVertexStruct{
+				.vertexPosition {0.0f,0.0f,0.0f,1.0f},
+				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+			}},
+			.tri1BottomLeft {GLTextRenderer::GlRectangleCornerVertexStruct{
+				.vertexPosition {0.0f,-1.0f,0.0f,1.0f},
+				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+			}},
+			.tri1BottomRight {GLTextRenderer::GlRectangleCornerVertexStruct{
+				.vertexPosition {1.0f,-1.0f,0.0f,1.0f},
+				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+			}},
+			.tri2TopLeft {GLTextRenderer::GlRectangleCornerVertexStruct{
+				.vertexPosition {0.0f,0.0f,0.0f,1.0f},
+				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+			}},
+			.tri2BottomRight {GLTextRenderer::GlRectangleCornerVertexStruct{
+				.vertexPosition {1.0f,-1.0f,0.0f,1.0f},
+				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+			}},
+			.tri2TopRight {GLTextRenderer::GlRectangleCornerVertexStruct{
+				.vertexPosition {1.0f,0.0f,0.0f,1.0f},
+				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
+			}}
+	};
+
+
 GLTextRenderer::GLTextRenderer(GLTextGlobalsWeakPtr glob) :
 		globals{glob},
-		inkRectVertexes {
-					.tri1TopLeft {GlRectangleCornerVertexStruct{
-						.vertexPosition {0.0f,1.0f,0.0f,1.0f},
-						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-					}},
-					.tri1BottomLeft {GlRectangleCornerVertexStruct{
-						.vertexPosition {0.0f,0.0f,0.0f,1.0f},
-						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-					}},
-					.tri1BottomRight {GlRectangleCornerVertexStruct{
-						.vertexPosition {1.0f,0.0f,0.0f,1.0f},
-						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-					}},
-					.tri2TopLeft {GlRectangleCornerVertexStruct{
-						.vertexPosition {0.0f,1.0f,0.0f,1.0f},
-						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-					}},
-					.tri2BottomRight {GlRectangleCornerVertexStruct{
-						.vertexPosition {1.0f,0.0f,0.0f,1.0f},
-						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-					}},
-					.tri2TopRight {GlRectangleCornerVertexStruct{
-						.vertexPosition {1.0f,1.0f,0.0f,1.0f},
-						.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-					}}
-			}
+		textBackgroundRectVertexes{textBackgroundRectVertexesTemplate}
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -538,7 +542,7 @@ void GLTextRenderer::setupVertexBuffers () {
 		glErr = glGetError();
 	}
 
-	glProgram = GLProgTextTexture::getProgram();
+	glGlyphProgram = GLProgTextTexture::getProgram();
 
 	if (logger->isDebugEnabled()) {
 		glErr = glGetError();
@@ -548,7 +552,7 @@ void GLTextRenderer::setupVertexBuffers () {
 		}
 	}
 
-	glProgram->useProgram();
+	glGlyphProgram->useProgram();
 
 	if (logger->isDebugEnabled()) {
 		glErr = glGetError();
@@ -631,6 +635,11 @@ void GLTextRenderer::draw(
 			OevGLES::Vec4 const &lightColor,
 			OevGLES::Vec4 const &ambientLightColor
 			) {
+
+	drawGlyphs(MVPMatrix);
+}
+
+void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
 
 	GLenum glErr = glGetError();
@@ -640,7 +649,7 @@ void GLTextRenderer::draw(
 		glErr = glGetError();
 	}
 
-	glProgram->useProgram();
+	glGlyphProgram->useProgram();
 
 	if (logger->isDebugEnabled()) {
 		glErr = glGetError();
@@ -660,7 +669,7 @@ void GLTextRenderer::draw(
 
 
 			// Set the uniforms
-			glUniformMatrix4fv(glProgram->getUnMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
+			glUniformMatrix4fv(glGlyphProgram->getUnMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {
@@ -669,7 +678,7 @@ void GLTextRenderer::draw(
 				}
 			}
 
-			glUniform4fv(glProgram->getUnFragColorLocation(),1, &textColor(0));
+			glUniform4fv(glGlyphProgram->getUnFragColorLocation(),1, &textColor(0));
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {
@@ -678,7 +687,7 @@ void GLTextRenderer::draw(
 				}
 			}
 
-			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE1, 1, glProgram->getUnTexture0Location());
+			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE1, 1, glGlyphProgram->getUnTexture0Location());
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {
@@ -698,7 +707,7 @@ void GLTextRenderer::draw(
 					glErr = glGetError();
 				}
 			}
-			glEnableVertexAttribArray(glProgram->getAttVertexPosLocation());
+			glEnableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {
@@ -706,10 +715,10 @@ void GLTextRenderer::draw(
 					glErr = glGetError();
 				}
 			}
-			glVertexAttribPointer(glProgram->getAttVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,
+			glVertexAttribPointer(glGlyphProgram->getAttVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,
 					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,vertexPosition)));
 			if (logger->isDebugEnabled()) {
-				LOG4CXX_DEBUG(logger,"\tCall glVertexAttribPointer (index = " << glProgram->getAttVertexPosLocation()
+				LOG4CXX_DEBUG(logger,"\tCall glVertexAttribPointer (index = " << glGlyphProgram->getAttVertexPosLocation()
 						<< ", size = " << vertextPositionArrayLen
 						<< ", type = " << GL_FLOAT
 						<< ", normalized = " << GL_FALSE
@@ -722,7 +731,7 @@ void GLTextRenderer::draw(
 					glErr = glGetError();
 				}
 			}
-			glEnableVertexAttribArray(glProgram->getAttTexture0PosLocation());
+			glEnableVertexAttribArray(glGlyphProgram->getAttTexture0PosLocation());
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {
@@ -730,9 +739,9 @@ void GLTextRenderer::draw(
 					glErr = glGetError();
 				}
 			}
-			glVertexAttribPointer(glProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
+			glVertexAttribPointer(glGlyphProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
 					GL_FALSE,sizeof(GlGlyphCornerVertexStruct),reinterpret_cast<void const*>(offsetof(GlGlyphCornerVertexStruct,texturePosition)));
-			LOG4CXX_DEBUG(logger,"\tCall glVertexAttribPointer (index = " << glProgram->getAttTexture0PosLocation()
+			LOG4CXX_DEBUG(logger,"\tCall glVertexAttribPointer (index = " << glGlyphProgram->getAttTexture0PosLocation()
 					<< ", size = " << texturePositionArrayLen
 					<< ", type = " << GL_FLOAT
 					<< ", normalized = " << GL_FALSE
@@ -761,8 +770,8 @@ void GLTextRenderer::draw(
 				}
 			}
 			// Reset bindings and assignment of the attribute buffers.
-			glDisableVertexAttribArray(glProgram->getAttVertexPosLocation());
-			glDisableVertexAttribArray(glProgram->getAttTexture0PosLocation());
+			glDisableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
+			glDisableVertexAttribArray(glGlyphProgram->getAttTexture0PosLocation());
 			glBindBuffer(GL_ARRAY_BUFFER,0);
 		}
 	}
@@ -770,4 +779,16 @@ void GLTextRenderer::draw(
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<-- End");
 }
 
+void drawTextBoxBackground (
+		OevGLES::Mat4 const &MVMatrix,
+		OevGLES::Mat4 const &MVPMatrix,
+		OevGLES::Vec3 const &lightDir,
+		OevGLES::Vec4 const &lightColor,
+		OevGLES::Vec4 const &ambientLightColor
+		) {
+	// make the text background program current
+	glTextBackgroundProgram->useProgram();
+
+
+}
 } /* namespace OevGLES */

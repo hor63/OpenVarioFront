@@ -34,6 +34,7 @@
 
 #include "GLTextGlobals.h"
 #include "GLPrograms/GLProgTextTexture.h"
+#include "GLPrograms/GLProgDiffuseLight.h"
 #include "Renderers/RendererBase.h"
 
 
@@ -293,8 +294,11 @@ private:
 
 	GLTextGlobalsWeakPtr globals;
 
-	GLProgTextTexture* glProgram = nullptr;
-	GLuint vertexBufferHandle = 0;
+	GLProgTextTexture* glGlyphProgram = nullptr;
+	GLuint vertexBufferHandleGlyphs = 0;
+
+	GLProgDiffuseLight* glTextBackgroundProgram = nullptr;
+	GLuint vertexBufferHandleTextBackground = 0;
 
 	/// \brief Size to reserve the vertex vectors
 	///
@@ -307,10 +311,19 @@ private:
 
 	/// \brief The rectangle which encloses the text box as drawn.
 	PangoRectangle inkRect = {-1,-1,-1,-1};
-	/// \brief The vertexes of two triangles which form the enclosing rectangle
-	GlRectVertextStruct inkRectVertexes;
+	/// \brief The vertexes of two triangles which form the background rectangle
+	GlRectVertextStruct textBackgroundRectVertexes;
 
 	std::unordered_map<GLuint,VertexBufferPerTexture> vertextBufferPerTextureMap;
+
+	void drawGlyphs (OevGLES::Mat4 const &MVPMatrix);
+	void drawTextBoxBackground (
+			OevGLES::Mat4 const &MVMatrix,
+			OevGLES::Mat4 const &MVPMatrix,
+			OevGLES::Vec3 const &lightDir,
+			OevGLES::Vec4 const &lightColor,
+			OevGLES::Vec4 const &ambientLightColor
+			);
 
 }; // class GLTextRenderer
 
