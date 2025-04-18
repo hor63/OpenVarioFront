@@ -137,6 +137,11 @@ private:
 	bool doRestoreBlendAttributes = false;
 };
 
+using BlendAttributeSetRestoreStd =
+		BlendAttributeSetRestore<
+			GL_TRUE,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA,GL_ONE,
+			GL_ZERO,GL_FUNC_ADD,GL_FUNC_ADD>;
+
 class RendererBase {
 public:
 
