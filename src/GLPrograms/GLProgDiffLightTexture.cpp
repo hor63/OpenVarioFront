@@ -92,9 +92,12 @@ varying vec2 varyTexture0Pos;
 const float cZero = 0.0;
 
 void main () { 
-	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));
+	float diffuseLightFactor = abs(dot(lightDir,normalize(vec3((mvMatrix * vertexNormal)))));
+	vec4 lightColor = ambientLightColor + (diffuseLightFactor * lightColor);
 	
-	fragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));
+	lightColor.a = 1.0;
+	
+	fragColor = vertexColor * lightColor;
 	varyTexture0Pos = vertexTexture0Pos;
 	gl_Position = mvpMatrix * vertexPos;
 }

@@ -88,9 +88,11 @@ varying vec4 varFragColor;
 const float cZero = 0.0;
 
 void main () { 
-	float diffuseLightFactor = abs(dot(lightDir,vec3((mvMatrix * vertexNormal))));
+	float diffuseLightFactor = abs(dot(lightDir,normalize(vec3((mvMatrix * vertexNormal)))));
+	vec4 lightColor = ambientLightColor + (diffuseLightFactor * lightColor);
 	
-	varFragColor = vertexColor * (ambientLightColor + (diffuseLightFactor * lightColor));
+	lightColor.a = 1.0;
+	varFragColor = vertexColor * lightColor;
 	gl_Position = mvpMatrix * vertexPos;
 }
 )";
