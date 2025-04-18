@@ -79,11 +79,6 @@ public:
 		GLfloat texturePosition [texturePositionArrayLen];
 	};
 
-	struct GlRectangleCornerVertexStruct {
-		GLfloat vertexPosition [vertextPositionArrayLen];
-		GLfloat vertexNormal [vertextPositionArrayLen];
-	};
-
 	/** \brief vertex buffer structure of a glyph box with two triangles
 	 *
 	 * The vertexes are:
@@ -108,12 +103,12 @@ public:
 	};
 
 	struct GlRectVertextStruct {
-		GlRectangleCornerVertexStruct tri1TopLeft;
-		GlRectangleCornerVertexStruct tri1BottomLeft;
-		GlRectangleCornerVertexStruct tri1BottomRight;
-		GlRectangleCornerVertexStruct tri2TopLeft;
-		GlRectangleCornerVertexStruct tri2BottomRight;
-		GlRectangleCornerVertexStruct tri2TopRight;
+		GLfloat tri1TopLeft [vertextPositionArrayLen];
+		GLfloat tri1BottomLeft [vertextPositionArrayLen];
+		GLfloat tri1BottomRight [vertextPositionArrayLen];
+		GLfloat tri2TopLeft [vertextPositionArrayLen];
+		GLfloat tri2BottomRight [vertextPositionArrayLen];
+		GLfloat tri2TopRight [vertextPositionArrayLen];
 	};
 
 	struct VertexBufferPerTexture {
@@ -266,7 +261,7 @@ public:
 		return textColor;
 	}
 
-	void setTextColor(const OevGLES::Vec4 &textColor) {
+	void setTextColor(OevGLES::Vec4 const &textColor) {
 		this->textColor = textColor;
 	}
 
@@ -274,7 +269,7 @@ public:
 		return backgroundColor;
 	}
 
-	void setBackgroundColor(const OevGLES::Vec4 &backgroundColor) {
+	void setBackgroundColor(OevGLES::Vec4 const &backgroundColor) {
 		this->backgroundColor = backgroundColor;
 	}
 
@@ -310,7 +305,7 @@ private:
 	bool drawBackground = true;
 
 	/// \brief The rectangle which encloses the text box as drawn.
-	PangoRectangle inkRect = {-1,-1,-1,-1};
+	PangoRectangle textBoxRect = {-1,-1,-1,-1};
 	/// \brief The vertexes of two triangles which form the background rectangle
 	GlRectVertextStruct textBackgroundRectVertexes;
 
@@ -324,6 +319,12 @@ private:
 			OevGLES::Vec4 const &lightColor,
 			OevGLES::Vec4 const &ambientLightColor
 			);
+
+	/// \see RendererBase::setupVertexBuffers()
+	void setupVertexBuffersGlyphs ();
+	/// \see RendererBase::setupVertexBuffers()
+	void setupVertexBuffersTextBoxBackground ();
+
 
 }; // class GLTextRenderer
 

@@ -94,7 +94,8 @@ int main(int argint,char** argv) {
 		OevGLES::Vec3 lightDir;
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
-		OevGLES::Vec4 whiteTransparentColor {1.0f,1.0f,1.0f,0.75f};
+		OevGLES::Vec4 whiteColor {1.0f,1.0f,1.0f,0.5f};
+		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
 
 		// Assume the initial view point is exactly on the z-axix.
 		// My goal is to find the aperture angle at which from this viewpoint
@@ -120,10 +121,7 @@ int main(int argint,char** argv) {
 		OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowHeight,windowHeight*3,
 				static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngle);
 
-		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(-320,240,0);
-		OevGLES::Mat4 viewMatrixText = OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up);
-		OevGLES::Mat4 MVMatrixText = viewMatrixText * modelMatrixText;
-		OevGLES::Mat4 MVPMatrixText = projMatrix * viewMatrixText * modelMatrixText;
+		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(-300,220,0);
 		OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
 		glTextRend.setFontSize(20);
@@ -158,10 +156,9 @@ int main(int argint,char** argv) {
 		glTextGlobPtr->getFontCache().exportTextureBitmaps();
 
 		glTextRend.setupVertexBuffers();
-		glTextRend.setTextColor(whiteTransparentColor);
-
-		glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
-
+		glTextRend.setTextColor(blackColor);
+		glTextRend.setBackgroundColor(whiteColor);
+		glTextRend.setDrawBackground(true);
 
 		for (GLfloat rotationAngleDeg = 0.0f; /*rotationAngleDeg<360.0f*/;rotationAngleDeg += 0.1f) {
 			SDL_Event sdlEvent;
@@ -182,6 +179,12 @@ int main(int argint,char** argv) {
 			OevGLES::Mat4 MVPMatrix = projMatrix * viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVMatrixBack = viewMatrix * modelMatrixBack;
 			OevGLES::Mat4 MVPMatrixBack = projMatrix * viewMatrix * modelMatrixBack;
+
+			OevGLES::Mat4 viewMatrixText = OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up);
+//			OevGLES::Mat4 MVMatrixText = viewMatrixText * modelMatrixText;
+			OevGLES::Mat4 MVMatrixText = viewMatrix * modelMatrixText;
+//			OevGLES::Mat4 MVPMatrixText = projMatrix * viewMatrixText * modelMatrixText;
+			OevGLES::Mat4 MVPMatrixText = projMatrix * viewMatrix * modelMatrixText;
 
 			// Light dir is in eye space, rotate the light with the viewers point of view
 			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(rotationAngleDeg) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});

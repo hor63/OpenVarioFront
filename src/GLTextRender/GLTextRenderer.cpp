@@ -168,34 +168,23 @@ static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* 
 
 namespace OevGLES {
 
-/// Copy template for the vertexes data. The x and y corners must be adjusted to the actual size of the background rectangle of the text box
+/// \brief Copy template for the vertices data of the background rectangle.
+///
+///  The x and y corners must be adjusted to the actual size of the background rectangle of the text box
+///
+/// Please note that the z-coordinate is a little recessed compared to the model of the glyph vertices to ensure that both are being drawn.
+///
 static GLTextRenderer::GlRectVertextStruct constexpr textBackgroundRectVertexesTemplate = GLTextRenderer::GlRectVertextStruct{
-			.tri1TopLeft {GLTextRenderer::GlRectangleCornerVertexStruct{
-				.vertexPosition {0.0f,0.0f,0.0f,1.0f},
-				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-			}},
-			.tri1BottomLeft {GLTextRenderer::GlRectangleCornerVertexStruct{
-				.vertexPosition {0.0f,-1.0f,0.0f,1.0f},
-				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-			}},
-			.tri1BottomRight {GLTextRenderer::GlRectangleCornerVertexStruct{
-				.vertexPosition {1.0f,-1.0f,0.0f,1.0f},
-				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-			}},
-			.tri2TopLeft {GLTextRenderer::GlRectangleCornerVertexStruct{
-				.vertexPosition {0.0f,0.0f,0.0f,1.0f},
-				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-			}},
-			.tri2BottomRight {GLTextRenderer::GlRectangleCornerVertexStruct{
-				.vertexPosition {1.0f,-1.0f,0.0f,1.0f},
-				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-			}},
-			.tri2TopRight {GLTextRenderer::GlRectangleCornerVertexStruct{
-				.vertexPosition {1.0f,0.0f,0.0f,1.0f},
-				.vertexNormal {0.0f,0.0f,1.0f,0.0f}
-			}}
+			.tri1TopLeft {0.0f,0.0f,-0.0f,1.0f},
+			.tri1BottomLeft {0.0f,-1.0f,-0.0f,1.0f},
+			.tri1BottomRight {1.0f,-1.0f,-0.0f,1.0f},
+			.tri2TopLeft {0.0f,0.0f,-0.0f,1.0f},
+			.tri2BottomRight {1.0f,-1.0f,-0.0f,1.0f},
+			.tri2TopRight {1.0f,0.0f,-0.0f,1.0f}
 	};
 
+static GLfloat const textBackgroundRectNormal [GLTextRenderer::vertextPositionArrayLen] {
+	0.0f,0.0f,1.0f,0.0f};
 
 GLTextRenderer::GLTextRenderer(GLTextGlobalsWeakPtr glob) :
 		globals{glob},
@@ -345,16 +334,38 @@ void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
 
 	pango_renderer_draw_layout (&pangoTextRenderer->parent_instance, pangoLayout, x, y);
 
-	pango_layout_get_extents (pangoLayout,&inkRect,nullptr);
-	pango_extents_to_pixels(&inkRect,nullptr);
+	pango_layout_get_extents (pangoLayout,nullptr,&textBoxRect);
+	pango_extents_to_pixels(&textBoxRect,nullptr);
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 			<< ": Layout ink bounding box topLeft = "
-			<< inkRect.x << 'x'
-			<< inkRect.y
+			<< textBoxRect.x << 'x'
+			<< textBoxRect.y
 			<< ", size = "
-			<< inkRect.width << 'x'
-			<< inkRect.height
+			<< textBoxRect.width << 'x'
+			<< textBoxRect.height
 			);
+
+	textBackgroundRectVertexes.tri1TopLeft[0] =
+			textBackgroundRectVertexes.tri1BottomLeft[0] =
+			textBackgroundRectVertexes.tri2TopLeft[0] =
+					textBoxRect.x;
+
+	textBackgroundRectVertexes.tri1BottomRight[0] =
+			textBackgroundRectVertexes.tri2BottomRight[0] =
+			textBackgroundRectVertexes.tri2TopRight[0] =
+					textBoxRect.x + textBoxRect.width;
+
+	textBackgroundRectVertexes.tri1TopLeft[1] =
+			textBackgroundRectVertexes.tri2TopLeft[1] =
+			textBackgroundRectVertexes.tri2TopRight[1] =
+					-textBoxRect.y;
+
+	textBackgroundRectVertexes.tri1BottomLeft[1] =
+			textBackgroundRectVertexes.tri1BottomRight[1] =
+			textBackgroundRectVertexes.tri2BottomRight[1] =
+					-textBoxRect.y - textBoxRect.height;
+
+
 	LOG4CXX_DEBUG (logger, "\tNumber of Unicode characters = " << pango_layout_get_character_count(pangoLayout));
 
 }
@@ -532,6 +543,29 @@ double GLTextRenderer::getFontSize() {
 }
 
 void GLTextRenderer::setupVertexBuffers () {
+	setupVertexBuffersGlyphs ();
+
+	if (drawBackground) {
+		setupVertexBuffersTextBoxBackground ();
+	}
+}
+
+void GLTextRenderer::setupVertexBuffersTextBoxBackground () {
+	// First get the program
+	glTextBackgroundProgram = OevGLES::GLProgDiffuseLight::getProgram();
+
+	// make the program current
+	glTextBackgroundProgram->useProgram();
+
+	glGenBuffers(1,&vertexBufferHandleTextBackground );
+	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground );
+	glBufferData(GL_ARRAY_BUFFER,sizeof(textBackgroundRectVertexes),&textBackgroundRectVertexes,GL_STATIC_DRAW);
+
+	glUseProgram(0);
+
+}
+
+void GLTextRenderer::setupVertexBuffersGlyphs () {
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
 
@@ -589,7 +623,7 @@ void GLTextRenderer::setupVertexBuffers () {
 			if (logger->isDebugEnabled()) {
 				glErr = glGetError();
 				while (glErr != GL_NO_ERROR) {
-					LOG4CXX_DEBUG(logger, "\tGLerror in glGenBuffers() = " << glErr);
+					LOG4CXX_DEBUG(logger, "\tGLerror in glBindBuffer = " << glErr);
 					glErr = glGetError();
 				}
 			}
@@ -636,7 +670,25 @@ void GLTextRenderer::draw(
 			OevGLES::Vec4 const &ambientLightColor
 			) {
 
+	if (drawBackground) {
+		drawTextBoxBackground(
+				MVMatrix,
+				MVPMatrix,
+				lightDir,
+				lightColor,
+				ambientLightColor
+				);
+
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(-1.0,-2.0);
+	}
+
 	drawGlyphs(MVPMatrix);
+
+	if (drawBackground) {
+		glDisable(GL_POLYGON_OFFSET_FILL);
+	}
+
 }
 
 void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
@@ -779,7 +831,7 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<-- End");
 }
 
-void drawTextBoxBackground (
+void GLTextRenderer::drawTextBoxBackground (
 		OevGLES::Mat4 const &MVMatrix,
 		OevGLES::Mat4 const &MVPMatrix,
 		OevGLES::Vec3 const &lightDir,
@@ -788,6 +840,42 @@ void drawTextBoxBackground (
 		) {
 	// make the text background program current
 	glTextBackgroundProgram->useProgram();
+
+
+	// Set the uniforms
+	glUniformMatrix4fv(glTextBackgroundProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
+	glUniformMatrix4fv(glTextBackgroundProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+
+	glUniform3fv(glTextBackgroundProgram->getLightDirLocation(),1,&(lightDir(0)));
+	glUniform4fv(glTextBackgroundProgram->getLightColorLocation(),1,&(lightColor(0)));
+	glUniform4fv(glTextBackgroundProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
+
+
+	// set the color attribute constant
+	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexColorLocation());
+	glVertexAttrib4fv(glTextBackgroundProgram->getVertexColorLocation(),&backgroundColor(0));
+
+	// The normal is the same value for all vertexes
+	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexNormalLocation());
+	glVertexAttrib4fv(glTextBackgroundProgram->getVertexNormalLocation(),textBackgroundRectNormal);
+
+	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground);
+
+	// setup the vertex coordinates
+	glEnableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
+	glVertexAttribPointer(glTextBackgroundProgram->getVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,GL_FALSE,vertextPositionArrayLen * sizeof (GLfloat),reinterpret_cast<void const *>(0U));
+
+	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
+
+	// Draw in transparent mode when the Alpha value is not totally opaque.
+	if (backgroundColor(3) < 1.0f) {
+		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
+	}
+	glDrawArrays(GL_TRIANGLES,0,6);
+
+	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
+
+	glUseProgram(0);
 
 
 }
