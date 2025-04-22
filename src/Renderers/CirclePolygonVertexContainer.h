@@ -1,0 +1,112 @@
+/*
+ * CirclePolygonVertexContainer.h
+ *
+ *  Created on: Apr 22, 2025
+ *      Author: hor
+ */
+
+#ifndef RENDERERS_CIRCLEPOLYGONVERTEXCONTAINER_H_
+#define RENDERERS_CIRCLEPOLYGONVERTEXCONTAINER_H_
+
+#include <vector>
+#include <map>
+
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+
+#include "OVFCommon.h"
+
+
+namespace OevGLES {
+
+/** \brief
+ *
+ */
+class CirclePolygonVertexContainer final {
+public:
+
+	struct CirclePolygonVertexStruct {
+		GLfloat position[4];
+		/** \brief Normal to the circle circumference
+		 *
+		 * This is *not* the normal of the triangle, but the normal of the
+		 * circumference of the polygon at the vertex position
+		*/
+		GLfloat normal[3];
+		/** \brief Indicator if the vertex is on the primary or secondary circle
+		 *
+		 * A value 0.0 indicates the vertex is part of the primary circle.\n
+		 * A value 1.0 indicates the vertex is part of the secondary circle.
+		 * The primary and secondary circle are connected by a triangle mesh.
+		 *
+		 * What the primary and secondary circle is depends on the use:
+		 *   In case of a ring (annulus) the primary circle is the outer circle,
+		 *   and the secondary circle is the inner circle. A full circle is just
+		 *   a degenerated ring with a secondary radius of 0\n
+		 *   In case of a cylinder the primary circle is on the z=0 plane, the
+		 *   secondary circle shares the same diameter and x-y center but is
+		 *   offset in z-direction.
+		 *
+		 * How the secondary circle is formed is determined by a transformation
+		 * matrix uniform provided to the program.
+		 *
+		*/
+		GLfloat isSecondaryCircle;
+	};
+
+	struct CircleVertexArrayStruct {
+		/** \brief Number of vertexes forming a full primary and secondary circle
+		 *
+		 * The number of vertexes is numSegments*2+2. This is due to the fact
+		 * that the vertexes for the primary and secondary circle are intermittent,
+		 * and the circle must be closed at the end (the "+2" term).
+		*/
+		GLsizei numVertexes;
+		/** \brief
+		 * The diameter of the circle where the deviation of the polygon from
+		 * the ideal circle becomes larger than \ref maxDeviationPixels.
+		 */
+		GLfloat maxDiameter;
+		/** \brief Handle to the GL ES vertex buffer
+		 *
+		 * Please note that I am usually not storing the content of the buffer in
+		 * the program (i.e. on the client side) except from the vertex array for
+		 * \ref maxNumSegments segments. This is the largest array. All other
+		 * arrays can be copied from the largest array, leaving out not needed
+		 * vertexes. Therefore I need to perform the complex calculations for
+		 * the vertexes only once.
+		*/
+		GLuint arrayBufferHandle;
+	};
+
+	/** \brief Maximum allowed deviation from the ideal circular form
+	 *
+	 * Circles are being composed polygons.
+	 * The number of segments and the radius of the polygon determine the
+	 * max. deviation from the ideal circle. \n
+	 * Conversely a given number of polygon segments determines the radius
+	 * of the polygon to not exceed the max. deviation from the circular form.
+	 */
+	static constexpr double maxDeviationPixels = 1.0;
+
+	/** \brief Maximum number of segments of a polygon
+	 *
+	 * For reference:
+	 * 	- With 64 segments a deviation of 1 pixel occurs at a radius of 830 pixel
+	 * 	- With 128 segments a deviation of 1 pixel occurs at a radius of 3320 pixel
+	 */
+	static constexpr std::size_t maxNumSegments = 128;
+
+	CirclePolygonVertexContainer();
+	~CirclePolygonVertexContainer();
+
+private:
+
+
+
+};
+
+} /* namespace OevGLES */
+
+#endif /* RENDERERS_CIRCLEPOLYGONVERTEXCONTAINER_H_ */
