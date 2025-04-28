@@ -27,7 +27,8 @@ GLFrameworkSharedPtr GLFramework::createFramework() {
 }
 
 GLFramework::GLFramework()
-	:sdlSurface{*this}
+	:sdlSurface{*this},
+	 circleVertexContainer()
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {

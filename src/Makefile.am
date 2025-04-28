@@ -28,6 +28,11 @@ OpenVarioFront_LDADD = \
 	GLPrograms/libOEV_GLPrograms.a \
 	GLES/TexHelper/libOEV_TexHelper.a \
 	GLES/libOEV_GLES.a \
+	GLTextRender/libOEV_GLTextRender.a \
+	Renderers/libOEV_Renderers.a \
+	GLPrograms/libOEV_GLPrograms.a \
+	GLES/TexHelper/libOEV_TexHelper.a \
+	GLES/libOEV_GLES.a \
 	$(LOG4CXX_LIBS) \
 	$(SDL3_LIBS) \
 	$(PANGO_FT2_LIBS) \

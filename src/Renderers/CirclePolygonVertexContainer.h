@@ -8,7 +8,7 @@
 #ifndef RENDERERS_CIRCLEPOLYGONVERTEXCONTAINER_H_
 #define RENDERERS_CIRCLEPOLYGONVERTEXCONTAINER_H_
 
-#include <vector>
+#include <array>
 #include <map>
 
 #include <GLES2/gl2.h>
@@ -16,7 +16,6 @@
 #include <GLES2/gl2platform.h>
 
 #include "OVFCommon.h"
-
 
 namespace OevGLES {
 
@@ -31,9 +30,9 @@ public:
 		/** \brief Normal to the circle circumference
 		 *
 		 * This is *not* the normal of the triangle, but the normal of the
-		 * circumference of the polygon at the vertex position
+		 * circumference circle of the polygon at the vertex position
 		*/
-		GLfloat normal[3];
+		GLfloat normal[4];
 		/** \brief Indicator if the vertex is on the primary or secondary circle
 		 *
 		 * A value 0.0 indicates the vertex is part of the primary circle.\n
@@ -53,6 +52,12 @@ public:
 		 *
 		*/
 		GLfloat isSecondaryCircle;
+
+		CirclePolygonVertexStruct() :
+			position {0.0f,0.0f,0.0f,1.0f},
+			normal {0.0f,0.0f,0.0f,0.0f},
+			isSecondaryCircle{0.0f}
+		{ }
 	};
 
 	struct CircleVertexArrayStruct {
@@ -95,6 +100,8 @@ public:
 	 * For reference:
 	 * 	- With 64 segments a deviation of 1 pixel occurs at a radius of 830 pixel
 	 * 	- With 128 segments a deviation of 1 pixel occurs at a radius of 3320 pixel
+	 *
+	 * 	Therefore a maximum of 128 segments is plenty enough.
 	 */
 	static constexpr std::size_t maxNumSegments = 128;
 
@@ -103,7 +110,28 @@ public:
 
 private:
 
+	/** \brief An array with the maximum number of segments
+	 *
+	 * All other vertex arrays can be constructed from the values in this array.
+	 *
+	 * The array contains \ref maxNumSegments*2 + 2 elements because each segment
+	 * has per angle one item on the primary, and one element on the secondary
+	 * circle.
+	 * At the end 2 elements are added to close the circle from
+	 * \ref maxNumSegments -1 to \ref maxNumSegments.
+	 *
+	*/
+	std::array<CirclePolygonVertexStruct,maxNumSegments*2 + 2> maxSegmentVertexArray;
 
+	/** \brief Contains a map of all possible circle segmentations
+	 *
+	 * The minimum number of segments is 4 (hardly a circle :) ); maximum number
+	 * of segments is \ref maxNumSegments.
+	 *
+	 * The key is the maximum radius (not diameter!) in pixels pixels where the
+	 * deviation from the ideal circle becomes > \ref maxDeviationPixels.
+	*/
+	std::map<GLfloat,CircleVertexArrayStruct> circleVertexArrayMap;
 
 };
 

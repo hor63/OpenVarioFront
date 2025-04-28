@@ -18,6 +18,7 @@
 #include "SDL/SDLRenderSurface.h"
 #include "GLTextRender/GLTextGlobals.h"
 #include "GLTextRender/GLTextRenderer.h"
+#include "Renderers/CirclePolygonVertexContainer.h"
 
 #include "GLFrameWorkPtr.h"
 
@@ -74,6 +75,8 @@ private:
 	SDLRenderSurface sdlSurface;
 
 	bool vertexArrayUsable = false;
+
+	CirclePolygonVertexContainer circleVertexContainer;
 
 	GLFramework();
 
