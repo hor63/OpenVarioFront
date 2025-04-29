@@ -20,7 +20,8 @@ SUBDIRS= TexHelper
 noinst_LIBRARIES = libOEV_GLES.a
 libOEV_GLES_a_SOURCES = GLFramework.cpp \
 	SDL/sysSDLWindow.cpp SDL/SDLRenderSurface.cpp \
-	GLShader.cpp GLProgram.cpp ExceptionBase.cpp VecMat.cpp GLTexture.cpp
+	GLShader.cpp GLProgram.cpp ExceptionBase.cpp VecMat.cpp GLTexture.cpp \
+	CirclePolygonVertexContainer.cpp
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES \
 	-I$(top_srcdir)/3rdParty/eigen/Eigen -I$(top_srcdir)/3rdParty/SDL/include $(LOG4CXX_CXXFLAGS) \

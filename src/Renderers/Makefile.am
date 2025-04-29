@@ -19,7 +19,7 @@
 	
 
 noinst_LIBRARIES = libOEV_Renderers.a
-libOEV_Renderers_a_SOURCES = RendererBase.cpp CirclePolygonVertexContainer.cpp AnalogHandRenderer.cpp SquareTextureRenderer.cpp
+libOEV_Renderers_a_SOURCES = RendererBase.cpp AnalogHandRenderer.cpp SquareTextureRenderer.cpp
     
 
 
