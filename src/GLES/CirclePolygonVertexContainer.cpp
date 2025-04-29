@@ -23,12 +23,15 @@ namespace OevGLES {
 CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("OpenVarioFront.Renderers.CirclePolygonVertexContainer");
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLES.CirclePolygonVertexContainer");
 	}
 #endif
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__);
-	for (int i = 0; i < maxNumSegments;++i) {
+
+	// Fill vertex data for the template vertex buffer on the client side.
+
+	for (int i = 0; i <= maxNumSegments;++i) {
 		double angle = static_cast<double>(i) *
 				(M_PI  * 2.0 / static_cast<double>(maxNumSegments));
 
@@ -79,50 +82,29 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 
 	}
 
-	// Now the final two elements which close the circle.
-	maxSegmentVertexArray[maxNumSegments*2 + 1].isSecondaryCircle = 1.0f;
+	// Fill the map of vertex buffers according to max circle size.
+	// The smallest circle is actual a quadrant, i.e. 4 corners.
 
-	// x
-	maxSegmentVertexArray[maxNumSegments*2].position[0] =
-			maxSegmentVertexArray[maxNumSegments*2 + 1].position[0] =
-			maxSegmentVertexArray[maxNumSegments*2].normal[0] =
-			maxSegmentVertexArray[maxNumSegments*2 + 1].normal[0] =
-					1.0;
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+			<< ": Fill map of vertex buffers for circle sizes");
 
-	// y
-	maxSegmentVertexArray[maxNumSegments*2].position[1] =
-			maxSegmentVertexArray[maxNumSegments*2 + 1].position[1] =
-			maxSegmentVertexArray[maxNumSegments*2].normal[1] =
-			maxSegmentVertexArray[maxNumSegments*2 + 1].normal[1] =
-					0.0;
+	for (int numSegments = 4; numSegments <= maxNumSegments; numSegments*=2) {
+		double segmentAngleHalf = 2 * M_PI / static_cast<double>(numSegments*2);
+		GLfloat maxDiameter = static_cast<GLfloat>(1.0 / (1.0 - cos (segmentAngleHalf)));
+
+		LOG4CXX_DEBUG(logger,"\tnumSegments = " << numSegments
+				<< ", halfAngle(deg) = " << (segmentAngleHalf * 180.0 / M_PI)
+				<< ", maxDiameter = " << maxDiameter
+				);
+
+		circleVertexArrayMap.insert(std::pair{maxDiameter,CircleVertexArrayStruct{
+			.numVertexes = numSegments * 2 + 2,
+			.maxDiameter = maxDiameter,
+			.vertexBufferHandle = 0
+		}});
 
 
-	LOG4CXX_DEBUG(logger,"\t angle = " << 0
-			<< "deg. Array["<< maxNumSegments*2 << "].position = "
-			<< maxSegmentVertexArray[maxNumSegments*2].position[0] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2].position[1] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2].position[2] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2].position[3] << ","
-			<< "; normal = "
-			<< maxSegmentVertexArray[maxNumSegments*2].normal[0] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2].normal[1] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2].normal[2] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2].normal[3] << ","
-			);
-
-	LOG4CXX_DEBUG(logger,"\t angle = " << 0
-			<< "deg. Array["<< maxNumSegments*2+1 << "].position = "
-			<< maxSegmentVertexArray[maxNumSegments*2+1].position[0] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2+1].position[1] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2+1].position[2] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2+1].position[3] << ","
-			<< "; normal = "
-			<< maxSegmentVertexArray[maxNumSegments*2+1].normal[0] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2+1].normal[1] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2+1].normal[2] << ","
-			<< maxSegmentVertexArray[maxNumSegments*2+1].normal[3] << ","
-			);
-
+	}
 
 }
 

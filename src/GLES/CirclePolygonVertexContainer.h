@@ -82,7 +82,7 @@ public:
 		 * vertexes. Therefore I need to perform the complex calculations for
 		 * the vertexes only once.
 		*/
-		GLuint arrayBufferHandle;
+		GLuint vertexBufferHandle;
 	};
 
 	/** \brief Maximum allowed deviation from the ideal circular form
