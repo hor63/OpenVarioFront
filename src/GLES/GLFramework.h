@@ -18,7 +18,7 @@
 #include "SDL/SDLRenderSurface.h"
 #include "GLTextRender/GLTextGlobals.h"
 #include "GLTextRender/GLTextRenderer.h"
-#include "CirclePolygonVertexContainer.h"
+#include "Renderers/CirclePolygonVertexContainer.h"
 
 #include "GLFrameWorkPtr.h"
 
