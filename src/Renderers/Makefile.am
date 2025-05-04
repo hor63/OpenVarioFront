@@ -20,7 +20,7 @@
 
 noinst_LIBRARIES = libOEV_Renderers.a
 libOEV_Renderers_a_SOURCES = RendererBase.cpp AnalogHandRenderer.cpp SquareTextureRenderer.cpp \
-	CirclePolygonVertexContainer.cpp
+	CirclePolygonVertexContainer.cpp CircleBaseRenderer.cpp
 
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES -I $(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
