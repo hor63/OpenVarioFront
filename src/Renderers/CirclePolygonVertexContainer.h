@@ -69,11 +69,14 @@ public:
 		*/
 		GLsizei numVertexes;
 		/** \brief
-		 * The diameter of the circle where the deviation of the polygon from
+		 * The radius of the circle where the deviation of the polygon from
 		 * the ideal circle becomes larger than \ref maxDeviationPixels.
 		 */
-		GLfloat maxDiameter;
+		GLfloat maxRadius;
 		/** \brief Handle to the GL ES vertex buffer
+		 *
+		 * The vertex buffer is created only on demand. The handle is initialized
+		 * to 0 to indicate that the vertex buffer must still be created.
 		 *
 		 * Please note that I am usually not storing the content of the buffer in
 		 * the program (i.e. on the client side) except from the vertex array for
@@ -83,6 +86,63 @@ public:
 		 * the vertexes only once.
 		*/
 		GLuint vertexBufferHandle;
+
+		CircleVertexArrayStruct() = delete;
+
+		CircleVertexArrayStruct(uint32_t numSegments)
+			:numVertexes{static_cast<GLsizei>(numSegments * 2U + 2U)},
+			 vertexBufferHandle{0U}
+		{
+			double segmentAngleHalf = 2 * M_PI / static_cast<double>(numSegments*2);
+			maxRadius = static_cast<GLfloat>(1.0 / (1.0 - cos (segmentAngleHalf)));
+		}
+
+		CircleVertexArrayStruct(CircleVertexArrayStruct const& source)
+			:numVertexes{source.numVertexes},
+			 maxRadius{source.maxRadius},
+			 vertexBufferHandle{0}
+		{}
+
+		CircleVertexArrayStruct(CircleVertexArrayStruct&& source)
+			:numVertexes{source.numVertexes},
+			 maxRadius{source.maxRadius},
+			 vertexBufferHandle{source.vertexBufferHandle}
+		{
+			source.vertexBufferHandle = 0;
+		}
+
+		~CircleVertexArrayStruct() {
+			if (vertexBufferHandle != 0U) {
+				glDeleteBuffers(1,&vertexBufferHandle);
+				vertexBufferHandle = 0;
+			}
+		}
+
+		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct&& source)
+		{
+			numVertexes = source.numVertexes;
+			maxRadius   = source.maxRadius;
+			if (vertexBufferHandle != 0U) {
+				glDeleteBuffers(1,&vertexBufferHandle);
+			}
+			vertexBufferHandle = source.vertexBufferHandle;
+			source.vertexBufferHandle = 0;
+
+			return *this;
+		}
+
+		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct const& source)
+		{
+			numVertexes = source.numVertexes;
+			maxRadius   = source.maxRadius;
+			if (vertexBufferHandle != 0U) {
+				glDeleteBuffers(1,&vertexBufferHandle);
+			}
+			vertexBufferHandle = 0;
+
+			return *this;
+		}
+
 	};
 
 	/** \brief Maximum allowed deviation from the ideal circular form

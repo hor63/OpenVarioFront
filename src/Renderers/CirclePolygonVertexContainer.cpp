@@ -88,22 +88,15 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 			<< ": Fill map of vertex buffers for circle sizes");
 
-	for (int numSegments = 4; numSegments <= maxNumSegments; numSegments*=2) {
-		double segmentAngleHalf = 2 * M_PI / static_cast<double>(numSegments*2);
-		GLfloat maxDiameter = static_cast<GLfloat>(1.0 / (1.0 - cos (segmentAngleHalf)));
+	for (uint32_t numSegments = 4; numSegments <= maxNumSegments; numSegments*=2) {
+		CircleVertexArrayStruct vertexArryHolder {numSegments};
 
 		LOG4CXX_DEBUG(logger,"\tnumSegments = " << numSegments
-				<< ", halfAngle(deg) = " << (segmentAngleHalf * 180.0 / M_PI)
-				<< ", maxDiameter = " << maxDiameter
+				<< ", maxRadius = " << vertexArryHolder.maxRadius
 				);
 
-		circleVertexArrayMap.insert(std::pair{maxDiameter,CircleVertexArrayStruct{
-			.numVertexes = numSegments * 2 + 2,
-			.maxDiameter = maxDiameter,
-			.vertexBufferHandle = 0
-		}});
-
-
+		circleVertexArrayMap.insert(
+				std::pair(vertexArryHolder.maxRadius,vertexArryHolder));
 	}
 
 }
