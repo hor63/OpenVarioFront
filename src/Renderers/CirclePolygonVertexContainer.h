@@ -55,7 +55,11 @@ public:
 
 		CirclePolygonVertexStruct() :
 			position {0.0f,0.0f,0.0f,1.0f},
-			normal {0.0f,0.0f,0.0f,0.0f},
+			// x and y are being calculated in the constructor of CirclePolygonVertexContainer.
+			// Value 1.0 for z is a dummy which will be adjusted by the z-factor
+			// by the internal model matrix for the normal.
+			// But to apply a factor I need a value != 0 initially
+			normal {0.0f,0.0f,1.0f,0.0f},
 			isSecondaryCircle{0.0f}
 		{ }
 	};

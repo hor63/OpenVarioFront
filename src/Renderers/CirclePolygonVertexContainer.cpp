@@ -35,7 +35,13 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 		double angle = static_cast<double>(i) *
 				(M_PI  * 2.0 / static_cast<double>(maxNumSegments));
 
-		maxSegmentVertexArray[i*2 + 1].isSecondaryCircle = 1.0f;
+		// Alternate circle is first. Assumption is that the alternate circle
+		// is the inner (smaller) circle, and/or is the circle in positive
+		// z-directrion.
+		// The direction of the triangle strip is counter-clock wise.
+		// Thus the drawing direction of the triangles is also counter-clock
+		// wise, and in direction of the normal vector.
+		maxSegmentVertexArray[i*2].isSecondaryCircle = 1.0f;
 
 		// x
 		maxSegmentVertexArray[i*2].position[0] =
