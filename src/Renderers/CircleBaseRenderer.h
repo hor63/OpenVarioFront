@@ -35,11 +35,38 @@
 
 namespace OevGLES {
 
+/** \brief Base class for all things circular
+ *
+ * This class can draw these types of objects:
+ *
+ *   - A ring with an inner and outer radius (like a washer).
+ *     The y-offset is 0.0.\n
+ *     - A full circle is just a degenerated ring with an inner radius = 0.
+ *   - A cylinder with primary and secondary radius equal, and z-offset > 0.0.
+ *   - A cone. The intermediary between the cylinder and the ring.
+ *     The secondary radius is smaller than the primary one. Simultaneously
+ *     the z-offset is > 0.0.
+ *
+ */
 class CircleBaseRenderer: public RendererBase {
 public:
 
 	CircleBaseRenderer();
 	virtual ~CircleBaseRenderer();
+
+private:
+
+	/// \brief Any rendering parameter changed.
+	bool dirty = true;
+
+	/// \brief The outer radius, and/or the radius around z=0
+	double primaryRadius = 1.0;
+	/// \brief Inner and/or radius of the circle offset with z>0
+	double secondaryRadius = 1.0;
+	/// \brief The z-offset of the secondary circle from the primary circle
+	double primarySecondaryZOffset = 1.0;
+
+	Vec4 normalVectorFactors;
 }; // class CircleBaseRenderer
 
 } /* namespace OevGLES */
