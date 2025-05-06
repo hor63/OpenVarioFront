@@ -38,13 +38,13 @@ namespace OevGLES {
 
 // vector and matrix type definitions like in OpenGL
 
-typedef Eigen::Matrix<GLfloat,2,1> Vec2;
-typedef Eigen::Matrix<GLfloat,3,1> Vec3;
-typedef Eigen::Matrix<GLfloat,4,1> Vec4;
+using Vec2 = Eigen::Matrix<GLfloat,2,1> ;
+using Vec3 = Eigen::Matrix<GLfloat,3,1>;
+using Vec4 = Eigen::Matrix<GLfloat,4,1>;
 
-typedef Eigen::Matrix<GLfloat,2,2> Mat2;
-typedef Eigen::Matrix<GLfloat,3,3> Mat3;
-typedef Eigen::Matrix<GLfloat,4,4> Mat4;
+using Mat2 = Eigen::Matrix<GLfloat,2,2>;
+using Mat3 = Eigen::Matrix<GLfloat,3,3>;
+using Mat4 = Eigen::Matrix<GLfloat,4,4>;
 
 /** \brief Constructs and returns a translation matrix
  *
