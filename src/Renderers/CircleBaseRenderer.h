@@ -54,6 +54,28 @@ public:
 	CircleBaseRenderer();
 	virtual ~CircleBaseRenderer();
 
+	double getPrimaryRadius() const {
+		return primaryRadius;
+	}
+
+	double getPrimarySecondaryZOffset() const {
+		return primarySecondaryZOffset;
+	}
+
+	double getSecondaryRadius() const {
+		return secondaryRadius;
+	}
+
+	void setPrimaryRadius(double primaryRadius = 1.0);
+	void setPrimarySecondaryZOffset(double primarySecondaryZOffset = 1.0);
+	void setSecondaryRadius(double secondaryRadius = 1.0);
+	virtual void setupVertexBuffers() override;
+	virtual void draw(const OevGLES::Mat4 &modelMatrix,
+			const OevGLES::Mat4 &viewMatrix, const OevGLES::Mat4 &ProjMatrix,
+			const OevGLES::Mat4 &MVMatrix, const OevGLES::Mat4 &MVPMatrix,
+			const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
+			const OevGLES::Vec4 &ambientLightColor) override;
+
 private:
 
 	/// \brief Any rendering parameter changed.
@@ -64,7 +86,10 @@ private:
 	/// \brief Inner and/or radius of the circle offset with z>0
 	double secondaryRadius = 1.0;
 	/// \brief The z-offset of the secondary circle from the primary circle
+	/// which is always on z=0.0.
 	double primarySecondaryZOffset = 1.0;
+
+	;
 
 	Vec4 normalVectorFactors;
 }; // class CircleBaseRenderer

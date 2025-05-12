@@ -45,4 +45,33 @@ CircleBaseRenderer::~CircleBaseRenderer() {
 	// TODO Auto-generated destructor stub
 }
 
+void CircleBaseRenderer::setPrimaryRadius(double primaryRadius = 1.0) {
+	this->primaryRadius = primaryRadius;
+
+	dirty = true;
+}
+
+void CircleBaseRenderer::setPrimarySecondaryZOffset(
+		double primarySecondaryZOffset = 1.0) {
+	this->primarySecondaryZOffset = primarySecondaryZOffset;
+
+	dirty = true;
+}
+
+void CircleBaseRenderer::setSecondaryRadius(double secondaryRadius = 1.0) {
+	this->secondaryRadius = secondaryRadius;
+
+	dirty = true;
+}
+
+void CircleBaseRenderer::setupVertexBuffers() {
+}
+
+void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
+		const OevGLES::Mat4 &viewMatrix, const OevGLES::Mat4 &ProjMatrix,
+		const OevGLES::Mat4 &MVMatrix, const OevGLES::Mat4 &MVPMatrix,
+		const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
+		const OevGLES::Vec4 &ambientLightColor) {
+}
+
 } /* namespace OevGLES */
