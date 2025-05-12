@@ -172,6 +172,28 @@ public:
 	CirclePolygonVertexContainer();
 	~CirclePolygonVertexContainer();
 
+	/** \brief Create and cache a vertex buffer for a circular object with a given
+	 * radius.
+	 *
+	 * *Note*: The returned reference is owned by this object, and must not be used
+	 * after this \ref CirclePolygonVertexContainer is deleted.
+	 * This is itself usually owned by the \ref GLFramework object of the program.
+	 *
+	 * The returned structure is cached internally. The returned \ref
+	 * CircleVertexArrayStruct is supposed to be used multiple times.
+	 * However, the vertex buffer is created on demand only. I.e. the vertex buffer
+	 * is not created before a vertex buffer with the requested number of segments
+	 * is being requested.
+	 *
+	 * \param radius Intended radius of the circular object to draw.
+	 * 		It is assumed that the outer radius of the object is passed.
+	 * \return Reference to a \ref CircleVertexArrayStruct structure with a
+	 * vertex buffer handle, and further description of the vertex buffer.
+	 * The number of polygon segments returned vertex buffer is always always a
+	 * power of 2 plus one segment to match the first segment to close the circle.
+	 */
+	CircleVertexArrayStruct const &createVertexArrayStruct (GLfloat radius);
+
 private:
 
 	/** \brief An array with the maximum number of segments
@@ -196,6 +218,8 @@ private:
 	 * deviation from the ideal circle becomes > \ref maxDeviationPixels.
 	*/
 	std::map<GLfloat,CircleVertexArrayStruct> circleVertexArrayMap;
+
+	void createVertexBuffer (CircleVertexArrayStruct& vertArrayStruct);
 
 };
 

@@ -109,4 +109,40 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 
 CirclePolygonVertexContainer::~CirclePolygonVertexContainer() {}
 
+const CirclePolygonVertexContainer::CircleVertexArrayStruct& CirclePolygonVertexContainer::createVertexArrayStruct(
+		GLfloat radius) {
+
+	auto rc = circleVertexArrayMap.lower_bound(radius);
+
+	if (rc == circleVertexArrayMap.end()) {
+		// The requested radius is greater than any which I provide.
+		// Use the largest buffer which I can provide.
+		// The number of segments is limited to \ref maxNumSegments.
+		--rc;
+	}
+
+	if (rc->second.vertexBufferHandle == 0) {
+		createVertexBuffer (rc->second);
+	}
+
+	return rc->second;
+}
+
+void CirclePolygonVertexContainer::createVertexBuffer(
+		CircleVertexArrayStruct &vertArrayStruct) {
+
+	CirclePolygonVertexStruct* clientBuffer;
+	std::vector<CirclePolygonVertexStruct> tempBuffer;
+
+	if (vertArrayStruct.numVertexes == maxNumSegments) {
+		clientBuffer = &maxSegmentVertexArray[0];
+	} else {
+
+		/// todo: Fill the temporary buffer
+	}
+
+	/// todo: create the vertex buffer and fill it with clientBuffer data.
+
+}
+
 } /* namespace OevGLES */
