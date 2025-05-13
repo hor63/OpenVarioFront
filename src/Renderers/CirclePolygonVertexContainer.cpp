@@ -134,11 +134,44 @@ void CirclePolygonVertexContainer::createVertexBuffer(
 	CirclePolygonVertexStruct* clientBuffer;
 	std::vector<CirclePolygonVertexStruct> tempBuffer;
 
-	if (vertArrayStruct.numVertexes == maxNumSegments) {
+	auto numSegments = (vertArrayStruct.numVertexes - 2) / 2;
+
+	if (numSegments == maxNumSegments) {
 		clientBuffer = &maxSegmentVertexArray[0];
+
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+				<< ": numSegments  == " << maxNumSegments
+				<< ". Use maxSegmentVertexArray at " <<
+				reinterpret_cast<void*>(clientBuffer));
+
 	} else {
 
-		/// todo: Fill the temporary buffer
+		auto incrementSource = maxNumSegments / numSegments;
+		int sourceVertexIndex = 0;
+
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+				<< ": numSegments  == " << numSegments
+				<< ", numVertexes = " << vertArrayStruct.numVertexes
+				<< ". Use a temporary buffer. IncrementSource = "
+				<< incrementSource);
+
+		tempBuffer.reserve(vertArrayStruct.numVertexes);
+
+		for (int targetVertexIndex = 0 ;
+				targetVertexIndex < vertArrayStruct.numVertexes ;
+				targetVertexIndex += 2) {
+
+			tempBuffer[targetVertexIndex]     = maxSegmentVertexArray[sourceVertexIndex];
+			tempBuffer[targetVertexIndex + 1] = maxSegmentVertexArray[sourceVertexIndex + 1];
+
+			LOG4CXX_DEBUG(logger,
+					"\ttargetVertexIndex = " << targetVertexIndex
+					<< ", sourceVertexIndex = " << sourceVertexIndex);
+
+			sourceVertexIndex += incrementSource;
+		}
+
+		clientBuffer = &tempBuffer[0];
 	}
 
 	/// todo: create the vertex buffer and fill it with clientBuffer data.
