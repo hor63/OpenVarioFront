@@ -298,7 +298,7 @@ AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with
 CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
    -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
    -Ddefault_library=shared \
-   -Doptimization=g -Ddebug=true \
+   -Doptimization=2 -Ddebug=true \
    -Dharfbuzz:default_library=both \
    -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
    -Dbuild-testsuite=false -Dbuild-examples=false \
@@ -312,8 +312,8 @@ cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
     -DSDL_STATIC=OFF -DSDL_SHARED=ON \
     -DCMAKE_INSTALL_LIBDIR="$pkg_config_libdir" \
     -DCMAKE_INSTALL_PREFIX="$pkg_config_prefix" \
-    -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-    -DCMAKE_LD_FLAGS="$LDFLAGS" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS"
+    -DCMAKE_C_FLAGS="$CFLAGS -O2 -g3" -DCMAKE_CXX_FLAGS="$CXXFLAGS -O2 -g3" \
+    -DCMAKE_LD_FLAGS="$LDFLAGS -O2 -g3" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS -O2 -g3"
 
 
 
