@@ -81,8 +81,8 @@ Mat4 scalingMatrix (GLfloat x, GLfloat y, GLfloat z ) {
 
 Mat4 rotationMatrixX (GLfloat adX) {
 	Mat4 rc;
-	GLfloat sinX = sinf(adX/180.0*M_PI);
-	GLfloat cosX = cosf(adX/180.0*M_PI);
+	GLfloat sinX = sinf(adX*degToRad);
+	GLfloat cosX = cosf(adX*degToRad);
 
 	initLogger();
 
@@ -106,8 +106,8 @@ Mat4 rotationMatrixX (GLfloat adX) {
 
 Mat4 rotationMatrixY (GLfloat adY) {
 	Mat4 rc;
-	GLfloat sinY = sinf(adY/180.0*M_PI);
-	GLfloat cosY = cosf(adY/180.0*M_PI);
+	GLfloat sinY = sinf(adY*degToRad);
+	GLfloat cosY = cosf(adY*degToRad);
 
 	initLogger();
 
@@ -131,8 +131,8 @@ Mat4 rotationMatrixY (GLfloat adY) {
 
 Mat4 rotationMatrixZ (GLfloat adZ) {
 	Mat4 rc;
-	GLfloat sinZ = sinf(adZ/180.0*M_PI);
-	GLfloat cosZ = cosf(adZ/180.0*M_PI);
+	GLfloat sinZ = sinf(adZ*degToRad);
+	GLfloat cosZ = cosf(adZ*degToRad);
 
 	initLogger();
 
@@ -215,7 +215,7 @@ Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, GLfloat fieldO
 	 */
 
 	Mat4 rc;
-	GLfloat range  = tanf((fieldOfViewAngle / 180.0 * M_PI) / 2.0f) * near;
+	GLfloat range  = tanf(fieldOfViewAngle * (degToRad / 2.0)) * near;
 	GLfloat Sx = (2.0f * near) / (range * aspect + range * aspect);
 	GLfloat Sy = near / range;
 	GLfloat Sz = -(far + near) / (far - near);

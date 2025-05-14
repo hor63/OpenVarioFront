@@ -36,6 +36,10 @@
 
 namespace OevGLES {
 
+static constexpr auto degToRad = M_PI/180.0;
+static constexpr auto radToDeg = 180.0/M_PI;
+
+
 // vector and matrix type definitions like in OpenGL
 
 using Vec2 = Eigen::Matrix<GLfloat,2,1> ;
