@@ -77,6 +77,8 @@ public:
 		 * the ideal circle becomes larger than \ref maxDeviationPixels.
 		 */
 		GLfloat maxRadius;
+		std::size_t numSegments;
+		double angleIncrementRad;
 		/** \brief Handle to the GL ES vertex buffer
 		 *
 		 * The vertex buffer is created only on demand. The handle is initialized
@@ -93,22 +95,20 @@ public:
 
 		CircleVertexArrayStruct() = delete;
 
-		CircleVertexArrayStruct(uint32_t numSegments)
-			:numVertexes{static_cast<GLsizei>(numSegments * 2U + 2U)},
-			 vertexBufferHandle{0U}
-		{
-			double segmentAngleHalf = 2 * M_PI / static_cast<double>(numSegments*2);
-			maxRadius = static_cast<GLfloat>(1.0 / (1.0 - cos (segmentAngleHalf)));
-		}
+		CircleVertexArrayStruct(std::size_t numSegments);
 
 		CircleVertexArrayStruct(CircleVertexArrayStruct const& source)
-			:numVertexes{source.numVertexes},
+			:numSegments{source.numSegments},
+			 numVertexes{source.numVertexes},
+			 angleIncrementRad{source.angleIncrementRad},
 			 maxRadius{source.maxRadius},
 			 vertexBufferHandle{0}
 		{}
 
 		CircleVertexArrayStruct(CircleVertexArrayStruct&& source)
-			:numVertexes{source.numVertexes},
+			:numSegments{source.numSegments},
+			 numVertexes{source.numVertexes},
+			 angleIncrementRad{source.angleIncrementRad},
 			 maxRadius{source.maxRadius},
 			 vertexBufferHandle{source.vertexBufferHandle}
 		{

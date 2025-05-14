@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include "CirclePolygonVertexContainer.h"
+#include "GLES/VecMat.h"
 
 
 #if defined HAVE_LOG4CXX_H
@@ -20,10 +21,34 @@ static log4cxx::LoggerPtr logger = 0;
 
 namespace OevGLES {
 
+CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(std::size_t numSegments)
+	:numSegments{numSegments},
+	 numVertexes{static_cast<GLsizei>(numSegments * 2U + 2U)},
+	 angleIncrementRad{2.0*M_PI/static_cast<double>(numSegments)},
+	 vertexBufferHandle{0U}
+
+{
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.Renderers.CirclePolygonVertexContainer");
+	}
+#endif
+
+	maxRadius  = static_cast<GLfloat>(1.0 / (1.0 - cos (angleIncrementRad / 2.0)));
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+			<< ": numSegments = " << numSegments
+			<< ", numVertexes = " << numVertexes
+			<< ", angleIncrementRad = " << angleIncrementRad
+			<< " = " << angleIncrementRad*radToDeg << "deg."
+			<< ", maxRadius = " << maxRadius);
+}
+
+
 CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLES.CirclePolygonVertexContainer");
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.Renderers.CirclePolygonVertexContainer");
 	}
 #endif
 
@@ -96,10 +121,6 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 
 	for (uint32_t numSegments = 4; numSegments <= maxNumSegments; numSegments*=2) {
 		CircleVertexArrayStruct vertexArryHolder {numSegments};
-
-		LOG4CXX_DEBUG(logger,"\tnumSegments = " << numSegments
-				<< ", maxRadius = " << vertexArryHolder.maxRadius
-				);
 
 		circleVertexArrayMap.insert(
 				std::pair(vertexArryHolder.maxRadius,vertexArryHolder));
