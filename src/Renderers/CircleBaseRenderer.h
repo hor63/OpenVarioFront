@@ -66,9 +66,9 @@ public:
 		return secondaryRadius;
 	}
 
-	void setPrimaryRadius(double primaryRadius = 1.0);
-	void setPrimarySecondaryZOffset(double primarySecondaryZOffset = 1.0);
-	void setSecondaryRadius(double secondaryRadius = 1.0);
+	void setPrimaryRadius(double primaryRadius);
+	void setPrimarySecondaryZOffset(double primarySecondaryZOffset);
+	void setSecondaryRadius(double secondaryRadius);
 	virtual void setupVertexBuffers() override;
 	virtual void draw(const OevGLES::Mat4 &modelMatrix,
 			const OevGLES::Mat4 &viewMatrix, const OevGLES::Mat4 &ProjMatrix,

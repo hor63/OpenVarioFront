@@ -45,20 +45,20 @@ CircleBaseRenderer::~CircleBaseRenderer() {
 	// TODO Auto-generated destructor stub
 }
 
-void CircleBaseRenderer::setPrimaryRadius(double primaryRadius = 1.0) {
+void CircleBaseRenderer::setPrimaryRadius(double primaryRadius) {
 	this->primaryRadius = primaryRadius;
 
 	dirty = true;
 }
 
 void CircleBaseRenderer::setPrimarySecondaryZOffset(
-		double primarySecondaryZOffset = 1.0) {
+		double primarySecondaryZOffset) {
 	this->primarySecondaryZOffset = primarySecondaryZOffset;
 
 	dirty = true;
 }
 
-void CircleBaseRenderer::setSecondaryRadius(double secondaryRadius = 1.0) {
+void CircleBaseRenderer::setSecondaryRadius(double secondaryRadius) {
 	this->secondaryRadius = secondaryRadius;
 
 	dirty = true;
