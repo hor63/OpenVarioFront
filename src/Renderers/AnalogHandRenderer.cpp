@@ -124,12 +124,11 @@ void AnalogHandRenderer::setupVertexBuffers() {
 	// First get the program
 	glProgram = OevGLES::GLProgDiffuseLight::getProgram();
 
-	// make the program current
-	glProgram->useProgram();
-
 	glGenBuffers(1,&vertexBufferHandle);
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER,0);
 
 
 }
@@ -189,6 +188,12 @@ void AnalogHandRenderer::draw(
 
 	glDrawArrays(GL_TRIANGLES,0,12);
 
+	glDisableVertexAttribArray(glProgram->getVertexPosLocation());
+	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
+
+	glBindBuffer(GL_ARRAY_BUFFER,0);
+
+	glUseProgram(0);
 
 }
 
