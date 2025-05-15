@@ -193,6 +193,14 @@ void CirclePolygonVertexContainer::createVertexBuffer(
 		}
 
 		clientBuffer = &tempBuffer[0];
+
+		glGenBuffers(1, &vertArrayStruct.vertexBufferHandle);
+		glBindBuffer(GL_ARRAY_BUFFER,vertArrayStruct.vertexBufferHandle);
+		glBufferData(GL_ARRAY_BUFFER,
+				sizeof(CirclePolygonVertexStruct)*vertArrayStruct.numVertexes,
+				clientBuffer,GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+
 	}
 
 	/// todo: create the vertex buffer and fill it with clientBuffer data.
