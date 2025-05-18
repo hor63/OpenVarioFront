@@ -36,13 +36,14 @@
 
 namespace OevGLES {
 
-CircleBaseRenderer::CircleBaseRenderer() {
-	// TODO Auto-generated constructor stub
+CircleBaseRenderer::CircleBaseRenderer(
+		CirclePolygonVertexContainer& circlePolygonVertexContainer)
+	: circlePolygonVertexContainer {circlePolygonVertexContainer}
+{
 
 }
 
 CircleBaseRenderer::~CircleBaseRenderer() {
-	// TODO Auto-generated destructor stub
 }
 
 void CircleBaseRenderer::setPrimaryRadius(double primaryRadius) {
@@ -65,6 +66,30 @@ void CircleBaseRenderer::setSecondaryRadius(double secondaryRadius) {
 }
 
 void CircleBaseRenderer::setupVertexBuffers() {
+
+	if (glProgram == nullptr) {
+		glProgram = GLProgDiffLightCircle::getProgram();
+	}
+
+	if (dirty) {
+
+		vertexArrayStruct =
+			&circlePolygonVertexContainer.createVertexArrayStruct(primaryRadius);
+
+		vecFactorPrimaryVertex [0] = vecFactorPrimaryVertex [1] = primaryRadius;
+		vecFactorSecondVertex [0] = vecFactorSecondVertex [1] = secondaryRadius;
+		vecFactorSecondVertex [2] = primarySecondaryZOffset;
+
+		// The normal vector as the cross product of one vector {0,1,0}
+		// and {x,0,y} degrades to {z,0,-x}
+		vecFactorNormalVector [0] = primarySecondaryZOffset;
+		vecFactorNormalVector [2] = primaryRadius - secondaryRadius;
+
+		Eigen::Map<Vec3> vecFactorNormalVectorMap (vecFactorNormalVector);
+		vecFactorNormalVectorMap.normalize();
+
+		dirty = false;
+	}
 }
 
 void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
