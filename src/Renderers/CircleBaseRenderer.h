@@ -32,6 +32,8 @@
 #define RENDERERS_CIRCLEBASERENDERER_H_
 
 #include "RendererBase.h"
+#include "CirclePolygonVertexContainer.h"
+#include "GLPrograms/GLProgDiffLightCircle.h"
 
 namespace OevGLES {
 
@@ -51,7 +53,9 @@ namespace OevGLES {
 class CircleBaseRenderer: public RendererBase {
 public:
 
-	CircleBaseRenderer();
+	/// Obtain the circlePolygonVertexContainer reference from your
+	/// \ref GLFramework object.
+	CircleBaseRenderer(CirclePolygonVertexContainer& circlePolygonVertexContainer);
 	virtual ~CircleBaseRenderer();
 
 	double getPrimaryRadius() const {
@@ -60,6 +64,10 @@ public:
 
 	double getPrimarySecondaryZOffset() const {
 		return primarySecondaryZOffset;
+	}
+
+	CirclePolygonVertexContainer& getCirclePolygonVertexContainer() {
+		return circlePolygonVertexContainer;
 	}
 
 	double getSecondaryRadius() const {
@@ -89,9 +97,22 @@ private:
 	/// which is always on z=0.0.
 	double primarySecondaryZOffset = 1.0;
 
-	;
+	// Client side uniforms
+	GLfloat vecFactorPrimaryVertex [4] = {1,1,0,1};
+	GLfloat vecFactorSecondVertex [4] = {1,1,1,1};
+	GLfloat vecFactorNormalVector [4] = {1,0,1,0};
 
-	Vec4 normalVectorFactors;
+
+	/// The cache object to provide the vertex arrays
+	CirclePolygonVertexContainer& circlePolygonVertexContainer;
+
+	/// The carrier of the suitable vertex buffer when \ref dirty is \p false.
+	CirclePolygonVertexContainer::CircleVertexArrayStruct const *
+		vertexArrayStruct = nullptr;
+
+	GLProgDiffLightCircle *glProgram = nullptr;
+
+	Vec4 normalVectorFactors = {1,1,1,1};
 }; // class CircleBaseRenderer
 
 } /* namespace OevGLES */
