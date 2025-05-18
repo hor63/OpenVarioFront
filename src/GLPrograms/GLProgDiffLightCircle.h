@@ -67,11 +67,25 @@ public:
 	virtual char const* getFragmentShaderCode() const override;
 
 	// The uniforms
-	GLProgram::ShaderVariableInfo const &getMMatrixSecondVertex() const {
-		return mMatrixSecondVertexInfo;
+	GLProgram::ShaderVariableInfo const &getVecFactorPrimaryVertexInfo() {
+		return vecFactorPrimaryVertexInfo;
 	}
-	GLint getMMatrixSecondVertexLocation () const {
-		return mMatrixSecondVertexLocation;
+	GLint getVecFactorPrimaryVertexLocation() {
+		return vecFactorPrimaryVertexLocation;
+	}
+
+	GLProgram::ShaderVariableInfo const &getVecFactorSecondVertexInfo() {
+		return vecFactorSecondVertexInfo;
+	}
+	GLint getVecFactorSecondVertexLocation() {
+		return vecFactorSecondVertexLocation;
+	}
+
+	GLProgram::ShaderVariableInfo const &getVecFactorNormalVectorInfo() {
+		return vecFactorNormalVectorInfo;
+	}
+	GLint getVecFactorNormalVectorLocation() {
+		return vecFactorNormalVectorLocation;
 	}
 
 	GLProgram::ShaderVariableInfo const &getMvpMatrixInfo() const {
@@ -154,28 +168,32 @@ private:
 	static GLProgDiffLightCircle* theProgram;
 
 	// The uniforms
-	GLProgram::ShaderVariableInfo	mMatrixSecondVertexInfo;
-	GLint 							mMatrixSecondVertexLocation = 0;
+	GLProgram::ShaderVariableInfo	vecFactorPrimaryVertexInfo;
+	GLint 							vecFactorPrimaryVertexLocation = 0;
+	GLProgram::ShaderVariableInfo	vecFactorSecondVertexInfo;
+	GLint 							vecFactorSecondVertexLocation = 0;
+	GLProgram::ShaderVariableInfo	vecFactorNormalVectorInfo;
+	GLint 							vecFactorNormalVectorLocation = 0;
 	GLProgram::ShaderVariableInfo	mvpMatrixInfo;
 	GLint 							mvpMatrixLocation = 0;
 	GLProgram::ShaderVariableInfo	mvMatrixInfo;
-	GLint							mvMatrixLocation = 0;
+	GLint 							mvMatrixLocation = 0;
 	GLProgram::ShaderVariableInfo	lightDirInfo;
-	GLint							lightDirLocation = 0;
+	GLint 							lightDirLocation = 0;
 	GLProgram::ShaderVariableInfo	lightColorInfo;
-	GLint							lightColorLocation = 0;
+	GLint 							lightColorLocation = 0;
 	GLProgram::ShaderVariableInfo	ambientLightColorInfo;
-	GLint							ambientLightColorLocation = 0;
+	GLint 							ambientLightColorLocation = 0;
 
 	// The vertex attributes
 	GLProgram::ShaderVariableInfo	vertexPosInfo;
-	GLint							vertexPosLocation = 0;
+	GLint 							vertexPosLocation = 0;
 	GLProgram::ShaderVariableInfo	vertexNormalInfo;
-	GLint							vertexNormalLocation = 0;
+	GLint 							vertexNormalLocation = 0;
 	GLProgram::ShaderVariableInfo	vertexColorInfo;
-	GLint							vertexColorLocation = 0;
+	GLint 							vertexColorLocation = 0;
 	GLProgram::ShaderVariableInfo	isSecondaryVertexInfo;
-	GLint							isSecondaryVertexLocation = 0;
+	GLint 							isSecondaryVertexLocation = 0;
 
 	/** \brief private constructor
 	 *
