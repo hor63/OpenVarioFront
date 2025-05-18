@@ -19,11 +19,16 @@
 
 namespace OevGLES {
 
+class GLFramework;
+
 /** \brief
  *
  */
 class CirclePolygonVertexContainer final {
 public:
+
+	// Only you can create me.
+	friend class GLFramework;
 
 	struct CirclePolygonVertexStruct {
 		GLfloat position[4];
@@ -169,7 +174,6 @@ public:
 	 */
 	static constexpr std::size_t maxNumSegments = 128;
 
-	CirclePolygonVertexContainer();
 	~CirclePolygonVertexContainer();
 
 	/** \brief Create and cache a vertex buffer for a circular object with a given
@@ -218,6 +222,9 @@ private:
 	 * deviation from the ideal circle becomes > \ref maxDeviationPixels.
 	*/
 	std::map<GLfloat,CircleVertexArrayStruct> circleVertexArrayMap;
+
+	/// Only friend \ref GLFramework can create me.
+	CirclePolygonVertexContainer();
 
 	void createVertexBuffer (CircleVertexArrayStruct& vertArrayStruct);
 
