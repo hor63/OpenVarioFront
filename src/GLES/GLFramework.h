@@ -64,6 +64,10 @@ public:
 		return sdlSurface;
 	}
 
+	CirclePolygonVertexContainer& getCircleVertexContainer() {
+		return circleVertexContainer;
+	}
+
 	bool isVertexArrayUsable() const {
 		return vertexArrayUsable;
 	}
