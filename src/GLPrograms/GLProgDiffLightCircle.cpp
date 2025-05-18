@@ -68,18 +68,13 @@ R"(
 
 precision mediump float;
 
-const mat4 m4Unity = (
-	1.0, 0.0, 0.0, 0.0,
-	0.0, 1.0, 0.0, 0.0,
-	0.0, 0.0, 1.0, 0.0,
-	0.0, 0.0, 0.0, 1.0
-);
-
 const float one = 1.0;
 
-// Model matrix for shifting the secondary vertex of each segment of a circle
-// around to form a ring like a washer, or like a tire.
-uniform mat4 mMatrixSecondVertex;
+// The factors Provides the real radius and z-offset of the primary circles.
+uniform vec4 vecFactorPrimaryVertex;
+uniform vec4 vecFactorSecondVertex;
+// The factor provides the real normal vector
+uniform vec4 vecFactorNormalVector;
 
 // MVP matrix is used to transform points
 uniform mat4 mvpMatrix;
@@ -102,19 +97,20 @@ attribute float isSecondaryVertex;
 varying vec4 varFragColor;
 
 void main () { 
-	float diffuseLightFactor = abs(dot(lightDir,normalize(vec3((mvMatrix * vertexNormal)))));
+	float diffuseLightFactor = abs(dot(lightDir,
+		normalize(vec3((mvMatrix * (vertexNormal*vecFactorNormalVector)))));
 	vec4 lightColor = ambientLightColor + (diffuseLightFactor * lightColor);
 
-	// Use mMatrixSecondVertex when isSecondaryVertex is 1.0
-	// but use just a Unity matrix if isSecondaryVertex is 0.0.
-	mat4 effMvpMatrix = mvpMatrix * (
-		(isSecondaryVertex * mMatrixSecondVertex) +
-		((one - isSecondaryVertex) * m4Unity));
+	// Use vecFactorSecondVertex when isSecondaryVertex is 1.0
+	// but use vecFactorPrimaryVertex if isSecondaryVertex is 0.0.
+	vec4 effFactorVertex = 
+		(isSecondaryVertex * vecFactorSecondVertex) +
+		((one - isSecondaryVertex) * vecFactorPrimaryVertex);
 
 	
 	lightColor.a = one;
 	varFragColor = vertexColor * lightColor;
-	gl_Position = effMvpMatrix * vertexPos;
+	gl_Position = mvpMatrix * (vertexPos * effFactorVertex);
 }
 )";
 
@@ -139,18 +135,32 @@ void main () {
 void OevGLES::GLProgDiffLightCircle::retrieveShaderVariableInfo() {
 
 	// The uniforms
-	mMatrixSecondVertexInfo	= *retrieveSingleUniformInfo("mMatrixSecondVertex",mMatrixSecondVertexLocation);
-	mvpMatrixInfo			= *retrieveSingleUniformInfo("mvpMatrix",mvpMatrixLocation);
-	mvMatrixInfo			= *retrieveSingleUniformInfo("mvMatrix",mvMatrixLocation);
-	lightDirInfo			= *retrieveSingleUniformInfo("lightDir",lightDirLocation);
-	lightColorInfo			= *retrieveSingleUniformInfo("lightColor",lightColorLocation);
-	ambientLightColorInfo	= *retrieveSingleUniformInfo("ambientLightColor",ambientLightColorLocation);
+	vecFactorPrimaryVertexInfo	=
+			*retrieveSingleUniformInfo("vecFactorPrimaryVertex",vecFactorPrimaryVertexLocation);
+	vecFactorSecondVertexInfo	=
+			*retrieveSingleUniformInfo("vecFactorSecondVertex",vecFactorSecondVertexLocation);
+	vecFactorNormalVectorInfo	=
+			*retrieveSingleUniformInfo("vecFactorNormalVector",vecFactorNormalVectorLocation);
+	mvpMatrixInfo				=
+			*retrieveSingleUniformInfo("mvpMatrix",mvpMatrixLocation);
+	mvMatrixInfo				=
+			*retrieveSingleUniformInfo("mvMatrix",mvMatrixLocation);
+	lightDirInfo				=
+			*retrieveSingleUniformInfo("lightDir",lightDirLocation);
+	lightColorInfo				=
+			*retrieveSingleUniformInfo("lightColor",lightColorLocation);
+	ambientLightColorInfo		=
+			*retrieveSingleUniformInfo("ambientLightColor",ambientLightColorLocation);
 
 	// The vertex attributes
-	vertexPosInfo			= *retrieveSingleAttributeInfo("vertexPos",vertexPosLocation);
-	vertexNormalInfo		= *retrieveSingleAttributeInfo("vertexNormal",vertexNormalLocation);
-	vertexColorInfo			= *retrieveSingleAttributeInfo("vertexColor",vertexColorLocation);
-	isSecondaryVertexInfo	= *retrieveSingleAttributeInfo("isSecondaryVertex",isSecondaryVertexLocation);
+	vertexPosInfo			=
+			*retrieveSingleAttributeInfo("vertexPos",vertexPosLocation);
+	vertexNormalInfo		=
+			*retrieveSingleAttributeInfo("vertexNormal",vertexNormalLocation);
+	vertexColorInfo			=
+			*retrieveSingleAttributeInfo("vertexColor",vertexColorLocation);
+	isSecondaryVertexInfo	=
+			*retrieveSingleAttributeInfo("isSecondaryVertex",isSecondaryVertexLocation);
 
 }
 
