@@ -631,10 +631,16 @@ void GLTextRenderer::draw(
 				);
 
 		glEnable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(-1.0,-2.0);
+		glPolygonOffset(-0.5f,-1.0);
 	}
 
+	GLint depthFuncBackup = GL_LESS;
+	glGetIntegerv(GL_DEPTH_FUNC,&depthFuncBackup);
+	glDepthFunc(GL_LEQUAL);
+
 	drawGlyphs(MVPMatrix);
+
+	glDepthFunc(depthFuncBackup);
 
 	if (drawBackground) {
 		glDisable(GL_POLYGON_OFFSET_FILL);
