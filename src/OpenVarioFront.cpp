@@ -73,7 +73,7 @@ int main(int argint,char** argv) {
 
 		glTextGlobPtr->setResolutionDPI(96, 96);
 
-		glFramework->createRenderSurface(640,480,PACKAGE_STRING);
+		glFramework->createRenderSurface(1024,1024,PACKAGE_STRING);
 
 		OevGLES::AnalogHandRenderer hand;
 		OevGLES::SquareTextureRenderer varioBackground;
@@ -95,7 +95,8 @@ int main(int argint,char** argv) {
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 		OevGLES::Vec4 whiteColor {1.0f,1.0f,1.0f,0.5f};
-		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
+// 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
+		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,1.0f};
 
 		// Assume the initial view point is exactly on the z-axix.
 		// My goal is to find the aperture angle at which from this viewpoint
@@ -124,8 +125,9 @@ int main(int argint,char** argv) {
 		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(-300,220,0);
 		OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
-		glTextRend.setFontSize(20);
-		glTextRend.setFonts("Noto Sans");
+		glTextRend.setFontSize(30);
+//		glTextRend.setFonts("Noto Sans");
+		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
 		glTextRend.setText(
 				  "0123456789||0ABCDEFGHIJK"
 				"\n一个对此心怀恶意的流氓"
@@ -133,9 +135,9 @@ int main(int argint,char** argv) {
 				"\nএকজন দুর্বৃত্ত যে এটাকে"
 				"\n খারাপ মনে করে"
 				"\nمحتال يعتقد الشر في هذا"
-				"\nLMNOPQRSTUVWXZYabcdefg"
+				"\nLMNOPQRSTUVWXAYaZabcdefg"
 				"\nhijklmnopqrstuvwxzy!@#"
-				"\n$%^&*()_+<>[]{};'\\:\"|"
+				"\n$%^&*()_+<>[]{};'.\\\\//.\\:\"|"
 				"\n,./?€üöäÜÖÄ"
 				"\níéóúêîôû^'´`îêôû°ß-="
 
@@ -169,7 +171,8 @@ int main(int argint,char** argv) {
 			}
 
 			if (rotationAngleDeg >= 360.0f) {
-				rotationAngleDeg -= 360.0f;
+				// rotationAngleDeg -= 360.0f;
+				rotationAngleDeg = 360.0f;
 			}
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
