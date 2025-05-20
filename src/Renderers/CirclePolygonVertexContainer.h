@@ -15,8 +15,6 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
 
-#include "OVFCommon.h"
-
 namespace OevGLES {
 
 class GLFramework;

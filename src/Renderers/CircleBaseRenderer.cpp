@@ -32,7 +32,13 @@
 #  include <config.h>
 #endif
 
+#include "OVFCommon.h"
+
 #include "CircleBaseRenderer.h"
+
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
 
 namespace OevGLES {
 
@@ -40,6 +46,12 @@ CircleBaseRenderer::CircleBaseRenderer(
 		CirclePolygonVertexContainer& circlePolygonVertexContainer)
 	: circlePolygonVertexContainer {circlePolygonVertexContainer}
 {
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.Renderers.CircleBaseRenderer");
+	}
+#endif
+
 
 }
 
@@ -79,6 +91,8 @@ void CircleBaseRenderer::setupVertexBuffers() {
 		vecFactorPrimaryVertex [0] = vecFactorPrimaryVertex [1] = primaryRadius;
 		vecFactorSecondVertex [0] = vecFactorSecondVertex [1] = secondaryRadius;
 		vecFactorSecondVertex [2] = primarySecondaryZOffset;
+		Eigen::Map<Vec4> vecFactorPrimaryVertexMap(vecFactorPrimaryVertex);
+		Eigen::Map<Vec4> vecFactorSecondVertexMap(vecFactorSecondVertex);
 
 		// The normal vector as the cross product of one vector {0,1,0}
 		// and {x,0,y} degrades to {z,0,-x}
@@ -86,9 +100,24 @@ void CircleBaseRenderer::setupVertexBuffers() {
 		vecFactorNormalVector [2] = primaryRadius - secondaryRadius;
 
 		Eigen::Map<Vec3> vecFactorNormalVectorMap (vecFactorNormalVector);
-		vecFactorNormalVectorMap.normalize();
 
 		dirty = false;
+
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+				<< ": primaryRadius = " << primaryRadius
+				<< ", secondaryRadius = " << secondaryRadius
+				<< ", primarySecondaryZOffset = " << primarySecondaryZOffset
+				<< "; use a polygon with " << vertexArrayStruct->numSegments
+				<< " segments, " << vertexArrayStruct->numVertexes << " vertexes"
+				<< "\nvecFactorPrimaryVertexMap = \n" << vecFactorPrimaryVertexMap
+				<< "\nvecFactorSecondVertexMap = \n" << vecFactorSecondVertexMap
+				<< "\nvecFactorNormalVectorMap = \n" << vecFactorNormalVectorMap);
+
+		vecFactorNormalVectorMap.normalize();
+		LOG4CXX_DEBUG(logger,"\tvecFactorNormalVectorMap normalized = \n"
+				<< vecFactorNormalVectorMap
+				);
+
 	}
 }
 
@@ -97,6 +126,31 @@ void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 		const OevGLES::Mat4 &MVMatrix, const OevGLES::Mat4 &MVPMatrix,
 		const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
 		const OevGLES::Vec4 &ambientLightColor) {
+
+	if (dirty) {
+		setupVertexBuffers();
+	}
+
+	// First activate the program
+	glProgram->useProgram();
+
+	// Set up the uniforms
+	glUniform4fv(glProgram->getVecFactorPrimaryVertexLocation(),1,vecFactorPrimaryVertex);
+	glUniform4fv(glProgram->getVecFactorSecondVertexLocation(),1,vecFactorSecondVertex);
+	glUniform4fv(glProgram->getVecFactorNormalVectorLocation(),1,vecFactorNormalVector);
+
+	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+
+	glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
+	glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
+	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
+
+	// Set up the attributes
+#error Complete this function
+
+	glUseProgram(0);
+
 }
 
 } /* namespace OevGLES */
