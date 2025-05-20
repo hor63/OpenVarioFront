@@ -11,6 +11,8 @@
 
 #include <cmath>
 
+#include "OVFCommon.h"
+
 #include "CirclePolygonVertexContainer.h"
 #include "GLES/VecMat.h"
 
@@ -167,7 +169,7 @@ void CirclePolygonVertexContainer::createVertexBuffer(
 
 	} else {
 
-		auto incrementSource = maxNumSegments / numSegments;
+		auto incrementSource = maxNumSegments * 2 / numSegments;
 		int sourceVertexIndex = 0;
 
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
