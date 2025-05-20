@@ -40,6 +40,7 @@
 #include "GLES/GLProgram.h"
 #include "Renderers/AnalogHandRenderer.h"
 #include "Renderers/SquareTextureRenderer.h"
+#include "Renderers/CircleBaseRenderer.h"
 #include "GLTextRender/GLTextRenderer.h"
 
 
@@ -77,12 +78,18 @@ int main(int argint,char** argv) {
 
 		OevGLES::AnalogHandRenderer hand;
 		OevGLES::SquareTextureRenderer varioBackground;
+		OevGLES::CircleBaseRenderer ring1 (glFramework->getCircleVertexContainer());
 
 		int windowWidth = -1, windowHeight = -1;
 		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
 
 		hand.setupVertexBuffers();
 		varioBackground.setupVertexBuffers();
+
+		ring1.setPrimaryRadius(200);
+		ring1.setSecondaryRadius(160);
+		ring1.setPrimarySecondaryZOffset(20);
+		ring1.setupVertexBuffers();
 
 		GLfloat k = 0.0f;
 		OevGLES::Mat4 modelMatrixBack = OevGLES::translationMatrix(-0,0,-1);
