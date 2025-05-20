@@ -59,11 +59,14 @@ GLTextFontCacheGlyphItem::GLTextFontCacheGlyphItem (
 			texturePositionNormalized {
 				static_cast<float>(texturePosition.xLeft) /
 					static_cast<float>(texture.getTextureData().getWidth()),
-				static_cast<float>(texturePosition.yBottom) /
+					// Add 0.5 pixel on the bottom to the top. Some characters
+					// were slightly truncated at the top, particular characters
+					// with round tops, like 'C' '0' 'O'
+				static_cast<float>(texturePosition.yBottom - 0.5f) /
 					static_cast<float>(texture.getTextureData().getHeight()),
 				static_cast<float>(texturePosition.xRight) /
 					static_cast<float>(texture.getTextureData().getWidth()),
-					// Add one pixel on the top to the top. Some characters
+					// Add 0.5 pixel on the top to the top. Some characters
 					// were slightly truncated at the top, particular characters
 					// with round tops, like 'C' '0' 'O'
 				(static_cast<float>(texturePosition.yTop) + 0.5f) /
