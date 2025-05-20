@@ -98,7 +98,7 @@ varying vec4 varFragColor;
 
 void main () { 
 	float diffuseLightFactor = abs(dot(lightDir,
-		normalize(vec3((mvMatrix * (vertexNormal*vecFactorNormalVector)))));
+		normalize(vec3((mvMatrix * (vertexNormal*vecFactorNormalVector))))));
 	vec4 lightColor = ambientLightColor + (diffuseLightFactor * lightColor);
 
 	// Use vecFactorSecondVertex when isSecondaryVertex is 1.0
