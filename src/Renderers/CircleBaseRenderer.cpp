@@ -147,8 +147,41 @@ void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
 
 	// Set up the attributes
-#error Complete this function
+	glBindBuffer(GL_ARRAY_BUFFER,vertexArrayStruct->vertexBufferHandle);
 
+	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+	glVertexAttribPointer(glProgram->getVertexPosLocation(),
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
+			GL_FLOAT,
+			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+			reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
+
+	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+	glVertexAttribPointer(glProgram->getVertexNormalLocation(),
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
+			GL_FLOAT,
+			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+			reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
+
+	glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+	glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
+			1,
+			GL_FLOAT,
+			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+			reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+
+	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
+	glVertexAttrib4fv(glProgram->getVertexColorLocation(),&bodyColor(0));
+
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, vertexArrayStruct->numVertexes);
+
+	glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
+	glDisableVertexAttribArray(glProgram->getVertexPosLocation());
+
+	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glUseProgram(0);
 
 }
