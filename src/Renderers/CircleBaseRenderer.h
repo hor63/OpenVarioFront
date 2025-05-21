@@ -74,9 +74,20 @@ public:
 		return secondaryRadius;
 	}
 
+	/// Color format is RGBA.
+	/// Values are normalized, i.e. the range is 0.0 to 1.0.
+	Vec4 getBodyColor() {
+		return bodyColor;
+	}
+
 	void setPrimaryRadius(double primaryRadius);
 	void setPrimarySecondaryZOffset(double primarySecondaryZOffset);
 	void setSecondaryRadius(double secondaryRadius);
+	/// Color format is RGBA.
+	/// Values are normalized, i.e. the range is 0.0 to 1.0.
+	void setBodyColor(const Vec4& colorRGBA) {
+		bodyColor = colorRGBA;
+	}
 	virtual void setupVertexBuffers() override;
 	virtual void draw(const OevGLES::Mat4 &modelMatrix,
 			const OevGLES::Mat4 &viewMatrix, const OevGLES::Mat4 &ProjMatrix,
@@ -102,6 +113,8 @@ private:
 	GLfloat vecFactorSecondVertex [4] = {1,1,1,1};
 	GLfloat vecFactorNormalVector [4] = {1,0,1,0};
 
+	// Client side fixed attributes
+	Vec4 bodyColor = {1.0f,1.0f,1.0f,1.0f};
 
 	/// The cache object to provide the vertex arrays
 	CirclePolygonVertexContainer& circlePolygonVertexContainer;
