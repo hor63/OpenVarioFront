@@ -84,6 +84,9 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 				maxSegmentVertexArray[i*2 + 1].normal[1] =
 						std::sin (angle);
 
+		// z
+		maxSegmentVertexArray[i*2].position[2] = 1.0f;
+
 		LOG4CXX_DEBUG(logger,"\t angle = " << (angle * 180.0 / M_PI)
 				<< "deg. Array["<< i*2 << "].position = "
 				<< maxSegmentVertexArray[i*2].position[0] << ","
