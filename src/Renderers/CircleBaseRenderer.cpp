@@ -175,6 +175,13 @@ void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
 	glVertexAttrib4fv(glProgram->getVertexColorLocation(),&bodyColor(0));
 
+	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
+
+	// Draw in transparent mode when the Alpha value is not totally opaque.
+	if (bodyColor(3) < 1.0f) {
+		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
+	}
+
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, vertexArrayStruct->numVertexes);
 
 	glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
