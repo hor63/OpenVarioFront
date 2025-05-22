@@ -160,7 +160,7 @@ public:
 	 * Conversely a given number of polygon segments determines the radius
 	 * of the polygon to not exceed the max. deviation from the circular form.
 	 */
-	static constexpr double maxDeviationPixels = 1.0;
+	static constexpr double maxDeviationPixels = 0.5;
 
 	/** \brief Maximum number of segments of a polygon
 	 *
@@ -170,7 +170,7 @@ public:
 	 *
 	 * 	Therefore a maximum of 128 segments is plenty enough.
 	 */
-	static constexpr std::size_t maxNumSegments = 128;
+	static constexpr std::size_t maxNumSegments = 256;
 
 	~CirclePolygonVertexContainer();
 
