@@ -96,7 +96,7 @@ void CircleBaseRenderer::setupVertexBuffers() {
 
 		// The normal vector as the cross product of one vector {0,1,0}
 		// and {x,0,y} degrades to {z,0,-x}
-		vecFactorNormalVector [0] = primarySecondaryZOffset;
+		vecFactorNormalVector [0] = vecFactorNormalVector [1] = primarySecondaryZOffset;
 		vecFactorNormalVector [2] = primaryRadius - secondaryRadius;
 
 		Eigen::Map<Vec3> vecFactorNormalVectorMap (vecFactorNormalVector);
