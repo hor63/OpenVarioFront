@@ -76,22 +76,12 @@ int main(int argint,char** argv) {
 
 		glFramework->createRenderSurface(1024,1024,PACKAGE_STRING);
 
-		OevGLES::AnalogHandRenderer hand;
 		OevGLES::SquareTextureRenderer varioBackground;
-		OevGLES::CircleBaseRenderer ring1 (glFramework->getCircleVertexContainer());
 
 		int windowWidth = -1, windowHeight = -1;
 		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
 
-		hand.setupVertexBuffers();
-		varioBackground.setupVertexBuffers();
-
-		ring1.setPrimaryRadius(200);
-		ring1.setSecondaryRadius(160);
-		ring1.setPrimarySecondaryZOffset(20);
-		ring1.setupVertexBuffers();
-
-		GLfloat k = 0.0f;
+		GLfloat objectRotationAngleDeg = 0.0f;
 		OevGLES::Mat4 modelMatrixBack = OevGLES::translationMatrix(-0,0,-1);
 		// OevGLES::Vec4 camPos = {3,4,static_cast<float>(windowWidth*2),1};
 		OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowHeight*2),1};
@@ -101,9 +91,22 @@ int main(int argint,char** argv) {
 		OevGLES::Vec3 lightDir;
 		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
 		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
-		OevGLES::Vec4 whiteColor {1.0f,1.0f,1.0f,0.5f};
+		OevGLES::Vec4 whiteTransparent0_5Color {1.0f,1.0f,1.0f,0.5f};
+		OevGLES::Vec4 whiteTransparent0_8Color {1.0f,1.0f,1.0f,0.8f};
 // 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,1.0f};
+
+		OevGLES::AnalogHandRenderer hand;
+		hand.setupVertexBuffers();
+		varioBackground.setupVertexBuffers();
+
+		OevGLES::CircleBaseRenderer ring1 (glFramework->getCircleVertexContainer());
+		ring1.setPrimaryRadius(200);
+		ring1.setSecondaryRadius(160);
+		ring1.setPrimarySecondaryZOffset(20);
+		ring1.setupVertexBuffers();
+		ring1.setBodyColor(whiteTransparent0_8Color);
+
 
 		// Assume the initial view point is exactly on the z-axix.
 		// My goal is to find the aperture angle at which from this viewpoint
@@ -166,7 +169,7 @@ int main(int argint,char** argv) {
 
 		glTextRend.setupVertexBuffers();
 		glTextRend.setTextColor(blackColor);
-		glTextRend.setBackgroundColor(whiteColor);
+		glTextRend.setBackgroundColor(whiteTransparent0_5Color);
 		glTextRend.setDrawBackground(true);
 
 		for (GLfloat rotationAngleDeg = 0.0f; /*rotationAngleDeg<360.0f*/;rotationAngleDeg += 0.1f) {
@@ -178,11 +181,13 @@ int main(int argint,char** argv) {
 			}
 
 			if (rotationAngleDeg >= 360.0f) {
-				// rotationAngleDeg -= 360.0f;
-				rotationAngleDeg = 360.0f;
+				// Let the scene rotate forever.
+				rotationAngleDeg -= 360.0f;
+				// Stop the rotation after one round
+				// rotationAngleDeg = 360.0f;
 			}
 
-			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(k) * OevGLES::Mat4::Identity();
+			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(objectRotationAngleDeg) * OevGLES::Mat4::Identity();
 
 			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngleDeg) * camPos).block<3,1>(0,0),origin,up);
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
@@ -207,15 +212,19 @@ int main(int argint,char** argv) {
 			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
 			varioBackground.draw(modelMatrixBack,viewMatrix,projMatrix,MVMatrixBack,MVPMatrixBack,lightDir,lightColor,ambientLightColor);
 
-			ring1.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
-
 			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
+
+			ring1.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
 
 			// sleep(3);
 
 			SDL_GL_SwapWindow(glFramework->getSDLSurface().getNativeWindow());
 
-			k += 1.0f;
+			objectRotationAngleDeg += 1.0f;
+
+			if (objectRotationAngleDeg >= 360.0f) {
+				objectRotationAngleDeg -= 360.0f;
+			}
 		}
 
 		sleep(10);
