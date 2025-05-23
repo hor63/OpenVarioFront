@@ -45,28 +45,28 @@ AnalogHandRenderer::AnalogHandRenderer()
 	  vertexArray {
 		// 0 triangle
 		 0.0f, 0.0f,13.0f,1.0f, // Pos 0
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
+		 0.0f, 0.0f,1.0f,0.0f, // Normal 0
 		256.0f, 0.0f,0.0f,1.0f, // Pos 1
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
 		 0.0f, 26.0f,0.0f,1.0f, // Pos 2
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
 		// 1st triangle
 		 0.0f, 0.0f,13.0f,1.0f, // Pos 0
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
+		 0.0f, 0.0f,1.0f,0.0f, // Normal 0
 		 0.0f,-26.0f,0.0f,1.0f, // Pos 1
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
 		256.0f, 0.0f,0.0f,1.0f, // Pos 2
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
 		// 2nd triangle
 		 0.0f, 0.0f,13.0f,1.0f, // Pos 0
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
+		 0.0f, 0.0f,1.0f,0.0f, // Normal 0
 		 0.0f, 26.0f,0.0f,1.0f, // Pos 1
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
 		-26.0f, 0.0f,0.0f,1.0f, // Pos 2
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 2
 		// 3rd triangle
 		 0.0f, 0.0f,13.0f,1.0f, // Pos 0
-		 0.0f, 0.0f,0.0f,0.0f, // Normal 0
+		 0.0f, 0.0f,1.0f,0.0f, // Normal 0
 		-26.0f, 0.0f,0.0f,1.0f, // Pos 1
 		 0.0f, 0.0f,0.0f,0.0f, // Normal 1
 		 0.0f,-26.0f,0.0f,1.0f, // Pos 2
@@ -97,7 +97,10 @@ AnalogHandRenderer::AnalogHandRenderer()
 			// Copy the normal into all normal vectors of the triangle
 			for (int k=1;k<6;k+=2) {
 				Eigen::Map<OevGLES::Vec3> posK (p0 + (k*4));
-				posK = normal;
+				// If the normal was already preset do not update it.
+				if(posK(2) == 0.0f){
+					posK = normal;
+				}
 			}
 
 #if defined HAVE_LOG4CXX_H
