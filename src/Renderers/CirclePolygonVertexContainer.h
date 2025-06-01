@@ -165,10 +165,10 @@ public:
 	/** \brief Maximum number of segments of a polygon
 	 *
 	 * For reference:
-	 * 	- With 64 segments a deviation of 1 pixel occurs at a radius of 830 pixel
-	 * 	- With 128 segments a deviation of 1 pixel occurs at a radius of 3320 pixel
+	 * 	- With 64 segments a deviation of 0.5 pixel occurs at a radius of 415 pixel
+	 * 	- With 128 segments a deviation of 1 pixel occurs at a radius of 1660 pixel
 	 *
-	 * 	Therefore a maximum of 128 segments is plenty enough.
+	 * 	Therefore a maximum of 256 segments is plenty enough.
 	 */
 	static constexpr std::size_t maxNumSegments = 256;
 
@@ -202,14 +202,15 @@ private:
 	 *
 	 * All other vertex arrays can be constructed from the values in this array.
 	 *
-	 * The array contains \ref maxNumSegments*2 + 2 elements because each segment
+	 * The array contains \ref maxNumSegments*2 + 4 elements because each segment
 	 * has per angle one item on the primary, and one element on the secondary
 	 * circle.
+	 * At the beginning there are two elements to be used as center of a full circle.
 	 * At the end 2 elements are added to close the circle from
 	 * \ref maxNumSegments -1 to \ref maxNumSegments.
 	 *
 	*/
-	std::array<CirclePolygonVertexStruct,maxNumSegments*2 + 2> maxSegmentVertexArray;
+	std::array<CirclePolygonVertexStruct,maxNumSegments*2 + 4> maxSegmentVertexArray;
 
 	/** \brief Contains a map of all possible circle segmentations
 	 *
