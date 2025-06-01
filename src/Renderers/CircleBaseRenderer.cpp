@@ -91,8 +91,10 @@ void CircleBaseRenderer::setupVertexBuffers() {
 		vecFactorPrimaryVertex [0] = vecFactorPrimaryVertex [1] = primaryRadius;
 		vecFactorSecondVertex [0] = vecFactorSecondVertex [1] = secondaryRadius;
 		vecFactorSecondVertex [2] = primarySecondaryZOffset;
+#if defined HAVE_LOG4CXX_H
 		Eigen::Map<Vec4> vecFactorPrimaryVertexMap(vecFactorPrimaryVertex);
 		Eigen::Map<Vec4> vecFactorSecondVertexMap(vecFactorSecondVertex);
+#endif
 
 		// The normal vector as the cross product of one vector {0,1,0}
 		// and {x,0,y} degrades to {z,0,-x}
@@ -182,7 +184,10 @@ void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
 	}
 
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, vertexArrayStruct->numVertexes);
+	// I am omitting the circle center at the start of the vertex array.
+	// Therefore I am starting at position 2, and the number of vertexes
+	// is 2 less that the number of vertexes in the buffer.
+	glDrawArrays( GL_TRIANGLE_STRIP, 2, vertexArrayStruct->numVertexes - 2);
 
 	glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
 	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
