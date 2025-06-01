@@ -95,7 +95,7 @@ public:
 			const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
 			const OevGLES::Vec4 &ambientLightColor) override;
 
-private:
+protected:
 
 	/// \brief Any rendering parameter changed.
 	bool dirty = true;
