@@ -41,6 +41,7 @@
 #include "Renderers/AnalogHandRenderer.h"
 #include "Renderers/SquareTextureRenderer.h"
 #include "Renderers/CircleBaseRenderer.h"
+#include "Renderers/CircleFilledRenderer.h"
 #include "GLTextRender/GLTextRenderer.h"
 
 
@@ -107,8 +108,14 @@ int main(int argint,char** argv) {
 		ring1.setupVertexBuffers();
 		ring1.setBodyColor(whiteTransparent0_8Color);
 
+		OevGLES::CircleFilledRenderer circ1 (glFramework->getCircleVertexContainer());
+		circ1.setPrimaryRadius(160);
+		circ1.setCenterZOffset(50);
+		circ1.setupVertexBuffers();
+		circ1.setBodyColor(whiteTransparent0_8Color);
 
-		// Assume the initial view point is exactly on the z-axix.
+
+		// Assume the initial view point is exactly on the z-axis.
 		// My goal is to find the aperture angle at which from this viewpoint
 		// one coordinate unit in x or y direction is exactly one pixel.
 		// Thus with the aperture angle I see exactly the window height.
@@ -189,9 +196,15 @@ int main(int argint,char** argv) {
 
 			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(objectRotationAngleDeg) * OevGLES::Mat4::Identity();
 
+			OevGLES::Mat4 modelMatrixCirc1 = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * modelMatrix;
+
 			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngleDeg) * camPos).block<3,1>(0,0),origin,up);
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
-			OevGLES::Mat4 MVPMatrix = projMatrix * viewMatrix * modelMatrix;
+			OevGLES::Mat4 MVPMatrix = projMatrix * MVMatrix;
+
+			OevGLES::Mat4 MVMatrixCirc1 = viewMatrix * modelMatrixCirc1;
+			OevGLES::Mat4 MVPMatrixCirc1 = projMatrix * MVMatrixCirc1;
+
 			OevGLES::Mat4 MVMatrixBack = viewMatrix * modelMatrixBack;
 			OevGLES::Mat4 MVPMatrixBack = projMatrix * viewMatrix * modelMatrixBack;
 
@@ -214,7 +227,8 @@ int main(int argint,char** argv) {
 
 			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
 
-			ring1.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
+			ring1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
+			circ1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrixCirc1,MVPMatrixCirc1,lightDir,lightColor,ambientLightColor);
 
 			// sleep(3);
 

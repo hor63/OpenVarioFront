@@ -32,6 +32,26 @@
 
 namespace OevGLES {
 
+/** \brief Draw a full circle.
+ *
+ * Draws a full circle with the x-y center at 0,0.
+ *
+ * The z-offset of the circle center can be offset from 0;
+ * default is y=0.
+ *
+ * Default radius is 1. Instead of scaling the radius up with the
+ * model matrix set the radius explicitly here with \ref setPrimaryRadius().
+ * This is necessary because the class can correctly determine how many polygon segments
+ * are required to render a smooth circle without visible edges.\n
+ * The class optimizes the number of polygon segments based on the given radius of the circle,
+ * instead of always draw the maximum possible number of segments for very small circles.
+ *
+ * The normal at the center is always {0,0,1}, i.e. always pointing to z.
+ * When used for directional lighting the cone body gets a dome like appearance in light.\n
+ * If you really want the cone in lighting use a \ref CircleBaseRenderer object with scondary radius=0.
+ * However, this class uses double the triangles than this class.
+ *
+ */
 class CircleFilledRenderer: public CircleBaseRenderer {
 public:
 	CircleFilledRenderer(CirclePolygonVertexContainer& circlePolygonVertexContainer);
@@ -43,6 +63,14 @@ public:
 			const OevGLES::Mat4 &MVMatrix, const OevGLES::Mat4 &MVPMatrix,
 			const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
 			const OevGLES::Vec4 &ambientLightColor) override;
+
+	/// \brief Set the z-offset of the center of the circle.
+	///
+	/// The perimeter of the circle is always drawn at z=0.\n
+	/// You can offset the center from z. This results in a cone.
+	void setCenterZOffset (double centerZOffset) {
+		CircleBaseRenderer::setPrimarySecondaryZOffset(centerZOffset);
+	}
 
 private:
 
