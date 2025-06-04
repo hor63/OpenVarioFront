@@ -60,29 +60,23 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 
 	// First element at index is the circle center for classes which draw
 	// full circles, and need a center point
-	// Alternate circle is first.
+	// Both vertexes of the center element are marked as secondary.
 	maxSegmentVertexArray[0].isSecondaryCircle = 1.0f;
+	maxSegmentVertexArray[1].isSecondaryCircle = 1.0f;
 
 	// x and y remain zero. This is the center of the circle.
 	// z position is one; can be adjusted by the z-factor
 	// of the internal model matrix
-	maxSegmentVertexArray[0].position[2] =
-			maxSegmentVertexArray[1].position[2] = 1.0f;
+	maxSegmentVertexArray[0].position[2] = 1.0f;
+	maxSegmentVertexArray[1].position[2] = 1.0f;
 
 
-	// The actual circle data start at segment index 1.
+	// The actual circle data start at segment index 1 (i.e. vertex index 2).
 	// Therefore start start the loop at index 1, but the angle still at 0
+	// The direction of the vertexes is counter-clock wise as usual in math.
 	for (int i = 1; i <= maxNumSegments + 1;++i) {
 		double angle = static_cast<double>(i - 1) *
 				(M_PI  * 2.0 / static_cast<double>(maxNumSegments));
-
-		// Alternate circle is first. Assumption is that the alternate circle
-		// is the inner (smaller) circle, and/or is the circle in positive
-		// z-direction.
-		// The direction of the triangle strip is counter-clock wise.
-		// Thus the drawing direction of the triangles is also counter-clock
-		// wise, and in direction of the normal vector.
-		maxSegmentVertexArray[i*2].isSecondaryCircle = 1.0f;
 
 		// x
 		maxSegmentVertexArray[i*2].position[0] =
@@ -99,7 +93,17 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 						std::sin (angle);
 
 		// z
+		// The secondary circle has the Z-offset
 		maxSegmentVertexArray[i*2].position[2] = 1.0f;
+
+		// Alternate circle is first. Assumption is that the alternate circle
+		// is the inner (smaller) circle, and/or is the circle in positive
+		// z-direction.
+		// The direction of the triangle strip is counter-clock wise.
+		// Thus the drawing direction of the triangles is counter-clock
+		// wise, and in direction of the normal vector.
+		maxSegmentVertexArray[i*2].isSecondaryCircle = 1.0f;
+
 
 		LOG4CXX_DEBUG(logger,"\t angle = " << (angle * 180.0 / M_PI)
 				<< "deg. Array["<< i*2 << "].position = "
@@ -210,7 +214,7 @@ void CirclePolygonVertexContainer::createVertexBuffer(
 		}
 
 		// Copy the first element manually. This is the circle center.
-		tempBuffer[0]     = maxSegmentVertexArray[0];
+		tempBuffer[0] = maxSegmentVertexArray[0];
 		tempBuffer[1] = maxSegmentVertexArray[1];
 
 
