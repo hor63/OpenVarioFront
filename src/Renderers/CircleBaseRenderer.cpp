@@ -96,8 +96,9 @@ void CircleBaseRenderer::setupVertexBuffers() {
 		Eigen::Map<Vec4> vecFactorSecondVertexMap(vecFactorSecondVertex);
 #endif
 
-		// The normal vector as the cross product of one vector {0,1,0}
-		// and {x,0,y} degrades to {z,0,-x}
+		// The normal vector as the cross product of vectors {0,1,0}
+		// (dummy to form a plane rotating around the y-axis)
+		// and {x,0,z} degrades to {z,0,-x}
 		vecFactorNormalVector [0] = vecFactorNormalVector [1] = primarySecondaryZOffset;
 		vecFactorNormalVector [2] = primaryRadius - secondaryRadius;
 
