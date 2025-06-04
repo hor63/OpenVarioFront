@@ -44,11 +44,17 @@ namespace OevGLES {
  *   - A ring with an inner and outer radius (like a washer).
  *     The y-offset is 0.0.\n
  *     - A full circle is just a degenerated ring with an inner radius = 0.
+ *       However, an optimized circle or cone is available with \ref CircleFilledRenderer.
  *   - A cylinder with primary and secondary radius equal, and z-offset > 0.0.
- *   - A cone. The intermediary between the cylinder and the ring.
+ *   - A conical frustum. The intermediary between the cylinder and the ring.
  *     The secondary radius is smaller than the primary one. Simultaneously
  *     the z-offset is > 0.0.
+ *     - A pointy cone with the secondary radius=0.
+ *       However, an optimized circle or cone is available with \ref CircleFilledRenderer.
  *
+ * The normal at the polygon segment borders is the average between the normals of the two
+ * adjacent polygon segments. Thus the appearance of such a body in directional light is smooth,
+ * hiding the segments of the polygon.
  */
 class CircleBaseRenderer: public RendererBase {
 public:
