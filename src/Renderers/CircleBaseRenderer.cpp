@@ -59,22 +59,29 @@ CircleBaseRenderer::~CircleBaseRenderer() {
 }
 
 void CircleBaseRenderer::setPrimaryRadius(double primaryRadius) {
-	this->primaryRadius = primaryRadius;
+	if (this->primaryRadius != primaryRadius) {
+		this->primaryRadius = primaryRadius;
 
-	dirty = true;
+		dirty = true;
+	}
 }
 
 void CircleBaseRenderer::setPrimarySecondaryZOffset(
 		double primarySecondaryZOffset) {
-	this->primarySecondaryZOffset = primarySecondaryZOffset;
 
-	dirty = true;
+	if (this->primarySecondaryZOffset != primarySecondaryZOffset) {
+		this->primarySecondaryZOffset = primarySecondaryZOffset;
+
+		dirty = true;
+	}
 }
 
 void CircleBaseRenderer::setSecondaryRadius(double secondaryRadius) {
-	this->secondaryRadius = secondaryRadius;
+	if (this->secondaryRadius != secondaryRadius) {
+		this->secondaryRadius = secondaryRadius;
 
-	dirty = true;
+		dirty = true;
+	}
 }
 
 void CircleBaseRenderer::setupVertexBuffers() {
