@@ -23,6 +23,9 @@
 						<entry kind="includePath" name="/OpenVarioFront/3rdParty/pango">
 							<flag value="VALUE_WORKSPACE_PATH|RESOLVED"/>
 						</entry>
+						<entry kind="includePath" name="/OpenVarioFront/src">
+							<flag value="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED"/>
+						</entry>
 					</resource>
 				</language>
 			</provider>
