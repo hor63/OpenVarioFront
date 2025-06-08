@@ -146,7 +146,7 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 		CircleVertexArrayStruct vertexArryHolder {numSegments};
 
 		circleVertexArrayMap.insert(
-				std::pair(vertexArryHolder.maxRadius,vertexArryHolder));
+				CircleVertexArrayMapType::value_type(vertexArryHolder.maxRadius,vertexArryHolder));
 	}
 
 }

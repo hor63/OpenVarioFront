@@ -220,7 +220,8 @@ private:
 	 * The key is the maximum radius (not diameter!) in pixels pixels where the
 	 * deviation from the ideal circle becomes > \ref maxDeviationPixels.
 	*/
-	std::map<GLfloat,CircleVertexArrayStruct> circleVertexArrayMap;
+	using  CircleVertexArrayMapType = std::map<GLfloat,CircleVertexArrayStruct>;
+	CircleVertexArrayMapType circleVertexArrayMap;
 
 	/// Only friend \ref GLFramework can create me.
 	CirclePolygonVertexContainer();
