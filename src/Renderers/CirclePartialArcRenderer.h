@@ -29,6 +29,8 @@
 #define RENDERERS_CIRCLEPARTIALARCRENDERER_H_
 
 #include "CircleBaseRenderer.h"
+#include "GLES/VecMat.h"
+#include <cstdint>
 
 namespace OevGLES {
 
@@ -54,6 +56,8 @@ public:
 	CirclePartialArcRenderer(CirclePolygonVertexContainer& circlePolygonVertexContainer);
 	virtual ~CirclePartialArcRenderer();
 
+	virtual void setupVertexBuffers() override;
+
 	virtual void draw(const OevGLES::Mat4 &modelMatrix,
 			const OevGLES::Mat4 &viewMatrix, const OevGLES::Mat4 &ProjMatrix,
 			const OevGLES::Mat4 &MVMatrix, const OevGLES::Mat4 &MVPMatrix,
@@ -74,13 +78,24 @@ public:
 
 protected:
 
-	/// Local dirty flag \n
-	/// It is kept distinct from the dirty flag of the base class
-	/// \ref CircleBaseRenderer
-	bool dirtyArc = true;
+	/// Dirty flag for the start angle of the arc
+	bool dirtyStartArc = true;
+	/// Dirty flag for the arc range
+	bool dirtyArcRange = true;
 
 	double startAngleDeg = 0.0;
 	double arcRangeDeg = 360.0;
+	
+	/// Number of segments of the \ref vertexArrayStruct object
+	/// to approximate the \ref arcRangeDeg angle.
+	uint32_t numSegmentsArc = 0U;
+	
+	// Calculated from \ref startAngleDeg
+	Mat4 rotMatrixStartAngle;
+	
+	// The MVPMatrix from the MVP matrix parameter in \ref draw(), and
+	// \ref rotMatrixStartAngle
+	Mat4 effMVPMatrix;
 };
 
 } /* namespace OevGLES */

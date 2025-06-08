@@ -42,6 +42,7 @@
 #include "Renderers/SquareTextureRenderer.h"
 #include "Renderers/CircleBaseRenderer.h"
 #include "Renderers/CircleFilledRenderer.h"
+#include "Renderers/CirclePartialArcRenderer.h"
 #include "GLTextRender/GLTextRenderer.h"
 
 
@@ -114,6 +115,13 @@ int main(int argint,char** argv) {
 		circ1.setupVertexBuffers();
 		circ1.setBodyColor(whiteTransparent0_8Color);
 
+		OevGLES::CirclePartialArcRenderer arc1 (glFramework->getCircleVertexContainer());
+		arc1.setPrimaryRadius(160);
+		arc1.setPrimarySecondaryZOffset(20);
+		arc1.setStartAngleDeg(60.0);
+		arc1.setArcRangeDeg(60.0);
+		arc1.setupVertexBuffers();
+		arc1.setBodyColor(whiteTransparent0_8Color);
 
 		// Assume the initial view point is exactly on the z-axis.
 		// My goal is to find the aperture angle at which from this viewpoint

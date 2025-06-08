@@ -52,7 +52,6 @@ CircleBaseRenderer::CircleBaseRenderer(
 	}
 #endif
 
-
 }
 
 CircleBaseRenderer::~CircleBaseRenderer() {
