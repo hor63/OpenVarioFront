@@ -40,9 +40,9 @@ namespace OevGLES {
  * However, this class draws a partial arc.\n
  * You can define the range which the arc covers from 0-360 deg.
  * You can also define the start angle where the arc starts.
- * Both angles *must* be positive, and they *always* count counter-clock wise.
- * If you want the angles run clock-wise, or negative, do the math yourself to match
- * the abovementioned conditions.
+ * Both angles *always* count counter-clock wise. Negative values, and/or values 
+ * >= 360.0 or =< 360.0 are accepted.
+ * If you want the angles run clock-wise you can use negative angle values.
  * The start angle 0 is the x-axis (to the right).
  *
  * Default start angle is 0 deg; default arc range is 360 deg.
@@ -75,6 +75,10 @@ public:
 	}
 
 	void setStartAngleDeg(double startAngleDeg);
+	
+	/** \brief Normalize angles to be positive between 0 and 360 deg.
+	*/
+	static double normalizeAngleDeg(double angleDeg);
 
 protected:
 
@@ -90,12 +94,21 @@ protected:
 	/// to approximate the \ref arcRangeDeg angle.
 	uint32_t numSegmentsArc = 0U;
 	
-	// Calculated from \ref startAngleDeg
+	/// Calculated from \ref startAngleDeg
 	Mat4 rotMatrixStartAngle;
 	
-	// The MVPMatrix from the MVP matrix parameter in \ref draw(), and
-	// \ref rotMatrixStartAngle
+	/// The MVPMatrix from the MVP matrix parameter in \ref draw() and
+	/// \ref rotMatrixStartAngle
 	Mat4 effMVPMatrix;
+
+	/** \brief Rotation matrix for the last partial segment to ending exactly on
+	 * the target range angle
+	 */
+	Mat4 rotMatrixRangeEnd;
+	
+	/// The MVPMatrix from the MVP matrix parameter in \ref draw() and
+	/// \ref rotMatrixRangeEnd
+	Mat4 effMVPMatrixRangeEnd;
 };
 
 } /* namespace OevGLES */

@@ -5,6 +5,7 @@
  *      Author: hor
  */
 
+#include <cmath>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -38,6 +39,9 @@ CirclePartialArcRenderer::~CirclePartialArcRenderer() {
 }
 
 void CirclePartialArcRenderer::setArcRangeDeg(double arcRangeDeg) {
+	
+	arcRangeDeg = normalizeAngleDeg(arcRangeDeg);
+	
 	if (this->arcRangeDeg != arcRangeDeg) {
 		this->arcRangeDeg = arcRangeDeg;
 
@@ -46,11 +50,26 @@ void CirclePartialArcRenderer::setArcRangeDeg(double arcRangeDeg) {
 }
 
 void CirclePartialArcRenderer::setStartAngleDeg(double startAngleDeg) {
+	
+	startAngleDeg = normalizeAngleDeg(startAngleDeg);
+		
 	if (this->startAngleDeg != startAngleDeg) {
 		this->startAngleDeg = startAngleDeg;
 
 		dirtyStartArc = true;
 	}
+}
+
+double CirclePartialArcRenderer::normalizeAngleDeg(double angleDeg) {
+	if (angleDeg >= 360.0 || angleDeg <= -360.0) {
+		angleDeg = std::fmod(angleDeg, 360.0);
+	}
+	
+	if (angleDeg < 0.0) {
+		angleDeg = 360.0 - angleDeg;
+	}
+	
+	return angleDeg;
 }
 
 void CirclePartialArcRenderer::setupVertexBuffers() {
