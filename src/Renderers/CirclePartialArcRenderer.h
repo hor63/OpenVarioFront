@@ -109,6 +109,9 @@ protected:
 	/// The MVPMatrix from the MVP matrix parameter in \ref draw() and
 	/// \ref rotMatrixRangeEnd
 	Mat4 effMVPMatrixRangeEnd;
+	
+	/// Vertexes for the end segment for an arc with an arbitrary angle
+	CirclePolygonVertexContainer::CirclePolygonVertexStruct endArcVertexes [4];
 };
 
 } /* namespace OevGLES */

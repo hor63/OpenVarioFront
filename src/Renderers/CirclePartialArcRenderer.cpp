@@ -31,7 +31,46 @@ CirclePartialArcRenderer::CirclePartialArcRenderer(CirclePolygonVertexContainer&
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.Renderers.CirclePartialArcRenderer");
 	}
 #endif
+	
+	
+	// Initialize endArcVertexes with default values.
+	// Please note that x and y of element 2 and 3 are being adjusted
+	// later at runtime
+	// x
+	endArcVertexes[0].position[0] =
+			endArcVertexes[1].position[0] =
+			endArcVertexes[0].normal[0] =
+			endArcVertexes[1].normal[0] =
+			endArcVertexes[2].position[0] =
+			endArcVertexes[3].position[0] =
+			endArcVertexes[2].normal[0] =
+			endArcVertexes[3].normal[0] =
+					1.0f;
 
+	// y
+	endArcVertexes[0].position[1] =
+			endArcVertexes[1].position[1] =
+			endArcVertexes[0].normal[1] =
+			endArcVertexes[1].normal[1] =
+			endArcVertexes[2].position[1] =
+			endArcVertexes[3].position[1] =
+			endArcVertexes[2].normal[1] =
+			endArcVertexes[3].normal[1] =
+					0.0f;
+
+	// z
+	// The secondary circle has the Z-offset
+	endArcVertexes[0].position[2] = 1.0f;
+	endArcVertexes[2].position[2] = 1.0f;
+
+	// Alternate circle is first. Assumption is that the alternate circle
+	// is the inner (smaller) circle, and/or is the circle in positive
+	// z-direction.
+	// The direction of the triangle strip is counter-clock wise.
+	// Thus the drawing direction of the triangles is counter-clock
+	// wise, and in direction of the normal vector.
+	endArcVertexes[0].isSecondaryCircle = 1.0f;
+	endArcVertexes[2].isSecondaryCircle = 1.0f;
 }
 
 CirclePartialArcRenderer::~CirclePartialArcRenderer() {
