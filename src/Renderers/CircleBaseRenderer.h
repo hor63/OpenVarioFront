@@ -130,8 +130,6 @@ protected:
 		vertexArrayStruct = nullptr;
 
 	GLProgDiffLightCircle *glProgram = nullptr;
-
-	Vec4 normalVectorFactors = {1,1,1,1};
 }; // class CircleBaseRenderer
 
 } /* namespace OevGLES */
