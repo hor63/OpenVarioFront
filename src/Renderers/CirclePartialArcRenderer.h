@@ -87,8 +87,31 @@ protected:
 	/// Dirty flag for the arc range
 	bool dirtyArcRange = true;
 
+	/** \brief The angle where the arc (visible part of the circle starts)
+	 *
+	 * The angle can be positive or negative, and exceed +360.0 or -360.0.
+	 *
+	 * Internally the angle is normalized as a positive angle between 0 and 360.0
+	 * to \ref startAngleDegNormalized
+	 */
 	double startAngleDeg = 0.0;
+
+	double startAngleDegNormalized = 0.0;
+	
+	/** \brief The visible part of the circle in degrees starting from \ref startAngleDeg
+	 *
+	 * You can define the range positive (counter-clock wise) or negative (clock-wise).
+	 *
+	 * If \p arcRangeDeg is <= -360.0 or is >= 360.0 the arc degrades to a full circle.
+	 
+	 * If the range angle is negative it is made positive, and \startAngleDegNormalized
+	 * now starts at the previous end. Thus the arc can progress in positive direction.
+	 */
 	double arcRangeDeg = 360.0;
+	
+	
+	double arcRangeDegNormalized = 360.0;
+	
 	
 	/// Number of segments of the \ref vertexArrayStruct object
 	/// to approximate the \ref arcRangeDeg angle.
