@@ -79,23 +79,19 @@ CirclePartialArcRenderer::~CirclePartialArcRenderer() {
 
 void CirclePartialArcRenderer::setArcRangeDeg(double arcRangeDeg) {
 	
-	arcRangeDeg = normalizeAngleDeg(arcRangeDeg);
-	
 	if (this->arcRangeDeg != arcRangeDeg) {
 		this->arcRangeDeg = arcRangeDeg;
 
-		dirtyArcRange = true;
+		dirtyArcAngles = true;
 	}
 }
 
 void CirclePartialArcRenderer::setStartAngleDeg(double startAngleDeg) {
 	
-	startAngleDeg = normalizeAngleDeg(startAngleDeg);
-		
 	if (this->startAngleDeg != startAngleDeg) {
 		this->startAngleDeg = startAngleDeg;
 
-		dirtyStartArc = true;
+		dirtyArcAngles = true;
 	}
 }
 
@@ -116,33 +112,10 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 	// Call the base class. It does the heavy lifting
 	CircleBaseRenderer::setupVertexBuffers();
 	
-	if (dirtyStartArc) {
-		if (startAngleDeg > 0.0) {
-			rotMatrixStartAngle = rotationMatrixZ (startAngleDeg);
-			LOG4CXX_DEBUG(logger, __FUNCTION__
-				<< ": startAngleDeg = " << startAngleDeg
-				<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
-		}
-		
-		dirtyStartArc = false;
+	if (dirtyArcAngles) {
+		normalizeAngles();
+		dirtyArcAngles = false;
 	}
-	
-	if (dirtyArcRange) {
-		if (arcRangeDeg > 0.0) {
-			
-			numSegmentsArc = 
-				static_cast<uint32_t>( vertexArrayStruct->numSegments * arcRangeDeg / 360.0);
-
-			LOG4CXX_DEBUG(logger, __FUNCTION__
-				<< ": arcRangeDeg = " << arcRangeDeg
-				<< ", numSegmentsArc = " << numSegmentsArc
-				<< " of " << vertexArrayStruct->numSegments
-				<< " for a full circle.");
-			
-		}
-		dirtyArcRange = false;
-	}
-	
 }
 
 void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
@@ -154,4 +127,25 @@ void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 	setupVertexBuffers();
 }
 
+void CirclePartialArcRenderer::normalizeAngles () {
+
+#error Actually normalize the angles here :)	
+
+	rotMatrixStartAngle = rotationMatrixZ (startAngleDeg);
+	LOG4CXX_DEBUG(logger, __FUNCTION__
+		<< ": startAngleDeg = " << startAngleDeg
+		<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
+
+	numSegmentsArc = 
+		static_cast<uint32_t>( vertexArrayStruct->numSegments * arcRangeDeg / 360.0);
+
+	LOG4CXX_DEBUG(logger, __FUNCTION__
+		<< ": arcRangeDeg = " << arcRangeDeg
+		<< ", numSegmentsArc = " << numSegmentsArc
+		<< " of " << vertexArrayStruct->numSegments
+		<< " for a full circle.");
+		
+	
+
+}
 } /* namespace OevGLES */

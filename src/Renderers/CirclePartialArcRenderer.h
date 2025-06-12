@@ -82,10 +82,8 @@ public:
 
 protected:
 
-	/// Dirty flag for the start angle of the arc
-	bool dirtyStartArc = true;
-	/// Dirty flag for the arc range
-	bool dirtyArcRange = true;
+	/// Dirty flag for \ref startAngleDeg and \ref arcRangeDeg
+	bool dirtyArcAngles= true;
 
 	/** \brief The angle where the arc (visible part of the circle starts)
 	 *
@@ -96,6 +94,12 @@ protected:
 	 */
 	double startAngleDeg = 0.0;
 
+	/** \brief Normalized start angle of the arc; 
+	 * 0.0 <= \p startAngleDegNormalized < 360.0
+	 *
+	 * Negative angles or angles >= 360.0 are transformed into a positive angle
+	 * < 360.0.
+	 */
 	double startAngleDegNormalized = 0.0;
 	
 	/** \brief The visible part of the circle in degrees starting from \ref startAngleDeg
@@ -104,14 +108,26 @@ protected:
 	 *
 	 * If \p arcRangeDeg is <= -360.0 or is >= 360.0 the arc degrades to a full circle.
 	 
-	 * If the range angle is negative it is made positive, and \startAngleDegNormalized
+	 * If the range angle is negative it is made positive, and \ref startAngleDegNormalized
 	 * now starts at the previous end. Thus the arc can progress in positive direction.
 	 */
 	double arcRangeDeg = 360.0;
 	
-	
+	/** \brief Normalized arc range.
+	 *
+	 * The normalized arc range is
+	 *   - positive
+	 *   - 0.0 <= \p arcRangeDegNormalized <= 360.0
+	 *   - | \ref arcRangeDeg | > 360.0 is cropped to 360.0. More than a full circle
+	 *     is not a thing.
+	 *
+	 * A negative \ref arcRangeDeg also affects \ref startAngleDegNormalized because
+	 * I need to start at the original end of the arc and draw the arc other way around.
+	 */
 	double arcRangeDegNormalized = 360.0;
 	
+	/// \brief \p true when | \ref arcRangeDeg | >= 360.0 
+	bool isFullCircle = true;
 	
 	/// Number of segments of the \ref vertexArrayStruct object
 	/// to approximate the \ref arcRangeDeg angle.
@@ -135,6 +151,13 @@ protected:
 	
 	/// Vertexes for the end segment for an arc with an arbitrary angle
 	CirclePolygonVertexContainer::CirclePolygonVertexStruct endArcVertexes [4];
+	
+	/** \brief Take \ref startAngleDeg and \ref arcRangeDeg and normalize them
+	 * into \ref startAngleDegNormalized and \ref arcRangeDegNormalized
+	 *
+	 \see \ref startAngleDegNormalized and \ref arcRangeDegNormalized
+	 */
+	void normalizeAngles ();
 };
 
 } /* namespace OevGLES */
