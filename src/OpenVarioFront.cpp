@@ -53,6 +53,9 @@
 
 #include "GLES/VecMat.h"
 
+using namespace OevGLES;
+
+
 int main(int argint,char** argv) {
 	int rc = 0;
 
@@ -83,7 +86,7 @@ int main(int argint,char** argv) {
 		int windowWidth = -1, windowHeight = -1;
 		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
 
-		GLfloat objectRotationAngleDeg = 0.0f;
+		OevGLES::AngleDeg objectRotationAngle = 0.0_deg;
 		OevGLES::Mat4 modelMatrixBack = OevGLES::translationMatrix(-0,0,-1);
 		// OevGLES::Vec4 camPos = {3,4,static_cast<float>(windowWidth*2),1};
 		OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowHeight*2),1};
@@ -118,8 +121,8 @@ int main(int argint,char** argv) {
 		OevGLES::CirclePartialArcRenderer arc1 (glFramework->getCircleVertexContainer());
 		arc1.setPrimaryRadius(160);
 		arc1.setPrimarySecondaryZOffset(20);
-		arc1.setStartAngleDeg(60.0);
-		arc1.setArcRangeDeg(60.0);
+		arc1.setStartAngle(60.0_deg);
+		arc1.setArcRange(60.0_deg);
 		arc1.setupVertexBuffers();
 		arc1.setBodyColor(whiteTransparent0_8Color);
 
@@ -130,7 +133,7 @@ int main(int argint,char** argv) {
 		// To calculate the aperture angle the the ArcTan of
 		// (windowHeight/2) / viewerDistance
 		// is half of the aperture angle.
-		static double const apertureAngle = atan((windowHeight/2.0)/camPos(2,0)) * 360.0 / M_PI;
+		static const OevGLES::AngleRad apertureAngle = OevGLES::AngleRad::makeAngle(atan((windowHeight/2.0)/camPos(2,0)));
 
 		std::cout << "Extensions are : " << glGetString(GL_EXTENSIONS) << std::endl;
 		void* glGenVertexArraysOESPtr = reinterpret_cast<void*>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
@@ -187,7 +190,7 @@ int main(int argint,char** argv) {
 		glTextRend.setBackgroundColor(whiteTransparent0_5Color);
 		glTextRend.setDrawBackground(true);
 
-		for (GLfloat rotationAngleDeg = 0.0f; /*rotationAngleDeg<360.0f*/;rotationAngleDeg += 0.1f) {
+		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.1_deg) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
 				if (sdlEvent.type == SDL_EVENT_QUIT) {
@@ -195,18 +198,18 @@ int main(int argint,char** argv) {
 				}
 			}
 
-			if (rotationAngleDeg >= 360.0f) {
+			if (rotationAngle >= 360.0_deg) {
 				// Let the scene rotate forever.
-				rotationAngleDeg -= 360.0f;
+				rotationAngle = rotationAngle - 360.0_deg;
 				// Stop the rotation after one round
-				// rotationAngleDeg = 360.0f;
+				// rotationAngle = 360.0f;
 			}
 
-			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(objectRotationAngleDeg) * OevGLES::Mat4::Identity();
+			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(objectRotationAngle) * OevGLES::Mat4::Identity();
 
 			OevGLES::Mat4 modelMatrixCirc1 = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * modelMatrix;
 
-			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngleDeg) * camPos).block<3,1>(0,0),origin,up);
+			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngle) * camPos).block<3,1>(0,0),origin,up);
 			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
 			OevGLES::Mat4 MVPMatrix = projMatrix * MVMatrix;
 
@@ -223,7 +226,7 @@ int main(int argint,char** argv) {
 			OevGLES::Mat4 MVPMatrixText = projMatrix * viewMatrix * modelMatrixText;
 
 			// Light dir is in eye space, rotate the light with the viewers point of view
-			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(rotationAngleDeg) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});
+			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(rotationAngle) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});
 			lightDir = lightDir4.block<3,1>(0,0);
 			lightDir.normalize();
 
@@ -242,10 +245,10 @@ int main(int argint,char** argv) {
 
 			SDL_GL_SwapWindow(glFramework->getSDLSurface().getNativeWindow());
 
-			objectRotationAngleDeg += 1.0f;
+			objectRotationAngle = objectRotationAngle + 1.0_deg;
 
-			if (objectRotationAngleDeg >= 360.0f) {
-				objectRotationAngleDeg -= 360.0f;
+			if (objectRotationAngle >= 360.0_deg) {
+				objectRotationAngle = objectRotationAngle - 360.0_deg;
 			}
 		}
 

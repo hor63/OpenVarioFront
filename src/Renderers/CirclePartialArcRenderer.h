@@ -30,6 +30,7 @@
 
 #include "CircleBaseRenderer.h"
 #include "GLES/VecMat.h"
+#include <cmath>
 #include <cstdint>
 
 namespace OevGLES {
@@ -64,21 +65,21 @@ public:
 			const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
 			const OevGLES::Vec4 &ambientLightColor) override;
 
-	double getArcRangeDeg() const {
-		return arcRangeDeg;
+	AngleDeg getArcRange() const {
+		return arcRange;
 	}
 
-	void setArcRangeDeg(double arcRangeDeg);
+	void setArcRange(AngleDeg arcRange);
 
-	double getStartAngleDeg() const {
-		return startAngleDeg;
+	AngleDeg getStartAngle() const {
+		return startAngle;
 	}
 
-	void setStartAngleDeg(double startAngleDeg);
+	void setStartAngle(AngleDeg startAngle);
 	
 	/** \brief Normalize angles to be positive between 0 and 360 deg.
 	*/
-	static double normalizeAngleDeg(double angleDeg);
+	static AngleDeg normalizeAngle(AngleDeg angle);
 
 protected:
 
@@ -92,7 +93,7 @@ protected:
 	 * Internally the angle is normalized as a positive angle between 0 and 360.0
 	 * to \ref startAngleDegNormalized
 	 */
-	double startAngleDeg = 0.0;
+	AngleDeg startAngle = AngleDeg::makeAngle(0.0f);
 
 	/** \brief Normalized start angle of the arc; 
 	 * 0.0 <= \p startAngleDegNormalized < 360.0
@@ -100,7 +101,7 @@ protected:
 	 * Negative angles or angles >= 360.0 are transformed into a positive angle
 	 * < 360.0.
 	 */
-	double startAngleDegNormalized = 0.0;
+	AngleRad startAngleNormalized = AngleRad::makeAngle(0.0f);
 	
 	/** \brief The visible part of the circle in degrees starting from \ref startAngleDeg
 	 *
@@ -111,7 +112,7 @@ protected:
 	 * If the range angle is negative it is made positive, and \ref startAngleDegNormalized
 	 * now starts at the previous end. Thus the arc can progress in positive direction.
 	 */
-	double arcRangeDeg = 360.0;
+	AngleDeg arcRange = AngleDeg::makeAngle(360.0f);
 	
 	/** \brief Normalized arc range.
 	 *
@@ -124,7 +125,7 @@ protected:
 	 * A negative \ref arcRangeDeg also affects \ref startAngleDegNormalized because
 	 * I need to start at the original end of the arc and draw the arc other way around.
 	 */
-	double arcRangeDegNormalized = 360.0;
+	AngleRad arcRangeNormalized = 2.0_rad * M_PI;
 	
 	/// \brief \p true when | \ref arcRangeDeg | >= 360.0 
 	bool isFullCircle = true;

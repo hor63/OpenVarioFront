@@ -15,6 +15,8 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
 
+#include "GLES/VecMat.h"
+
 namespace OevGLES {
 
 class GLFramework;
@@ -81,7 +83,7 @@ public:
 		 */
 		GLfloat maxRadius;
 		std::size_t numSegments;
-		double angleIncrementRad;
+		AngleRad angleIncrement;
 		/** \brief Handle to the GL ES vertex buffer
 		 *
 		 * The vertex buffer is created only on demand. The handle is initialized
@@ -103,7 +105,7 @@ public:
 		CircleVertexArrayStruct(CircleVertexArrayStruct const& source)
 			:numSegments{source.numSegments},
 			 numVertexes{source.numVertexes},
-			 angleIncrementRad{source.angleIncrementRad},
+			 angleIncrement{source.angleIncrement},
 			 maxRadius{source.maxRadius},
 			 vertexBufferHandle{0}
 		{}
@@ -111,7 +113,7 @@ public:
 		CircleVertexArrayStruct(CircleVertexArrayStruct&& source)
 			:numSegments{source.numSegments},
 			 numVertexes{source.numVertexes},
-			 angleIncrementRad{source.angleIncrementRad},
+			 angleIncrement{source.angleIncrement},
 			 maxRadius{source.maxRadius},
 			 vertexBufferHandle{source.vertexBufferHandle}
 		{

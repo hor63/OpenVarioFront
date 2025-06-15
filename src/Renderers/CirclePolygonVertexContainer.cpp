@@ -5,6 +5,7 @@
  *      Author: hor
  */
 
+#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -26,7 +27,6 @@ namespace OevGLES {
 CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(std::size_t numSegments)
 	:numSegments{numSegments},
 	 numVertexes{static_cast<GLsizei>(numSegments * 2U + 4U)},
-	 angleIncrementRad{2.0*M_PI/static_cast<double>(numSegments)},
 	 vertexBufferHandle{0U}
 
 {
@@ -36,13 +36,15 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(s
 	}
 #endif
 
-	maxRadius  = static_cast<GLfloat>(maxDeviationPixels / (1.0 - cos (angleIncrementRad / 2.0)));
+	angleIncrement = AngleRad::fullCircle / static_cast<GLfloat>(numSegments);
+
+	maxRadius  = static_cast<GLfloat>(maxDeviationPixels / (1.0 - cos (angleIncrement / 2.0)));
 
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 			<< ": numSegments = " << numSegments
 			<< ", numVertexes = " << numVertexes
-			<< ", angleIncrementRad = " << angleIncrementRad
-			<< " = " << angleIncrementRad*radToDeg << "deg."
+			<< ", angleIncrementRad = " << angleIncrement
+			<< " = " << AngleDeg(angleIncrement).getAngleValue() << "deg."
 			<< ", maxRadius = " << maxRadius);
 }
 

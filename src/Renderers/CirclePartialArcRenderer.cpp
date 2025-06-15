@@ -77,34 +77,34 @@ CirclePartialArcRenderer::~CirclePartialArcRenderer() {
 
 }
 
-void CirclePartialArcRenderer::setArcRangeDeg(double arcRangeDeg) {
+void CirclePartialArcRenderer::setArcRange(AngleDeg arcRange) {
 	
-	if (this->arcRangeDeg != arcRangeDeg) {
-		this->arcRangeDeg = arcRangeDeg;
+	if (this->arcRange != arcRange) {
+		this->arcRange = arcRange;
 
 		dirtyArcAngles = true;
 	}
 }
 
-void CirclePartialArcRenderer::setStartAngleDeg(double startAngleDeg) {
+void CirclePartialArcRenderer::setStartAngle(AngleDeg startAngle) {
 	
-	if (this->startAngleDeg != startAngleDeg) {
-		this->startAngleDeg = startAngleDeg;
+	if (this->startAngle != startAngle) {
+		this->startAngle = startAngle;
 
 		dirtyArcAngles = true;
 	}
 }
 
-double CirclePartialArcRenderer::normalizeAngleDeg(double angleDeg) {
-	if (angleDeg >= 360.0 || angleDeg <= -360.0) {
-		angleDeg = std::fmod(angleDeg, 360.0);
+AngleDeg CirclePartialArcRenderer::normalizeAngle(AngleDeg angle) {
+	if (angle >= 360.0_deg || (angle <= (360.0_deg*-1.0))) {
+		angle = AngleDeg::makeAngle(std::fmod(angle.getAngleValue(), 360.0));
 	}
 	
-	if (angleDeg < 0.0) {
-		angleDeg = 360.0 - angleDeg;
+	if (angle < 0.0_deg) {
+		angle = 360.0_deg - angle;
 	}
 	
-	return angleDeg;
+	return angle;
 }
 
 void CirclePartialArcRenderer::setupVertexBuffers() {
@@ -129,23 +129,47 @@ void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 
 void CirclePartialArcRenderer::normalizeAngles () {
 
-#error Actually normalize the angles here :)	
-
-	rotMatrixStartAngle = rotationMatrixZ (startAngleDeg);
 	LOG4CXX_DEBUG(logger, __FUNCTION__
-		<< ": startAngleDeg = " << startAngleDeg
-		<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
+		<< ": arcRangeDeg = " << arcRange.getAngleValue()
+		<< ", startAngleDeg = " << startAngle.getAngleValue()
+		);
 
-	numSegmentsArc = 
-		static_cast<uint32_t>( vertexArrayStruct->numSegments * arcRangeDeg / 360.0);
-
-	LOG4CXX_DEBUG(logger, __FUNCTION__
-		<< ": arcRangeDeg = " << arcRangeDeg
-		<< ", numSegmentsArc = " << numSegmentsArc
-		<< " of " << vertexArrayStruct->numSegments
-		<< " for a full circle.");
+	if (arcRange >=360.0_deg || arcRange <= (360.0_deg * -1.0f)) {
+		// Other considerations are moot since now
+		// the full circle draw method of the base classs is being called.
+		isFullCircle = true;
 		
+		LOG4CXX_DEBUG(logger, "\tPaint a full circle");
+
+	} else {
+		isFullCircle = false;
+		
+		if (arcRange < 0.0_deg) {
+			// let the arc start at the end but draw the arc now counter-clock wise.
+			startAngleNormalized = normalizeAngle(startAngle + arcRange);
+			arcRangeNormalized = arcRange * -1.0f;
+		} else {
+			startAngleNormalized = normalizeAngle(startAngle);
+			arcRangeNormalized = arcRange;
+		}
+
+		rotMatrixStartAngle = rotationMatrixZ (startAngleNormalized);
+		LOG4CXX_DEBUG(logger, 
+			"\t startAngleDegNormalized = " << startAngle.getAngleValue()
+			<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
 	
+		numSegmentsArc = 
+			static_cast<uint32_t>( vertexArrayStruct->numSegments * (arcRangeNormalized / AngleRad::fullCircle));
+	
+		LOG4CXX_DEBUG(logger, __FUNCTION__
+			<< ": arcRangeDeg = " << arcRangeNormalized.getAngleValue()
+			<< ", numSegmentsArc = " << numSegmentsArc
+			<< " of " << vertexArrayStruct->numSegments
+			<< " for a full circle.");
+			
+		
+	}
+
 
 }
 } /* namespace OevGLES */

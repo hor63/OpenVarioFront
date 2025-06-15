@@ -79,10 +79,10 @@ Mat4 scalingMatrix (GLfloat x, GLfloat y, GLfloat z ) {
 	return rc;
 }
 
-Mat4 rotationMatrixX (GLfloat adX) {
+Mat4 rotationMatrixX (AngleRad angleAroundX) {
 	Mat4 rc;
-	GLfloat sinX = sinf(adX*degToRad);
-	GLfloat cosX = cosf(adX*degToRad);
+	GLfloat sinX = sinf(angleAroundX);
+	GLfloat cosX = cosf(angleAroundX);
 
 	initLogger();
 
@@ -99,15 +99,15 @@ Mat4 rotationMatrixX (GLfloat adX) {
 			0.0f,	sinX,	cosX,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f;
 
-	LOG4CXX_DEBUG(logger,"rotationMatrixX (adX = " << adX << ") =\n" << rc );
+	LOG4CXX_DEBUG(logger,"rotationMatrixX (adX = " << angleAroundX.getAngleValue() << ") =\n" << rc );
 
 	return rc;
 }
 
-Mat4 rotationMatrixY (GLfloat adY) {
+Mat4 rotationMatrixY (AngleRad angleAroundY) {
 	Mat4 rc;
-	GLfloat sinY = sinf(adY*degToRad);
-	GLfloat cosY = cosf(adY*degToRad);
+	GLfloat sinY = sinf(angleAroundY);
+	GLfloat cosY = cosf(angleAroundY);
 
 	initLogger();
 
@@ -124,15 +124,15 @@ Mat4 rotationMatrixY (GLfloat adY) {
 		   -sinY,	0.0f,	cosY,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f;
 
-	LOG4CXX_DEBUG(logger,"rotationMatrixY (adY = " << adY << ") =\n" << rc );
+	LOG4CXX_DEBUG(logger,"rotationMatrixY (adY = " << angleAroundY.getAngleValue() << ") =\n" << rc );
 
 	return rc;
 }
 
-Mat4 rotationMatrixZ (GLfloat adZ) {
+Mat4 rotationMatrixZ (AngleRad angleAroundZ) {
 	Mat4 rc;
-	GLfloat sinZ = sinf(adZ*degToRad);
-	GLfloat cosZ = cosf(adZ*degToRad);
+	GLfloat sinZ = sinf(angleAroundZ);
+	GLfloat cosZ = cosf(angleAroundZ);
 
 	initLogger();
 
@@ -149,7 +149,7 @@ Mat4 rotationMatrixZ (GLfloat adZ) {
 			0.0f,	0.0f,	1.0f,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f;
 
-	LOG4CXX_DEBUG(logger,"rotationMatrixZ (adZ = " << adZ << ") =\n" << rc );
+	LOG4CXX_DEBUG(logger,"rotationMatrixZ (adZ = " << angleAroundZ.getAngleValue() << ") =\n" << rc );
 
 	return rc;
 }
@@ -197,7 +197,7 @@ Mat4 viewMatrix (Vec3 const& camPos, Vec3 const &lookAt, Vec3 const & up) {
 	return rc;
 }
 
-Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, GLfloat fieldOfViewAngle) {
+Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad fieldOfViewAngle) {
 	/*
 	 *
 	 * range = tan(fov/2) ∗ near
@@ -215,7 +215,7 @@ Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, GLfloat fieldO
 	 */
 
 	Mat4 rc;
-	GLfloat range  = tanf(fieldOfViewAngle * (degToRad / 2.0)) * near;
+	GLfloat range  = tanf(fieldOfViewAngle * 0.5f) * near;
 	GLfloat Sx = (2.0f * near) / (range * aspect + range * aspect);
 	GLfloat Sy = near / range;
 	GLfloat Sz = -(far + near) / (far - near);
@@ -228,7 +228,11 @@ Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, GLfloat fieldO
 			0.0f,	0.0f,	Sz,		Pz,
 			0.0f,	0.0f,	-1.0f,	0.0f;
 
-	LOG4CXX_DEBUG(logger,"projectionMatrix (near = " << near << ", far = " << far << ", aspect = " << aspect << ", fieldOfViewAngle = " << fieldOfViewAngle << ")" );
+	LOG4CXX_DEBUG(logger,"projectionMatrix (near = " << near 
+		<< ", far = " << far
+		<< ", aspect = " << aspect
+		<< ", fieldOfViewAngle = " << fieldOfViewAngle.getAngleValue()
+		<< ")" );
 	LOG4CXX_DEBUG(logger,"projectionMatrix: range = " << range);
 	LOG4CXX_DEBUG(logger,"projectionMatrix = \n" << rc);
 
