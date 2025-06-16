@@ -26,6 +26,7 @@
 #ifndef VECMAT_H_
 #define VECMAT_H_
 
+#include <cmath>
 #include <math.h>
 
 #include <GLES2/gl2.h>
@@ -79,52 +80,53 @@ class Angle {
 		return angleValue;
 	}
 	
-	Angle operator * (GLfloat mult) {
+	Angle operator * (GLfloat mult) const {
 		return Angle(angleValue * mult);
 	}
 	
-	Angle operator / (GLfloat mult) {
-		return Angle(angleValue / mult);
+	Angle operator / (GLfloat div) const {
+		return Angle(angleValue / div);
 	}
 
-	GLfloat operator / (Angle mult) {
+	GLfloat operator / (Angle mult) const {
 		return angleValue / mult.angleValue;
 	}
 
-	Angle operator + (Angle add) {
+	Angle operator + (Angle add) const {
 		return Angle(angleValue + add.angleValue);
 	}
 	
-	Angle operator - (Angle sub) {
+	Angle operator - (Angle sub) const {
 		return Angle(angleValue - sub.angleValue);
 	}
 
-	bool operator == (Angle comp) {
+	bool operator == (Angle comp) const {
 		return angleValue == comp.angleValue;
 	}
 
-	bool operator != (Angle comp) {
+	bool operator != (Angle comp) const {
 		return angleValue != comp.angleValue;
 	}
 
-	bool operator >= (Angle comp) {
+	bool operator >= (Angle comp) const {
 		return angleValue >= comp.angleValue;
 	}
-	bool operator <= (Angle comp) {
+	bool operator <= (Angle comp) const {
 		return angleValue <= comp.angleValue;
 	}
-	bool operator > (Angle comp) {
+	bool operator > (Angle comp) const {
 		return angleValue > comp.angleValue;
 	}
-	bool operator < (Angle comp) {
+	bool operator < (Angle comp) const {
 		return angleValue < comp.angleValue;
 	}
 	
-	static constexpr Angle fullCircle = 
-		makeAngleConstexpr (
-			static_cast<GLfloat>(Numerator) /
+	static const Angle fullCircle () {
+		return Angle (
+			static_cast<GLfloat>(Numerator) / 
 			static_cast<GLfloat>(Denominator)
-			);
+		);
+	}
 	
 	private:
 
@@ -138,16 +140,15 @@ class Angle {
 
 /// 360 degrees are a full circle.
 using AngleDeg = Angle<360,1>;
-static AngleDeg operator ""_deg (long double angleDeg) {
+static AngleDeg operator""_deg (long double angleDeg) {
 	return AngleDeg::makeAngle(static_cast<GLfloat>(angleDeg));
 }
 
 /// 2*Pi are a full circle.
 using AngleRad = Angle<628318531,100000000>;
-static AngleRad operator ""_rad (long double angleRad) {
+static AngleRad operator""_rad (long double angleRad) {
 	return AngleRad::makeAngle(static_cast<GLfloat>(angleRad));
 } // namespace OevGLES
-
 
 static GLfloat sinf (AngleRad const &angle) {
 	return ::sinf(angle.getAngleValue());
