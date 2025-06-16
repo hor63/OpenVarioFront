@@ -133,7 +133,7 @@ int main(int argint,char** argv) {
 		// To calculate the aperture angle the the ArcTan of
 		// (windowHeight/2) / viewerDistance
 		// is half of the aperture angle.
-		static const OevGLES::AngleRad apertureAngle = OevGLES::AngleRad::makeAngle(atan((windowHeight/2.0)/camPos(2,0)));
+		static const OevGLES::AngleRad apertureAngle = OevGLES::AngleRad::makeAngle(atan((windowHeight/2.0)/camPos(2,0))) * 2.0f;
 
 		std::cout << "Extensions are : " << glGetString(GL_EXTENSIONS) << std::endl;
 		void* glGenVertexArraysOESPtr = reinterpret_cast<void*>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));

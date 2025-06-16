@@ -36,14 +36,14 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(s
 	}
 #endif
 
-	angleIncrement = AngleRad::fullCircle / static_cast<GLfloat>(numSegments);
+	angleIncrement = AngleRad::fullCircle() / static_cast<GLfloat>(numSegments);
 
-	maxRadius  = static_cast<GLfloat>(maxDeviationPixels / (1.0 - cos (angleIncrement / 2.0)));
+	maxRadius  = static_cast<GLfloat>(maxDeviationPixels / (1.0 - cosf (angleIncrement / 2.0)));
 
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 			<< ": numSegments = " << numSegments
 			<< ", numVertexes = " << numVertexes
-			<< ", angleIncrementRad = " << angleIncrement
+			<< ", angleIncrement = " << angleIncrement.getAngleValue()
 			<< " = " << AngleDeg(angleIncrement).getAngleValue() << "deg."
 			<< ", maxRadius = " << maxRadius);
 }

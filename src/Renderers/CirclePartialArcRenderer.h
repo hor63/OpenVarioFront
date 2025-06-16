@@ -112,7 +112,7 @@ protected:
 	 * If the range angle is negative it is made positive, and \ref startAngleDegNormalized
 	 * now starts at the previous end. Thus the arc can progress in positive direction.
 	 */
-	AngleDeg arcRange = AngleDeg::makeAngle(360.0f);
+	AngleDeg arcRange = 360.0_deg;
 	
 	/** \brief Normalized arc range.
 	 *

@@ -159,7 +159,7 @@ void CirclePartialArcRenderer::normalizeAngles () {
 			<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
 	
 		numSegmentsArc = 
-			static_cast<uint32_t>( vertexArrayStruct->numSegments * (arcRangeNormalized / AngleRad::fullCircle));
+			static_cast<uint32_t>( vertexArrayStruct->numSegments * (arcRangeNormalized / AngleRad::fullCircle()));
 	
 		LOG4CXX_DEBUG(logger, __FUNCTION__
 			<< ": arcRangeDeg = " << arcRangeNormalized.getAngleValue()
