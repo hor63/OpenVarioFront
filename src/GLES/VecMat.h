@@ -121,7 +121,7 @@ class Angle {
 		return angleValue < comp.angleValue;
 	}
 	
-	static const Angle fullCircle () {
+	static constexpr Angle fullCircle () {
 		return Angle (
 			static_cast<GLfloat>(Numerator) / 
 			static_cast<GLfloat>(Denominator)
