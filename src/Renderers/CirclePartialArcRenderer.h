@@ -134,6 +134,9 @@ protected:
 	/// to approximate the \ref arcRangeDeg angle.
 	uint32_t numSegmentsArc = 0U;
 	
+	/// Number of vertexes to draw to form the coarse part of the arc 
+	GLsizei numVertexesArc = 0;
+	
 	/// Calculated from \ref startAngleDeg
 	Mat4 rotMatrixStartAngle;
 	

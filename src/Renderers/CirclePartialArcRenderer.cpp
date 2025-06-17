@@ -96,12 +96,12 @@ void CirclePartialArcRenderer::setStartAngle(AngleDeg startAngle) {
 }
 
 AngleDeg CirclePartialArcRenderer::normalizeAngle(AngleDeg angle) {
-	if (angle >= 360.0_deg || (angle <= (360.0_deg*-1.0))) {
-		angle = AngleDeg::makeAngle(std::fmod(angle.getAngleValue(), 360.0));
+	if (angle >= 360.0_deg || (angle <= (-360.0_deg))) {
+		angle = AngleDeg::makeAngle(std::fmod(angle.getAngleValue(), 360.0f));
 	}
 	
 	if (angle < 0.0_deg) {
-		angle = 360.0_deg - angle;
+		angle = 360.0_deg + angle;
 	}
 	
 	return angle;
@@ -115,6 +115,31 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 	if (dirtyArcAngles) {
 		normalizeAngles();
 		dirtyArcAngles = false;
+		
+		if (!isFullCircle) {
+
+		rotMatrixStartAngle = rotationMatrixZ (startAngleNormalized);
+		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+			<< "startAngleNormalized = " 
+			<< static_cast<AngleDeg>(startAngleNormalized).getAngleValue()
+			<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
+	
+		numSegmentsArc = 
+			static_cast<uint32_t>( vertexArrayStruct->numSegments * 
+				(arcRangeNormalized / AngleRad::fullCircle()));
+				
+		numVertexesArc = numSegmentsArc * 2 + 2;
+	
+		LOG4CXX_DEBUG(logger, 
+			"\tarcRangeNormalized = "
+			<< static_cast<AngleDeg>(arcRangeNormalized).getAngleValue()
+			<< ", numSegmentsArc = " << numSegmentsArc
+			<< " of " << vertexArrayStruct->numSegments
+			<< " for a full circle.");
+			
+		
+
+		}
 	}
 }
 
@@ -125,16 +150,89 @@ void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 		const OevGLES::Vec4 &ambientLightColor) {
 	
 	setupVertexBuffers();
+	
+	if (isFullCircle) {
+		CircleBaseRenderer::draw(modelMatrix,viewMatrix,ProjMatrix,
+			MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
+	} else { // if (isFullCircle) {
+		Mat4 MVMatrixStartAngle = MVMatrix * rotMatrixStartAngle;
+		Mat4 MVPMatrixStartAngle = MVPMatrix * rotMatrixStartAngle;
+		// First activate the program
+		glProgram->useProgram();
+	
+		// Set up the uniforms
+		glUniform4fv(glProgram->getVecFactorPrimaryVertexLocation(),1,vecFactorPrimaryVertex);
+		glUniform4fv(glProgram->getVecFactorSecondVertexLocation(),1,vecFactorSecondVertex);
+		glUniform4fv(glProgram->getVecFactorNormalVectorLocation(),1,vecFactorNormalVector);
+	
+		glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,
+			GL_FALSE,&(MVPMatrixStartAngle(0,0)));
+		glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,
+			GL_FALSE,&(MVMatrixStartAngle(0,0)));
+	
+		glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
+		glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
+		glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
+	
+		// Set up the attributes
+		glBindBuffer(GL_ARRAY_BUFFER,vertexArrayStruct->vertexBufferHandle);
+	
+		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		glVertexAttribPointer(glProgram->getVertexPosLocation(),
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
+	
+		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+		glVertexAttribPointer(glProgram->getVertexNormalLocation(),
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
+	
+		glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+		glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
+				1,
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+	
+		glDisableVertexAttribArray(glProgram->getVertexColorLocation());
+		glVertexAttrib4fv(glProgram->getVertexColorLocation(),&bodyColor(0));
+	
+		std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
+	
+		// Draw in transparent mode when the Alpha value is not totally opaque.
+		if (bodyColor(3) < 1.0f) {
+			blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
+		}
+	
+		// I am omitting the circle center at the start of the vertex array.
+		// Therefore I am starting at position 2, and the number of vertexes
+		// is 2 less that the number of vertexes in the buffer.
+		glDrawArrays( GL_TRIANGLE_STRIP, 2, numVertexesArc);
+	
+		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
+		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
+	
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+		glUseProgram(0);
+	} // else { // if (isFullCircle) {
+
 }
 
 void CirclePartialArcRenderer::normalizeAngles () {
 
-	LOG4CXX_DEBUG(logger, __FUNCTION__
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 		<< ": arcRangeDeg = " << arcRange.getAngleValue()
 		<< ", startAngleDeg = " << startAngle.getAngleValue()
 		);
 
-	if (arcRange >=360.0_deg || arcRange <= (360.0_deg * -1.0f)) {
+	if (arcRange >=360.0_deg || arcRange <= (-360.0_deg)) {
 		// Other considerations are moot since now
 		// the full circle draw method of the base classs is being called.
 		isFullCircle = true;
@@ -145,29 +243,15 @@ void CirclePartialArcRenderer::normalizeAngles () {
 		isFullCircle = false;
 		
 		if (arcRange < 0.0_deg) {
+			LOG4CXX_DEBUG(logger,"\tarcRange is < 0.0");
 			// let the arc start at the end but draw the arc now counter-clock wise.
-			startAngleNormalized = normalizeAngle(startAngle + arcRange);
-			arcRangeNormalized = arcRange * -1.0f;
+			startAngleNormalized = normalizeAngle(startAngle + (AngleDeg::fullCircle() + arcRange));
+			arcRangeNormalized = -arcRange;
 		} else {
 			startAngleNormalized = normalizeAngle(startAngle);
 			arcRangeNormalized = arcRange;
 		}
 
-		rotMatrixStartAngle = rotationMatrixZ (startAngleNormalized);
-		LOG4CXX_DEBUG(logger, 
-			"\t startAngleDegNormalized = " << startAngle.getAngleValue()
-			<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
-	
-		numSegmentsArc = 
-			static_cast<uint32_t>( vertexArrayStruct->numSegments * (arcRangeNormalized / AngleRad::fullCircle()));
-	
-		LOG4CXX_DEBUG(logger, __FUNCTION__
-			<< ": arcRangeDeg = " << arcRangeNormalized.getAngleValue()
-			<< ", numSegmentsArc = " << numSegmentsArc
-			<< " of " << vertexArrayStruct->numSegments
-			<< " for a full circle.");
-			
-		
 	}
 
 

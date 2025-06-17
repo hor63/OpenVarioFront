@@ -100,6 +100,10 @@ class Angle {
 		return Angle(angleValue - sub.angleValue);
 	}
 
+	Angle operator - () const {
+		return Angle(-angleValue);
+	}
+
 	bool operator == (Angle comp) const {
 		return angleValue == comp.angleValue;
 	}

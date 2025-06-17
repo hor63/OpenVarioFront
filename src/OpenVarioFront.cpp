@@ -120,9 +120,11 @@ int main(int argint,char** argv) {
 
 		OevGLES::CirclePartialArcRenderer arc1 (glFramework->getCircleVertexContainer());
 		arc1.setPrimaryRadius(160);
+		arc1.setSecondaryRadius(100);
 		arc1.setPrimarySecondaryZOffset(20);
-		arc1.setStartAngle(60.0_deg);
-		arc1.setArcRange(60.0_deg);
+		//arc1.setStartAngle(180.0_deg);
+		arc1.setStartAngle(180.0_deg);
+		arc1.setArcRange(-60.0_deg);
 		arc1.setupVertexBuffers();
 		arc1.setBodyColor(whiteTransparent0_8Color);
 
@@ -190,7 +192,7 @@ int main(int argint,char** argv) {
 		glTextRend.setBackgroundColor(whiteTransparent0_5Color);
 		glTextRend.setDrawBackground(true);
 
-		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.1_deg) {
+		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
 				if (sdlEvent.type == SDL_EVENT_QUIT) {
@@ -205,7 +207,7 @@ int main(int argint,char** argv) {
 				// rotationAngle = 360.0f;
 			}
 
-			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(objectRotationAngle) * OevGLES::Mat4::Identity();
+			OevGLES::Mat4 modelMatrix = /*OevGLES::rotationMatrixZ(objectRotationAngle) **/ OevGLES::Mat4::Identity();
 
 			OevGLES::Mat4 modelMatrixCirc1 = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * modelMatrix;
 
@@ -239,7 +241,10 @@ int main(int argint,char** argv) {
 			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
 
 			ring1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
-			circ1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrixCirc1,MVPMatrixCirc1,lightDir,lightColor,ambientLightColor);
+			//circ1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrixCirc1,MVPMatrixCirc1,lightDir,lightColor,ambientLightColor);
+			
+			arc1.setArcRange(objectRotationAngle / 2.0f - 90.0_deg);
+			arc1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrixCirc1,MVPMatrixCirc1,lightDir,lightColor,ambientLightColor);
 
 			// sleep(3);
 
@@ -248,7 +253,7 @@ int main(int argint,char** argv) {
 			objectRotationAngle = objectRotationAngle + 1.0_deg;
 
 			if (objectRotationAngle >= 360.0_deg) {
-				objectRotationAngle = objectRotationAngle - 360.0_deg;
+				objectRotationAngle = 0.0_deg;
 			}
 		}
 
