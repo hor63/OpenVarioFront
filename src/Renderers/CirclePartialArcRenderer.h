@@ -81,6 +81,10 @@ public:
 	*/
 	static AngleDeg normalizeAngle(AngleDeg angle);
 
+	/** \brief Normalize angles to be positive between 0 and 2PI.
+	*/
+	static AngleRad normalizeAngle(AngleRad angle);
+
 protected:
 
 	/// Dirty flag for \ref startAngleDeg and \ref arcRangeDeg
@@ -126,6 +130,16 @@ protected:
 	 * I need to start at the original end of the arc and draw the arc other way around.
 	 */
 	AngleRad arcRangeNormalized = 2.0_rad * M_PI;
+	
+	/** \brief Start angle of the segment which fills the gap between the last
+	 *    segment of the polygon and the actual target end angle.
+	 *
+	 * To fill the gap I am drawing one segment of the polygon.
+	 * The start angle of the segment is calculated that the start angle plus
+	 * \ref CirclePolygonVertexContainer::CircleVertexArrayStruct::angleIncrement
+	 * becomes exactly \ref arcRangeNormalized.
+	 */
+	AngleRad startAngleAdditionalSegment;
 	
 	/// \brief \p true when | \ref arcRangeDeg | >= 360.0 
 	bool isFullCircle = true;

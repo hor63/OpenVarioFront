@@ -96,12 +96,51 @@ void CirclePartialArcRenderer::setStartAngle(AngleDeg startAngle) {
 }
 
 AngleDeg CirclePartialArcRenderer::normalizeAngle(AngleDeg angle) {
-	if (angle >= 360.0_deg || (angle <= (-360.0_deg))) {
+	
+	// Use the fmod function only when absolutely necessary,
+	// i.e. the |angle| is >= 720deg (circle 2 times)
+	if (angle >= (AngleDeg::fullCircle() * 2.0f) || (angle <= (AngleDeg::fullCircle() * 2.0f))) {
 		angle = AngleDeg::makeAngle(std::fmod(angle.getAngleValue(), 360.0f));
+	}
+	
+	// The much more likely scenario in angle conversions is that the angle to normalize
+	// crosses 360 deg limit only once
+	while (angle >= 360.0_deg) {
+		angle = angle - 360.0_deg;
+	}
+	
+	while (angle <= 360.0_deg) {
+		angle = angle + 360.0_deg;
 	}
 	
 	if (angle < 0.0_deg) {
 		angle = 360.0_deg + angle;
+	}
+	
+	return angle;
+}
+
+AngleRad CirclePartialArcRenderer::normalizeAngle(AngleRad angle) {
+	
+	// Use the fmod function only when absolutely necessary,
+	// i.e. the |angle| is >= 4 * PI (circle 2 times)
+	if (angle >= (AngleRad::fullCircle() * 2.0f) || (angle <= (AngleRad::fullCircle() * 2.0f))) {
+		angle = AngleRad::makeAngle(
+			std::fmod(angle.getAngleValue(), AngleRad::fullCircle().getAngleValue()));
+	}
+	
+	// The much more likely scenario in angle conversions is that the angle to normalize
+	// crosses 2 Pi limit only once
+	while (angle >= AngleRad::fullCircle()) {
+		angle = angle - AngleRad::fullCircle();
+	}
+	
+	while (angle <= -AngleRad::fullCircle()) {
+		angle = angle + AngleRad::fullCircle();
+	}
+	
+	if (angle < 0.0_rad) {
+		angle = AngleRad::fullCircle() + angle;
 	}
 	
 	return angle;
@@ -129,6 +168,10 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 				(arcRangeNormalized / AngleRad::fullCircle()));
 				
 		numVertexesArc = numSegmentsArc * 2 + 2;
+		
+		startAngleAdditionalSegment = normalizeAngle (
+			startAngleNormalized + arcRangeNormalized -
+			vertexArrayStruct->angleIncrement);
 	
 		LOG4CXX_DEBUG(logger, 
 			"\tarcRangeNormalized = "
