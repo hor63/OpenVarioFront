@@ -79,11 +79,8 @@ public:
 	
 	/** \brief Normalize angles to be positive between 0 and 360 deg.
 	*/
-	static AngleDeg normalizeAngle(AngleDeg angle);
-
-	/** \brief Normalize angles to be positive between 0 and 2PI.
-	*/
-	static AngleRad normalizeAngle(AngleRad angle);
+	template <int32_t Numerator,int32_t Denominator>
+	static Angle<Numerator,Denominator> normalizeAngle(Angle<Numerator,Denominator> angle);
 
 protected:
 
@@ -106,6 +103,9 @@ protected:
 	 * < 360.0.
 	 */
 	AngleRad startAngleNormalized = AngleRad::makeAngle(0.0f);
+	
+	/// Calculated from \ref startAngleNormalized
+	Mat4 rotMatrixStartAngle;
 	
 	/** \brief The visible part of the circle in degrees starting from \ref startAngleDeg
 	 *
@@ -141,6 +141,9 @@ protected:
 	 */
 	AngleRad startAngleAdditionalSegment;
 	
+	/// Calculated from \ref startAngleAdditionalSegment
+	Mat4 rotMatrixStartAngleAdditionalSegment;
+	
 	/// \brief \p true when | \ref arcRangeDeg | >= 360.0 
 	bool isFullCircle = true;
 	
@@ -150,9 +153,6 @@ protected:
 	
 	/// Number of vertexes to draw to form the coarse part of the arc 
 	GLsizei numVertexesArc = 0;
-	
-	/// Calculated from \ref startAngleDeg
-	Mat4 rotMatrixStartAngle;
 	
 	/// The MVPMatrix from the MVP matrix parameter in \ref draw() and
 	/// \ref rotMatrixStartAngle

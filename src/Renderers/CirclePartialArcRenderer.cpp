@@ -95,52 +95,29 @@ void CirclePartialArcRenderer::setStartAngle(AngleDeg startAngle) {
 	}
 }
 
-AngleDeg CirclePartialArcRenderer::normalizeAngle(AngleDeg angle) {
-	
+template <int32_t Numerator,int32_t Denominator>
+Angle<Numerator,Denominator> CirclePartialArcRenderer::normalizeAngle(
+		Angle<Numerator,Denominator> angle) {	
 	// Use the fmod function only when absolutely necessary,
 	// i.e. the |angle| is >= 720deg (circle 2 times)
-	if (angle >= (AngleDeg::fullCircle() * 2.0f) || (angle <= (AngleDeg::fullCircle() * 2.0f))) {
-		angle = AngleDeg::makeAngle(std::fmod(angle.getAngleValue(), 360.0f));
+	if (angle >= (Angle<Numerator,Denominator>::fullCircle() * 2.0f) || 
+		(angle <= (Angle<Numerator,Denominator>::fullCircle() * 2.0f))) {
+		angle = Angle<Numerator,Denominator>::makeAngle(std::fmod(angle.getAngleValue(),
+			Angle<Numerator,Denominator>::fullCircle().getAngleValue()));
 	}
 	
 	// The much more likely scenario in angle conversions is that the angle to normalize
 	// crosses 360 deg limit only once
-	while (angle >= 360.0_deg) {
-		angle = angle - 360.0_deg;
+	while (angle >= Angle<Numerator,Denominator>::fullCircle()) {
+		angle = angle - Angle<Numerator,Denominator>::fullCircle();
 	}
 	
-	while (angle <= 360.0_deg) {
-		angle = angle + 360.0_deg;
+	while (angle <= -Angle<Numerator,Denominator>::fullCircle()) {
+		angle = angle + Angle<Numerator,Denominator>::fullCircle();
 	}
 	
-	if (angle < 0.0_deg) {
-		angle = 360.0_deg + angle;
-	}
-	
-	return angle;
-}
-
-AngleRad CirclePartialArcRenderer::normalizeAngle(AngleRad angle) {
-	
-	// Use the fmod function only when absolutely necessary,
-	// i.e. the |angle| is >= 4 * PI (circle 2 times)
-	if (angle >= (AngleRad::fullCircle() * 2.0f) || (angle <= (AngleRad::fullCircle() * 2.0f))) {
-		angle = AngleRad::makeAngle(
-			std::fmod(angle.getAngleValue(), AngleRad::fullCircle().getAngleValue()));
-	}
-	
-	// The much more likely scenario in angle conversions is that the angle to normalize
-	// crosses 2 Pi limit only once
-	while (angle >= AngleRad::fullCircle()) {
-		angle = angle - AngleRad::fullCircle();
-	}
-	
-	while (angle <= -AngleRad::fullCircle()) {
-		angle = angle + AngleRad::fullCircle();
-	}
-	
-	if (angle < 0.0_rad) {
-		angle = AngleRad::fullCircle() + angle;
+	if (angle < Angle<Numerator,Denominator>::makeAngle(0.0f)){
+		angle = Angle<Numerator,Denominator>::fullCircle() + angle;
 	}
 	
 	return angle;
@@ -159,7 +136,7 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 
 		rotMatrixStartAngle = rotationMatrixZ (startAngleNormalized);
 		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-			<< "startAngleNormalized = " << startAngleNormalized
+			<< ": startAngleNormalized = " << startAngleNormalized
 			<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
 	
 		numSegmentsArc = 
@@ -167,10 +144,6 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 				(arcRangeNormalized / AngleRad::fullCircle()));
 				
 		numVertexesArc = numSegmentsArc * 2 + 2;
-		
-		startAngleAdditionalSegment = normalizeAngle (
-			startAngleNormalized + arcRangeNormalized -
-			vertexArrayStruct->angleIncrement);
 	
 		LOG4CXX_DEBUG(logger, 
 			"\tarcRangeNormalized = " << arcRangeNormalized
@@ -179,7 +152,20 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 			<< " for a full circle.");
 			
 		
+		startAngleAdditionalSegment = normalizeAngle (
+			startAngleNormalized + arcRangeNormalized -
+			vertexArrayStruct->angleIncrement);
 
+		rotMatrixStartAngleAdditionalSegment = 
+			rotationMatrixZ (startAngleAdditionalSegment);
+
+		LOG4CXX_DEBUG (logger,"\tstartAngleNormalized:" << startAngleNormalized
+			<< " + arcRangeNormalized:" << arcRangeNormalized
+			<< " - vertexArrayStruct->angleIncrement:" << vertexArrayStruct->angleIncrement
+			<< " = startAngleAdditionalSegment:" << startAngleAdditionalSegment
+			<< ", rotMatrixStartAngleAdditionalSegment =\n"
+			<< rotMatrixStartAngleAdditionalSegment);
+		
 		}
 	}
 }
@@ -206,10 +192,10 @@ void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 		glUniform4fv(glProgram->getVecFactorSecondVertexLocation(),1,vecFactorSecondVertex);
 		glUniform4fv(glProgram->getVecFactorNormalVectorLocation(),1,vecFactorNormalVector);
 	
-		glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,
-			GL_FALSE,&(MVPMatrixStartAngle(0,0)));
 		glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,
 			GL_FALSE,&(MVMatrixStartAngle(0,0)));
+		glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,
+			GL_FALSE,&(MVPMatrixStartAngle(0,0)));
 	
 		glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
 		glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
@@ -255,6 +241,16 @@ void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 		// Therefore I am starting at position 2, and the number of vertexes
 		// is 2 less that the number of vertexes in the buffer.
 		glDrawArrays( GL_TRIANGLE_STRIP, 2, numVertexesArc);
+	
+		MVMatrixStartAngle = MVMatrix * rotMatrixStartAngleAdditionalSegment;
+		MVPMatrixStartAngle = MVPMatrix * rotMatrixStartAngleAdditionalSegment;
+
+		glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,
+			GL_FALSE,&(MVMatrixStartAngle(0,0)));
+		glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,
+			GL_FALSE,&(MVPMatrixStartAngle(0,0)));
+		glDrawArrays( GL_TRIANGLE_STRIP, 2, 4);
+
 	
 		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
 		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
