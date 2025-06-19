@@ -99,7 +99,7 @@ Mat4 rotationMatrixX (AngleRad angleAroundX) {
 			0.0f,	sinX,	cosX,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f;
 
-	LOG4CXX_DEBUG(logger,"rotationMatrixX (adX = " << angleAroundX.getAngleValue() << ") =\n" << rc );
+	LOG4CXX_DEBUG(logger,"rotationMatrixX (adX = " << angleAroundX << ") =\n" << rc );
 
 	return rc;
 }
@@ -124,7 +124,7 @@ Mat4 rotationMatrixY (AngleRad angleAroundY) {
 		   -sinY,	0.0f,	cosY,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f;
 
-	LOG4CXX_DEBUG(logger,"rotationMatrixY (adY = " << angleAroundY.getAngleValue() << ") =\n" << rc );
+	LOG4CXX_DEBUG(logger,"rotationMatrixY (adY = " << angleAroundY << ") =\n" << rc );
 
 	return rc;
 }
@@ -149,7 +149,7 @@ Mat4 rotationMatrixZ (AngleRad angleAroundZ) {
 			0.0f,	0.0f,	1.0f,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f;
 
-	LOG4CXX_DEBUG(logger,"rotationMatrixZ (adZ = " << angleAroundZ.getAngleValue() << ") =\n" << rc );
+	LOG4CXX_DEBUG(logger,"rotationMatrixZ (adZ = " << angleAroundZ << ") =\n" << rc );
 
 	return rc;
 }
@@ -231,7 +231,7 @@ Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad field
 	LOG4CXX_DEBUG(logger,"projectionMatrix (near = " << near 
 		<< ", far = " << far
 		<< ", aspect = " << aspect
-		<< ", fieldOfViewAngle = " << fieldOfViewAngle.getAngleValue()
+		<< ", fieldOfViewAngle = " << fieldOfViewAngle
 		<< ")" );
 	LOG4CXX_DEBUG(logger,"projectionMatrix: range = " << range);
 	LOG4CXX_DEBUG(logger,"projectionMatrix = \n" << rc);
@@ -240,5 +240,5 @@ Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad field
 
 }
 
-
 } /* namespace OevGLES */
+

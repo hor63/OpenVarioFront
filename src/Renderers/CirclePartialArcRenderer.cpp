@@ -159,8 +159,7 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 
 		rotMatrixStartAngle = rotationMatrixZ (startAngleNormalized);
 		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-			<< "startAngleNormalized = " 
-			<< static_cast<AngleDeg>(startAngleNormalized).getAngleValue()
+			<< "startAngleNormalized = " << startAngleNormalized
 			<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
 	
 		numSegmentsArc = 
@@ -174,8 +173,7 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 			vertexArrayStruct->angleIncrement);
 	
 		LOG4CXX_DEBUG(logger, 
-			"\tarcRangeNormalized = "
-			<< static_cast<AngleDeg>(arcRangeNormalized).getAngleValue()
+			"\tarcRangeNormalized = " << arcRangeNormalized
 			<< ", numSegmentsArc = " << numSegmentsArc
 			<< " of " << vertexArrayStruct->numSegments
 			<< " for a full circle.");
@@ -271,8 +269,8 @@ void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 void CirclePartialArcRenderer::normalizeAngles () {
 
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-		<< ": arcRangeDeg = " << arcRange.getAngleValue()
-		<< ", startAngleDeg = " << startAngle.getAngleValue()
+		<< ": arcRangeDeg = " << arcRange
+		<< ", startAngleDeg = " << startAngle
 		);
 
 	if (arcRange >=360.0_deg || arcRange <= (-360.0_deg)) {

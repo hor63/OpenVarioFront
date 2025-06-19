@@ -21,6 +21,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
 
 
 #ifndef VECMAT_H_
@@ -32,7 +35,10 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
-
+#include <ostream>
+#if defined HAVE_LOG4CXX_H
+#	include <log4cxx/logger.h>
+#endif
 #include "Eigen"
 
 namespace OevGLES {
@@ -248,6 +254,22 @@ Mat4 viewMatrix (Vec3 const& camPos, Vec3 const &lookAt, Vec3 const & up);
  */
 Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad fieldOfViewAngle);
 
+} // namespace OevGLES {
+
+template <int32_t Numerator,int32_t Denominator>
+static std::ostream & operator << (std::ostream & os, 
+	OevGLES::Angle<Numerator,Denominator> angle) {
+	os << static_cast<OevGLES::AngleDeg>(angle).getAngleValue() << "deg.";
+	
+	return os;
 }
+
+#if defined HAVE_LOG4CXX_H
+template <int32_t Numerator,int32_t Denominator>
+static std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, 
+	OevGLES::Angle<Numerator,Denominator> angle) {
+		return (static_cast<std::ostream &>(b) << angle);
+	}
+#endif
 
 #endif /* VECMAT_H_ */

@@ -43,8 +43,7 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(s
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 			<< ": numSegments = " << numSegments
 			<< ", numVertexes = " << numVertexes
-			<< ", angleIncrement = " << angleIncrement.getAngleValue()
-			<< " = " << AngleDeg(angleIncrement).getAngleValue() << "deg."
+			<< ", angleIncrement = " << angleIncrement
 			<< ", maxRadius = " << maxRadius);
 }
 
