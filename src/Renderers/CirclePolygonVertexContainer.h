@@ -72,11 +72,26 @@ public:
 	struct CircleVertexArrayStruct {
 		/** \brief Number of vertexes forming a full primary and secondary circle
 		 *
-		 * The number of vertexes is numSegments*2+2. This is due to the fact
+		 * The number of vertexes is numSegments*2+4. This is due to the fact
 		 * that the vertexes for the primary and secondary circle are intermittent,
-		 * and the circle must be closed at the end (the "+2" term).
+		 * and the circle must be closed at the end,
+		 * and the first 2 vertexes are being used as circle center for the 
+		 * full circle class \ref CircleFilledRenderer (hence the "+2" term).
 		*/
 		GLsizei numVertexes;
+		
+		/** \brief stride within \ref maxSegmentVertexArray for this polygon
+		 *
+		 * This object usually represents a polygon with less segments as \ref maxNumSegments
+		 * and less vertexes than in \ref maxSegmentVertexArray.
+		 * 
+		 * This factor here gives you the stepping within \ref maxSegmentVertexArray
+		 * to access the first vertex for segment #n in your polygon within 
+		 * \ref maxSegmentVertexArray.
+		 * 
+		 */
+		std::size_t vertexStrideInMaxVertexArrayPerSegment;
+		
 		/** \brief
 		 * The radius of the circle where the deviation of the polygon from
 		 * the ideal circle becomes larger than \ref maxDeviationPixels.
@@ -105,6 +120,7 @@ public:
 		CircleVertexArrayStruct(CircleVertexArrayStruct const& source)
 			:numSegments{source.numSegments},
 			 numVertexes{source.numVertexes},
+			 vertexStrideInMaxVertexArrayPerSegment{source.vertexStrideInMaxVertexArrayPerSegment},
 			 angleIncrement{source.angleIncrement},
 			 maxRadius{source.maxRadius},
 			 vertexBufferHandle{0}
@@ -113,6 +129,7 @@ public:
 		CircleVertexArrayStruct(CircleVertexArrayStruct&& source)
 			:numSegments{source.numSegments},
 			 numVertexes{source.numVertexes},
+			 vertexStrideInMaxVertexArrayPerSegment{source.vertexStrideInMaxVertexArrayPerSegment},
 			 angleIncrement{source.angleIncrement},
 			 maxRadius{source.maxRadius},
 			 vertexBufferHandle{source.vertexBufferHandle}
@@ -130,6 +147,7 @@ public:
 		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct&& source)
 		{
 			numVertexes = source.numVertexes;
+			vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
 			maxRadius   = source.maxRadius;
 			if (vertexBufferHandle != 0U) {
 				glDeleteBuffers(1,&vertexBufferHandle);
@@ -143,6 +161,7 @@ public:
 		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct const& source)
 		{
 			numVertexes = source.numVertexes;
+			vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
 			maxRadius   = source.maxRadius;
 			if (vertexBufferHandle != 0U) {
 				glDeleteBuffers(1,&vertexBufferHandle);
@@ -198,6 +217,15 @@ public:
 	 */
 	CircleVertexArrayStruct const &createVertexArrayStruct (GLfloat radius);
 
+	typedef std::array<CirclePolygonVertexStruct,maxNumSegments*2 + 4> MaxSegmentVertexArrayType;
+
+	/** \brief Provide direct access to the largest possible vertex array on the 
+	 *   client side
+	 */
+	const MaxSegmentVertexArrayType getMaxSegmentVertexArray() const {
+		return maxSegmentVertexArray;
+	}
+
 private:
 
 	/** \brief An array with the maximum number of segments
@@ -212,7 +240,7 @@ private:
 	 * \ref maxNumSegments -1 to \ref maxNumSegments.
 	 *
 	*/
-	std::array<CirclePolygonVertexStruct,maxNumSegments*2 + 4> maxSegmentVertexArray;
+	MaxSegmentVertexArrayType maxSegmentVertexArray;
 
 	/** \brief Contains a map of all possible circle segmentations
 	 *

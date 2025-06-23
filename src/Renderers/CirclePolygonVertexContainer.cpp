@@ -27,6 +27,7 @@ namespace OevGLES {
 CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(std::size_t numSegments)
 	:numSegments{numSegments},
 	 numVertexes{static_cast<GLsizei>(numSegments * 2U + 4U)},
+	 vertexStrideInMaxVertexArrayPerSegment{maxNumSegments/numSegments * 2U},
 	 vertexBufferHandle{0U}
 
 {
@@ -43,6 +44,8 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(s
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 			<< ": numSegments = " << numSegments
 			<< ", numVertexes = " << numVertexes
+			<< ", vertexStrideInMaxVertexArrayPerSegment = "
+			<< 		vertexStrideInMaxVertexArrayPerSegment
 			<< ", angleIncrement = " << angleIncrement
 			<< ", maxRadius = " << maxRadius);
 }
@@ -106,7 +109,7 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 		maxSegmentVertexArray[i*2].isSecondaryCircle = 1.0f;
 
 
-		LOG4CXX_DEBUG(logger,"\t angle = " << (angle * 180.0 / M_PI)
+		LOG4CXX_TRACE(logger,"\t angle = " << (angle * 180.0 / M_PI)
 				<< "deg. Array["<< i*2 << "].position = "
 				<< maxSegmentVertexArray[i*2].position[0] << ","
 				<< maxSegmentVertexArray[i*2].position[1] << ","
@@ -119,7 +122,7 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 				<< maxSegmentVertexArray[i*2].normal[3] << ","
 				);
 
-		LOG4CXX_DEBUG(logger,"\t angle = " << (angle * 180.0 / M_PI)
+		LOG4CXX_TRACE(logger,"\t angle = " << (angle * 180.0 / M_PI)
 				<< "deg. Array["<< i*2+1 << "].position = "
 				<< maxSegmentVertexArray[i*2+1].position[0] << ","
 				<< maxSegmentVertexArray[i*2+1].position[1] << ","
@@ -145,6 +148,13 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 
 	for (uint32_t numSegments = 4; numSegments <= maxNumSegments; numSegments*=2) {
 		CircleVertexArrayStruct vertexArryHolder {numSegments};
+
+		LOG4CXX_DEBUG(logger,"\tInsert vertexArryHolder, numSegments = " << numSegments
+			<< ", vertexArryHolder.numVertexes = " << vertexArryHolder.numVertexes
+			<< ", vertexArryHolder.angleIncrement = " << vertexArryHolder.angleIncrement
+			<< ", vertexArryHolder.vertexStrideInMaxVertexArrayPerSegment = " << vertexArryHolder.vertexStrideInMaxVertexArrayPerSegment
+			<< ", vertexArryHolder.maxRadius = " << vertexArryHolder.maxRadius
+			);
 
 		circleVertexArrayMap.insert(
 				CircleVertexArrayMapType::value_type(vertexArryHolder.maxRadius,vertexArryHolder));
