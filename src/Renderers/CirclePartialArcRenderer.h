@@ -131,19 +131,6 @@ protected:
 	 */
 	AngleRad arcRangeNormalized = 2.0_rad * M_PI;
 	
-	/** \brief Start angle of the segment which fills the gap between the last
-	 *    segment of the polygon and the actual target end angle.
-	 *
-	 * To fill the gap I am drawing one segment of the polygon.
-	 * The start angle of the segment is calculated that the start angle plus
-	 * \ref CirclePolygonVertexContainer::CircleVertexArrayStruct::angleIncrement
-	 * becomes exactly \ref arcRangeNormalized.
-	 */
-	AngleRad startAngleAdditionalSegment;
-	
-	/// Calculated from \ref startAngleAdditionalSegment
-	Mat4 rotMatrixStartAngleAdditionalSegment;
-	
 	/// \brief \p true when | \ref arcRangeDeg | >= 360.0 
 	bool isFullCircle = true;
 	
@@ -168,7 +155,16 @@ protected:
 	Mat4 effMVPMatrixRangeEnd;
 	
 	/// Vertexes for the end segment for an arc with an arbitrary angle
-	CirclePolygonVertexContainer::CirclePolygonVertexStruct endArcVertexes [4];
+	std::array<CirclePolygonVertexContainer::CirclePolygonVertexStruct,4> endArcVertexes;
+	
+	/** \brief Handle to the GL ES vertex buffer for \ref endArcVertexes
+	 *
+	 * The vertex buffer is created only on demand. The handle is initialized
+	 * to 0 to indicate that the vertex buffer must still be created.
+	 *
+	*/
+	GLuint vertexBufferHandleArcEnd = 0U;
+
 	
 	/** \brief Take \ref startAngleDeg and \ref arcRangeDeg and normalize them
 	 * into \ref startAngleDegNormalized and \ref arcRangeDegNormalized

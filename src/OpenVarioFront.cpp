@@ -207,7 +207,7 @@ int main(int argint,char** argv) {
 				// rotationAngle = 360.0f;
 			}
 
-			OevGLES::Mat4 modelMatrix = /*OevGLES::rotationMatrixZ(objectRotationAngle) **/ OevGLES::Mat4::Identity();
+			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(objectRotationAngle) * OevGLES::Mat4::Identity();
 
 			OevGLES::Mat4 modelMatrixCirc1 = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * modelMatrix;
 

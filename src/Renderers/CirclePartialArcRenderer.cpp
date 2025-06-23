@@ -5,6 +5,7 @@
  *      Author: hor
  */
 
+#include <GLES2/gl2.h>
 #include <cmath>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -75,6 +76,10 @@ CirclePartialArcRenderer::CirclePartialArcRenderer(CirclePolygonVertexContainer&
 
 CirclePartialArcRenderer::~CirclePartialArcRenderer() {
 
+	if (vertexBufferHandleArcEnd != 0U) {
+		glDeleteBuffers(1, &vertexBufferHandleArcEnd);
+	}
+
 }
 
 void CirclePartialArcRenderer::setArcRange(AngleDeg arcRange) {
@@ -134,40 +139,77 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 		
 		if (!isFullCircle) {
 
-		rotMatrixStartAngle = rotationMatrixZ (startAngleNormalized);
-		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-			<< ": startAngleNormalized = " << startAngleNormalized
-			<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
-	
-		numSegmentsArc = 
-			static_cast<uint32_t>( vertexArrayStruct->numSegments * 
-				(arcRangeNormalized / AngleRad::fullCircle()));
+			rotMatrixStartAngle = rotationMatrixZ (startAngleNormalized);
+			LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+				<< ": startAngleNormalized = " << startAngleNormalized
+				<< ", rotMatrixStartAngle = \n" << rotMatrixStartAngle);
+		
+			numSegmentsArc = 
+				static_cast<uint32_t>( vertexArrayStruct->numSegments * 
+					(arcRangeNormalized / AngleRad::fullCircle()));
+					
+			numVertexesArc = numSegmentsArc * 2 + 2;
+		
+			LOG4CXX_DEBUG(logger, 
+				"\tarcRangeNormalized = " << arcRangeNormalized
+				<< ", numSegmentsArc = " << numSegmentsArc
+				<< " of " << vertexArrayStruct->numSegments
+				<< " for a full circle.");
 				
-		numVertexesArc = numSegmentsArc * 2 + 2;
 	
-		LOG4CXX_DEBUG(logger, 
-			"\tarcRangeNormalized = " << arcRangeNormalized
-			<< ", numSegmentsArc = " << numSegmentsArc
-			<< " of " << vertexArrayStruct->numSegments
-			<< " for a full circle.");
+			LOG4CXX_DEBUG (logger,"\tstartAngleNormalized:" << startAngleNormalized
+				<< " + arcRangeNormalized:" << arcRangeNormalized
+				<< " - vertexArrayStruct->angleIncrement:" << vertexArrayStruct->angleIncrement);
 			
-		
-		startAngleAdditionalSegment = normalizeAngle (
-			startAngleNormalized + arcRangeNormalized -
-			vertexArrayStruct->angleIncrement);
+	
+			auto indexMaxVertexArrayEndSegmentStart = 
+				numSegmentsArc * vertexArrayStruct->vertexStrideInMaxVertexArrayPerSegment + 2;
+	
+			LOG4CXX_DEBUG (logger,"\tindexMaxVertexArrayEndSegmentStart:" 
+				<< indexMaxVertexArrayEndSegmentStart
+				<< ", vertexStrideInMaxVertexArrayPerSegment = "
+				<< vertexArrayStruct->vertexStrideInMaxVertexArrayPerSegment);
 
-		rotMatrixStartAngleAdditionalSegment = 
-			rotationMatrixZ (startAngleAdditionalSegment);
+			// Copy the data from the template arry into the end segment, and calculate
+			// the end points of the end segment yourself.
+			// The vertexes are the end of the coarse polygon. This way I achieve a
+			// seamless connection from the coarse polygon to the end segment.
+			endArcVertexes[0] = endArcVertexes[2] = 
+				circlePolygonVertexContainer.getMaxSegmentVertexArray()[
+					indexMaxVertexArrayEndSegmentStart
+				];
+			endArcVertexes[1] = endArcVertexes[3] = 
+				circlePolygonVertexContainer.getMaxSegmentVertexArray()[
+					indexMaxVertexArrayEndSegmentStart + 1
+				];
 
-		LOG4CXX_DEBUG (logger,"\tstartAngleNormalized:" << startAngleNormalized
-			<< " + arcRangeNormalized:" << arcRangeNormalized
-			<< " - vertexArrayStruct->angleIncrement:" << vertexArrayStruct->angleIncrement
-			<< " = startAngleAdditionalSegment:" << startAngleAdditionalSegment
-			<< ", rotMatrixStartAngleAdditionalSegment =\n"
-			<< rotMatrixStartAngleAdditionalSegment);
-		
-		}
-	}
+			// x
+			endArcVertexes[2].position[0] =
+				endArcVertexes[3].position[0] =
+				endArcVertexes[2].normal[0] =
+				endArcVertexes[3].normal[0] =
+						cosf (arcRangeNormalized);
+
+			// y
+			endArcVertexes[2].position[1] =
+				endArcVertexes[3].position[1] =
+				endArcVertexes[2].normal[1] =
+				endArcVertexes[3].normal[1] =
+						sinf (arcRangeNormalized);
+
+			if (vertexBufferHandleArcEnd == 0U) {
+				glGenBuffers(1, &vertexBufferHandleArcEnd);
+			}
+			
+			glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleArcEnd);
+			glBufferData(GL_ARRAY_BUFFER,
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct)
+					* endArcVertexes.max_size(),
+				endArcVertexes.data(),
+				GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER,0);
+		} // if (!isFullCircle) {
+	} // if (dirtyArcAngles) {
 }
 
 void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
@@ -242,15 +284,34 @@ void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 		// is 2 less that the number of vertexes in the buffer.
 		glDrawArrays( GL_TRIANGLE_STRIP, 2, numVertexesArc);
 	
-		MVMatrixStartAngle = MVMatrix * rotMatrixStartAngleAdditionalSegment;
-		MVPMatrixStartAngle = MVPMatrix * rotMatrixStartAngleAdditionalSegment;
-
-		glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,
-			GL_FALSE,&(MVMatrixStartAngle(0,0)));
-		glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,
-			GL_FALSE,&(MVPMatrixStartAngle(0,0)));
-		glDrawArrays( GL_TRIANGLE_STRIP, 2, 4);
-
+		// draw the end array
+		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleArcEnd);
+		
+		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		glVertexAttribPointer(glProgram->getVertexPosLocation(),
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
+	
+		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+		glVertexAttribPointer(glProgram->getVertexNormalLocation(),
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
+	
+		glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+		glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
+				1,
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+		
+		glDrawArrays( GL_TRIANGLE_STRIP, 0, 4);
+		
 	
 		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
 		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
