@@ -17,6 +17,12 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
+PFNGLBINDVERTEXARRAYOESPROC GLFramework::glBindVertexArrayOES = nullptr;
+PFNGLDELETEVERTEXARRAYSOESPROC GLFramework::glDeleteVertexArraysOES = nullptr;
+PFNGLGENVERTEXARRAYSOESPROC GLFramework::glGenVertexArraysOES = nullptr;
+PFNGLISVERTEXARRAYOESPROC GLFramework::glIsVertexArrayOES = nullptr;
+bool GLFramework::vertexArrayUsable = false;
+
 
 GLFrameworkSharedPtr GLFramework::createFramework() {
 	GLFrameworkSharedPtr ret ( new GLFramework);
@@ -35,6 +41,7 @@ GLFramework::GLFramework()
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLFramework");
 	}
 #endif
+
 }
 
 GLFramework::~GLFramework() {
@@ -52,24 +59,34 @@ void GLFramework::createRenderSurface(GLint width, GLint height,
 			<< width << "x" << height);
 	sdlSurface.createRenderSurface(width,height,PACKAGE_STRING);
 
-	glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
-	glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
-	glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
-	glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
-
-	std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
-	auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
-
-	if (glBindVertexArrayOES != nullptr
-			&& glDeleteVertexArraysOES != nullptr
-			&& glGenVertexArraysOES != nullptr
-			&& glIsVertexArrayOES != nullptr
-			&& foundPos != std::string::npos
-			) {
-		vertexArrayUsable = true;
-	} else {
-		vertexArrayUsable = false;
+	if (glBindVertexArrayOES == nullptr) {
+		glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
 	}
+	if (glDeleteVertexArraysOES == nullptr) {
+		glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
+	}
+	if (glGenVertexArraysOES == nullptr) {
+		glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
+	}
+	if (glIsVertexArrayOES == nullptr) {
+		glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
+	}
+
+	if (!vertexArrayUsable) {
+		std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
+		auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
+	
+		if (glBindVertexArrayOES != nullptr
+				&& glDeleteVertexArraysOES != nullptr
+				&& glGenVertexArraysOES != nullptr
+				&& glIsVertexArrayOES != nullptr
+				&& foundPos != std::string::npos
+				) {
+			vertexArrayUsable = true;
+		} else {
+			vertexArrayUsable = false;
+		}
+	} // if (!vertexArrayUsable) {
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " << vertexArrayUsable);
 

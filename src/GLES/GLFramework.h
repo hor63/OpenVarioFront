@@ -34,10 +34,10 @@ using GLFrameworkSharedPtr = std::shared_ptr<GLFramework>;
 
 class GLFramework final {
 public:
-	PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = nullptr;
-	PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = nullptr;
-	PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = nullptr;
-	PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES = nullptr;
+	static PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES;
+	static PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES;
+	static PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES;
+	static PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES;
 
 	static GLFrameworkSharedPtr createFramework();
 
@@ -68,7 +68,7 @@ public:
 		return circleVertexContainer;
 	}
 
-	bool isVertexArrayUsable() const {
+	static bool isVertexArrayUsable() {
 		return vertexArrayUsable;
 	}
 
@@ -78,7 +78,7 @@ private:
 
 	SDLRenderSurface sdlSurface;
 
-	bool vertexArrayUsable = false;
+	static bool vertexArrayUsable;
 
 	CirclePolygonVertexContainer circleVertexContainer;
 
