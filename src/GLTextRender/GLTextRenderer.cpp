@@ -25,6 +25,8 @@
  *
  */
 
+#include "GLFramework.h"
+#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -248,6 +250,15 @@ GLTextRenderer::~GLTextRenderer() {
 	}
 	if (pangoTextRenderer) {
 		g_object_unref(pangoTextRenderer);
+	}
+
+	if (vertexBufferHandleTextBackground != 0U) {
+		glDeleteBuffers(1, &vertexBufferHandleTextBackground);
+		vertexBufferHandleTextBackground = 0U;
+	}
+	if (vertexArrayHandleTextBackground != 0U) {
+		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandleTextBackground);
+		vertexArrayHandleTextBackground = 0U;
 	}
 
 }
@@ -557,6 +568,18 @@ void GLTextRenderer::setupVertexBuffersTextBoxBackground () {
 	glGenBuffers(1,&vertexBufferHandleTextBackground );
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground );
 	glBufferData(GL_ARRAY_BUFFER,sizeof(textBackgroundRectVertexes),&textBackgroundRectVertexes,GL_STATIC_DRAW);
+	if (GLFramework::isVertexArrayUsable()) {
+		if (vertexArrayHandleTextBackground == 0U) {
+			GLFramework::glGenVertexArraysOES(1,&vertexArrayHandleTextBackground);
+		}
+		GLFramework::glBindVertexArrayOES(vertexArrayHandleTextBackground);
+
+		// setup the vertex coordinates
+		glEnableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
+		glVertexAttribPointer(glTextBackgroundProgram->getVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,GL_FALSE,vertextPositionArrayLen * sizeof (GLfloat),reinterpret_cast<void const *>(0U));
+
+		GLFramework::glBindVertexArrayOES(0U);
+	} // if (GLFramework::isVertexArrayUsable()) {
 
 	glBindBuffer(GL_ARRAY_BUFFER,0 );
 
@@ -722,7 +745,6 @@ void GLTextRenderer::drawTextBoxBackground (
 	// make the text background program current
 	glTextBackgroundProgram->useProgram();
 
-
 	// Set the uniforms
 	glUniformMatrix4fv(glTextBackgroundProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
 	glUniformMatrix4fv(glTextBackgroundProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
@@ -740,24 +762,30 @@ void GLTextRenderer::drawTextBoxBackground (
 	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexNormalLocation());
 	glVertexAttrib4fv(glTextBackgroundProgram->getVertexNormalLocation(),textBackgroundRectNormal);
 
-	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground);
-
-	// setup the vertex coordinates
-	glEnableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
-	glVertexAttribPointer(glTextBackgroundProgram->getVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,GL_FALSE,vertextPositionArrayLen * sizeof (GLfloat),reinterpret_cast<void const *>(0U));
-
-	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
+	if (GLFramework::isVertexArrayUsable()) {
+		GLFramework::glBindVertexArrayOES(vertexArrayHandleTextBackground);
+	} else {
+		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground);
+	
+		// setup the vertex coordinates
+		glEnableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
+		glVertexAttribPointer(glTextBackgroundProgram->getVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,GL_FALSE,vertextPositionArrayLen * sizeof (GLfloat),reinterpret_cast<void const *>(0U));
+	}
 
 	// Draw in transparent mode when the Alpha value is not totally opaque.
+	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
 	if (backgroundColor(3) < 1.0f) {
 		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
 	}
+
 	glDrawArrays(GL_TRIANGLES,0,6);
 
-	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
-
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-
+	if (GLFramework::isVertexArrayUsable()) {
+		GLFramework::glBindVertexArrayOES(0U);
+	} else {
+		glDisableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+	}
 	glUseProgram(0);
 
 

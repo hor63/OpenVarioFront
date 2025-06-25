@@ -83,8 +83,8 @@ private:
 
 	OevGLES::GLProgDiffuseLight* glProgram = 0;
 
-	GLuint vertexBufferHandle = 0;
-
+	GLuint vertexBufferHandle = 0U;
+	GLuint vertexArrayHandle = 0U;
 
 };
 

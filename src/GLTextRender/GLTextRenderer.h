@@ -290,10 +290,10 @@ private:
 	GLTextGlobalsWeakPtr globals;
 
 	GLProgTextTexture* glGlyphProgram = nullptr;
-	GLuint vertexBufferHandleGlyphs = 0;
 
 	GLProgDiffuseLight* glTextBackgroundProgram = nullptr;
-	GLuint vertexBufferHandleTextBackground = 0;
+	GLuint vertexBufferHandleTextBackground = 0U;
+	GLuint vertexArrayHandleTextBackground = 0U;
 
 	/// \brief Size to reserve the vertex vectors
 	///

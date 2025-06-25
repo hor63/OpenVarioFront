@@ -23,6 +23,8 @@
  *
  */
 
+#include "GLFramework.h"
+#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -120,16 +122,48 @@ AnalogHandRenderer::AnalogHandRenderer()
 	}
 
 
-AnalogHandRenderer::~AnalogHandRenderer() { }
+AnalogHandRenderer::~AnalogHandRenderer() { 
+	if (vertexBufferHandle != 0U) {
+		glDeleteBuffers(1, &vertexBufferHandle);
+		vertexBufferHandle = 0U;
+	}
+	if (vertexArrayHandle != 0U) {
+		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		vertexArrayHandle = 0U;
+	}
+
+}
 
 void AnalogHandRenderer::setupVertexBuffers() {
 
 	// First get the program
 	glProgram = OevGLES::GLProgDiffuseLight::getProgram();
 
-	glGenBuffers(1,&vertexBufferHandle);
+	if (vertexBufferHandle == 0U) {
+		glGenBuffers(1,&vertexBufferHandle);
+	}
+	
+	if (GLFramework::isVertexArrayUsable()) {
+		if (vertexArrayHandle == 0U) {
+			GLFramework::glGenVertexArraysOES(1,&vertexArrayHandle);
+		}
+		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
+	}
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
+
+	if (GLFramework::isVertexArrayUsable()) {
+		GLfloat* bufferOffset = 0;
+		// setup the vertex coordinates
+		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+		// setup the vertex normals
+		bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
+		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+		glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+
+		GLFramework::glBindVertexArrayOES(0);
+	}
 
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 
@@ -174,16 +208,20 @@ void AnalogHandRenderer::draw(
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
 	glVertexAttrib4fv(glProgram->getVertexColorLocation(),handColor);
 
-	// re-bind the buffer object
-	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
-
-	// setup the vertex coordinates
-	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-	glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
-	// setup the vertex coordinates
-	bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
-	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
-	glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+	if (GLFramework::isVertexArrayUsable()) {
+		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
+	} else {
+		// re-bind the buffer object
+		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
+	
+		// setup the vertex coordinates
+		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+		// setup the vertex normals
+		bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
+		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+		glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+	} // 	if (GLFramework::isVertexArrayUsable()) {
 
 	// The object is opaque. Use the depth buffer, and write to the depth buffer
 	glDepthMask(GL_TRUE);
@@ -191,10 +229,15 @@ void AnalogHandRenderer::draw(
 
 	glDrawArrays(GL_TRIANGLES,0,12);
 
-	glDisableVertexAttribArray(glProgram->getVertexPosLocation());
-	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
-
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	if (GLFramework::isVertexArrayUsable()) {
+		GLFramework::glBindVertexArrayOES(0U);
+	} else {
+		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
+		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
+	
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+	
+	} // if (GLFramework::isVertexArrayUsable()) {
 
 	glUseProgram(0);
 
