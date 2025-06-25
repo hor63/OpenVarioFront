@@ -28,10 +28,12 @@
 #ifndef GLTEXTRENDER_GLTEXTRENDERER_H_
 #define GLTEXTRENDER_GLTEXTRENDERER_H_
 
+#include <GLES2/gl2.h>
 #include <string>
 #include <vector>
 #include <unordered_map>
 
+#include "GLFramework.h"
 #include "GLTextGlobals.h"
 #include "GLPrograms/GLProgTextTexture.h"
 #include "GLPrograms/GLProgDiffuseLight.h"
@@ -111,19 +113,24 @@ public:
 		GLfloat tri2TopRight [vertextPositionArrayLen];
 	};
 
-	struct VertexBufferPerTexture {
+	class VertexBufferPerTexture {
+	public:
 		std::vector<GlGlyphVertexStruct> vertexVector;
 
 		GLTextFontTexture& fontTexture;
 
 		GLuint vertexBufferHandle;
+		GLuint vertexArrayHandle;
 
 		/// 3 vertexes per triangle, 6 vertexes per rectangular glyph
 		GLsizei numVertexes;
 
+		VertexBufferPerTexture() = delete;
+
 		VertexBufferPerTexture(GLTextFontTexture& fontTexture, size_t vectorReserveSize)
 		: fontTexture{fontTexture},
 		  vertexBufferHandle{0},
+		  vertexArrayHandle{0},
 		  numVertexes{0}
 		{
 			vertexVector.reserve(vectorReserveSize);
@@ -135,11 +142,17 @@ public:
 		: vertexVector {std::move(source.vertexVector)},
 		  fontTexture{source.fontTexture},
 		  vertexBufferHandle{source.vertexBufferHandle},
+		  vertexArrayHandle{source.vertexArrayHandle},
 		  numVertexes{source.numVertexes}
-		{}
+		{
+			source.vertexBufferHandle = 0U;
+			source.vertexArrayHandle = 0U;
+		}
 
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture const& source) = delete;
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture&& source) = delete;
+		
+		~VertexBufferPerTexture();
 
 	};
 
