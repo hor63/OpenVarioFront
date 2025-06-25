@@ -34,7 +34,6 @@
 
 #include <unordered_map>
 
-#include "GLTextGlobals.h"
 #include "GLTextPangoCPPWrappers.h"
 #include "GLTextGlyphBBox.h"
 #include "GLTextFontTexture.h"

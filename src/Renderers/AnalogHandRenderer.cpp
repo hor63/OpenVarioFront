@@ -22,12 +22,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
-#include "GLFramework.h"
-#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
+
+#include "GLFramework.h"
+#include <GLES2/gl2.h>
 
 #include "Renderers/AnalogHandRenderer.h"
 

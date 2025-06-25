@@ -27,7 +27,7 @@
 #  include <config.h>
 #endif
 
-#include <memory.h>
+#include <cstring>
 
 #include "GLES/TexHelper/TextureData.h"
 

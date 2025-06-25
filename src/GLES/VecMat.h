@@ -30,7 +30,6 @@
 #define VECMAT_H_
 
 #include <cmath>
-#include <math.h>
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>

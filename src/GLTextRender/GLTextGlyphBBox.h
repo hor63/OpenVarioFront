@@ -29,6 +29,8 @@
 #ifndef GLTEXTRENDER_GLTEXTGLYPHBBOX_H_
 #define GLTEXTRENDER_GLTEXTGLYPHBBOX_H_
 
+#include <cstdint>
+
 namespace OevGLES {
 
 /**

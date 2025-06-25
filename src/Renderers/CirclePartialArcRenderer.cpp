@@ -4,12 +4,12 @@
  *  Created on: Jun 4, 2025
  *      Author: hor
  */
-
-#include <GLES2/gl2.h>
-#include <cmath>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
+
+#include <GLES2/gl2.h>
+#include <cmath>
 
 #include "OVFCommon.h"
 

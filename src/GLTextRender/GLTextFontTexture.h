@@ -30,8 +30,8 @@
 #include <list>
 
 #include "GLTextGlyphBBox.h"
-#include "GLTextFontCache.h"
 #include "GLES/GLTexture.h"
+#include "freetype/freetype.h"
 
 namespace OevGLES {
 

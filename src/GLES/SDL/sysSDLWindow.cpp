@@ -33,7 +33,6 @@
 #include <X11/Xutil.h>
 
 #include <sstream>
-#include <memory.h>
 
 #include "OVFCommon.h"
 

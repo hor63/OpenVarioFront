@@ -4,11 +4,11 @@
  *  Created on: Apr 22, 2025
  *      Author: hor
  */
-
-#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
+
+#include <GLES2/gl2.h>
 
 #include <cmath>
 
