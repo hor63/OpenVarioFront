@@ -164,6 +164,7 @@ protected:
 	 *
 	*/
 	GLuint vertexBufferHandleArcEnd = 0U;
+	GLuint vertexArrayHandleArcEnd = 0U;
 
 	
 	/** \brief Take \ref startAngleDeg and \ref arcRangeDeg and normalize them

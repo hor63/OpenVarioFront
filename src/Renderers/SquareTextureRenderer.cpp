@@ -27,11 +27,13 @@
 #  include <config.h>
 #endif
 
+#include "OVFCommon.h"
+
+#include "GLES/GLFramework.h"
 #include "Renderers/SquareTextureRenderer.h"
 #include "GLES/TexHelper/PngReader.h"
 
 #if defined HAVE_LOG4CXX_H
-#include "OVFCommon.h"
 	static log4cxx::LoggerPtr logger = 0;
 #endif
 
@@ -97,7 +99,24 @@ SquareTextureRenderer::SquareTextureRenderer()
 	}
 
 
-SquareTextureRenderer::~SquareTextureRenderer() { }
+SquareTextureRenderer::~SquareTextureRenderer() {
+
+		LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+		<< ": vertexBufferHandle = " << vertexBufferHandle
+		<< ", vertexArrayHandle  = " << vertexArrayHandle
+		);
+
+	if (vertexBufferHandle != 0U) {
+		glDeleteBuffers(1, &vertexBufferHandle);
+		vertexBufferHandle = 0U;
+	}
+	if (vertexArrayHandle != 0U) {
+		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		vertexArrayHandle = 0U;
+	}
+
+
+ }
 
 void SquareTextureRenderer::setupVertexBuffers() {
 

@@ -169,7 +169,13 @@ static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* 
 
 namespace OevGLES {
 
-GLTextRenderer::~VertexBufferPerTexture() {
+GLTextRenderer::VertexBufferPerTexture::~VertexBufferPerTexture() {
+	
+	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+		<< ": vertexBufferHandle = " << vertexBufferHandle
+		<< ", vertexArrayHandle  = " << vertexArrayHandle
+		);
+	
 	if (vertexBufferHandle != 0U) {
 		glDeleteBuffers(1, &vertexBufferHandle);
 		vertexBufferHandle = 0U;
@@ -262,6 +268,11 @@ GLTextRenderer::~GLTextRenderer() {
 	if (pangoTextRenderer) {
 		g_object_unref(pangoTextRenderer);
 	}
+
+	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+		<< ": vertexBufferHandleTextBackground = " << vertexBufferHandleTextBackground
+		<< ", vertexArrayHandleTextBackground  = " << vertexArrayHandleTextBackground
+		);
 
 	if (vertexBufferHandleTextBackground != 0U) {
 		glDeleteBuffers(1, &vertexBufferHandleTextBackground);

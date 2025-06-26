@@ -55,6 +55,7 @@ CircleBaseRenderer::CircleBaseRenderer(
 }
 
 CircleBaseRenderer::~CircleBaseRenderer() {
+	
 }
 
 void CircleBaseRenderer::setPrimaryRadius(double primaryRadius) {

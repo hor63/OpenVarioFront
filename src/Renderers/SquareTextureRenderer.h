@@ -96,8 +96,8 @@ private:
 
 	OevGLES::GLProgDiffLightTexture* glProgram = 0;
 
-	GLuint vertexBufferHandle = 0;
-
+	GLuint vertexBufferHandle = 0U;
+	GLuint vertexArrayHandle = 0U;
 	OevGLES::GLTexture varioBackgoundTexture;
 
 };

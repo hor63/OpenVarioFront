@@ -33,7 +33,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "GLFramework.h"
+#include "GLES/GLFramework.h"
 #include "GLTextGlobals.h"
 #include "GLPrograms/GLProgTextTexture.h"
 #include "GLPrograms/GLProgDiffuseLight.h"

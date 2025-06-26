@@ -123,6 +123,12 @@ AnalogHandRenderer::AnalogHandRenderer()
 
 
 AnalogHandRenderer::~AnalogHandRenderer() { 
+	
+	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+		<< ": vertexBufferHandle = " << vertexBufferHandle
+		<< ", vertexArrayHandle  = " << vertexArrayHandle
+		);
+
 	if (vertexBufferHandle != 0U) {
 		glDeleteBuffers(1, &vertexBufferHandle);
 		vertexBufferHandle = 0U;

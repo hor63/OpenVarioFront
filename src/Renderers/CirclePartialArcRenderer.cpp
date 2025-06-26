@@ -13,6 +13,7 @@
 
 #include "OVFCommon.h"
 
+#include <GLES/GLFramework.h>
 #include "CirclePartialArcRenderer.h"
 #include "CircleBaseRenderer.h"
 #include "GLES/VecMat.h"
@@ -75,10 +76,21 @@ CirclePartialArcRenderer::CirclePartialArcRenderer(CirclePolygonVertexContainer&
 }
 
 CirclePartialArcRenderer::~CirclePartialArcRenderer() {
+	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+		<< ": vertexBufferHandle = " << vertexBufferHandleArcEnd
+		<< ", vertexArrayHandle  = " << vertexArrayHandleArcEnd
+		);
 
 	if (vertexBufferHandleArcEnd != 0U) {
 		glDeleteBuffers(1, &vertexBufferHandleArcEnd);
+		vertexBufferHandleArcEnd = 0U;
 	}
+
+	if (vertexArrayHandleArcEnd != 0U) {
+		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandleArcEnd);
+		vertexArrayHandleArcEnd = 0U;
+	}
+
 
 }
 
