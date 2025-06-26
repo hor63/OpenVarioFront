@@ -195,7 +195,7 @@ int main(int argint,char** argv) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
 				if (sdlEvent.type == SDL_EVENT_QUIT) {
-					exit (0);
+					return 0;
 				}
 			}
 
@@ -256,7 +256,7 @@ int main(int argint,char** argv) {
 			}
 		}
 
-		sleep(10);
+		// sleep(10);
 
 		LOG4CXX_INFO(logger,"Destroy the diffuse light program");
 		OevGLES::GLProgDiffuseLight::destroyProgram();
