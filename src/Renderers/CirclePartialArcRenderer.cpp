@@ -77,8 +77,8 @@ CirclePartialArcRenderer::CirclePartialArcRenderer(CirclePolygonVertexContainer&
 
 CirclePartialArcRenderer::~CirclePartialArcRenderer() {
 	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
-		<< ": vertexBufferHandle = " << vertexBufferHandleArcEnd
-		<< ", vertexArrayHandle  = " << vertexArrayHandleArcEnd
+		<< ": vertexBufferHandleArcEnd = " << vertexBufferHandleArcEnd
+		<< ", vertexArrayHandleArcEnd  = " << vertexArrayHandleArcEnd
 		);
 
 	if (vertexBufferHandleArcEnd != 0U) {
@@ -219,6 +219,39 @@ void CirclePartialArcRenderer::setupVertexBuffers() {
 					* endArcVertexes.max_size(),
 				endArcVertexes.data(),
 				GL_DYNAMIC_DRAW);
+				
+			if (GLFramework::isVertexArrayUsable() && vertexArrayHandleArcEnd == 0U) {
+				GLFramework::glGenVertexArraysOES(1,&vertexArrayHandleArcEnd);
+				GLFramework::glBindVertexArrayOES(vertexArrayHandleArcEnd);
+
+				// Set up the attributes
+				glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+				glVertexAttribPointer(glProgram->getVertexPosLocation(),
+						sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+							sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
+						GL_FLOAT,
+						GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+						reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
+			
+				glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+				glVertexAttribPointer(glProgram->getVertexNormalLocation(),
+						sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+							sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
+						GL_FLOAT,
+						GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+						reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
+			
+				glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+				glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
+						1,
+						GL_FLOAT,
+						GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+						reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+				
+				GLFramework::glBindVertexArrayOES(0U);
+
+			}
+				
 			glBindBuffer(GL_ARRAY_BUFFER,0);
 		} // if (!isFullCircle) {
 	} // if (dirtyArcAngles) {
@@ -297,39 +330,47 @@ void CirclePartialArcRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 		glDrawArrays( GL_TRIANGLE_STRIP, 2, numVertexesArc);
 	
 		// draw the end array
-		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleArcEnd);
+		if (vertexArrayHandleArcEnd != 0U) {
+				GLFramework::glBindVertexArrayOES(vertexArrayHandleArcEnd);
+		} else {
+			glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleArcEnd);
+			
+			glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+			glVertexAttribPointer(glProgram->getVertexPosLocation(),
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+						sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
+					GL_FLOAT,
+					GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
 		
-		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-		glVertexAttribPointer(glProgram->getVertexPosLocation(),
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
-					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
-				GL_FLOAT,
-				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
-	
-		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
-		glVertexAttribPointer(glProgram->getVertexNormalLocation(),
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
-					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
-				GL_FLOAT,
-				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
-	
-		glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-		glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
-				1,
-				GL_FLOAT,
-				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+			glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+			glVertexAttribPointer(glProgram->getVertexNormalLocation(),
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+						sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
+					GL_FLOAT,
+					GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
 		
+			glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+			glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
+					1,
+					GL_FLOAT,
+					GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+		}
+
 		glDrawArrays( GL_TRIANGLE_STRIP, 0, 4);
 		
-	
-		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
-		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
-	
-		glBindBuffer(GL_ARRAY_BUFFER,0);
+		if (vertexArrayHandleArcEnd != 0U) {
+			GLFramework::glBindVertexArrayOES(0U);
+		} else {
+			glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+			glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
+			glDisableVertexAttribArray(glProgram->getVertexPosLocation());
+		
+			glBindBuffer(GL_ARRAY_BUFFER,0);
+		}
+		
 		glUseProgram(0);
 	} // else { // if (isFullCircle) {
 
