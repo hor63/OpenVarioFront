@@ -149,16 +149,12 @@ void AnalogHandRenderer::setupVertexBuffers() {
 		glGenBuffers(1,&vertexBufferHandle);
 	}
 	
-	if (GLFramework::isVertexArrayUsable()) {
-		if (vertexArrayHandle == 0U) {
-			GLFramework::glGenVertexArraysOES(1,&vertexArrayHandle);
-		}
-		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
-	}
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 
-	if (GLFramework::isVertexArrayUsable()) {
+	if (GLFramework::isVertexArrayUsable() && vertexArrayHandle == 0U) {
+		GLFramework::glGenVertexArraysOES(1,&vertexArrayHandle);
+		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
 		GLfloat* bufferOffset = 0;
 		// setup the vertex coordinates
 		glEnableVertexAttribArray(glProgram->getVertexPosLocation());

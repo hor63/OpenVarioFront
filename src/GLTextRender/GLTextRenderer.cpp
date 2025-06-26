@@ -590,10 +590,8 @@ void GLTextRenderer::setupVertexBuffersTextBoxBackground () {
 	glGenBuffers(1,&vertexBufferHandleTextBackground );
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground );
 	glBufferData(GL_ARRAY_BUFFER,sizeof(textBackgroundRectVertexes),&textBackgroundRectVertexes,GL_STATIC_DRAW);
-	if (GLFramework::isVertexArrayUsable()) {
-		if (vertexArrayHandleTextBackground == 0U) {
-			GLFramework::glGenVertexArraysOES(1,&vertexArrayHandleTextBackground);
-		}
+	if (GLFramework::isVertexArrayUsable() && vertexArrayHandleTextBackground == 0U) {
+		GLFramework::glGenVertexArraysOES(1,&vertexArrayHandleTextBackground);
 		GLFramework::glBindVertexArrayOES(vertexArrayHandleTextBackground);
 
 		// setup the vertex coordinates
@@ -650,10 +648,8 @@ void GLTextRenderer::setupVertexBuffersGlyphs () {
 					&vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[0],
 					GL_STATIC_DRAW);
 
-			if(GLFramework::isVertexArrayUsable()){
-				if(vertexBuffer.vertexArrayHandle == 0) {
-					GLFramework::glGenVertexArraysOES(1,&vertexBuffer.vertexArrayHandle);
-				}
+			if(GLFramework::isVertexArrayUsable() && vertexBuffer.vertexArrayHandle == 0){
+				GLFramework::glGenVertexArraysOES(1,&vertexBuffer.vertexArrayHandle);
 				GLFramework::glBindVertexArrayOES(vertexBuffer.vertexArrayHandle);
 				
 				glEnableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
