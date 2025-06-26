@@ -1,1 +1,4 @@
 CompileFlags: {CompilationDatabase: build}
+
+Diagnostics:
+  Suppress: "pp_including_mainfile_in_preamble"
