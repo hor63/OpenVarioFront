@@ -136,6 +136,27 @@ void SquareTextureRenderer::setupVertexBuffers() {
 	varioBackgoundTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
 	varioBackgoundTexture.setMinificationFilter(OevGLES::GLTexture::Linear);
 
+	if (GLFramework::isVertexArrayUsable() && vertexArrayHandle == 0U) {
+		GLfloat* bufferOffset = 0;
+
+		GLFramework::glGenVertexArraysOES(1,&vertexArrayHandle);
+		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
+
+		// setup the vertex coordinates
+		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		glVertexAttribPointer(glProgram->getVertexPosLocation(),
+			4,GL_FLOAT,GL_FALSE,
+			6 * sizeof (GLfloat),bufferOffset);
+		// setup the texture coordinates
+		bufferOffset += 4; // Advance the offset by 4 floats to the texture coordinate.
+		glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
+		glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),
+			2,GL_FLOAT,GL_FALSE,
+			6 * sizeof (GLfloat),bufferOffset);
+
+		GLFramework::glBindVertexArrayOES(0U);
+	}
+
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 
 }
@@ -185,16 +206,24 @@ void SquareTextureRenderer::draw(
 	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
 	glVertexAttrib4fv(glProgram->getVertexNormalLocation(),textureNormal);
 
-	// re-bind the buffer object
-	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
-
-	// setup the vertex coordinates
-	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-	glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,6 * sizeof (GLfloat),bufferOffset);
-	// setup the texture coordinates
-	bufferOffset += 4; // Advance the offset by 4 floats to the texture coordinate.
-	glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
-	glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),2,GL_FLOAT,GL_FALSE,6 * sizeof (GLfloat),bufferOffset);
+	if (vertexArrayHandle != 0U) {
+		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
+	} else {
+		// re-bind the buffer object
+		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
+	
+		// setup the vertex coordinates
+		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		glVertexAttribPointer(glProgram->getVertexPosLocation(),
+			4,GL_FLOAT,GL_FALSE,
+			6 * sizeof (GLfloat),bufferOffset);
+		// setup the texture coordinates
+		bufferOffset += 4; // Advance the offset by 4 floats to the texture coordinate.
+		glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
+		glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),
+			2,GL_FLOAT,GL_FALSE,
+			6 * sizeof (GLfloat),bufferOffset);
+	} // if (vertexArrayHandle != 0U) {
 
 	// Assign the texture to Texure engine 0, and set the sampler uniform accordingly
 	varioBackgoundTexture.bindToUniformLocation(GL_TEXTURE0,0,glProgram->getTexture0Location());
@@ -205,9 +234,13 @@ void SquareTextureRenderer::draw(
 
 	glDrawArrays(GL_TRIANGLE_FAN,0,4);
 
-	glDisableVertexAttribArray(glProgram->getVertexPosLocation());
-	glDisableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	if (vertexArrayHandle != 0U) {
+		GLFramework::glBindVertexArrayOES(0U);
+	} else {
+		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
+		glDisableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+	} // if (vertexArrayHandle != 0U) {
 
 	glUseProgram(0);
 
