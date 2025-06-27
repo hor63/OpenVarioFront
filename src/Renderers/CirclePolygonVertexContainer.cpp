@@ -4,6 +4,7 @@
  *  Created on: Apr 22, 2025
  *      Author: hor
  */
+#include "GLFramework.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -14,8 +15,9 @@
 
 #include "OVFCommon.h"
 
-#include "CirclePolygonVertexContainer.h"
 #include "GLES/VecMat.h"
+#include "CirclePolygonVertexContainer.h"
+#include "GLPrograms/GLProgDiffLightCircle.h"
 
 
 #if defined HAVE_LOG4CXX_H
@@ -28,7 +30,8 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(s
 	:numSegments{numSegments},
 	 numVertexes{static_cast<GLsizei>(numSegments * 2U + 4U)},
 	 vertexStrideInMaxVertexArrayPerSegment{maxNumSegments/numSegments * 2U},
-	 vertexBufferHandle{0U}
+	 vertexBufferHandle{0U},
+	 vertexArrayHandle{0U}
 
 {
 #if defined HAVE_LOG4CXX_H
@@ -50,6 +53,63 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(s
 			<< ", maxRadius = " << maxRadius);
 }
 
+CirclePolygonVertexContainer::CircleVertexArrayStruct::~CircleVertexArrayStruct() {
+
+	LOG4CXX_INFO(logger, __PRETTY_FUNCTION__
+		<< ": vertexBufferHandle = " << vertexBufferHandle
+		<< ", vertexArrayHandle" << vertexArrayHandle
+		);
+	
+	if (vertexBufferHandle != 0U) {
+		glDeleteBuffers(1,&vertexBufferHandle);
+		vertexBufferHandle = 0;
+	}
+	
+	if (vertexArrayHandle != 0U) {
+		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		vertexArrayHandle = 0U;
+	}
+}
+
+CirclePolygonVertexContainer::CircleVertexArrayStruct& 
+	CirclePolygonVertexContainer::CircleVertexArrayStruct::operator = (
+		CirclePolygonVertexContainer::CircleVertexArrayStruct&& source)
+{
+	numVertexes = source.numVertexes;
+	vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
+	maxRadius   = source.maxRadius;
+	if (vertexBufferHandle != 0U) {
+		glDeleteBuffers(1,&vertexBufferHandle);
+	}
+	vertexBufferHandle = source.vertexBufferHandle;
+	source.vertexBufferHandle = 0;
+	if (vertexArrayHandle != 0U) {
+		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandle);
+	}
+	vertexArrayHandle = source.vertexArrayHandle;
+	source.vertexArrayHandle = 0;
+
+	return *this;
+}
+
+CirclePolygonVertexContainer::CircleVertexArrayStruct& 
+	CirclePolygonVertexContainer::CircleVertexArrayStruct::operator = (
+		CirclePolygonVertexContainer::CircleVertexArrayStruct const& source)
+{
+	numVertexes = source.numVertexes;
+	vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
+	maxRadius   = source.maxRadius;
+	if (vertexBufferHandle != 0U) {
+		glDeleteBuffers(1,&vertexBufferHandle);
+		vertexBufferHandle = 0;
+	}
+	if (vertexArrayHandle != 0U) {
+		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		vertexArrayHandle = 0U;
+	}
+
+	return *this;
+}
 
 CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 #if defined HAVE_LOG4CXX_H
@@ -236,6 +296,40 @@ void CirclePolygonVertexContainer::createVertexBuffer(
 		glBufferData(GL_ARRAY_BUFFER,
 				sizeof(CirclePolygonVertexStruct)*vertArrayStruct.numVertexes,
 				clientBuffer,GL_STATIC_DRAW);
+		
+		if (GLFramework::isVertexArrayUsable() && vertArrayStruct.vertexArrayHandle == 0U) {
+			auto glProgram = GLProgDiffLightCircle::getProgram();
+			
+			GLFramework::glGenVertexArraysOES(1,&vertArrayStruct.vertexArrayHandle);
+			GLFramework::glBindVertexArrayOES(vertArrayStruct.vertexArrayHandle);
+			
+			glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+			glVertexAttribPointer(glProgram->getVertexPosLocation(),
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+						sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
+					GL_FLOAT,
+					GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
+		
+			glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+			glVertexAttribPointer(glProgram->getVertexNormalLocation(),
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+						sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
+					GL_FLOAT,
+					GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
+		
+			glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+			glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
+					1,
+					GL_FLOAT,
+					GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+
+			GLFramework::glBindVertexArrayOES(0U);
+
+		}
+		
 		glBindBuffer(GL_ARRAY_BUFFER,0);
 
 	}

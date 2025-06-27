@@ -112,6 +112,7 @@ public:
 		 * the vertexes only once.
 		*/
 		GLuint vertexBufferHandle;
+		GLuint vertexArrayHandle;
 
 		CircleVertexArrayStruct() = delete;
 
@@ -123,7 +124,8 @@ public:
 			 vertexStrideInMaxVertexArrayPerSegment{source.vertexStrideInMaxVertexArrayPerSegment},
 			 angleIncrement{source.angleIncrement},
 			 maxRadius{source.maxRadius},
-			 vertexBufferHandle{0}
+			 vertexBufferHandle{0},
+			 vertexArrayHandle{0}
 		{}
 
 		CircleVertexArrayStruct(CircleVertexArrayStruct&& source)
@@ -132,45 +134,18 @@ public:
 			 vertexStrideInMaxVertexArrayPerSegment{source.vertexStrideInMaxVertexArrayPerSegment},
 			 angleIncrement{source.angleIncrement},
 			 maxRadius{source.maxRadius},
-			 vertexBufferHandle{source.vertexBufferHandle}
+			 vertexBufferHandle{source.vertexBufferHandle},
+			 vertexArrayHandle{source.vertexArrayHandle}
 		{
 			source.vertexBufferHandle = 0;
+			source.vertexArrayHandle = 0;
 		}
 
-		~CircleVertexArrayStruct() {
-			if (vertexBufferHandle != 0U) {
-				glDeleteBuffers(1,&vertexBufferHandle);
-				vertexBufferHandle = 0;
-			}
-		}
+		~CircleVertexArrayStruct();
 
-		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct&& source)
-		{
-			numVertexes = source.numVertexes;
-			vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
-			maxRadius   = source.maxRadius;
-			if (vertexBufferHandle != 0U) {
-				glDeleteBuffers(1,&vertexBufferHandle);
-			}
-			vertexBufferHandle = source.vertexBufferHandle;
-			source.vertexBufferHandle = 0;
-
-			return *this;
-		}
-
-		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct const& source)
-		{
-			numVertexes = source.numVertexes;
-			vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
-			maxRadius   = source.maxRadius;
-			if (vertexBufferHandle != 0U) {
-				glDeleteBuffers(1,&vertexBufferHandle);
-			}
-			vertexBufferHandle = 0;
-
-			return *this;
-		}
-
+		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct&& source);
+		
+		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct const& source);
 	};
 
 	/** \brief Maximum allowed deviation from the ideal circular form

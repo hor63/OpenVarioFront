@@ -34,6 +34,7 @@
 
 #include "OVFCommon.h"
 
+#include "GLES/GLFramework.h"
 #include "CircleBaseRenderer.h"
 
 #if defined HAVE_LOG4CXX_H
@@ -157,30 +158,35 @@ void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
 
 	// Set up the attributes
-	glBindBuffer(GL_ARRAY_BUFFER,vertexArrayStruct->vertexBufferHandle);
+	if (vertexArrayStruct->vertexArrayHandle != 0U) {
+		GLFramework::glBindVertexArrayOES(vertexArrayStruct->vertexArrayHandle);
+	} else {
 
-	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-	glVertexAttribPointer(glProgram->getVertexPosLocation(),
-			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
-			GL_FLOAT,
-			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-			reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
-
-	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
-	glVertexAttribPointer(glProgram->getVertexNormalLocation(),
-			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
-			GL_FLOAT,
-			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-			reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
-
-	glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-	glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
-			1,
-			GL_FLOAT,
-			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-			reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+		glBindBuffer(GL_ARRAY_BUFFER,vertexArrayStruct->vertexBufferHandle);
+	
+		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		glVertexAttribPointer(glProgram->getVertexPosLocation(),
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
+	
+		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+		glVertexAttribPointer(glProgram->getVertexNormalLocation(),
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
+	
+		glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+		glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
+				1,
+				GL_FLOAT,
+				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+	} // if (vertexArrayStruct->vertexArrayHandle != 0U) {}
 
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
 	glVertexAttrib4fv(glProgram->getVertexColorLocation(),&bodyColor(0));
@@ -197,12 +203,17 @@ void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 	// is 2 less that the number of vertexes in the buffer.
 	glDrawArrays( GL_TRIANGLE_STRIP, 2, vertexArrayStruct->numVertexes - 2);
 
-	glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
-	glDisableVertexAttribArray(glProgram->getVertexPosLocation());
+	if (vertexArrayStruct->vertexArrayHandle != 0U) {
+		GLFramework::glBindVertexArrayOES(0U);
+	} else {
 
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-	glUseProgram(0);
+		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
+		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
+	
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+		glUseProgram(0);
+	} // if (vertexArrayStruct->vertexArrayHandle != 0U) {
 
 }
 
