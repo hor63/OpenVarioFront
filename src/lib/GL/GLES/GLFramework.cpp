@@ -9,7 +9,7 @@
 #  include <config.h>
 #endif
 
-#include "GLFramework.h"
+#include "GLES/GLFramework.h"
 
 namespace OevGLES {
 

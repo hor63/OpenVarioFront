@@ -15,16 +15,28 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS= TexHelper
-
 noinst_LIBRARIES = libOEV_GLES.a
-libOEV_GLES_a_SOURCES = GLFramework.cpp \
-	SDL/sysSDLWindow.cpp SDL/SDLRenderSurface.cpp \
-	GLShader.cpp GLProgram.cpp ExceptionBase.cpp VecMat.cpp GLTexture.cpp 
+libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
+	GLES/SDL/sysSDLWindow.cpp GLES/SDL/SDLRenderSurface.cpp \
+	GLES/GLShader.cpp GLES/GLProgram.cpp GLES/ExceptionBase.cpp \
+	GLES/VecMat.cpp GLES/GLTexture.cpp \
+	GLES/TexHelper/TextureData.cpp GLES/TexHelper/PngReader.cpp \
+	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \
+	GLPrograms/GLProgDiffLightTexture.cpp GLPrograms/GLProgTextTexture.cpp \
+	GLPrograms/GLProgDiffLightCircle.cpp \
+	Renderers/RendererBase.cpp Renderers/AnalogHandRenderer.cpp \
+	Renderers/SquareTextureRenderer.cpp Renderers/CirclePolygonVertexContainer.cpp \
+	Renderers/CircleBaseRenderer.cpp Renderers/CircleFilledRenderer.cpp \
+	Renderers/CirclePartialArcRenderer.cpp \
+	GLTextRender/GLTextGlobals.cpp GLTextRender/GLTextRenderer.cpp \
+	GLTextRender/GLTextFontCache.cpp GLTextRender/GLTextPangoCPPWrappers.cpp \
+	GLTextRender/GLTextFontTexture.cpp
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES \
-	-I$(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
-	$(FREETYPE2_CFLAGS) $(SDL3_CFLAGS) $(PANGO_FT2_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
+#AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES \
+#	-I$(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
+#	$(FREETYPE2_CFLAGS) $(SDL3_CFLAGS) $(PANGO_FT2_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
+
+AM_CXXFLAGS= $(AC_APP_CXXFLAGS)
 
 AM_LDFLAGS= $(LOG4CXX_LDFLAGS)
 

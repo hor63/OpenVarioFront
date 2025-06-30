@@ -106,7 +106,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = src/GLES
+subdir = src/lib/GL
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/host-cpu-c-abi.m4 \
@@ -135,7 +135,17 @@ libOEV_GLES_a_LIBADD =
 am_libOEV_GLES_a_OBJECTS = GLFramework.$(OBJEXT) \
 	sysSDLWindow.$(OBJEXT) SDLRenderSurface.$(OBJEXT) \
 	GLShader.$(OBJEXT) GLProgram.$(OBJEXT) ExceptionBase.$(OBJEXT) \
-	VecMat.$(OBJEXT) GLTexture.$(OBJEXT)
+	VecMat.$(OBJEXT) GLTexture.$(OBJEXT) TextureData.$(OBJEXT) \
+	PngReader.$(OBJEXT) GLProgBase.$(OBJEXT) \
+	GLProgDiffuseLight.$(OBJEXT) GLProgDiffLightTexture.$(OBJEXT) \
+	GLProgTextTexture.$(OBJEXT) GLProgDiffLightCircle.$(OBJEXT) \
+	RendererBase.$(OBJEXT) AnalogHandRenderer.$(OBJEXT) \
+	SquareTextureRenderer.$(OBJEXT) \
+	CirclePolygonVertexContainer.$(OBJEXT) \
+	CircleBaseRenderer.$(OBJEXT) CircleFilledRenderer.$(OBJEXT) \
+	CirclePartialArcRenderer.$(OBJEXT) GLTextGlobals.$(OBJEXT) \
+	GLTextRenderer.$(OBJEXT) GLTextFontCache.$(OBJEXT) \
+	GLTextPangoCPPWrappers.$(OBJEXT) GLTextFontTexture.$(OBJEXT)
 libOEV_GLES_a_OBJECTS = $(am_libOEV_GLES_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -152,10 +162,24 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/ExceptionBase.Po \
-	./$(DEPDIR)/GLFramework.Po ./$(DEPDIR)/GLProgram.Po \
-	./$(DEPDIR)/GLShader.Po ./$(DEPDIR)/GLTexture.Po \
-	./$(DEPDIR)/SDLRenderSurface.Po ./$(DEPDIR)/VecMat.Po \
+am__depfiles_remade = ./$(DEPDIR)/AnalogHandRenderer.Po \
+	./$(DEPDIR)/CircleBaseRenderer.Po \
+	./$(DEPDIR)/CircleFilledRenderer.Po \
+	./$(DEPDIR)/CirclePartialArcRenderer.Po \
+	./$(DEPDIR)/CirclePolygonVertexContainer.Po \
+	./$(DEPDIR)/ExceptionBase.Po ./$(DEPDIR)/GLFramework.Po \
+	./$(DEPDIR)/GLProgBase.Po ./$(DEPDIR)/GLProgDiffLightCircle.Po \
+	./$(DEPDIR)/GLProgDiffLightTexture.Po \
+	./$(DEPDIR)/GLProgDiffuseLight.Po \
+	./$(DEPDIR)/GLProgTextTexture.Po ./$(DEPDIR)/GLProgram.Po \
+	./$(DEPDIR)/GLShader.Po ./$(DEPDIR)/GLTextFontCache.Po \
+	./$(DEPDIR)/GLTextFontTexture.Po ./$(DEPDIR)/GLTextGlobals.Po \
+	./$(DEPDIR)/GLTextPangoCPPWrappers.Po \
+	./$(DEPDIR)/GLTextRenderer.Po ./$(DEPDIR)/GLTexture.Po \
+	./$(DEPDIR)/PngReader.Po ./$(DEPDIR)/RendererBase.Po \
+	./$(DEPDIR)/SDLRenderSurface.Po \
+	./$(DEPDIR)/SquareTextureRenderer.Po \
+	./$(DEPDIR)/TextureData.Po ./$(DEPDIR)/VecMat.Po \
 	./$(DEPDIR)/sysSDLWindow.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -182,27 +206,11 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(libOEV_GLES_a_SOURCES)
 DIST_SOURCES = $(libOEV_GLES_a_SOURCES)
-RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
-	ctags-recursive dvi-recursive html-recursive info-recursive \
-	install-data-recursive install-dvi-recursive \
-	install-exec-recursive install-html-recursive \
-	install-info-recursive install-pdf-recursive \
-	install-ps-recursive install-recursive installcheck-recursive \
-	installdirs-recursive pdf-recursive ps-recursive \
-	tags-recursive uninstall-recursive
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
-  distclean-recursive maintainer-clean-recursive
-am__recursive_targets = \
-  $(RECURSIVE_TARGETS) \
-  $(RECURSIVE_CLEAN_TARGETS) \
-  $(am__extra_recursive_targets)
-AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
-	distdir distdir-am
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -220,35 +228,10 @@ am__define_uniq_tagged_files = \
   unique=`for i in $$list; do \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
-DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-am__relativize = \
-  dir0=`pwd`; \
-  sed_first='s,^\([^/]*\)/.*$$,\1,'; \
-  sed_rest='s,^[^/]*/*,,'; \
-  sed_last='s,^.*/\([^/]*\)$$,\1,'; \
-  sed_butlast='s,/*[^/]*$$,,'; \
-  while test -n "$$dir1"; do \
-    first=`echo "$$dir1" | sed -e "$$sed_first"`; \
-    if test "$$first" != "."; then \
-      if test "$$first" = ".."; then \
-        dir2=`echo "$$dir0" | sed -e "$$sed_last"`/"$$dir2"; \
-        dir0=`echo "$$dir0" | sed -e "$$sed_butlast"`; \
-      else \
-        first2=`echo "$$dir2" | sed -e "$$sed_first"`; \
-        if test "$$first2" = "$$first"; then \
-          dir2=`echo "$$dir2" | sed -e "$$sed_rest"`; \
-        else \
-          dir2="../$$dir2"; \
-        fi; \
-        dir0="$$dir0"/"$$first"; \
-      fi; \
-    fi; \
-    dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
-  done; \
-  reldir="$$dir2"
 ACLOCAL = @ACLOCAL@
+AC_APP_CXXFLAGS = @AC_APP_CXXFLAGS@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
@@ -457,18 +440,30 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = TexHelper
 noinst_LIBRARIES = libOEV_GLES.a
-libOEV_GLES_a_SOURCES = GLFramework.cpp \
-	SDL/sysSDLWindow.cpp SDL/SDLRenderSurface.cpp \
-	GLShader.cpp GLProgram.cpp ExceptionBase.cpp VecMat.cpp GLTexture.cpp 
+libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
+	GLES/SDL/sysSDLWindow.cpp GLES/SDL/SDLRenderSurface.cpp \
+	GLES/GLShader.cpp GLES/GLProgram.cpp GLES/ExceptionBase.cpp \
+	GLES/VecMat.cpp GLES/GLTexture.cpp \
+	GLES/TexHelper/TextureData.cpp GLES/TexHelper/PngReader.cpp \
+	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \
+	GLPrograms/GLProgDiffLightTexture.cpp GLPrograms/GLProgTextTexture.cpp \
+	GLPrograms/GLProgDiffLightCircle.cpp \
+	Renderers/RendererBase.cpp Renderers/AnalogHandRenderer.cpp \
+	Renderers/SquareTextureRenderer.cpp Renderers/CirclePolygonVertexContainer.cpp \
+	Renderers/CircleBaseRenderer.cpp Renderers/CircleFilledRenderer.cpp \
+	Renderers/CirclePartialArcRenderer.cpp \
+	GLTextRender/GLTextGlobals.cpp GLTextRender/GLTextRenderer.cpp \
+	GLTextRender/GLTextFontCache.cpp GLTextRender/GLTextPangoCPPWrappers.cpp \
+	GLTextRender/GLTextFontTexture.cpp
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES \
-	-I$(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
-	$(FREETYPE2_CFLAGS) $(SDL3_CFLAGS) $(PANGO_FT2_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
 
+#AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/GLES \
+#	-I$(top_srcdir)/3rdParty/eigen/Eigen $(LOG4CXX_CXXFLAGS) \
+#	$(FREETYPE2_CFLAGS) $(SDL3_CFLAGS) $(PANGO_FT2_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
+AM_CXXFLAGS = $(AC_APP_CXXFLAGS)
 AM_LDFLAGS = $(LOG4CXX_LDFLAGS)
-all: all-recursive
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cpp .lo .o .obj
@@ -481,9 +476,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/GLES/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/lib/GL/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/GLES/Makefile
+	  $(AUTOMAKE) --gnu src/lib/GL/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -516,12 +511,31 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AnalogHandRenderer.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CircleBaseRenderer.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CircleFilledRenderer.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CirclePartialArcRenderer.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CirclePolygonVertexContainer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExceptionBase.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLFramework.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgBase.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffLightCircle.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffLightTexture.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffuseLight.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgTextTexture.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgram.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLShader.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLTextFontCache.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLTextFontTexture.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLTextGlobals.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLTextPangoCPPWrappers.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLTextRenderer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLTexture.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PngReader.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RendererBase.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDLRenderSurface.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SquareTextureRenderer.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextureData.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VecMat.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sysSDLWindow.Po@am__quote@ # am--include-marker
 
@@ -552,33 +566,383 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-sysSDLWindow.o: SDL/sysSDLWindow.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sysSDLWindow.o -MD -MP -MF $(DEPDIR)/sysSDLWindow.Tpo -c -o sysSDLWindow.o `test -f 'SDL/sysSDLWindow.cpp' || echo '$(srcdir)/'`SDL/sysSDLWindow.cpp
+GLFramework.o: GLES/GLFramework.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLFramework.o -MD -MP -MF $(DEPDIR)/GLFramework.Tpo -c -o GLFramework.o `test -f 'GLES/GLFramework.cpp' || echo '$(srcdir)/'`GLES/GLFramework.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLFramework.Tpo $(DEPDIR)/GLFramework.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLFramework.cpp' object='GLFramework.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLFramework.o `test -f 'GLES/GLFramework.cpp' || echo '$(srcdir)/'`GLES/GLFramework.cpp
+
+GLFramework.obj: GLES/GLFramework.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLFramework.obj -MD -MP -MF $(DEPDIR)/GLFramework.Tpo -c -o GLFramework.obj `if test -f 'GLES/GLFramework.cpp'; then $(CYGPATH_W) 'GLES/GLFramework.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLFramework.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLFramework.Tpo $(DEPDIR)/GLFramework.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLFramework.cpp' object='GLFramework.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLFramework.obj `if test -f 'GLES/GLFramework.cpp'; then $(CYGPATH_W) 'GLES/GLFramework.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLFramework.cpp'; fi`
+
+sysSDLWindow.o: GLES/SDL/sysSDLWindow.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sysSDLWindow.o -MD -MP -MF $(DEPDIR)/sysSDLWindow.Tpo -c -o sysSDLWindow.o `test -f 'GLES/SDL/sysSDLWindow.cpp' || echo '$(srcdir)/'`GLES/SDL/sysSDLWindow.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sysSDLWindow.Tpo $(DEPDIR)/sysSDLWindow.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SDL/sysSDLWindow.cpp' object='sysSDLWindow.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/SDL/sysSDLWindow.cpp' object='sysSDLWindow.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sysSDLWindow.o `test -f 'SDL/sysSDLWindow.cpp' || echo '$(srcdir)/'`SDL/sysSDLWindow.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sysSDLWindow.o `test -f 'GLES/SDL/sysSDLWindow.cpp' || echo '$(srcdir)/'`GLES/SDL/sysSDLWindow.cpp
 
-sysSDLWindow.obj: SDL/sysSDLWindow.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sysSDLWindow.obj -MD -MP -MF $(DEPDIR)/sysSDLWindow.Tpo -c -o sysSDLWindow.obj `if test -f 'SDL/sysSDLWindow.cpp'; then $(CYGPATH_W) 'SDL/sysSDLWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/SDL/sysSDLWindow.cpp'; fi`
+sysSDLWindow.obj: GLES/SDL/sysSDLWindow.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sysSDLWindow.obj -MD -MP -MF $(DEPDIR)/sysSDLWindow.Tpo -c -o sysSDLWindow.obj `if test -f 'GLES/SDL/sysSDLWindow.cpp'; then $(CYGPATH_W) 'GLES/SDL/sysSDLWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/SDL/sysSDLWindow.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sysSDLWindow.Tpo $(DEPDIR)/sysSDLWindow.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SDL/sysSDLWindow.cpp' object='sysSDLWindow.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/SDL/sysSDLWindow.cpp' object='sysSDLWindow.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sysSDLWindow.obj `if test -f 'SDL/sysSDLWindow.cpp'; then $(CYGPATH_W) 'SDL/sysSDLWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/SDL/sysSDLWindow.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sysSDLWindow.obj `if test -f 'GLES/SDL/sysSDLWindow.cpp'; then $(CYGPATH_W) 'GLES/SDL/sysSDLWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/SDL/sysSDLWindow.cpp'; fi`
 
-SDLRenderSurface.o: SDL/SDLRenderSurface.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SDLRenderSurface.o -MD -MP -MF $(DEPDIR)/SDLRenderSurface.Tpo -c -o SDLRenderSurface.o `test -f 'SDL/SDLRenderSurface.cpp' || echo '$(srcdir)/'`SDL/SDLRenderSurface.cpp
+SDLRenderSurface.o: GLES/SDL/SDLRenderSurface.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SDLRenderSurface.o -MD -MP -MF $(DEPDIR)/SDLRenderSurface.Tpo -c -o SDLRenderSurface.o `test -f 'GLES/SDL/SDLRenderSurface.cpp' || echo '$(srcdir)/'`GLES/SDL/SDLRenderSurface.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/SDLRenderSurface.Tpo $(DEPDIR)/SDLRenderSurface.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SDL/SDLRenderSurface.cpp' object='SDLRenderSurface.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/SDL/SDLRenderSurface.cpp' object='SDLRenderSurface.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SDLRenderSurface.o `test -f 'SDL/SDLRenderSurface.cpp' || echo '$(srcdir)/'`SDL/SDLRenderSurface.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SDLRenderSurface.o `test -f 'GLES/SDL/SDLRenderSurface.cpp' || echo '$(srcdir)/'`GLES/SDL/SDLRenderSurface.cpp
 
-SDLRenderSurface.obj: SDL/SDLRenderSurface.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SDLRenderSurface.obj -MD -MP -MF $(DEPDIR)/SDLRenderSurface.Tpo -c -o SDLRenderSurface.obj `if test -f 'SDL/SDLRenderSurface.cpp'; then $(CYGPATH_W) 'SDL/SDLRenderSurface.cpp'; else $(CYGPATH_W) '$(srcdir)/SDL/SDLRenderSurface.cpp'; fi`
+SDLRenderSurface.obj: GLES/SDL/SDLRenderSurface.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SDLRenderSurface.obj -MD -MP -MF $(DEPDIR)/SDLRenderSurface.Tpo -c -o SDLRenderSurface.obj `if test -f 'GLES/SDL/SDLRenderSurface.cpp'; then $(CYGPATH_W) 'GLES/SDL/SDLRenderSurface.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/SDL/SDLRenderSurface.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/SDLRenderSurface.Tpo $(DEPDIR)/SDLRenderSurface.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SDL/SDLRenderSurface.cpp' object='SDLRenderSurface.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/SDL/SDLRenderSurface.cpp' object='SDLRenderSurface.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SDLRenderSurface.obj `if test -f 'SDL/SDLRenderSurface.cpp'; then $(CYGPATH_W) 'SDL/SDLRenderSurface.cpp'; else $(CYGPATH_W) '$(srcdir)/SDL/SDLRenderSurface.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SDLRenderSurface.obj `if test -f 'GLES/SDL/SDLRenderSurface.cpp'; then $(CYGPATH_W) 'GLES/SDL/SDLRenderSurface.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/SDL/SDLRenderSurface.cpp'; fi`
+
+GLShader.o: GLES/GLShader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLShader.o -MD -MP -MF $(DEPDIR)/GLShader.Tpo -c -o GLShader.o `test -f 'GLES/GLShader.cpp' || echo '$(srcdir)/'`GLES/GLShader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLShader.Tpo $(DEPDIR)/GLShader.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLShader.cpp' object='GLShader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLShader.o `test -f 'GLES/GLShader.cpp' || echo '$(srcdir)/'`GLES/GLShader.cpp
+
+GLShader.obj: GLES/GLShader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLShader.obj -MD -MP -MF $(DEPDIR)/GLShader.Tpo -c -o GLShader.obj `if test -f 'GLES/GLShader.cpp'; then $(CYGPATH_W) 'GLES/GLShader.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLShader.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLShader.Tpo $(DEPDIR)/GLShader.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLShader.cpp' object='GLShader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLShader.obj `if test -f 'GLES/GLShader.cpp'; then $(CYGPATH_W) 'GLES/GLShader.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLShader.cpp'; fi`
+
+GLProgram.o: GLES/GLProgram.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgram.o -MD -MP -MF $(DEPDIR)/GLProgram.Tpo -c -o GLProgram.o `test -f 'GLES/GLProgram.cpp' || echo '$(srcdir)/'`GLES/GLProgram.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgram.Tpo $(DEPDIR)/GLProgram.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLProgram.cpp' object='GLProgram.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgram.o `test -f 'GLES/GLProgram.cpp' || echo '$(srcdir)/'`GLES/GLProgram.cpp
+
+GLProgram.obj: GLES/GLProgram.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgram.obj -MD -MP -MF $(DEPDIR)/GLProgram.Tpo -c -o GLProgram.obj `if test -f 'GLES/GLProgram.cpp'; then $(CYGPATH_W) 'GLES/GLProgram.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLProgram.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgram.Tpo $(DEPDIR)/GLProgram.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLProgram.cpp' object='GLProgram.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgram.obj `if test -f 'GLES/GLProgram.cpp'; then $(CYGPATH_W) 'GLES/GLProgram.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLProgram.cpp'; fi`
+
+ExceptionBase.o: GLES/ExceptionBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExceptionBase.o -MD -MP -MF $(DEPDIR)/ExceptionBase.Tpo -c -o ExceptionBase.o `test -f 'GLES/ExceptionBase.cpp' || echo '$(srcdir)/'`GLES/ExceptionBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExceptionBase.Tpo $(DEPDIR)/ExceptionBase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/ExceptionBase.cpp' object='ExceptionBase.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExceptionBase.o `test -f 'GLES/ExceptionBase.cpp' || echo '$(srcdir)/'`GLES/ExceptionBase.cpp
+
+ExceptionBase.obj: GLES/ExceptionBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExceptionBase.obj -MD -MP -MF $(DEPDIR)/ExceptionBase.Tpo -c -o ExceptionBase.obj `if test -f 'GLES/ExceptionBase.cpp'; then $(CYGPATH_W) 'GLES/ExceptionBase.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/ExceptionBase.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExceptionBase.Tpo $(DEPDIR)/ExceptionBase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/ExceptionBase.cpp' object='ExceptionBase.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExceptionBase.obj `if test -f 'GLES/ExceptionBase.cpp'; then $(CYGPATH_W) 'GLES/ExceptionBase.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/ExceptionBase.cpp'; fi`
+
+VecMat.o: GLES/VecMat.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT VecMat.o -MD -MP -MF $(DEPDIR)/VecMat.Tpo -c -o VecMat.o `test -f 'GLES/VecMat.cpp' || echo '$(srcdir)/'`GLES/VecMat.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/VecMat.Tpo $(DEPDIR)/VecMat.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/VecMat.cpp' object='VecMat.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o VecMat.o `test -f 'GLES/VecMat.cpp' || echo '$(srcdir)/'`GLES/VecMat.cpp
+
+VecMat.obj: GLES/VecMat.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT VecMat.obj -MD -MP -MF $(DEPDIR)/VecMat.Tpo -c -o VecMat.obj `if test -f 'GLES/VecMat.cpp'; then $(CYGPATH_W) 'GLES/VecMat.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/VecMat.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/VecMat.Tpo $(DEPDIR)/VecMat.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/VecMat.cpp' object='VecMat.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o VecMat.obj `if test -f 'GLES/VecMat.cpp'; then $(CYGPATH_W) 'GLES/VecMat.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/VecMat.cpp'; fi`
+
+GLTexture.o: GLES/GLTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTexture.o -MD -MP -MF $(DEPDIR)/GLTexture.Tpo -c -o GLTexture.o `test -f 'GLES/GLTexture.cpp' || echo '$(srcdir)/'`GLES/GLTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTexture.Tpo $(DEPDIR)/GLTexture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLTexture.cpp' object='GLTexture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTexture.o `test -f 'GLES/GLTexture.cpp' || echo '$(srcdir)/'`GLES/GLTexture.cpp
+
+GLTexture.obj: GLES/GLTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTexture.obj -MD -MP -MF $(DEPDIR)/GLTexture.Tpo -c -o GLTexture.obj `if test -f 'GLES/GLTexture.cpp'; then $(CYGPATH_W) 'GLES/GLTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLTexture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTexture.Tpo $(DEPDIR)/GLTexture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLTexture.cpp' object='GLTexture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTexture.obj `if test -f 'GLES/GLTexture.cpp'; then $(CYGPATH_W) 'GLES/GLTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLTexture.cpp'; fi`
+
+TextureData.o: GLES/TexHelper/TextureData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TextureData.o -MD -MP -MF $(DEPDIR)/TextureData.Tpo -c -o TextureData.o `test -f 'GLES/TexHelper/TextureData.cpp' || echo '$(srcdir)/'`GLES/TexHelper/TextureData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/TextureData.Tpo $(DEPDIR)/TextureData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/TexHelper/TextureData.cpp' object='TextureData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TextureData.o `test -f 'GLES/TexHelper/TextureData.cpp' || echo '$(srcdir)/'`GLES/TexHelper/TextureData.cpp
+
+TextureData.obj: GLES/TexHelper/TextureData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TextureData.obj -MD -MP -MF $(DEPDIR)/TextureData.Tpo -c -o TextureData.obj `if test -f 'GLES/TexHelper/TextureData.cpp'; then $(CYGPATH_W) 'GLES/TexHelper/TextureData.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/TexHelper/TextureData.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/TextureData.Tpo $(DEPDIR)/TextureData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/TexHelper/TextureData.cpp' object='TextureData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TextureData.obj `if test -f 'GLES/TexHelper/TextureData.cpp'; then $(CYGPATH_W) 'GLES/TexHelper/TextureData.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/TexHelper/TextureData.cpp'; fi`
+
+PngReader.o: GLES/TexHelper/PngReader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PngReader.o -MD -MP -MF $(DEPDIR)/PngReader.Tpo -c -o PngReader.o `test -f 'GLES/TexHelper/PngReader.cpp' || echo '$(srcdir)/'`GLES/TexHelper/PngReader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/PngReader.Tpo $(DEPDIR)/PngReader.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/TexHelper/PngReader.cpp' object='PngReader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PngReader.o `test -f 'GLES/TexHelper/PngReader.cpp' || echo '$(srcdir)/'`GLES/TexHelper/PngReader.cpp
+
+PngReader.obj: GLES/TexHelper/PngReader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PngReader.obj -MD -MP -MF $(DEPDIR)/PngReader.Tpo -c -o PngReader.obj `if test -f 'GLES/TexHelper/PngReader.cpp'; then $(CYGPATH_W) 'GLES/TexHelper/PngReader.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/TexHelper/PngReader.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/PngReader.Tpo $(DEPDIR)/PngReader.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/TexHelper/PngReader.cpp' object='PngReader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PngReader.obj `if test -f 'GLES/TexHelper/PngReader.cpp'; then $(CYGPATH_W) 'GLES/TexHelper/PngReader.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/TexHelper/PngReader.cpp'; fi`
+
+GLProgBase.o: GLPrograms/GLProgBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgBase.o -MD -MP -MF $(DEPDIR)/GLProgBase.Tpo -c -o GLProgBase.o `test -f 'GLPrograms/GLProgBase.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgBase.Tpo $(DEPDIR)/GLProgBase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgBase.cpp' object='GLProgBase.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgBase.o `test -f 'GLPrograms/GLProgBase.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgBase.cpp
+
+GLProgBase.obj: GLPrograms/GLProgBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgBase.obj -MD -MP -MF $(DEPDIR)/GLProgBase.Tpo -c -o GLProgBase.obj `if test -f 'GLPrograms/GLProgBase.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgBase.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgBase.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgBase.Tpo $(DEPDIR)/GLProgBase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgBase.cpp' object='GLProgBase.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgBase.obj `if test -f 'GLPrograms/GLProgBase.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgBase.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgBase.cpp'; fi`
+
+GLProgDiffuseLight.o: GLPrograms/GLProgDiffuseLight.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgDiffuseLight.o -MD -MP -MF $(DEPDIR)/GLProgDiffuseLight.Tpo -c -o GLProgDiffuseLight.o `test -f 'GLPrograms/GLProgDiffuseLight.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgDiffuseLight.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgDiffuseLight.Tpo $(DEPDIR)/GLProgDiffuseLight.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgDiffuseLight.cpp' object='GLProgDiffuseLight.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgDiffuseLight.o `test -f 'GLPrograms/GLProgDiffuseLight.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgDiffuseLight.cpp
+
+GLProgDiffuseLight.obj: GLPrograms/GLProgDiffuseLight.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgDiffuseLight.obj -MD -MP -MF $(DEPDIR)/GLProgDiffuseLight.Tpo -c -o GLProgDiffuseLight.obj `if test -f 'GLPrograms/GLProgDiffuseLight.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgDiffuseLight.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgDiffuseLight.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgDiffuseLight.Tpo $(DEPDIR)/GLProgDiffuseLight.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgDiffuseLight.cpp' object='GLProgDiffuseLight.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgDiffuseLight.obj `if test -f 'GLPrograms/GLProgDiffuseLight.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgDiffuseLight.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgDiffuseLight.cpp'; fi`
+
+GLProgDiffLightTexture.o: GLPrograms/GLProgDiffLightTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgDiffLightTexture.o -MD -MP -MF $(DEPDIR)/GLProgDiffLightTexture.Tpo -c -o GLProgDiffLightTexture.o `test -f 'GLPrograms/GLProgDiffLightTexture.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgDiffLightTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgDiffLightTexture.Tpo $(DEPDIR)/GLProgDiffLightTexture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgDiffLightTexture.cpp' object='GLProgDiffLightTexture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgDiffLightTexture.o `test -f 'GLPrograms/GLProgDiffLightTexture.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgDiffLightTexture.cpp
+
+GLProgDiffLightTexture.obj: GLPrograms/GLProgDiffLightTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgDiffLightTexture.obj -MD -MP -MF $(DEPDIR)/GLProgDiffLightTexture.Tpo -c -o GLProgDiffLightTexture.obj `if test -f 'GLPrograms/GLProgDiffLightTexture.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgDiffLightTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgDiffLightTexture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgDiffLightTexture.Tpo $(DEPDIR)/GLProgDiffLightTexture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgDiffLightTexture.cpp' object='GLProgDiffLightTexture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgDiffLightTexture.obj `if test -f 'GLPrograms/GLProgDiffLightTexture.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgDiffLightTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgDiffLightTexture.cpp'; fi`
+
+GLProgTextTexture.o: GLPrograms/GLProgTextTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgTextTexture.o -MD -MP -MF $(DEPDIR)/GLProgTextTexture.Tpo -c -o GLProgTextTexture.o `test -f 'GLPrograms/GLProgTextTexture.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgTextTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgTextTexture.Tpo $(DEPDIR)/GLProgTextTexture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgTextTexture.cpp' object='GLProgTextTexture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgTextTexture.o `test -f 'GLPrograms/GLProgTextTexture.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgTextTexture.cpp
+
+GLProgTextTexture.obj: GLPrograms/GLProgTextTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgTextTexture.obj -MD -MP -MF $(DEPDIR)/GLProgTextTexture.Tpo -c -o GLProgTextTexture.obj `if test -f 'GLPrograms/GLProgTextTexture.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgTextTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgTextTexture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgTextTexture.Tpo $(DEPDIR)/GLProgTextTexture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgTextTexture.cpp' object='GLProgTextTexture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgTextTexture.obj `if test -f 'GLPrograms/GLProgTextTexture.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgTextTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgTextTexture.cpp'; fi`
+
+GLProgDiffLightCircle.o: GLPrograms/GLProgDiffLightCircle.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgDiffLightCircle.o -MD -MP -MF $(DEPDIR)/GLProgDiffLightCircle.Tpo -c -o GLProgDiffLightCircle.o `test -f 'GLPrograms/GLProgDiffLightCircle.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgDiffLightCircle.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgDiffLightCircle.Tpo $(DEPDIR)/GLProgDiffLightCircle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgDiffLightCircle.cpp' object='GLProgDiffLightCircle.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgDiffLightCircle.o `test -f 'GLPrograms/GLProgDiffLightCircle.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgDiffLightCircle.cpp
+
+GLProgDiffLightCircle.obj: GLPrograms/GLProgDiffLightCircle.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgDiffLightCircle.obj -MD -MP -MF $(DEPDIR)/GLProgDiffLightCircle.Tpo -c -o GLProgDiffLightCircle.obj `if test -f 'GLPrograms/GLProgDiffLightCircle.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgDiffLightCircle.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgDiffLightCircle.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgDiffLightCircle.Tpo $(DEPDIR)/GLProgDiffLightCircle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgDiffLightCircle.cpp' object='GLProgDiffLightCircle.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgDiffLightCircle.obj `if test -f 'GLPrograms/GLProgDiffLightCircle.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgDiffLightCircle.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgDiffLightCircle.cpp'; fi`
+
+RendererBase.o: Renderers/RendererBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RendererBase.o -MD -MP -MF $(DEPDIR)/RendererBase.Tpo -c -o RendererBase.o `test -f 'Renderers/RendererBase.cpp' || echo '$(srcdir)/'`Renderers/RendererBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RendererBase.Tpo $(DEPDIR)/RendererBase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/RendererBase.cpp' object='RendererBase.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RendererBase.o `test -f 'Renderers/RendererBase.cpp' || echo '$(srcdir)/'`Renderers/RendererBase.cpp
+
+RendererBase.obj: Renderers/RendererBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RendererBase.obj -MD -MP -MF $(DEPDIR)/RendererBase.Tpo -c -o RendererBase.obj `if test -f 'Renderers/RendererBase.cpp'; then $(CYGPATH_W) 'Renderers/RendererBase.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/RendererBase.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RendererBase.Tpo $(DEPDIR)/RendererBase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/RendererBase.cpp' object='RendererBase.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RendererBase.obj `if test -f 'Renderers/RendererBase.cpp'; then $(CYGPATH_W) 'Renderers/RendererBase.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/RendererBase.cpp'; fi`
+
+AnalogHandRenderer.o: Renderers/AnalogHandRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AnalogHandRenderer.o -MD -MP -MF $(DEPDIR)/AnalogHandRenderer.Tpo -c -o AnalogHandRenderer.o `test -f 'Renderers/AnalogHandRenderer.cpp' || echo '$(srcdir)/'`Renderers/AnalogHandRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/AnalogHandRenderer.Tpo $(DEPDIR)/AnalogHandRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/AnalogHandRenderer.cpp' object='AnalogHandRenderer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AnalogHandRenderer.o `test -f 'Renderers/AnalogHandRenderer.cpp' || echo '$(srcdir)/'`Renderers/AnalogHandRenderer.cpp
+
+AnalogHandRenderer.obj: Renderers/AnalogHandRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AnalogHandRenderer.obj -MD -MP -MF $(DEPDIR)/AnalogHandRenderer.Tpo -c -o AnalogHandRenderer.obj `if test -f 'Renderers/AnalogHandRenderer.cpp'; then $(CYGPATH_W) 'Renderers/AnalogHandRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/AnalogHandRenderer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/AnalogHandRenderer.Tpo $(DEPDIR)/AnalogHandRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/AnalogHandRenderer.cpp' object='AnalogHandRenderer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AnalogHandRenderer.obj `if test -f 'Renderers/AnalogHandRenderer.cpp'; then $(CYGPATH_W) 'Renderers/AnalogHandRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/AnalogHandRenderer.cpp'; fi`
+
+SquareTextureRenderer.o: Renderers/SquareTextureRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SquareTextureRenderer.o -MD -MP -MF $(DEPDIR)/SquareTextureRenderer.Tpo -c -o SquareTextureRenderer.o `test -f 'Renderers/SquareTextureRenderer.cpp' || echo '$(srcdir)/'`Renderers/SquareTextureRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/SquareTextureRenderer.Tpo $(DEPDIR)/SquareTextureRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/SquareTextureRenderer.cpp' object='SquareTextureRenderer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SquareTextureRenderer.o `test -f 'Renderers/SquareTextureRenderer.cpp' || echo '$(srcdir)/'`Renderers/SquareTextureRenderer.cpp
+
+SquareTextureRenderer.obj: Renderers/SquareTextureRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SquareTextureRenderer.obj -MD -MP -MF $(DEPDIR)/SquareTextureRenderer.Tpo -c -o SquareTextureRenderer.obj `if test -f 'Renderers/SquareTextureRenderer.cpp'; then $(CYGPATH_W) 'Renderers/SquareTextureRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/SquareTextureRenderer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/SquareTextureRenderer.Tpo $(DEPDIR)/SquareTextureRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/SquareTextureRenderer.cpp' object='SquareTextureRenderer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SquareTextureRenderer.obj `if test -f 'Renderers/SquareTextureRenderer.cpp'; then $(CYGPATH_W) 'Renderers/SquareTextureRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/SquareTextureRenderer.cpp'; fi`
+
+CirclePolygonVertexContainer.o: Renderers/CirclePolygonVertexContainer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CirclePolygonVertexContainer.o -MD -MP -MF $(DEPDIR)/CirclePolygonVertexContainer.Tpo -c -o CirclePolygonVertexContainer.o `test -f 'Renderers/CirclePolygonVertexContainer.cpp' || echo '$(srcdir)/'`Renderers/CirclePolygonVertexContainer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CirclePolygonVertexContainer.Tpo $(DEPDIR)/CirclePolygonVertexContainer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/CirclePolygonVertexContainer.cpp' object='CirclePolygonVertexContainer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CirclePolygonVertexContainer.o `test -f 'Renderers/CirclePolygonVertexContainer.cpp' || echo '$(srcdir)/'`Renderers/CirclePolygonVertexContainer.cpp
+
+CirclePolygonVertexContainer.obj: Renderers/CirclePolygonVertexContainer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CirclePolygonVertexContainer.obj -MD -MP -MF $(DEPDIR)/CirclePolygonVertexContainer.Tpo -c -o CirclePolygonVertexContainer.obj `if test -f 'Renderers/CirclePolygonVertexContainer.cpp'; then $(CYGPATH_W) 'Renderers/CirclePolygonVertexContainer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/CirclePolygonVertexContainer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CirclePolygonVertexContainer.Tpo $(DEPDIR)/CirclePolygonVertexContainer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/CirclePolygonVertexContainer.cpp' object='CirclePolygonVertexContainer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CirclePolygonVertexContainer.obj `if test -f 'Renderers/CirclePolygonVertexContainer.cpp'; then $(CYGPATH_W) 'Renderers/CirclePolygonVertexContainer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/CirclePolygonVertexContainer.cpp'; fi`
+
+CircleBaseRenderer.o: Renderers/CircleBaseRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CircleBaseRenderer.o -MD -MP -MF $(DEPDIR)/CircleBaseRenderer.Tpo -c -o CircleBaseRenderer.o `test -f 'Renderers/CircleBaseRenderer.cpp' || echo '$(srcdir)/'`Renderers/CircleBaseRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CircleBaseRenderer.Tpo $(DEPDIR)/CircleBaseRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/CircleBaseRenderer.cpp' object='CircleBaseRenderer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CircleBaseRenderer.o `test -f 'Renderers/CircleBaseRenderer.cpp' || echo '$(srcdir)/'`Renderers/CircleBaseRenderer.cpp
+
+CircleBaseRenderer.obj: Renderers/CircleBaseRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CircleBaseRenderer.obj -MD -MP -MF $(DEPDIR)/CircleBaseRenderer.Tpo -c -o CircleBaseRenderer.obj `if test -f 'Renderers/CircleBaseRenderer.cpp'; then $(CYGPATH_W) 'Renderers/CircleBaseRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/CircleBaseRenderer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CircleBaseRenderer.Tpo $(DEPDIR)/CircleBaseRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/CircleBaseRenderer.cpp' object='CircleBaseRenderer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CircleBaseRenderer.obj `if test -f 'Renderers/CircleBaseRenderer.cpp'; then $(CYGPATH_W) 'Renderers/CircleBaseRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/CircleBaseRenderer.cpp'; fi`
+
+CircleFilledRenderer.o: Renderers/CircleFilledRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CircleFilledRenderer.o -MD -MP -MF $(DEPDIR)/CircleFilledRenderer.Tpo -c -o CircleFilledRenderer.o `test -f 'Renderers/CircleFilledRenderer.cpp' || echo '$(srcdir)/'`Renderers/CircleFilledRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CircleFilledRenderer.Tpo $(DEPDIR)/CircleFilledRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/CircleFilledRenderer.cpp' object='CircleFilledRenderer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CircleFilledRenderer.o `test -f 'Renderers/CircleFilledRenderer.cpp' || echo '$(srcdir)/'`Renderers/CircleFilledRenderer.cpp
+
+CircleFilledRenderer.obj: Renderers/CircleFilledRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CircleFilledRenderer.obj -MD -MP -MF $(DEPDIR)/CircleFilledRenderer.Tpo -c -o CircleFilledRenderer.obj `if test -f 'Renderers/CircleFilledRenderer.cpp'; then $(CYGPATH_W) 'Renderers/CircleFilledRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/CircleFilledRenderer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CircleFilledRenderer.Tpo $(DEPDIR)/CircleFilledRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/CircleFilledRenderer.cpp' object='CircleFilledRenderer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CircleFilledRenderer.obj `if test -f 'Renderers/CircleFilledRenderer.cpp'; then $(CYGPATH_W) 'Renderers/CircleFilledRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/CircleFilledRenderer.cpp'; fi`
+
+CirclePartialArcRenderer.o: Renderers/CirclePartialArcRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CirclePartialArcRenderer.o -MD -MP -MF $(DEPDIR)/CirclePartialArcRenderer.Tpo -c -o CirclePartialArcRenderer.o `test -f 'Renderers/CirclePartialArcRenderer.cpp' || echo '$(srcdir)/'`Renderers/CirclePartialArcRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CirclePartialArcRenderer.Tpo $(DEPDIR)/CirclePartialArcRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/CirclePartialArcRenderer.cpp' object='CirclePartialArcRenderer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CirclePartialArcRenderer.o `test -f 'Renderers/CirclePartialArcRenderer.cpp' || echo '$(srcdir)/'`Renderers/CirclePartialArcRenderer.cpp
+
+CirclePartialArcRenderer.obj: Renderers/CirclePartialArcRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CirclePartialArcRenderer.obj -MD -MP -MF $(DEPDIR)/CirclePartialArcRenderer.Tpo -c -o CirclePartialArcRenderer.obj `if test -f 'Renderers/CirclePartialArcRenderer.cpp'; then $(CYGPATH_W) 'Renderers/CirclePartialArcRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/CirclePartialArcRenderer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CirclePartialArcRenderer.Tpo $(DEPDIR)/CirclePartialArcRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/CirclePartialArcRenderer.cpp' object='CirclePartialArcRenderer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CirclePartialArcRenderer.obj `if test -f 'Renderers/CirclePartialArcRenderer.cpp'; then $(CYGPATH_W) 'Renderers/CirclePartialArcRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/CirclePartialArcRenderer.cpp'; fi`
+
+GLTextGlobals.o: GLTextRender/GLTextGlobals.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextGlobals.o -MD -MP -MF $(DEPDIR)/GLTextGlobals.Tpo -c -o GLTextGlobals.o `test -f 'GLTextRender/GLTextGlobals.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextGlobals.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextGlobals.Tpo $(DEPDIR)/GLTextGlobals.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextGlobals.cpp' object='GLTextGlobals.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextGlobals.o `test -f 'GLTextRender/GLTextGlobals.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextGlobals.cpp
+
+GLTextGlobals.obj: GLTextRender/GLTextGlobals.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextGlobals.obj -MD -MP -MF $(DEPDIR)/GLTextGlobals.Tpo -c -o GLTextGlobals.obj `if test -f 'GLTextRender/GLTextGlobals.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextGlobals.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextGlobals.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextGlobals.Tpo $(DEPDIR)/GLTextGlobals.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextGlobals.cpp' object='GLTextGlobals.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextGlobals.obj `if test -f 'GLTextRender/GLTextGlobals.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextGlobals.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextGlobals.cpp'; fi`
+
+GLTextRenderer.o: GLTextRender/GLTextRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextRenderer.o -MD -MP -MF $(DEPDIR)/GLTextRenderer.Tpo -c -o GLTextRenderer.o `test -f 'GLTextRender/GLTextRenderer.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextRenderer.Tpo $(DEPDIR)/GLTextRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextRenderer.cpp' object='GLTextRenderer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextRenderer.o `test -f 'GLTextRender/GLTextRenderer.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextRenderer.cpp
+
+GLTextRenderer.obj: GLTextRender/GLTextRenderer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextRenderer.obj -MD -MP -MF $(DEPDIR)/GLTextRenderer.Tpo -c -o GLTextRenderer.obj `if test -f 'GLTextRender/GLTextRenderer.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextRenderer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextRenderer.Tpo $(DEPDIR)/GLTextRenderer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextRenderer.cpp' object='GLTextRenderer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextRenderer.obj `if test -f 'GLTextRender/GLTextRenderer.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextRenderer.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextRenderer.cpp'; fi`
+
+GLTextFontCache.o: GLTextRender/GLTextFontCache.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextFontCache.o -MD -MP -MF $(DEPDIR)/GLTextFontCache.Tpo -c -o GLTextFontCache.o `test -f 'GLTextRender/GLTextFontCache.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextFontCache.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextFontCache.Tpo $(DEPDIR)/GLTextFontCache.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextFontCache.cpp' object='GLTextFontCache.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextFontCache.o `test -f 'GLTextRender/GLTextFontCache.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextFontCache.cpp
+
+GLTextFontCache.obj: GLTextRender/GLTextFontCache.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextFontCache.obj -MD -MP -MF $(DEPDIR)/GLTextFontCache.Tpo -c -o GLTextFontCache.obj `if test -f 'GLTextRender/GLTextFontCache.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextFontCache.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextFontCache.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextFontCache.Tpo $(DEPDIR)/GLTextFontCache.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextFontCache.cpp' object='GLTextFontCache.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextFontCache.obj `if test -f 'GLTextRender/GLTextFontCache.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextFontCache.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextFontCache.cpp'; fi`
+
+GLTextPangoCPPWrappers.o: GLTextRender/GLTextPangoCPPWrappers.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextPangoCPPWrappers.o -MD -MP -MF $(DEPDIR)/GLTextPangoCPPWrappers.Tpo -c -o GLTextPangoCPPWrappers.o `test -f 'GLTextRender/GLTextPangoCPPWrappers.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextPangoCPPWrappers.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextPangoCPPWrappers.Tpo $(DEPDIR)/GLTextPangoCPPWrappers.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextPangoCPPWrappers.cpp' object='GLTextPangoCPPWrappers.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextPangoCPPWrappers.o `test -f 'GLTextRender/GLTextPangoCPPWrappers.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextPangoCPPWrappers.cpp
+
+GLTextPangoCPPWrappers.obj: GLTextRender/GLTextPangoCPPWrappers.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextPangoCPPWrappers.obj -MD -MP -MF $(DEPDIR)/GLTextPangoCPPWrappers.Tpo -c -o GLTextPangoCPPWrappers.obj `if test -f 'GLTextRender/GLTextPangoCPPWrappers.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextPangoCPPWrappers.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextPangoCPPWrappers.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextPangoCPPWrappers.Tpo $(DEPDIR)/GLTextPangoCPPWrappers.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextPangoCPPWrappers.cpp' object='GLTextPangoCPPWrappers.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextPangoCPPWrappers.obj `if test -f 'GLTextRender/GLTextPangoCPPWrappers.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextPangoCPPWrappers.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextPangoCPPWrappers.cpp'; fi`
+
+GLTextFontTexture.o: GLTextRender/GLTextFontTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextFontTexture.o -MD -MP -MF $(DEPDIR)/GLTextFontTexture.Tpo -c -o GLTextFontTexture.o `test -f 'GLTextRender/GLTextFontTexture.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextFontTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextFontTexture.Tpo $(DEPDIR)/GLTextFontTexture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextFontTexture.cpp' object='GLTextFontTexture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextFontTexture.o `test -f 'GLTextRender/GLTextFontTexture.cpp' || echo '$(srcdir)/'`GLTextRender/GLTextFontTexture.cpp
+
+GLTextFontTexture.obj: GLTextRender/GLTextFontTexture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTextFontTexture.obj -MD -MP -MF $(DEPDIR)/GLTextFontTexture.Tpo -c -o GLTextFontTexture.obj `if test -f 'GLTextRender/GLTextFontTexture.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextFontTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextFontTexture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLTextFontTexture.Tpo $(DEPDIR)/GLTextFontTexture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLTextRender/GLTextFontTexture.cpp' object='GLTextFontTexture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTextFontTexture.obj `if test -f 'GLTextRender/GLTextFontTexture.cpp'; then $(CYGPATH_W) 'GLTextRender/GLTextFontTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLTextRender/GLTextFontTexture.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -586,61 +950,14 @@ mostlyclean-libtool:
 clean-libtool:
 	-rm -rf .libs _libs
 
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run 'make' without going through this Makefile.
-# To change the values of 'make' variables: instead of editing Makefiles,
-# (1) if the variable is set in 'config.status', edit 'config.status'
-#     (which will cause the Makefiles to be regenerated when you run 'make');
-# (2) otherwise, pass the desired values on the 'make' command line.
-$(am__recursive_targets):
-	@fail=; \
-	if $(am__make_keepgoing); then \
-	  failcom='fail=yes'; \
-	else \
-	  failcom='exit 1'; \
-	fi; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
-
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
-tags: tags-recursive
+tags: tags-am
 TAGS: tags
 
 tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
 	set x; \
 	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
 	$(am__define_uniq_tagged_files); \
 	shift; \
 	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
@@ -653,7 +970,7 @@ tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
 	      $$unique; \
 	  fi; \
 	fi
-ctags: ctags-recursive
+ctags: ctags-am
 
 CTAGS: ctags
 ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
@@ -666,7 +983,7 @@ GTAGS:
 	here=`$(am__cd) $(top_builddir) && pwd` \
 	  && $(am__cd) $(top_srcdir) \
 	  && gtags -i $(GTAGS_ARGS) "$$here"
-cscopelist: cscopelist-recursive
+cscopelist: cscopelist-am
 
 cscopelist-am: $(am__tagged_files)
 	list='$(am__tagged_files)'; \
@@ -717,45 +1034,19 @@ distdir-am: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    $(am__make_dryrun) \
-	      || test -d "$(distdir)/$$subdir" \
-	      || $(MKDIR_P) "$(distdir)/$$subdir" \
-	      || exit 1; \
-	    dir1=$$subdir; dir2="$(distdir)/$$subdir"; \
-	    $(am__relativize); \
-	    new_distdir=$$reldir; \
-	    dir1=$$subdir; dir2="$(top_distdir)"; \
-	    $(am__relativize); \
-	    new_top_distdir=$$reldir; \
-	    echo " (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir="$$new_top_distdir" distdir="$$new_distdir" \\"; \
-	    echo "     am__remove_distdir=: am__skip_length_check=: am__skip_mode_fix=: distdir)"; \
-	    ($(am__cd) $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$new_top_distdir" \
-	        distdir="$$new_distdir" \
-		am__remove_distdir=: \
-		am__skip_length_check=: \
-		am__skip_mode_fix=: \
-	        distdir) \
-	      || exit 1; \
-	  fi; \
-	done
 check-am: all-am
-check: check-recursive
+check: check-am
 all-am: Makefile $(LIBRARIES)
-installdirs: installdirs-recursive
-installdirs-am:
-install: install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+installdirs:
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	if test -z '$(STRIP)'; then \
 	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
@@ -777,107 +1068,144 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-recursive
+clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
 	mostlyclean-am
 
-distclean: distclean-recursive
-		-rm -f ./$(DEPDIR)/ExceptionBase.Po
+distclean: distclean-am
+		-rm -f ./$(DEPDIR)/AnalogHandRenderer.Po
+	-rm -f ./$(DEPDIR)/CircleBaseRenderer.Po
+	-rm -f ./$(DEPDIR)/CircleFilledRenderer.Po
+	-rm -f ./$(DEPDIR)/CirclePartialArcRenderer.Po
+	-rm -f ./$(DEPDIR)/CirclePolygonVertexContainer.Po
+	-rm -f ./$(DEPDIR)/ExceptionBase.Po
 	-rm -f ./$(DEPDIR)/GLFramework.Po
+	-rm -f ./$(DEPDIR)/GLProgBase.Po
+	-rm -f ./$(DEPDIR)/GLProgDiffLightCircle.Po
+	-rm -f ./$(DEPDIR)/GLProgDiffLightTexture.Po
+	-rm -f ./$(DEPDIR)/GLProgDiffuseLight.Po
+	-rm -f ./$(DEPDIR)/GLProgTextTexture.Po
 	-rm -f ./$(DEPDIR)/GLProgram.Po
 	-rm -f ./$(DEPDIR)/GLShader.Po
+	-rm -f ./$(DEPDIR)/GLTextFontCache.Po
+	-rm -f ./$(DEPDIR)/GLTextFontTexture.Po
+	-rm -f ./$(DEPDIR)/GLTextGlobals.Po
+	-rm -f ./$(DEPDIR)/GLTextPangoCPPWrappers.Po
+	-rm -f ./$(DEPDIR)/GLTextRenderer.Po
 	-rm -f ./$(DEPDIR)/GLTexture.Po
+	-rm -f ./$(DEPDIR)/PngReader.Po
+	-rm -f ./$(DEPDIR)/RendererBase.Po
 	-rm -f ./$(DEPDIR)/SDLRenderSurface.Po
+	-rm -f ./$(DEPDIR)/SquareTextureRenderer.Po
+	-rm -f ./$(DEPDIR)/TextureData.Po
 	-rm -f ./$(DEPDIR)/VecMat.Po
 	-rm -f ./$(DEPDIR)/sysSDLWindow.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-html: html-recursive
+html: html-am
 
 html-am:
 
-info: info-recursive
+info: info-am
 
 info-am:
 
 install-data-am:
 
-install-dvi: install-dvi-recursive
+install-dvi: install-dvi-am
 
 install-dvi-am:
 
 install-exec-am:
 
-install-html: install-html-recursive
+install-html: install-html-am
 
 install-html-am:
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-info-am:
 
 install-man:
 
-install-pdf: install-pdf-recursive
+install-pdf: install-pdf-am
 
 install-pdf-am:
 
-install-ps: install-ps-recursive
+install-ps: install-ps-am
 
 install-ps-am:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
-		-rm -f ./$(DEPDIR)/ExceptionBase.Po
+maintainer-clean: maintainer-clean-am
+		-rm -f ./$(DEPDIR)/AnalogHandRenderer.Po
+	-rm -f ./$(DEPDIR)/CircleBaseRenderer.Po
+	-rm -f ./$(DEPDIR)/CircleFilledRenderer.Po
+	-rm -f ./$(DEPDIR)/CirclePartialArcRenderer.Po
+	-rm -f ./$(DEPDIR)/CirclePolygonVertexContainer.Po
+	-rm -f ./$(DEPDIR)/ExceptionBase.Po
 	-rm -f ./$(DEPDIR)/GLFramework.Po
+	-rm -f ./$(DEPDIR)/GLProgBase.Po
+	-rm -f ./$(DEPDIR)/GLProgDiffLightCircle.Po
+	-rm -f ./$(DEPDIR)/GLProgDiffLightTexture.Po
+	-rm -f ./$(DEPDIR)/GLProgDiffuseLight.Po
+	-rm -f ./$(DEPDIR)/GLProgTextTexture.Po
 	-rm -f ./$(DEPDIR)/GLProgram.Po
 	-rm -f ./$(DEPDIR)/GLShader.Po
+	-rm -f ./$(DEPDIR)/GLTextFontCache.Po
+	-rm -f ./$(DEPDIR)/GLTextFontTexture.Po
+	-rm -f ./$(DEPDIR)/GLTextGlobals.Po
+	-rm -f ./$(DEPDIR)/GLTextPangoCPPWrappers.Po
+	-rm -f ./$(DEPDIR)/GLTextRenderer.Po
 	-rm -f ./$(DEPDIR)/GLTexture.Po
+	-rm -f ./$(DEPDIR)/PngReader.Po
+	-rm -f ./$(DEPDIR)/RendererBase.Po
 	-rm -f ./$(DEPDIR)/SDLRenderSurface.Po
+	-rm -f ./$(DEPDIR)/SquareTextureRenderer.Po
+	-rm -f ./$(DEPDIR)/TextureData.Po
 	-rm -f ./$(DEPDIR)/VecMat.Po
 	-rm -f ./$(DEPDIR)/sysSDLWindow.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-pdf: pdf-recursive
+pdf: pdf-am
 
 pdf-am:
 
-ps: ps-recursive
+ps: ps-am
 
 ps-am:
 
 uninstall-am:
 
-.MAKE: $(am__recursive_targets) install-am install-strip
+.MAKE: install-am install-strip
 
-.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--depfiles check check-am clean clean-generic clean-libtool \
-	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am
+.PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
+	clean-generic clean-libtool clean-noinstLIBRARIES \
+	cscopelist-am ctags ctags-am distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 

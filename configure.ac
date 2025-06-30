@@ -285,12 +285,15 @@ DX_INIT_DOXYGEN(OpenVarioFront, $(srcdir)/doxygen.cfg, doc/doxygen)
 AC_CONFIG_FILES(Makefile po/Makefile.in
                 3rdParty/Makefile
                 src/Makefile
-                src/GLES/Makefile
-                src/GLES/TexHelper/Makefile
-                src/GLPrograms/Makefile
-                src/Renderers/Makefile
-                src/GLTextRender/Makefile
+                src/lib/GL/Makefile
                 )
+
+AC_APP_CXXFLAGS="-I${srcdir}/src -I${srcdir}/src/lib/GL -I${srcdir}/3rdParty/eigen/Eigen \
+	-I${srcdir}/3rdParty/SDL/include ${LOG4CXX_CXXFLAGS} \
+	${FREETYPE2_CFLAGS} ${LIBPNG_CFLAGS} ${PANGO_FT2_CFLAGS} ${SDL3_CFLAGS} ${GLES2_CFLAGS} \
+	${PTHREAD_CFLAGS}"
+
+AC_SUBST([AC_APP_CXXFLAGS])
 
 AC_OUTPUT
 

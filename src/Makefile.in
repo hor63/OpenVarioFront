@@ -129,13 +129,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_OpenVarioFront_OBJECTS = OpenVarioFront.$(OBJEXT)
 OpenVarioFront_OBJECTS = $(am_OpenVarioFront_OBJECTS)
 am__DEPENDENCIES_1 =
-OpenVarioFront_DEPENDENCIES = GLTextRender/libOEV_GLTextRender.a \
-	Renderers/libOEV_Renderers.a GLPrograms/libOEV_GLPrograms.a \
-	GLES/TexHelper/libOEV_TexHelper.a GLES/libOEV_GLES.a \
-	./GLTextRender/libOEV_GLTextRender.a \
-	./Renderers/libOEV_Renderers.a \
-	./GLPrograms/libOEV_GLPrograms.a \
-	./GLES/TexHelper/libOEV_TexHelper.a ./GLES/libOEV_GLES.a \
+OpenVarioFront_DEPENDENCIES = lib/GL/libOEV_GLES.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -247,6 +241,7 @@ am__relativize = \
   done; \
   reldir="$$dir2"
 ACLOCAL = @ACLOCAL@
+AC_APP_CXXFLAGS = @AC_APP_CXXFLAGS@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
@@ -455,30 +450,22 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = GLES GLPrograms Renderers GLTextRender
+SUBDIRS = lib/GL
 bin_PROGRAMS = OpenVarioFront$(EXEEXT)
 OpenVarioFront_SOURCES = OpenVarioFront.cpp  
 OpenVarioFront_LDADD = \
-	GLTextRender/libOEV_GLTextRender.a \
-	Renderers/libOEV_Renderers.a \
-	GLPrograms/libOEV_GLPrograms.a \
-	GLES/TexHelper/libOEV_TexHelper.a \
-	GLES/libOEV_GLES.a \
-	./GLTextRender/libOEV_GLTextRender.a \
-	./Renderers/libOEV_Renderers.a \
-	./GLPrograms/libOEV_GLPrograms.a \
-	./GLES/TexHelper/libOEV_TexHelper.a \
-	./GLES/libOEV_GLES.a \
+	lib/GL/libOEV_GLES.a \
 	$(LOG4CXX_LIBS) \
 	$(SDL3_LIBS) \
 	$(PANGO_FT2_LIBS) \
 	$(LIBPNG_LIBS) \
 	$(GLES2_LIBS)
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen/Eigen -I$(top_srcdir)/3rdParty/SDL/include $(LOG4CXX_CXXFLAGS) \
-	$(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) $(SDL3_CFLAGS) $(GLES2_CFLAGS) \
-	$(PTHREAD_CFLAGS)
 
+#AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen/Eigen -I$(top_srcdir)/3rdParty/SDL/include $(LOG4CXX_CXXFLAGS) \
+#	$(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) $(SDL3_CFLAGS) $(GLES2_CFLAGS) \
+#	$(PTHREAD_CFLAGS)
+AM_CXXFLAGS = $(AC_APP_CXXFLAGS)
 AM_LDFLAGS = $(LOG4CXX_LDFLAGS) 
 all: all-recursive
 

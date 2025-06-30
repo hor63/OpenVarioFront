@@ -663,6 +663,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+AC_APP_CXXFLAGS
 DX_RULES
 PAPER_SIZE
 DOXYGEN_PAPER_SIZE
@@ -27386,7 +27387,14 @@ DX_RULES="${DX_SNIPPET_doc}"
 #echo DX_ENV=$DX_ENV
 
 
-ac_config_files="$ac_config_files Makefile po/Makefile.in 3rdParty/Makefile src/Makefile src/GLES/Makefile src/GLES/TexHelper/Makefile src/GLPrograms/Makefile src/Renderers/Makefile src/GLTextRender/Makefile"
+ac_config_files="$ac_config_files Makefile po/Makefile.in 3rdParty/Makefile src/Makefile src/lib/GL/Makefile"
+
+
+AC_APP_CXXFLAGS="-I${srcdir}/src -I${srcdir}/src/lib/GL -I${srcdir}/3rdParty/eigen/Eigen \
+	-I${srcdir}/3rdParty/SDL/include ${LOG4CXX_CXXFLAGS} \
+	${FREETYPE2_CFLAGS} ${LIBPNG_CFLAGS} ${PANGO_FT2_CFLAGS} ${SDL3_CFLAGS} ${GLES2_CFLAGS} \
+	${PTHREAD_CFLAGS}"
+
 
 
 cat >confcache <<\_ACEOF
@@ -28517,11 +28525,7 @@ do
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
     "3rdParty/Makefile") CONFIG_FILES="$CONFIG_FILES 3rdParty/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/GLES/Makefile") CONFIG_FILES="$CONFIG_FILES src/GLES/Makefile" ;;
-    "src/GLES/TexHelper/Makefile") CONFIG_FILES="$CONFIG_FILES src/GLES/TexHelper/Makefile" ;;
-    "src/GLPrograms/Makefile") CONFIG_FILES="$CONFIG_FILES src/GLPrograms/Makefile" ;;
-    "src/Renderers/Makefile") CONFIG_FILES="$CONFIG_FILES src/Renderers/Makefile" ;;
-    "src/GLTextRender/Makefile") CONFIG_FILES="$CONFIG_FILES src/GLTextRender/Makefile" ;;
+    "src/lib/GL/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/GL/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

@@ -32,8 +32,8 @@
 
 #include "OVFCommon.h"
 
-#include "GLFramework.h"
-#include "ExceptionBase.h"
+#include "GLES/GLFramework.h"
+#include "GLES/ExceptionBase.h"
 
 namespace OevGLES {
 

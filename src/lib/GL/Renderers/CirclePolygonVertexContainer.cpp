@@ -4,7 +4,7 @@
  *  Created on: Apr 22, 2025
  *      Author: hor
  */
-#include "GLFramework.h"
+#include "GLES/GLFramework.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif

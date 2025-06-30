@@ -28,7 +28,7 @@
 #  include <config.h>
 #endif
 
-#include "GLFramework.h"
+#include "GLES/GLFramework.h"
 #include <GLES2/gl2.h>
 #include <cmath>
 
