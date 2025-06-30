@@ -19,6 +19,10 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
 AC_INIT([OpenVarioFront],[0.1],[https://github.com/hor63/OpenVarioFront/issues],[OpenVarioFront],https://github.com/hor63/OpenVarioFront)
+
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.21])
+
 AC_CONFIG_HEADERS(config.h)
 
 AC_CONFIG_MACRO_DIRS([m4])
@@ -278,7 +282,7 @@ DX_PDF_FEATURE(OFF)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(OpenVarioFront, $(srcdir)/doxygen.cfg, doc/doxygen)
 
-AC_CONFIG_FILES(Makefile
+AC_CONFIG_FILES(Makefile po/Makefile.in
                 3rdParty/Makefile
                 src/Makefile
                 src/GLES/Makefile
