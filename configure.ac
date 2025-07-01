@@ -64,6 +64,7 @@ fi
 export PKG_CONFIG_PATH="${pkg_config_libdir}/pkgconfig"
 
 AC_PROG_CXX
+AM_PROG_AS
 AX_PROG_CXX_FOR_BUILD
 AX_CXX_COMPILE_STDCXX_17(ext, mandatory)
 AX_PTHREAD()
