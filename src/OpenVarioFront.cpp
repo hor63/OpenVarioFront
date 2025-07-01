@@ -25,6 +25,9 @@
  *
  */
 
+#include "SDL3/SDL_events.h"
+#include "SDL3/SDL_keyboard.h"
+#include "SDL3/SDL_video.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -54,6 +57,409 @@
 
 using namespace OevGLES;
 
+static void printEventType (SDL_Event& event) {
+	
+	switch (event.type) {
+			
+			case SDL_EVENT_QUIT:
+			std::cout << "SDL event is SDL_EVENT_QUIT" << std::endl;
+			break;
+		    
+			case SDL_EVENT_TERMINATING:
+			std::cout << "SDL event is SDL_EVENT_TERMINATING" << std::endl;
+			break;
+		    
+			case SDL_EVENT_LOW_MEMORY:
+			std::cout << "SDL event is SDL_EVENT_LOW_MEMORY" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WILL_ENTER_BACKGROUND:
+			std::cout << "SDL event is SDL_EVENT_WILL_ENTER_BACKGROUND" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DID_ENTER_BACKGROUND:
+			std::cout << "SDL event is SDL_EVENT_DID_ENTER_BACKGROUND" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WILL_ENTER_FOREGROUND:
+			std::cout << "SDL event is SDL_EVENT_WILL_ENTER_FOREGROUND" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DID_ENTER_FOREGROUND:
+			std::cout << "SDL event is SDL_EVENT_DID_ENTER_FOREGROUND" << std::endl;
+			break;
+		    
+			case SDL_EVENT_LOCALE_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_LOCALE_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_SYSTEM_THEME_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_SYSTEM_THEME_CHANGED" << std::endl;
+			break;
+		    
+		    /* Display events */
+		    /* 0x150 was SDL_DISPLAYEVENT, reserve the number for sdl2-compat */
+		    
+			case SDL_EVENT_DISPLAY_ORIENTATION:
+			std::cout << "SDL event is SDL_EVENT_DISPLAY_ORIENTATION" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DISPLAY_ADDED:
+			std::cout << "SDL event is SDL_EVENT_DISPLAY_ADDED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DISPLAY_REMOVED:
+			std::cout << "SDL event is SDL_EVENT_DISPLAY_REMOVED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DISPLAY_MOVED:
+			std::cout << "SDL event is SDL_EVENT_DISPLAY_MOVED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED" << std::endl;
+			break;
+		
+		    
+			case SDL_EVENT_WINDOW_SHOWN:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_SHOWN" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_HIDDEN:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_HIDDEN" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_EXPOSED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_EXPOSED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_MOVED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_MOVED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_RESIZED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_RESIZED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_METAL_VIEW_RESIZED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_METAL_VIEW_RESIZED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_MINIMIZED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_MINIMIZED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_MAXIMIZED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_MAXIMIZED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_RESTORED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_RESTORED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_MOUSE_ENTER:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_MOUSE_ENTER" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_MOUSE_LEAVE" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_FOCUS_GAINED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_FOCUS_GAINED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_FOCUS_LOST:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_FOCUS_LOST" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_CLOSE_REQUESTED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_HIT_TEST:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_HIT_TEST" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_ICCPROF_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_ICCPROF_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_DISPLAY_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_SAFE_AREA_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_SAFE_AREA_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_OCCLUDED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_OCCLUDED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_ENTER_FULLSCREEN" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_LEAVE_FULLSCREEN" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_DESTROYED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_DESTROYED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_WINDOW_HDR_STATE_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_HDR_STATE_CHANGED" << std::endl;
+			break;
+		
+		    /* Keyboard events */
+		    
+			case SDL_EVENT_KEY_DOWN:
+			std::cout << "SDL event is SDL_EVENT_KEY_DOWN" << std::endl;
+			break;
+		    
+			case SDL_EVENT_KEY_UP:
+			std::cout << "SDL event is SDL_EVENT_KEY_UP" << std::endl;
+			break;
+		    
+			case SDL_EVENT_TEXT_EDITING:
+			std::cout << "SDL event is SDL_EVENT_TEXT_EDITING" << std::endl;
+			break;
+		    
+			case SDL_EVENT_TEXT_INPUT:
+			std::cout << "SDL event is SDL_EVENT_TEXT_INPUT" << std::endl;
+			break;
+		    
+			case SDL_EVENT_KEYMAP_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_KEYMAP_CHANGED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_KEYBOARD_ADDED:
+			std::cout << "SDL event is SDL_EVENT_KEYBOARD_ADDED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_KEYBOARD_REMOVED:
+			std::cout << "SDL event is SDL_EVENT_KEYBOARD_REMOVED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_TEXT_EDITING_CANDIDATES:
+			std::cout << "SDL event is SDL_EVENT_TEXT_EDITING_CANDIDATES" << std::endl;
+			break;
+		
+		    /* Mouse events */
+		    
+			case SDL_EVENT_MOUSE_MOTION:
+			std::cout << "SDL event is SDL_EVENT_MOUSE_MOTION" << std::endl;
+			break;
+		    
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			std::cout << "SDL event is SDL_EVENT_MOUSE_BUTTON_DOWN" << std::endl;
+			break;
+		    
+			case SDL_EVENT_MOUSE_BUTTON_UP:
+			std::cout << "SDL event is SDL_EVENT_MOUSE_BUTTON_UP" << std::endl;
+			break;
+		    
+			case SDL_EVENT_MOUSE_WHEEL:
+			std::cout << "SDL event is SDL_EVENT_MOUSE_WHEEL" << std::endl;
+			break;
+		    
+			case SDL_EVENT_MOUSE_ADDED:
+			std::cout << "SDL event is SDL_EVENT_MOUSE_ADDED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_MOUSE_REMOVED:
+			std::cout << "SDL event is SDL_EVENT_MOUSE_REMOVED" << std::endl;
+			break;
+		
+		    /* Joystick events */
+		
+		    /* Gamepad events */
+		
+		    /* Touch events */
+		    
+			case SDL_EVENT_FINGER_DOWN:
+			std::cout << "SDL event is SDL_EVENT_FINGER_DOWN" << std::endl;
+			break;
+		    
+			case SDL_EVENT_FINGER_UP:
+			std::cout << "SDL event is SDL_EVENT_FINGER_UP" << std::endl;
+			break;
+		    
+			case SDL_EVENT_FINGER_MOTION:
+			std::cout << "SDL event is SDL_EVENT_FINGER_MOTION" << std::endl;
+			break;
+		    
+			case SDL_EVENT_FINGER_CANCELED:
+			std::cout << "SDL event is SDL_EVENT_FINGER_CANCELED" << std::endl;
+			break;
+		
+		    /* Clipboard events */
+		    
+			case SDL_EVENT_CLIPBOARD_UPDATE:
+			std::cout << "SDL event is SDL_EVENT_CLIPBOARD_UPDATE" << std::endl;
+			break;
+		
+		    /* Drag and drop events */
+		    
+			case SDL_EVENT_DROP_FILE:
+			std::cout << "SDL event is SDL_EVENT_DROP_FILE" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DROP_TEXT:
+			std::cout << "SDL event is SDL_EVENT_DROP_TEXT" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DROP_BEGIN:
+			std::cout << "SDL event is SDL_EVENT_DROP_BEGIN" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DROP_COMPLETE:
+			std::cout << "SDL event is SDL_EVENT_DROP_COMPLETE" << std::endl;
+			break;
+		    
+			case SDL_EVENT_DROP_POSITION:
+			std::cout << "SDL event is SDL_EVENT_DROP_POSITION" << std::endl;
+			break;
+		
+		    /* Audio hotplug events */
+		    
+			case SDL_EVENT_AUDIO_DEVICE_ADDED:
+			std::cout << "SDL event is SDL_EVENT_AUDIO_DEVICE_ADDED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_AUDIO_DEVICE_REMOVED:
+			std::cout << "SDL event is SDL_EVENT_AUDIO_DEVICE_REMOVED" << std::endl;
+			break;
+		    
+			case SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED:
+			std::cout << "SDL event is SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED" << std::endl;
+			break;
+		
+		    /* Sensor events */
+		    
+			case SDL_EVENT_SENSOR_UPDATE:
+			std::cout << "SDL event is SDL_EVENT_SENSOR_UPDATE" << std::endl;
+			break;
+		
+		    /* Pressure-sensitive pen events */
+		
+		    /* Camera hotplug events */
+		
+		    /* Render events */
+		    
+			case SDL_EVENT_RENDER_TARGETS_RESET:
+			std::cout << "SDL event is SDL_EVENT_RENDER_TARGETS_RESET" << std::endl;
+			break;
+		    
+			case SDL_EVENT_RENDER_DEVICE_RESET:
+			std::cout << "SDL event is SDL_EVENT_RENDER_DEVICE_RESET" << std::endl;
+			break;
+		    
+			case SDL_EVENT_RENDER_DEVICE_LOST:
+			std::cout << "SDL event is SDL_EVENT_RENDER_DEVICE_LOST" << std::endl;
+			break;
+		
+		    /* Reserved events for private platforms */
+		    
+			case SDL_EVENT_PRIVATE0:
+			std::cout << "SDL event is SDL_EVENT_PRIVATE0" << std::endl;
+			break;
+		    
+			case SDL_EVENT_PRIVATE1:
+			std::cout << "SDL event is SDL_EVENT_PRIVATE1" << std::endl;
+			break;
+		    
+			case SDL_EVENT_PRIVATE2:
+			std::cout << "SDL event is SDL_EVENT_PRIVATE2" << std::endl;
+			break;
+		    
+			case SDL_EVENT_PRIVATE3:
+			std::cout << "SDL event is SDL_EVENT_PRIVATE3" << std::endl;
+			break;
+		
+		    /* Internal events */
+		
+		    /** Events SDL_EVENT_USER through SDL_EVENT_LAST are for your use,
+		     *  and should be allocated with SDL_RegisterEvents()
+		     */
+		    
+			case SDL_EVENT_USER:
+			std::cout << "SDL event is SDL_EVENT_USER" << std::endl;
+			break;
+
+		default :
+			std::cout << "Event type = " << event.type << std::endl;
+			break;
+	}
+}
+
+static bool handleSLEDvent (SDL_Event& event,OevGLES::GLFramework &framework) {
+
+	printEventType (event);
+	
+	if (event.type == SDL_EVENT_QUIT) {
+		return false;
+	}
+	
+	if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
+		SDL_Window * sdlWindow = framework.getSDLSurface().getNativeWindow();
+		std::cout << "sdlWindow = " << reinterpret_cast<void*>(sdlWindow)
+			<< ", SDL_TextInputActive(sdlWindow) = " << SDL_TextInputActive(sdlWindow)
+			<< std::endl;
+			
+		if (SDL_TextInputActive(sdlWindow)) {
+			SDL_StopTextInput(sdlWindow);
+		} else {
+			
+			auto rc = SDL_StartTextInput(sdlWindow);
+			
+			std::cout << "SDL_StartTextInput returned " << rc << std::endl;
+			
+			SDL_Rect rect;
+			int cursor;
+			rc = SDL_GetTextInputArea (sdlWindow,&rect,&cursor);
+			std::cout << "SDL_GetTextInputArea returned " << rc
+				<< ", pos = " << rect.x << "x" << rect.y
+				<< ", size (WxH) = " << rect.w << "x" << rect.h
+				<< ", cursor = " << cursor
+				<< std::endl;
+		}
+	}
+
+	if (event.type == SDL_EVENT_TEXT_EDITING) {
+		std::cout 
+			<< "text = " << event.edit.text
+			<< ", start = " << event.edit.start
+			<< ", length = " << event.edit.length
+			<< std::endl;
+	}
+
+	if (event.type == SDL_EVENT_TEXT_INPUT) {
+		std::cout 
+			<< "text = " << event.text.text
+			<< std::endl;
+	}
+	
+	return true;
+}
 
 int main(int argint,char** argv) {
 	int rc = 0;
@@ -156,7 +562,7 @@ int main(int argint,char** argv) {
 
 		glTextRend.setFontSize(30);
 //		glTextRend.setFonts("Noto Sans");
-		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
+		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Sans Thai, Noto Sans Bengali, Noto Sans CJK SC");
 		glTextRend.setText(
 				  "0123456789||0ABCDEFGHIJK"
 				"\n一个对此心怀恶意的流氓"
@@ -194,7 +600,8 @@ int main(int argint,char** argv) {
 		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
-				if (sdlEvent.type == SDL_EVENT_QUIT) {
+				
+				if (!handleSLEDvent(sdlEvent,*glFramework)) {
 					return 0;
 				}
 			}
