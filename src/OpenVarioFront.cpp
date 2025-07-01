@@ -461,6 +461,12 @@ static bool handleSLEDvent (SDL_Event& event,OevGLES::GLFramework &framework) {
 	return true;
 }
 
+extern "C" {
+
+extern char const Vario5m[];
+extern int const Vario5m_size;
+}
+
 int main(int argint,char** argv) {
 	int rc = 0;
 
@@ -476,6 +482,9 @@ int main(int argint,char** argv) {
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront");
 #endif // if defined HAVE_LOG4CXX_H
 
+	LOG4CXX_INFO (logger,"Vario5m = " << reinterpret_cast<void const * const>(Vario5m)
+		<< ", Vario5m_size = " << Vario5m_size
+		);
 
     try {
     	auto glFramework = OevGLES::GLFramework::createFramework();

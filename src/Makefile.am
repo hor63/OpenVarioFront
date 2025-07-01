@@ -20,7 +20,7 @@ SUBDIRS=lib/GL
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
-OpenVarioFront_SOURCES=OpenVarioFront.cpp  
+OpenVarioFront_SOURCES=OpenVarioFront.cpp Vario5m.s
  
 OpenVarioFront_LDADD = \
 	lib/GL/libOEV_GLES.a \
