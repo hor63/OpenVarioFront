@@ -34,13 +34,15 @@
 #include <sstream>
 #include <libpng16/png.h>
 
+#include "OVFCommon.h"
+
 #include "GLES/TexHelper/PngReader.h"
 #include "GLES/ExceptionBase.h"
 
 namespace OevGLES {
 
 #if defined HAVE_LOG4CXX_H
-log4cxx::LoggerPtr PngReader::logger = 0;
+static log4cxx::LoggerPtr logger = 0;
 #endif
 
 PngReader::PngReader(char const *fileName)
@@ -54,6 +56,21 @@ PngReader::PngReader(char const *fileName)
 }
 
 PngReader::~PngReader() {}
+
+static void readPngDataFromMemory(png_structp png_ptr,
+							png_bytep data, png_size_t length) {
+								
+}
+
+static void pngErrorCallback(png_structp png_ptr,
+png_const_charp error_msg) {
+	
+}
+
+static void pngWarningCallback(png_structp png_ptr,
+png_const_charp warning_msg) {
+	
+}
 
 void PngReader::readPngToTexture(TextureData &textureData) {
 
@@ -98,7 +115,11 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		png_set_sig_bytes(pngPtr,0);
 		LOG4CXX_DEBUG(logger,"Called png_set_sig_bytes");
 
-		png_read_png(pngPtr,pngInfo,PNG_TRANSFORM_EXPAND|PNG_TRANSFORM_STRIP_16|PNG_TRANSFORM_PACKING,0);
+		png_read_png(pngPtr,pngInfo,
+			PNG_TRANSFORM_EXPAND // expand index to pallets to RGB
+			|PNG_TRANSFORM_STRIP_16 // truncate 16-bit samples to 8 bit
+			|PNG_TRANSFORM_PACKING // Expand < 8 bit samples to 8 bit
+			,0);
 		LOG4CXX_DEBUG(logger,"Called png_read_png");
 
 		png_uint_32 width = 0,height =0;

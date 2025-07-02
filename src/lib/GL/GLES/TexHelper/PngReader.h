@@ -28,8 +28,6 @@
 
 #include <string>
 
-#include "OVFCommon.h"
-
 #include "GLES/TexHelper/TextureData.h"
 
 namespace OevGLES {
@@ -37,6 +35,7 @@ namespace OevGLES {
 class PngReader {
 public:
 	PngReader(char const *fileName);
+	PngReader(char const *memLocation,int memLength);
 	virtual ~PngReader();
 
 	void readPngToTexture(TextureData &textureData);
@@ -44,10 +43,6 @@ public:
 private:
 
 	std::string fileName;
-
-#if defined HAVE_LOG4CXX_H
-	static log4cxx::LoggerPtr logger;
-#endif
 
 };
 
