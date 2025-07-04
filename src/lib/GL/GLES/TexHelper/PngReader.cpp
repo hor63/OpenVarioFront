@@ -24,6 +24,7 @@
  */
 
 
+#include <csetjmp>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -32,7 +33,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
-#include <libpng16/png.h>
 
 #include "OVFCommon.h"
 
@@ -55,22 +55,78 @@ PngReader::PngReader(char const *fileName)
 #endif
 }
 
+PngReader::PngReader(
+	char const *memLocation,
+	int memLength,
+	std::string const &imageName)
+	:memLocation{memLocation},
+	memLength{memLength},
+	fileName{imageName} 
+{
+	
+}
+
 PngReader::~PngReader() {}
 
-static void readPngDataFromMemory(png_structp png_ptr,
-							png_bytep data, png_size_t length) {
-								
+void PngReader::readPngDataFromMemoryCallback(png_struct* pngPtr,
+							unsigned char* data, size_t dataLength) {
+
+	PngReader* tis = reinterpret_cast<PngReader*>(png_get_io_ptr(pngPtr));
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": tis = " << tis);
+	LOG4CXX_DEBUG(logger,"\tdata = " << data << ", length = " << dataLength
+		<< ", memLocation = " << tis->memLocation
+		<< ", memLength " << tis->memLength
+		<< ", posInMemLocation " << tis->posInMemLocation
+		);
+
+	if (dataLength <= (tis->memLength - tis->posInMemLocation)) {
+		
+	} else {
+		png_error(pngPtr,
+			"Error: libpng tries to read past the memory buffer");
+	}
+
 }
 
-static void pngErrorCallback(png_structp png_ptr,
-png_const_charp error_msg) {
+void PngReader::pngErrorCallback(png_struct* pngPtr,char const* errorMsg){
+	PngReader* tis = reinterpret_cast<PngReader*>(png_get_error_ptr(pngPtr));
+	
+	tis->errorMessage = errorMsg;
+	
+	longjmp(png_jmpbuf(pngPtr), 2);
+}
+
+void PngReader::pngWarningCallback(png_struct* pngPtr,char const* warnMsg){
+	PngReader* tis = reinterpret_cast<PngReader*>(png_get_error_ptr(pngPtr));
+
+	tis->warnMesage = warnMsg;
 	
 }
 
-static void pngWarningCallback(png_structp png_ptr,
-png_const_charp warning_msg) {
+void PngReader::setupReadFromFile(png_struct* pngPtr,FILE* &pngFile){
+
+		pngFile = fopen(fileName.c_str(),"rb");
+		LOG4CXX_DEBUG(logger,"Opened PNG file \"" << fileName 
+		<< "\". pngFile pointer = " << pngFile);
+
+		if (pngFile == nullptr) {
+			std::ostringstream errMsg;
+			errMsg << "Could not open png input file \"" << fileName << "\"";
+			throw PngReaderException(errMsg.str().c_str());
+		}
+
+		png_init_io(pngPtr,pngFile);
+		LOG4CXX_DEBUG(logger,"Called png_init_io");
 	
+};
+void PngReader::setupReadFromMemory(png_struct* pngPtr) {
+	
+	png_set_read_fn(pngPtr,this,readPngDataFromMemoryCallback);
+	png_init_io(pngPtr,reinterpret_cast<FILE*>(this));
+
 }
+
 
 void PngReader::readPngToTexture(TextureData &textureData) {
 
@@ -82,15 +138,6 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 
 
 	try {
-
-		pngFile = fopen(fileName.c_str(),"rb");
-		LOG4CXX_DEBUG(logger,"Opened PNG file \"" << fileName << "\". pngFile = " << pngFile);
-
-		if (!pngFile) {
-			std::ostringstream errMsg;
-			errMsg << "Could not open png input file \"" << fileName << "\"";
-			throw PngReaderException(errMsg.str().c_str());
-		}
 
 		pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
 		LOG4CXX_DEBUG(logger,"Created read struct. pngPtr = " << pngPtr);
@@ -104,13 +151,22 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 			throw PngReaderException("png_create_info_struct() failed");
 		}
 
+		png_set_error_fn(pngPtr,
+			this, pngErrorCallback,
+			pngWarningCallback);
+
+		if (memLocation != nullptr) {
+			// switch to reading from memory
+			setupReadFromMemory(pngPtr);
+		} else {
+			// Setup reading from file; open the file.
+			setupReadFromFile(pngPtr,pngFile);
+		}
+
 		if (setjmp(png_jmpbuf(pngPtr))) {
 			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file");
 			throw PngReaderException("longjmp called due to internal png error");
 		}
-
-		png_init_io(pngPtr,pngFile);
-		LOG4CXX_DEBUG(logger,"Called png_init_io");
 
 		png_set_sig_bytes(pngPtr,0);
 		LOG4CXX_DEBUG(logger,"Called png_set_sig_bytes");
@@ -225,7 +281,9 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		png_destroy_read_struct(&pngPtr,&pngInfo,NULL);
 		LOG4CXX_DEBUG(logger,"Destroyed the PNG structures.");
 
-		fclose (pngFile);
+		if(pngFile) {
+			fclose (pngFile);
+		}
 
 
 	}

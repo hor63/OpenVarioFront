@@ -30,19 +30,40 @@
 
 #include "GLES/TexHelper/TextureData.h"
 
+#include <libpng16/png.h>
+
 namespace OevGLES {
 
 class PngReader {
 public:
+	/// \brief Read a PNG image from a file
 	PngReader(char const *fileName);
-	PngReader(char const *memLocation,int memLength);
+	/// Read a PNG image from a memory location within the program
+	PngReader(char const *memLocation,int memLength,std::string const &imageName);
 	virtual ~PngReader();
 
 	void readPngToTexture(TextureData &textureData);
 
 private:
 
+	static void pngErrorCallback(png_struct* pngPtr,char const* error_msg);
+	static void pngWarningCallback(png_struct* pngPtr,char const* warn_msg);
+
+	static void readPngDataFromMemoryCallback(png_struct* pngPtr,
+							unsigned char* data, size_t dataLength);	
+	void setupReadFromFile(png_struct* pngPtr,FILE* &pngFile);
+	void setupReadFromMemory(png_struct* pngPtr);
+
+
+	/// \brief Either the image file name or the image name when \ref memLocation
+	/// is not \p nullptr.
 	std::string fileName;
+	char const *memLocation = nullptr;
+	int memLength = 0;
+	int posInMemLocation = 0;
+	
+	std::string warnMesage;
+	std::string errorMessage;
 
 };
 
