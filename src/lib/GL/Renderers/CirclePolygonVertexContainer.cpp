@@ -15,7 +15,7 @@
 
 #include "OVFCommon.h"
 
-#include "GLES/VecMat.h"
+#include "VecMat.h"
 #include "CirclePolygonVertexContainer.h"
 #include "GLPrograms/GLProgDiffLightCircle.h"
 

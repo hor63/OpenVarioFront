@@ -29,7 +29,7 @@
 #define RENDERERS_CIRCLEPARTIALARCRENDERER_H_
 
 #include "CircleBaseRenderer.h"
-#include "GLES/VecMat.h"
+#include "VecMat.h"
 #include <cmath>
 #include <cstdint>
 

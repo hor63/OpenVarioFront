@@ -15,22 +15,10 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-noinst_LIBRARIES = libOEV_GLES.a
-libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
-	GLES/SDL/sysSDLWindow.cpp GLES/SDL/SDLRenderSurface.cpp \
-	GLES/GLShader.cpp GLES/GLProgram.cpp GLES/ExceptionBase.cpp \
-	GLES/GLTexture.cpp \
-	GLES/TexHelper/TextureData.cpp GLES/TexHelper/PngReader.cpp \
-	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \
-	GLPrograms/GLProgDiffLightTexture.cpp GLPrograms/GLProgTextTexture.cpp \
-	GLPrograms/GLProgDiffLightCircle.cpp \
-	Renderers/RendererBase.cpp Renderers/AnalogHandRenderer.cpp \
-	Renderers/SquareTextureRenderer.cpp Renderers/CirclePolygonVertexContainer.cpp \
-	Renderers/CircleBaseRenderer.cpp Renderers/CircleFilledRenderer.cpp \
-	Renderers/CirclePartialArcRenderer.cpp \
-	GLTextRender/GLTextGlobals.cpp GLTextRender/GLTextRenderer.cpp \
-	GLTextRender/GLTextFontCache.cpp GLTextRender/GLTextPangoCPPWrappers.cpp \
-	GLTextRender/GLTextFontTexture.cpp
+noinst_LIBRARIES = libOEV_util.a
+libOEV_util_a_SOURCES = VecMat.cpp \
+	../../../3rdParty/fmt/src/format.cc \
+	../../../3rdParty/fmt/src/os.cc
 
 AM_CXXFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
 	-I$(top_srcdir)/src/lib/util \

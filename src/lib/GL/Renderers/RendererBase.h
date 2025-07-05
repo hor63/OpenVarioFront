@@ -32,7 +32,7 @@
 #	undef Success
 #endif
 
-#include "GLES/VecMat.h"
+#include "VecMat.h"
 
 namespace OevGLES {
 

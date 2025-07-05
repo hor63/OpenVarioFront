@@ -27530,7 +27530,7 @@ DX_RULES="${DX_SNIPPET_doc}"
 #echo DX_ENV=$DX_ENV
 
 
-ac_config_files="$ac_config_files Makefile po/Makefile.in 3rdParty/Makefile src/Makefile src/lib/GL/Makefile"
+ac_config_files="$ac_config_files Makefile po/Makefile.in 3rdParty/Makefile src/Makefile src/lib/GL/Makefile src/lib/util/Makefile"
 
 
 
@@ -28668,6 +28668,7 @@ do
     "3rdParty/Makefile") CONFIG_FILES="$CONFIG_FILES 3rdParty/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/lib/GL/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/GL/Makefile" ;;
+    "src/lib/util/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/util/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

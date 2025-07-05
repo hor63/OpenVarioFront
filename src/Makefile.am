@@ -15,7 +15,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=lib/GL
+SUBDIRS=lib/GL lib/util
 	
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
@@ -24,6 +24,7 @@ OpenVarioFront_SOURCES=OpenVarioFront.cpp Vario5m.s
  
 OpenVarioFront_LDADD = \
 	lib/GL/libOEV_GLES.a \
+	lib/util/libOEV_util.a \
 	$(LOG4CXX_LIBS) \
 	$(SDL3_LIBS) \
 	$(PANGO_FT2_LIBS) \
@@ -31,7 +32,9 @@ OpenVarioFront_LDADD = \
 	$(GLES2_LIBS)
 
 AM_CXXFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
+	-I$(top_srcdir)/src/lib/util \
 	-I$(top_srcdir)/3rdParty/eigen/Eigen \
+	-I$(top_srcdir)/3rdParty/fmt/include \
 	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) \
 	$(SDL3_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
 

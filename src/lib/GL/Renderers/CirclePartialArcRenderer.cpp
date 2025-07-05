@@ -16,7 +16,7 @@
 #include <GLES/GLFramework.h>
 #include "CirclePartialArcRenderer.h"
 #include "CircleBaseRenderer.h"
-#include "GLES/VecMat.h"
+#include "VecMat.h"
 
 
 #if defined HAVE_LOG4CXX_H

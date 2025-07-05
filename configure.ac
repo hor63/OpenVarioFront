@@ -287,6 +287,7 @@ AC_CONFIG_FILES(Makefile po/Makefile.in
                 3rdParty/Makefile
                 src/Makefile
                 src/lib/GL/Makefile
+                src/lib/util/Makefile
                 )
 
 AC_SUBST([AC_APP_CXXFLAGS])

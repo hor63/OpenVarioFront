@@ -15,7 +15,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
 
-#include "GLES/VecMat.h"
+#include "VecMat.h"
 
 namespace OevGLES {
 

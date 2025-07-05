@@ -53,7 +53,7 @@
 #	undef Success
 #endif
 
-#include "GLES/VecMat.h"
+#include "VecMat.h"
 
 using namespace OevGLES;
 
@@ -284,7 +284,8 @@ int main(int argint,char** argv) {
 	    LOG4CXX_INFO(logger,"Destroy eglSurface and eglContext and native window.");
 
 	} catch (std::exception const& e) {
-		std::cerr << e.what() << std::endl;
+		std::cerr << "Exception of type " << typeid(e).name() 
+			<< " caught. Reason is: " << e.what() << std::endl;
 	}
 
 

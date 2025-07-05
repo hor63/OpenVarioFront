@@ -36,6 +36,9 @@
 
 #include "OVFCommon.h"
 
+#include "gettext.h"
+#include "fmt/format.h"
+
 #include "GLES/TexHelper/PngReader.h"
 #include "GLES/ExceptionBase.h"
 
@@ -81,18 +84,33 @@ void PngReader::readPngDataFromMemoryCallback(png_struct* pngPtr,
 		);
 
 	if (dataLength <= (tis->memLength - tis->posInMemLocation)) {
-		
+		std::memcpy(data,&tis->memLocation[tis->posInMemLocation],dataLength);
+		tis->posInMemLocation += dataLength;
 	} else {
+		tis->errorMessage = fmt::format(
+				_("Error reading PNG image {0} from memory."
+				" Requested length is {1} bytes, but only {2} bytes of {3} are left for reading."),
+				tis->fileName,dataLength,(tis->memLength - tis->posInMemLocation),
+				tis->memLength
+			);
+		LOG4CXX_ERROR(logger,"\t" << tis->errorMessage);
 		png_error(pngPtr,
-			"Error: libpng tries to read past the memory buffer");
+			tis->errorMessage.c_str());
 	}
 
 }
 
 void PngReader::pngErrorCallback(png_struct* pngPtr,char const* errorMsg){
 	PngReader* tis = reinterpret_cast<PngReader*>(png_get_error_ptr(pngPtr));
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": errorMsg = " << errorMsg);
+	LOG4CXX_DEBUG(logger,"\t errorMsg ptr = " << reinterpret_cast<const void*>(errorMsg)
+		<< " tis->errorMessage ptr = " 
+		<< reinterpret_cast<const void*>(tis->errorMessage.c_str()));
 	
+	if (tis->errorMessage.c_str() != errorMsg) {
 	tis->errorMessage = errorMsg;
+	}
 	
 	longjmp(png_jmpbuf(pngPtr), 2);
 }
@@ -111,9 +129,11 @@ void PngReader::setupReadFromFile(png_struct* pngPtr,FILE* &pngFile){
 		<< "\". pngFile pointer = " << pngFile);
 
 		if (pngFile == nullptr) {
-			std::ostringstream errMsg;
-			errMsg << "Could not open png input file \"" << fileName << "\"";
-			throw PngReaderException(errMsg.str().c_str());
+			errorMessage = 
+				fmt::format(_(
+					"Could not open PNG file {0}. errno = {1}: {2}"),
+					fileName,errno,std::strerror(errno));
+			throw PngReaderException(errorMessage.c_str());
 		}
 
 		png_init_io(pngPtr,pngFile);
@@ -122,7 +142,8 @@ void PngReader::setupReadFromFile(png_struct* pngPtr,FILE* &pngFile){
 };
 void PngReader::setupReadFromMemory(png_struct* pngPtr) {
 	
-	png_set_read_fn(pngPtr,this,readPngDataFromMemoryCallback);
+	png_set_read_fn(pngPtr,this,
+		readPngDataFromMemoryCallback);
 	png_init_io(pngPtr,reinterpret_cast<FILE*>(this));
 
 }
@@ -165,7 +186,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 
 		if (setjmp(png_jmpbuf(pngPtr))) {
 			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file");
-			throw PngReaderException("longjmp called due to internal png error");
+			throw PngReaderException(errorMessage.c_str());
 		}
 
 		png_set_sig_bytes(pngPtr,0);
