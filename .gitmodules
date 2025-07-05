@@ -8,3 +8,6 @@
 [submodule "3rdParty/pango"]
 	path = 3rdParty/pango
 	url = https://github.com/hor63/pango.git
+[submodule "3rdParty/fmt"]
+	path = 3rdParty/fmt
+	url = https://github.com/hor63/fmt
