@@ -44,7 +44,7 @@ SquareTextureRenderer::SquareTextureRenderer()
 	// Setup the positions
 	/* The texture is rendered by 2 triangles in a fan forming a square.
 	 *
-	 *	V2	  V1
+	 *	V2	  V3
 	 *	-------
 	 *	|\    |
 	 *	| \   |
@@ -52,19 +52,27 @@ SquareTextureRenderer::SquareTextureRenderer()
 	 *	|   \ |
 	 *	|    \|
 	 *	-------
-	 *	V3	  V0
+	 *	V0	  V1
 	 *
 	 */
 	  vertexArray {
-		// Vertex0
-		 256.0f,-256.0f,-26.0f,1.0f,	// Pos 0
-		 1.0f,  0.0f,				// Texture coordinate 0
-		 256.0f, 256.0f,-26.0f,1.0f,	// Pos 1
-		 1.0f, 1.0f,				// Texture coordinate 1
-		-256.0f, 256.0f,-26.0f,1.0f,	// Pos 2
-		 0.0f, 1.0f,				// Texture coordinate 2
-		-256.0f,-256.0f,-26.0f,1.0f,	// Pos 3
-		 0.0f, 0.0f					// Texture coordinate 3
+		{
+			{0.0f,0.0f,0.0f,1.0f},
+			{0.0f,0.0f}
+		},
+		{
+			{1.0f,0.0f,0.0f,1.0f},
+			{1.0f,0.0f}
+		},
+		{
+			{0.0f,1.0f,0.0f,1.0f},
+			{0.0f,1.0f}
+		},
+		{
+			{1.0f,1.0f,0.0f,1.0f},
+			{1.0f,1.0f}
+		},
+	
 	}
 	{
 
@@ -81,15 +89,12 @@ SquareTextureRenderer::SquareTextureRenderer()
 			// Print the 4 vertexes
 			for (int i=0; i < 4 ; i++) {
 
-				GLfloat* p0 = vertexArray + (i*6);
-				Eigen::Map<OevGLES::Vec4> vecX ( p0 );
-				Eigen::Map<OevGLES::Vec2> vecXTexPos ( p0 + 4);
+				VertexType& vertex = vertexArray [i];
+				Eigen::Map<OevGLES::Vec4> const vecX ( &vertex.position[0] );
+				Eigen::Map<OevGLES::Vec2> const vecXTexPos ( &vertex.textureCoordinate[0]);
 
 				LOG4CXX_DEBUG(logger,"Vertex #" << i << ": Position = [" << vecX.transpose() << "], NormaTexture coordinates = [" << vecXTexPos.transpose() << ']');
 
-			}
-
-			{
 				Eigen::Map<OevGLES::Vec4> vecNormal (textureNormal);
 				LOG4CXX_DEBUG(logger,"Normal of all vertextes = [" << vecNormal.transpose() << ']');
 			}
@@ -120,45 +125,49 @@ SquareTextureRenderer::~SquareTextureRenderer() {
 
 void SquareTextureRenderer::setupVertexBuffers() {
 
-	// First get the program
-	glProgram = OevGLES::GLProgDiffLightTexture::getProgram();
-
-	glGenBuffers(1,&vertexBufferHandle);
-	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
-
-	// Load the texture into GL
-	OevGLES::PngReader varioBackgoundReader ("./Vario5m.png");
-	OevGLES::TextureData texData (8,8,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
-	varioBackgoundReader.readPngToTexture(texData);
-	varioBackgoundTexture.setTextureData(texData);
-
-	varioBackgoundTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
-	varioBackgoundTexture.setMinificationFilter(OevGLES::GLTexture::Linear);
-
-	if (GLFramework::isVertexArrayUsable() && vertexArrayHandle == 0U) {
-		GLfloat* bufferOffset = 0;
-
-		GLFramework::glGenVertexArraysOES(1,&vertexArrayHandle);
-		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
-
-		// setup the vertex coordinates
-		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-		glVertexAttribPointer(glProgram->getVertexPosLocation(),
-			4,GL_FLOAT,GL_FALSE,
-			6 * sizeof (GLfloat),bufferOffset);
-		// setup the texture coordinates
-		bufferOffset += 4; // Advance the offset by 4 floats to the texture coordinate.
-		glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
-		glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),
-			2,GL_FLOAT,GL_FALSE,
-			6 * sizeof (GLfloat),bufferOffset);
-
-		GLFramework::glBindVertexArrayOES(0U);
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-
+	if (dirty) {
+	
+		// First get the program
+		glProgram = OevGLES::GLProgDiffLightTexture::getProgram();
+	
+		glGenBuffers(1,&vertexBufferHandle);
+		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
+		glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
+	
+		// Load the texture into GL
+		OevGLES::PngReader varioBackgoundReader ("./Vario5m.png");
+		OevGLES::TextureData texData (8,8,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
+		varioBackgoundReader.readPngToTexture(texData);
+		varioBackgoundTexture.setTextureData(texData);
+	
+		varioBackgoundTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
+		varioBackgoundTexture.setMinificationFilter(OevGLES::GLTexture::Linear);
+	
+		if (GLFramework::isVertexArrayUsable() && vertexArrayHandle == 0U) {
+	
+			GLFramework::glGenVertexArraysOES(1,&vertexArrayHandle);
+			GLFramework::glBindVertexArrayOES(vertexArrayHandle);
+	
+			// setup the vertex coordinates
+			glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+			glVertexAttribPointer(glProgram->getVertexPosLocation(),
+				4,GL_FLOAT,GL_FALSE,
+				sizeof (VertexType),
+				reinterpret_cast<void*>(offsetof(VertexType,position)));
+			// setup the texture coordinates
+			glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
+			glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),
+				2,GL_FLOAT,GL_FALSE,
+				sizeof (VertexType),
+				reinterpret_cast<void*>(offsetof(VertexType,textureCoordinate)));
+	
+			GLFramework::glBindVertexArrayOES(0U);
+		}
+	
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+		
+		dirty = false;
+	} // if (dirty) {
 }
 
 void SquareTextureRenderer::draw(
@@ -168,7 +177,9 @@ void SquareTextureRenderer::draw(
 		const OevGLES::Vec3& lightDir, const OevGLES::Vec4& lightColor,
 		const OevGLES::Vec4& ambientLightColor ) {
 
-	GLfloat* bufferOffset = 0;
+	if (dirty) {
+		setupVertexBuffers();
+	}
 
 	// make my program current
 	glProgram->useProgram();
@@ -216,13 +227,14 @@ void SquareTextureRenderer::draw(
 		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
 		glVertexAttribPointer(glProgram->getVertexPosLocation(),
 			4,GL_FLOAT,GL_FALSE,
-			6 * sizeof (GLfloat),bufferOffset);
+			sizeof (VertexType),
+			reinterpret_cast<void*>(offsetof(VertexType,position)));
 		// setup the texture coordinates
-		bufferOffset += 4; // Advance the offset by 4 floats to the texture coordinate.
 		glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
 		glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),
 			2,GL_FLOAT,GL_FALSE,
-			6 * sizeof (GLfloat),bufferOffset);
+			sizeof (VertexType),
+			reinterpret_cast<void*>(offsetof(VertexType,textureCoordinate)));
 	} // if (vertexArrayHandle != 0U) {
 
 	// Assign the texture to Texure engine 0, and set the sampler uniform accordingly

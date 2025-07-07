@@ -35,9 +35,36 @@ namespace OevGLES {
 
 class SquareTextureRenderer : public RendererBase {
 public:
+
+	typedef GLfloat VertexPosition [4];
+	typedef GLfloat TextureCoordinate [2];
+	
+	typedef struct VertexType {
+		VertexPosition position;
+		TextureCoordinate textureCoordinate;
+	};
+
 	SquareTextureRenderer();
 
 	virtual ~SquareTextureRenderer();
+
+	/** \brief Switch to external PNG file, and set the path and name of the PNG file
+	 * 
+	 * \param pngFileName Name of the PNG file. The name can include a relative
+	 		or absolute path.
+	 */
+	void setPNGFileName (std::string const &pngFileName);
+	
+	/** \brief Switch to in-memory PNG data, and set the memory location and length
+	 * 
+	 * \param memLocationPNGData Pointer to the start of the PNG data in memory
+	 * \param lenPNGData Length of the PNG data 
+	 * \param pngImageName Name of the image for diagnostic and debugging purposes
+	 */
+	void setPNGMemoryData(
+		char const * memLocationPNGData,
+		int lenPNGData,
+		std::string const &pngImageName);
 
 	/** \brief Setup the vertex arrays, calculate normals... and setup VBOs
 	 *
@@ -88,17 +115,40 @@ private:
 	 *	0	  1
 	 */
 
-	GLfloat vertexArray[ 4 // 4 vertexes in the
-						*6]; // Per vertex position as Vec4 and texture coordinate as Vec2
+	VertexType vertexArray[4]; // Per vertex position as Vec4 and texture coordinate as Vec2
 
 	GLfloat textureBaseColor [4] = {1.0f,1.0f,1.0f,1.0f};
 	GLfloat textureNormal [4] = {0.0f, 0.0f, 1.0f, 0.0f};
 
 	OevGLES::GLProgDiffLightTexture* glProgram = 0;
 
+	bool dirty = true;
+
 	GLuint vertexBufferHandle = 0U;
 	GLuint vertexArrayHandle = 0U;
 	OevGLES::GLTexture varioBackgoundTexture;
+	
+	/** \brief Name of an external PNG file or name of the image from memory
+	 *
+	 * When \ref memLocation is \p nullptr it defines path and name of an
+	 * external PNG file.
+	 * 
+	 * Else it defines the name of the image from memory, and is used for diagnostic
+	 * and debugging purposes only
+	 */
+	std::string fileName;
+	
+	/** \brief Location of the PNG data in memory
+	 * 
+	 * When you set it you *must* also set \ref memLen. Otherwise exceptions fly.
+	 */
+	char* const memLocation = nullptr;
+
+	/** \brief length of the PNG data defined in \ref memLocation
+	 *
+	 * 
+	 */
+	int memLen = 0;
 
 };
 
