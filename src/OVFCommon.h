@@ -92,6 +92,11 @@
 #define LOG4CXX_L7DLOG3(logger, level, key, p1, p2, p3)  do {;} while (0)
 #endif /* #if defined HAVE_LOG4CXX_H */
 
+#include "gettext.h"
+#define _(str) dgettext(PACKAGE,str)
+#define N_(str1,str2,N) dngettext(PACKAGE,str1,str2,N)
+
+
 /**
  * Define OV_DLL_IMPORT, OV_DLL_EXPORT, and OV_DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
  *
