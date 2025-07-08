@@ -39,7 +39,7 @@ public:
 	typedef GLfloat VertexPosition [4];
 	typedef GLfloat TextureCoordinate [2];
 	
-	typedef struct VertexType {
+	struct VertexType {
 		VertexPosition position;
 		TextureCoordinate textureCoordinate;
 	};
@@ -50,10 +50,30 @@ public:
 
 	/** \brief Switch to external PNG file, and set the path and name of the PNG file
 	 * 
+	 * Using this method switches the source of PNG data to an external file.
+	 * If the source had been set to in-memory data using \ref setPNGMemoryData
+	 * this info is reset. \ref memLocation is reset to \p nullptr.
+	 * 
 	 * \param pngFileName Name of the PNG file. The name can include a relative
 	 		or absolute path.
 	 */
 	void setPNGFileName (std::string const &pngFileName);
+	
+	/** \brief Return the name of the external PNG file or an empty string.
+	 *
+	 * When the source is set to in-memory data with \ref setPNGMemoryData
+	 * the method returns an empty string.
+	 *
+	 * \return the path and name of the PNG file or an empty string
+	 */
+	std::string getPNGFileName (){
+		
+		if (memLocation == nullptr) {
+			return std::string();
+		}
+		
+		return fileName;
+	}
 	
 	/** \brief Switch to in-memory PNG data, and set the memory location and length
 	 * 
@@ -65,6 +85,31 @@ public:
 		char const * memLocationPNGData,
 		int lenPNGData,
 		std::string const &pngImageName);
+
+	/// \brief Return structure for \ref getMemoryDataInfo()
+	struct MemoryDataInfo {
+		/// Pointer to the start of the image data in memory.
+		/// Is \p nullptr when the source is not in-memory.
+		char const * memLocationPNGData;
+		/// Length of the image data.
+		/// Is 0 when the source is not in-memory
+		int lenPNGData;
+		/// Name of the image for information purposes only
+		std::string pngImageName;
+	};
+	
+	/** \brief Get information of in-memory source of image data
+	 
+	 \return \ref MemoryDataInfo
+	 \see \ref MemoryDataInfo for returned information.
+	 */
+	MemoryDataInfo getMemoryDataInfo() {
+		return MemoryDataInfo {
+			.memLocationPNGData=memLocation,
+			.lenPNGData=memLen,
+			.pngImageName=fileName
+		};
+	}
 
 	/** \brief Setup the vertex arrays, calculate normals... and setup VBOs
 	 *
