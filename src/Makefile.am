@@ -15,16 +15,17 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=lib/GL lib/util
+SUBDIRS=../resources lib/GL lib/util
 	
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
-OpenVarioFront_SOURCES=OpenVarioFront.cpp Vario5m.s
+OpenVarioFront_SOURCES=OpenVarioFront.cpp
  
 OpenVarioFront_LDADD = \
 	lib/GL/libOEV_GLES.a \
 	lib/util/libOEV_util.a \
+	../resources/libOEV_resurces.a \
 	$(LOG4CXX_LIBS) \
 	$(SDL3_LIBS) \
 	$(PANGO_FT2_LIBS) \

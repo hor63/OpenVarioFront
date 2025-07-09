@@ -15,14 +15,18 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+
+SUFFIXES = .png .s .S
+
+BINC = $(srcdir)/binary2obj.sh
+
+.png.o:
+	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" srcdir="$(srcdir)" $(BINC) $@ $< .png
+
+
 noinst_LIBRARIES = libOEV_resurces.a
-libOEV_GLES_a_SOURCES = Vario5m.png
+libOEV_resurces_a_SOURCES = Vario5m.png
 
 
 AM_LDFLAGS= $(LOG4CXX_LDFLAGS)
 
-
-.SUFFXES: .png .jpg .jpeg
-
-.o.png:
-	

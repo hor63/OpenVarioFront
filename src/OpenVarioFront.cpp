@@ -60,13 +60,7 @@ using namespace OevGLES;
 static void printEventType (SDL_Event& event);
 static bool handleSLEDvent (SDL_Event& event,OevGLES::GLFramework &framework);
 
-extern "C" {
-
-extern char const Vario5m[];
-extern char const Vario5m_end[];
-extern int const Vario5m_size;
-extern int const Vario5m_size_end;
-}
+#include "resources/Vario5m.h"
 
 int main(int argint,char** argv) {
 	int rc = 0;
@@ -87,7 +81,6 @@ int main(int argint,char** argv) {
 		<< ",Vario5m_end = " << reinterpret_cast<void const * const>(Vario5m_end)
 		<< ", Vario5m_size = " << Vario5m_size
 		<< ", &Vario5m_size = " << &Vario5m_size
-		<< ", &Vario5m_size_end = " << &Vario5m_size_end
 		);
 
     try {

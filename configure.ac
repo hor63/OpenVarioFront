@@ -283,8 +283,10 @@ DX_PDF_FEATURE(OFF)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(OpenVarioFront, $(srcdir)/doxygen.cfg, doc/doxygen)
 
-AC_CONFIG_FILES(Makefile po/Makefile.in
+AC_CONFIG_FILES(Makefile 
+                po/Makefile.in
                 3rdParty/Makefile
+                resources/Makefile
                 src/Makefile
                 src/lib/GL/Makefile
                 src/lib/util/Makefile

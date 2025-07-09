@@ -4,14 +4,18 @@
  *
  * It defines the global symbols NAME, NAME_end and NAME_size
  * The symbols are to be declared as follows in C++:
-
+ *
+ * You can adjust NAME and FILE_NAME with macro definitions on the command line
+ * when you are using gcc as assembler driver like:
+ gcc -c -o myIcon.o -DFILE_NAME=/path/myIcon.png -DNAME=myIcon includeBinary.S
+ * This command generates the equivalent C++ declarations:
  extern "C" {
- extern const char NAME[];
- extern const char NAME_end[];
- extern const int  NAME_size;
+ extern const char myIcon[];
+ extern const char myIcon_end[];
+ extern const int  myIcon_size;
  }
-
-*/
+ * To resolve the referenced symbols you must link myIcon.o to your program.
+ */
 
 #define catStr(name,suffix) name ## suffix
 #define xcatStr(name,suffix) catStr(name,suffix)
