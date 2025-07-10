@@ -386,7 +386,10 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUFFIXES = .png .s .S
+
+# Add assembler sources to force the declaration of the assembler command and
+# options and 
+SUFFIXES = .png .jpg .jpeg .s .S
 BINC = $(srcdir)/binary2obj.sh
 noinst_LIBRARIES = libOEV_resurces.a
 libOEV_resurces_a_SOURCES = Vario5m.png
@@ -394,7 +397,7 @@ AM_LDFLAGS = $(LOG4CXX_LDFLAGS)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .png .s .S .o
+.SUFFIXES: .png .jpg .jpeg .s .S .o
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -652,7 +655,13 @@ uninstall-am:
 
 
 .png.o:
-	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" srcdir="$(srcdir)" $(BINC) $@ $< .png
+	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" $(BINC) $@ $< $*
+
+.jpg.o:
+	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" $(BINC) $@ $< $*
+
+.jpeg.o:
+	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" $(BINC) $@ $< $*
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

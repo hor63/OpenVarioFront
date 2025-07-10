@@ -27,16 +27,34 @@
 
     .section .rodata
 
-    .global NAME
-    .type   NAME, @object
-    .global xcatStr(NAME,_end)
-    .type   xcatStr(NAME,_end), @object
+    .global xcatStr(NAME,_data)
+    .type   xcatStr(NAME,_data), @object
+    .global xcatStr(NAME,_data_end)
+    .type   xcatStr(NAME,_data_end), @object
     .align  8
-NAME:
+xcatStr(NAME,_data):
     .incbin xstr(FILE_NAME)
-xcatStr(NAME,_end):
+xcatStr(NAME,_data_end):
+
     .global xcatStr(NAME,_size)
     .type   xcatStr(NAME,_size), @object
     .align  8
 xcatStr(NAME,_size):
-    .int    xcatStr(NAME,_end) - NAME
+    .int    xcatStr(NAME,_data_end) - xcatStr(NAME,_data)
+
+    .global xcatStr(NAME,_size)
+    .type   xcatStr(NAME,_size), @object
+    .align  8
+
+    .global xcatStr(NAME,_filename)
+    .type   xcatStr(NAME,_filename), @object
+    .align  8
+xcatStr(NAME,_filename):
+    .string xstr(BASE_FILENAME)
+xcatStr(NAME,_filename_end):
+
+
+    .global xcatStr(NAME,_filename_length)
+    .type   xcatStr(NAME,_filename_length), @object
+xcatStr(NAME,_filename_length):
+    .int xcatStr(NAME,_filename_end) - xcatStr(NAME,_filename) - 1

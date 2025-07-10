@@ -16,12 +16,21 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-SUFFIXES = .png .s .S
+# Add assembler sources to force the declaration of the assembler command and
+# options which are being used to invoke the assembler to package the binary
+# file into an object file
+SUFFIXES = .png .jpg .jpeg .s .S
 
 BINC = $(srcdir)/binary2obj.sh
 
 .png.o:
-	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" srcdir="$(srcdir)" $(BINC) $@ $< .png
+	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" $(BINC) $@ $< $*
+
+.jpg.o:
+	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" $(BINC) $@ $< $*
+
+.jpeg.o:
+	CCAS="$(CCAS)" CCASFLAGS="$(CCASFLAGS)" $(BINC) $@ $< $*
 
 
 noinst_LIBRARIES = libOEV_resurces.a
