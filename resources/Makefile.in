@@ -388,7 +388,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 # Add assembler sources to force the declaration of the assembler command and
-# options and 
+# options which are being used to invoke the assembler to package the binary
+# file into an object file
 SUFFIXES = .png .jpg .jpeg .s .S
 BINC = $(srcdir)/binary2obj.sh
 noinst_LIBRARIES = libOEV_resurces.a
