@@ -171,7 +171,7 @@ namespace OevGLES {
 
 GLTextRenderer::VertexBufferPerTexture::~VertexBufferPerTexture() {
 	
-	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 		<< ": vertexBufferHandle = " << vertexBufferHandle
 		<< ", vertexArrayHandle  = " << vertexArrayHandle
 		);
@@ -269,7 +269,7 @@ GLTextRenderer::~GLTextRenderer() {
 		g_object_unref(pangoTextRenderer);
 	}
 
-	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 		<< ": vertexBufferHandleTextBackground = " << vertexBufferHandleTextBackground
 		<< ", vertexArrayHandleTextBackground  = " << vertexArrayHandleTextBackground
 		);

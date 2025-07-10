@@ -55,7 +55,7 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(s
 
 CirclePolygonVertexContainer::CircleVertexArrayStruct::~CircleVertexArrayStruct() {
 
-	LOG4CXX_INFO(logger, __PRETTY_FUNCTION__
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 		<< ": vertexBufferHandle = " << vertexBufferHandle
 		<< ", vertexArrayHandle" << vertexArrayHandle
 		);

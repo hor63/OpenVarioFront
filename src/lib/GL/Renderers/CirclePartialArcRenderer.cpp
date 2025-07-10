@@ -76,7 +76,7 @@ CirclePartialArcRenderer::CirclePartialArcRenderer(CirclePolygonVertexContainer&
 }
 
 CirclePartialArcRenderer::~CirclePartialArcRenderer() {
-	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 		<< ": vertexBufferHandleArcEnd = " << vertexBufferHandleArcEnd
 		<< ", vertexArrayHandleArcEnd  = " << vertexArrayHandleArcEnd
 		);
