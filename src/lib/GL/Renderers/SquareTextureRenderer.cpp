@@ -23,6 +23,7 @@
  *
  */
 
+#include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -57,19 +58,19 @@ SquareTextureRenderer::SquareTextureRenderer()
 	 */
 	  vertexArray {
 		{
-			{0.0f,0.0f,0.0f,1.0f},
+			{-356.0f,-256.0f,0.0f,1.0f},
 			{0.0f,0.0f}
 		},
 		{
-			{1.0f,0.0f,0.0f,1.0f},
+			{156.0f,-256.0f,0.0f,1.0f},
 			{1.0f,0.0f}
 		},
 		{
-			{0.0f,1.0f,0.0f,1.0f},
+			{-256.0f,256.0f,0.0f,1.0f},
 			{0.0f,1.0f}
 		},
 		{
-			{1.0f,1.0f,0.0f,1.0f},
+			{256.0f,256.0f,0.0f,1.0f},
 			{1.0f,1.0f}
 		},
 	
@@ -106,7 +107,7 @@ SquareTextureRenderer::SquareTextureRenderer()
 
 SquareTextureRenderer::~SquareTextureRenderer() {
 
-		LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 		<< ": vertexBufferHandle = " << vertexBufferHandle
 		<< ", vertexArrayHandle  = " << vertexArrayHandle
 		);
@@ -123,7 +124,28 @@ SquareTextureRenderer::~SquareTextureRenderer() {
 
  }
 
+void SquareTextureRenderer::setPNGFileName (std::string const &pngFileName) {
+	
+	// Check if the the same file was set before, and in-memory data were
+	// not being setup before.
+	if (memLocation == nullptr && fileName == pngFileName) {
+		// no action required.
+		return;
+	}
+	
+	fileName = pngFileName;
+	// Reset in-memory data if it existed before.
+	memLocation = nullptr;
+	memLen = 0;
+	dirty = true;
+}
+
+
 void SquareTextureRenderer::setupVertexBuffers() {
+
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+			<< ": dirty = " << dirty);
+
 
 	if (dirty) {
 	
@@ -134,10 +156,15 @@ void SquareTextureRenderer::setupVertexBuffers() {
 		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 		glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 	
+		std::unique_ptr<OevGLES::PngReader> varioBackgoundReader;
 		// Load the texture into GL
-		OevGLES::PngReader varioBackgoundReader ("./Vario5m.png");
+		if (memLocation == nullptr) {
+			varioBackgoundReader.reset(new PngReader (memLocation,memLen,fileName));
+		} else {
+			varioBackgoundReader.reset(new PngReader (fileName.c_str()));
+		}
 		OevGLES::TextureData texData (8,8,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
-		varioBackgoundReader.readPngToTexture(texData);
+		varioBackgoundReader->readPngToTexture(texData);
 		varioBackgoundTexture.setTextureData(texData);
 	
 		varioBackgoundTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
@@ -185,7 +212,7 @@ void SquareTextureRenderer::draw(
 	glProgram->useProgram();
 
 
-	LOG4CXX_DEBUG(logger,"lightDir = " << lightDir.transpose());
+	LOG4CXX_TRACE(logger,"lightDir = " << lightDir.transpose());
 
 	/*
 	GLfloat* p0 = vertexArray;

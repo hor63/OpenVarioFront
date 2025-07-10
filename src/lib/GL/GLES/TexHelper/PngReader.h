@@ -37,7 +37,7 @@ namespace OevGLES {
 class PngReader {
 public:
 	/// \brief Read a PNG image from a file
-	PngReader(char const *fileName);
+	PngReader(std::string const &fileName);
 	/// Read a PNG image from a memory location within the program
 	PngReader(char const *memLocation,int memLength,std::string const &imageName);
 	virtual ~PngReader();

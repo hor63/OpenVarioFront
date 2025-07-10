@@ -48,7 +48,7 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-PngReader::PngReader(char const *fileName)
+PngReader::PngReader(std::string const &fileName)
 	:fileName{fileName}
 {
 #if defined HAVE_LOG4CXX_H
@@ -66,7 +66,11 @@ PngReader::PngReader(
 	memLength{memLength},
 	fileName{imageName} 
 {
-	
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.PngReader");
+	}
+#endif
 }
 
 PngReader::~PngReader() {}
@@ -181,12 +185,21 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 			setupReadFromMemory(pngPtr);
 		} else {
 			// Setup reading from file; open the file.
+			if (fileName.empty()) {
+				throw PngReaderException(fmt::format(
+					_("Error: Neither a PNG file name was set nor in-memrory data provided.")
+					).c_str());
+			}
 			setupReadFromFile(pngPtr,pngFile);
 		}
 
 		if (setjmp(png_jmpbuf(pngPtr))) {
-			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file");
-			throw PngReaderException(errorMessage.c_str());
+			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file with message: "
+			<< errorMessage);
+			throw PngReaderException(
+				fmt::format (
+					_("Error reading PNG file {0}: {1}"),
+					fileName,errorMessage).c_str());
 		}
 
 		png_set_sig_bytes(pngPtr,0);
