@@ -77,10 +77,12 @@ int main(int argint,char** argv) {
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront");
 #endif // if defined HAVE_LOG4CXX_H
 
-	LOG4CXX_INFO (logger,"Vario5m = " << reinterpret_cast<void const * const>(Vario5m)
-		<< ",Vario5m_end = " << reinterpret_cast<void const * const>(Vario5m_end)
+	LOG4CXX_INFO (logger,"Vario5m_data = " << reinterpret_cast<void const * const>(Vario5m_data)
+		<< ",Vario5m_end = " << reinterpret_cast<void const * const>(Vario5m_data_end)
 		<< ", Vario5m_size = " << Vario5m_size
 		<< ", &Vario5m_size = " << &Vario5m_size
+		<< ", Vario5m_filename = " << Vario5m_filename
+		<< ", Vario5m_filename_length = " << Vario5m_filename_length
 		);
 
     try {
