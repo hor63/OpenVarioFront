@@ -95,6 +95,7 @@ int main(int argint,char** argv) {
 		glFramework->createRenderSurface(1024,1024,PACKAGE_STRING);
 
 		OevGLES::SquareTextureRenderer varioBackground;
+		varioBackground.setPNGFileName("../../resources/Vario5m.png");
 
 		int windowWidth = -1, windowHeight = -1;
 		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
