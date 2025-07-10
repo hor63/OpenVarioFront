@@ -41,10 +41,7 @@ AM_CXXFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
 
 AM_LDFLAGS= $(LOG4CXX_LDFLAGS) 
 
-all: $(abs_builddir)/OpenVarioFront.logger.properties $(abs_builddir)/Vario5m.png
+all: $(abs_builddir)/OpenVarioFront.logger.properties
 
 $(abs_builddir)/OpenVarioFront.logger.properties: $(srcdir)/OpenVarioFront.logger.properties
 	cp $(srcdir)/OpenVarioFront.logger.properties $(abs_builddir)/OpenVarioFront.logger.properties
-
-$(abs_builddir)/Vario5m.png: $(srcdir)/Vario5m.png
-	cp $(srcdir)/Vario5m.png $(abs_builddir)/Vario5m.png

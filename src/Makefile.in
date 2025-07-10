@@ -888,13 +888,10 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 
-all: $(abs_builddir)/OpenVarioFront.logger.properties $(abs_builddir)/Vario5m.png
+all: $(abs_builddir)/OpenVarioFront.logger.properties
 
 $(abs_builddir)/OpenVarioFront.logger.properties: $(srcdir)/OpenVarioFront.logger.properties
 	cp $(srcdir)/OpenVarioFront.logger.properties $(abs_builddir)/OpenVarioFront.logger.properties
-
-$(abs_builddir)/Vario5m.png: $(srcdir)/Vario5m.png
-	cp $(srcdir)/Vario5m.png $(abs_builddir)/Vario5m.png
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
