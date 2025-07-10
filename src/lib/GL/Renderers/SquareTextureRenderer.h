@@ -187,7 +187,7 @@ private:
 	 * 
 	 * When you set it you *must* also set \ref memLen. Otherwise exceptions fly.
 	 */
-	char* const memLocation = nullptr;
+	char const* memLocation = nullptr;
 
 	/** \brief length of the PNG data defined in \ref memLocation
 	 *
