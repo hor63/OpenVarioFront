@@ -45,7 +45,7 @@ SquareTextureRenderer::SquareTextureRenderer()
 	// Setup the positions
 	/* The texture is rendered by 2 triangles in a fan forming a square.
 	 *
-	 *	V2	  V3
+	 *	V2	  V1
 	 *	-------
 	 *	|\    |
 	 *	| \   |
@@ -53,25 +53,25 @@ SquareTextureRenderer::SquareTextureRenderer()
 	 *	|   \ |
 	 *	|    \|
 	 *	-------
-	 *	V0	  V1
+	 *	V3	  V0
 	 *
 	 */
 	  vertexArray {
 		{
-			{-356.0f,-256.0f,0.0f,1.0f},
-			{0.0f,0.0f}
+			{256.0f,-256.0f,-26.0f,1.0f},
+			{1.0f,  0.0f}
 		},
 		{
-			{156.0f,-256.0f,0.0f,1.0f},
-			{1.0f,0.0f}
+			{256.0f, 256.0f,-26.0f,1.0f},
+			{ 1.0f, 1.0f}
 		},
 		{
-			{-256.0f,256.0f,0.0f,1.0f},
-			{0.0f,1.0f}
+			{-256.0f, 256.0f,-26.0f,1.0f},
+			{0.0f, 1.0f}
 		},
 		{
-			{256.0f,256.0f,0.0f,1.0f},
-			{1.0f,1.0f}
+			{-256.0f,-256.0f,-26.0f,1.0f},
+			{ 0.0f, 0.0f}
 		},
 	
 	}
