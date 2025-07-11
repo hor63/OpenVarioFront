@@ -140,6 +140,23 @@ void SquareTextureRenderer::setPNGFileName (std::string const &pngFileName) {
 	dirty = true;
 }
 
+void SquareTextureRenderer::setPNGMemoryData(
+		char const * memLocationPNGData,
+		int lenPNGData,
+		std::string const &pngImageName) {
+
+	memLocation = memLocationPNGData;
+	memLen = lenPNGData;
+	fileName = pngImageName;
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+		<< ": memLocation = " << reinterpret_cast<void const *>(memLocation)
+		<< ", lenPNGData = " << memLen
+		<< ", pngImageName" << fileName);
+
+	dirty = true;
+
+}
 
 void SquareTextureRenderer::setupVertexBuffers() {
 
@@ -158,7 +175,12 @@ void SquareTextureRenderer::setupVertexBuffers() {
 	
 		std::unique_ptr<OevGLES::PngReader> varioBackgoundReader;
 		// Load the texture into GL
-		if (memLocation == nullptr) {
+		if (memLocation != nullptr) {
+			LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+				<< ": create PngReader with memLocation = "
+				<< reinterpret_cast<void const *>(memLocation)
+				<< ", lenPNGData = " << memLen
+				<< ", pngImageName" << fileName);
 			varioBackgoundReader.reset(new PngReader (memLocation,memLen,fileName));
 		} else {
 			varioBackgoundReader.reset(new PngReader (fileName.c_str()));

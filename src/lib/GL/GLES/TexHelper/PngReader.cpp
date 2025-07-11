@@ -56,6 +56,8 @@ PngReader::PngReader(std::string const &fileName)
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.PngReader");
 	}
 #endif
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+		<< ", fileName = " << this->fileName);
 }
 
 PngReader::PngReader(
@@ -71,6 +73,11 @@ PngReader::PngReader(
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.PngReader");
 	}
 #endif
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+		<< ": memLocation = "
+		<< reinterpret_cast<void const *>(this->memLocation)
+		<< ", lenPNGData = " << this->memLength
+		<< ", fileName = " << this->fileName);
 }
 
 PngReader::~PngReader() {}
@@ -80,9 +87,10 @@ void PngReader::readPngDataFromMemoryCallback(png_struct* pngPtr,
 
 	PngReader* tis = reinterpret_cast<PngReader*>(png_get_io_ptr(pngPtr));
 
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": tis = " << tis);
-	LOG4CXX_DEBUG(logger,"\tdata = " << data << ", length = " << dataLength
-		<< ", memLocation = " << tis->memLocation
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": tis = " << tis
+		<< ", data = " << reinterpret_cast<void const*>(data)
+		<< ", length = " << dataLength
+		<< ", memLocation = " << reinterpret_cast<void const*>(tis->memLocation)
 		<< ", memLength " << tis->memLength
 		<< ", posInMemLocation " << tis->posInMemLocation
 		);
@@ -146,6 +154,8 @@ void PngReader::setupReadFromFile(png_struct* pngPtr,FILE* &pngFile){
 };
 void PngReader::setupReadFromMemory(png_struct* pngPtr) {
 	
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__);
+
 	png_set_read_fn(pngPtr,this,
 		readPngDataFromMemoryCallback);
 	png_init_io(pngPtr,reinterpret_cast<FILE*>(this));
