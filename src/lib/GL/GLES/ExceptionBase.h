@@ -90,6 +90,13 @@ public:
 		{}
 };
 
+class JpegReaderException :public ExceptionBase {
+public:
+	JpegReaderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
 class GLTextRenderException :public ExceptionBase {
 public:
 	GLTextRenderException(char const *description)
