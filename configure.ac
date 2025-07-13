@@ -219,6 +219,10 @@ PKG_CHECK_MODULES([LIBPNG], [libpng])
 AC_SUBST([LIBPNG_CFLAGS])
 AC_SUBST([LIBPNG_LIBS])
 
+PKG_CHECK_MODULES([LIBJPEG], [libjpeg])
+AC_SUBST([LIBJPEG_CFLAGS])
+AC_SUBST([LIBJPEG_LIBS])
+
 # When you do not find a working SDL3 installation
 # configure, build, and install it here right away
 # then finding the installed package is assured unless something with the build

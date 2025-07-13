@@ -133,7 +133,7 @@ OpenVarioFront_DEPENDENCIES = lib/GL/libOEV_GLES.a \
 	lib/util/libOEV_util.a ../resources/libOEV_resurces.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -336,6 +336,8 @@ LDFLAGS_FOR_BUILD = @LDFLAGS_FOR_BUILD@
 LD_NO_UNDEFINED_OPT = @LD_NO_UNDEFINED_OPT@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
+LIBJPEG_CFLAGS = @LIBJPEG_CFLAGS@
+LIBJPEG_LIBS = @LIBJPEG_LIBS@
 LIBOBJS = @LIBOBJS@
 LIBPNG_CFLAGS = @LIBPNG_CFLAGS@
 LIBPNG_LIBS = @LIBPNG_LIBS@
@@ -465,13 +467,15 @@ OpenVarioFront_LDADD = \
 	$(SDL3_LIBS) \
 	$(PANGO_FT2_LIBS) \
 	$(LIBPNG_LIBS) \
+	$(LIBJPEG_LIBS) \
 	$(GLES2_LIBS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
 	-I$(top_srcdir)/src/lib/util \
 	-I$(top_srcdir)/3rdParty/eigen/Eigen \
 	-I$(top_srcdir)/3rdParty/fmt/include \
-	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) \
+	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(PANGO_FT2_CFLAGS) \
+	$(LIBPNG_CFLAGS) $(LIBJPEG_CFLAGS) \
 	$(SDL3_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
 
 AM_LDFLAGS = $(LOG4CXX_LDFLAGS) 

@@ -30,13 +30,15 @@ OpenVarioFront_LDADD = \
 	$(SDL3_LIBS) \
 	$(PANGO_FT2_LIBS) \
 	$(LIBPNG_LIBS) \
+	$(LIBJPEG_LIBS) \
 	$(GLES2_LIBS)
 
 AM_CXXFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
 	-I$(top_srcdir)/src/lib/util \
 	-I$(top_srcdir)/3rdParty/eigen/Eigen \
 	-I$(top_srcdir)/3rdParty/fmt/include \
-	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(LIBPNG_CFLAGS) $(PANGO_FT2_CFLAGS) \
+	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(PANGO_FT2_CFLAGS) \
+	$(LIBPNG_CFLAGS) $(LIBJPEG_CFLAGS) \
 	$(SDL3_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
 
 AM_LDFLAGS= $(LOG4CXX_LDFLAGS) 
