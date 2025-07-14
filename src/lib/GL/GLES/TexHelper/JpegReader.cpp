@@ -24,8 +24,8 @@
  */
 
 
+#include "glib.h"
 #include <csetjmp>
-#include <jpeglib.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -42,6 +42,8 @@
 
 #include "GLES/TexHelper/JpegReader.h"
 #include "GLES/ExceptionBase.h"
+
+#include <jpeglib.h>
 
 namespace OevGLES {
 
@@ -158,17 +160,18 @@ void JpegReader::setupReadFromFile(jpeg_decompress_struct& jpegInfo,FILE* &jpegF
 	
 };
 
-/*
 void JpegReader::setupReadFromMemory(jpeg_decompress_struct& jpegInfo) {
 	
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__);
+	throw JpegReaderException("JPEG from memory is not supported yet.");
+/*
 
 	png_set_read_fn(jpegInfo,this,
 		readPngDataFromMemoryCallback);
 	png_init_io(pngPtr,reinterpret_cast<FILE*>(this));
+*/
 
 }
-*/
 
 void JpegReader::readJpegToTexture(TextureData &textureData) {
 
@@ -218,13 +221,41 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 
 		jpeg_read_header(&jpegInfo, TRUE);
 
-		LOG4CXX_DEBUG(logger,": Image size = "
+		LOG4CXX_DEBUG(logger,"\tImage size = "
 			<< jpegInfo.image_width << 'x' << jpegInfo.image_height);
+			
+		LOG4CXX_DEBUG(logger,"\tout_color_space = " << static_cast<int>(jpegInfo.out_color_space));
+		
+		// Select the format for me.
+		// I only support greyscale or RGB, no Alpha channel, which is poorly
+		// defined for JPEG anyway.
+		// If I need an image with Alpha channel I will use PNG.
+		// Natural images like photos, art are the natural domain of JPEG. But
+		// they usually do not have an Alpha channel.
+		if (jpegInfo.jpeg_color_space == JCS_GRAYSCALE) {
+			jpegInfo.out_color_space = JCS_GRAYSCALE;
+		} else {
+			jpegInfo.out_color_space = JCS_RGB;
+		}
+		// I do not want color maps.
+		jpegInfo.quantize_colors = FALSE;
 
 		jpeg_start_decompress(&jpegInfo);
-		LOG4CXX_DEBUG(logger,": Image size = "
+		LOG4CXX_DEBUG(logger,"\tAfter decompressing: Image size = "
 			<< jpegInfo.output_width << 'x' << jpegInfo.output_height);
+		LOG4CXX_DEBUG(logger,"\t dct_method            = " << jpegInfo.dct_method);
+		LOG4CXX_DEBUG(logger,"\t do_fancy_upsampling   = " << jpegInfo.do_fancy_upsampling);
+		LOG4CXX_DEBUG(logger,"\t do_block_smoothing    = " << jpegInfo.do_block_smoothing);
+		LOG4CXX_DEBUG(logger,"\t enable_1pass_quant    = " << jpegInfo.enable_1pass_quant);
+		LOG4CXX_DEBUG(logger,"\t enable_external_quant = " << jpegInfo.enable_external_quant);
+		LOG4CXX_DEBUG(logger,"\t enable_2pass_quant    = " << jpegInfo.enable_2pass_quant);
+		LOG4CXX_DEBUG(logger,"\t rec_outbuf_heigh      = " << jpegInfo.rec_outbuf_height);
+		LOG4CXX_DEBUG(logger,"\t out_color_components  = " << jpegInfo.out_color_components);
+		LOG4CXX_DEBUG(logger,"\t data_precision        = " << jpegInfo.data_precision);
+		LOG4CXX_DEBUG(logger,"\t out_color_components  = " << jpegInfo.out_color_components);
+		LOG4CXX_DEBUG(logger,"\t output_components     = " << jpegInfo.output_components);
 
+/*
 		TextureData::GlFormat textureFormat;
 		TextureData::DataType textureDataType;
 		// Build the texture buffer object according to the information from the PNG file
@@ -321,37 +352,32 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 		// Cleanup
 		png_destroy_read_struct(&pngPtr,&pngInfo,NULL);
 		LOG4CXX_DEBUG(logger,"Destroyed the PNG structures.");
+*/
 
+		// Cleanup
+		LOG4CXX_DEBUG(logger,"\tCalling jpeg_finish_decompress");
+		jpeg_finish_decompress(&jpegInfo);
+
+		LOG4CXX_DEBUG(logger,"\tCalling jpeg_destroy_decompress");
+		jpeg_destroy_decompress(&jpegInfo);
 		if(jpegFile) {
 			fclose (jpegFile);
 		}
-
 
 	}
 	catch (std::exception const &e) {
 
 		// Perform internal cleanup before re-throwing the exception
-
-		if (rowPointers) {
-			delete rowPointers;
-		}
-
-		if (pngInfo) {
-			png_destroy_info_struct(pngPtr,&pngInfo);
-		}
-
-		if (pngPtr) {
-			png_destroy_read_struct(&pngPtr,NULL,NULL);
-		}
-
-		if (jpegFile) {
+		jpeg_finish_decompress(&jpegInfo);
+		jpeg_destroy_decompress(&jpegInfo);
+		if(jpegFile) {
 			fclose (jpegFile);
 		}
 
 		throw;
 	}
 
-
+	throw JpegReaderException("Testing only");
 
 
 }

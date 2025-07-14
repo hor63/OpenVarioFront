@@ -33,6 +33,7 @@
 #include "GLES/GLFramework.h"
 #include "Renderers/SquareTextureRenderer.h"
 #include "GLES/TexHelper/PngReader.h"
+#include "GLES/TexHelper/JpegReader.h"
 
 #if defined HAVE_LOG4CXX_H
 	static log4cxx::LoggerPtr logger = 0;
@@ -173,7 +174,7 @@ void SquareTextureRenderer::setupVertexBuffers() {
 		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 		glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 	
-		std::unique_ptr<OevGLES::PngReader> varioBackgoundReader;
+		std::unique_ptr<OevGLES::JpegReader> varioBackgoundReader;
 		// Load the texture into GL
 		if (memLocation != nullptr) {
 			LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
@@ -181,12 +182,12 @@ void SquareTextureRenderer::setupVertexBuffers() {
 				<< reinterpret_cast<void const *>(memLocation)
 				<< ", lenPNGData = " << memLen
 				<< ", pngImageName" << fileName);
-			varioBackgoundReader.reset(new PngReader (memLocation,memLen,fileName));
+			varioBackgoundReader.reset(new JpegReader (memLocation,memLen,fileName));
 		} else {
-			varioBackgoundReader.reset(new PngReader (fileName.c_str()));
+			varioBackgoundReader.reset(new JpegReader (fileName.c_str()));
 		}
 		OevGLES::TextureData texData (8,8,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
-		varioBackgoundReader->readPngToTexture(texData);
+		varioBackgoundReader->readJpegToTexture(texData);
 		varioBackgoundTexture.setTextureData(texData);
 	
 		varioBackgoundTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
