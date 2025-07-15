@@ -1,0 +1,51 @@
+# German translations for OpenVarioFront package.
+# Copyright (C) 2025 Kai Horstmann
+# This file is distributed under the same license as the OpenVarioFront package.
+# Kai Horstmann <horstmannkai@hotmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenVarioFront 0.1\n"
+"Report-Msgid-Bugs-To: https://github.com/hor63/OpenVarioFront/issues\n"
+"POT-Creation-Date: 2025-07-15 23:04+0200\n"
+"PO-Revision-Date: 2025-07-15 23:04+0200\n"
+"Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
+"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:153
+msgid "Could not open JPEG file {0}. errno = {1}: {2}"
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:202
+msgid "Error: Neither a PNG file name was set nor in-memrory data provided."
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:103
+msgid ""
+"Error reading PNG image {0} from memory. Requested length is {1} bytes, but "
+"only {2} bytes of {3} are left for reading."
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:146
+msgid "Could not open PNG file {0}. errno = {1}: {2}"
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:200
+msgid ""
+"Error: Neither a PNG file name was set nor in-memrory data was provided."
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:211
+msgid "Error reading PNG image {0}: {1}"
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:303
+msgid ""
+"Error in PNG image {0}: PNG buffer length is {1} but the length of the "
+"texture data buffer is {2}."
+msgstr ""
