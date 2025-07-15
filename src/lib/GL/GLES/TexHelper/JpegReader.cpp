@@ -255,13 +255,13 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 		LOG4CXX_DEBUG(logger,"\t out_color_components  = " << jpegInfo.out_color_components);
 		LOG4CXX_DEBUG(logger,"\t output_components     = " << jpegInfo.output_components);
 
-/*
+
 		TextureData::GlFormat textureFormat;
 		TextureData::DataType textureDataType;
 		// Build the texture buffer object according to the information from the PNG file
-		switch (colorType) {
-		case PNG_COLOR_TYPE_GRAY:
-			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY");
+		switch (jpegInfo.out_color_space) {
+		case JCS_GRAYSCALE:
+			LOG4CXX_DEBUG(logger,"Color type is JCS_GRAYSCALE");
 			if (bitDepth != 8) {
 				std::ostringstream os;
 				os << "Bit depth of color type PNG_COLOR_TYPE_GRAY is " << bitDepth << ". This depth is not supported.";
@@ -272,20 +272,8 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 			}
 			break;
 
-		case PNG_COLOR_TYPE_GRAY_ALPHA:
-			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY_ALPHA");
-			if (bitDepth != 8) {
-				std::ostringstream os;
-				os << "Bit depth of color type PNG_COLOR_TYPE_GRAY_ALPHA is " << bitDepth << ". This depth is not supported.";
-				throw JpegReaderException(os.str().c_str());
-			} else {
-				textureFormat = TextureData::LuminanceA;
-				textureDataType = TextureData::Byte;
-			}
-			break;
-
-		case PNG_COLOR_TYPE_RGB:
-			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGB");
+		case JCS_RGB:
+			LOG4CXX_DEBUG(logger,"Color type is JCS_RGB");
 			if (bitDepth != 8) {
 				std::ostringstream os;
 				os << "Bit depth of color type PNG_COLOR_TYPE_RGB is " << bitDepth << ". This depth is not supported.";
