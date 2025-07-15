@@ -177,13 +177,13 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
 		LOG4CXX_DEBUG(logger,"Created read struct. pngPtr = " << pngPtr);
 		if (!pngPtr) {
-			throw PngReaderException("png_create_read_struct() failed");
+			throw PngReaderException("png_create_read_struct() failed.");
 		}
 
 		pngInfo = png_create_info_struct(pngPtr);
 		LOG4CXX_DEBUG(logger,"Created info struct. pngInfo = " << pngInfo);
 		if (!pngInfo) {
-			throw PngReaderException("png_create_info_struct() failed");
+			throw PngReaderException("png_create_info_struct() failed.");
 		}
 
 		png_set_error_fn(pngPtr,
@@ -197,7 +197,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 			// Setup reading from file; open the file.
 			if (fileName.empty()) {
 				throw PngReaderException(fmt::format(
-					_("Error: Neither a PNG file name was set nor in-memrory data provided.")
+					_("Error: Neither a PNG file name was set nor in-memrory data was provided.")
 					).c_str());
 			}
 			setupReadFromFile(pngPtr,pngFile);
@@ -208,7 +208,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 			<< errorMessage);
 			throw PngReaderException(
 				fmt::format (
-					_("Error reading PNG file {0}: {1}"),
+					_("Error reading PNG image {0}: {1}"),
 					fileName,errorMessage).c_str());
 		}
 
@@ -235,9 +235,10 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		case PNG_COLOR_TYPE_GRAY:
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY");
 			if (bitDepth != 8) {
-				std::ostringstream os;
-				os << "Bit depth of color type PNG_COLOR_TYPE_GRAY is " << bitDepth << ". This depth is not supported.";
-				throw PngReaderException(os.str().c_str());
+				auto errMsg = fmt::format(
+					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.",
+					fileName,"PNG_COLOR_TYPE_GRAY",bitDepth);
+				throw PngReaderException(errMsg.c_str());
 			} else {
 				textureFormat = TextureData::Luminance;
 				textureDataType = TextureData::Byte;
@@ -247,9 +248,10 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		case PNG_COLOR_TYPE_GRAY_ALPHA:
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY_ALPHA");
 			if (bitDepth != 8) {
-				std::ostringstream os;
-				os << "Bit depth of color type PNG_COLOR_TYPE_GRAY_ALPHA is " << bitDepth << ". This depth is not supported.";
-				throw PngReaderException(os.str().c_str());
+				auto errMsg = fmt::format(
+					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.",
+					fileName,"PNG_COLOR_TYPE_GRAY_ALPHA",bitDepth);
+				throw PngReaderException(errMsg.c_str());
 			} else {
 				textureFormat = TextureData::LuminanceA;
 				textureDataType = TextureData::Byte;
@@ -259,9 +261,10 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		case PNG_COLOR_TYPE_RGB:
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGB");
 			if (bitDepth != 8) {
-				std::ostringstream os;
-				os << "Bit depth of color type PNG_COLOR_TYPE_RGB is " << bitDepth << ". This depth is not supported.";
-				throw PngReaderException(os.str().c_str());
+				auto errMsg = fmt::format(
+					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.",
+					fileName,"PNG_COLOR_TYPE_RGB",bitDepth);
+				throw PngReaderException(errMsg.c_str());
 			} else {
 				textureFormat = TextureData::RGB;
 				textureDataType = TextureData::Byte;
@@ -271,9 +274,10 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		case PNG_COLOR_TYPE_RGB_ALPHA:
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGBA");
 			if (bitDepth != 8) {
-				std::ostringstream os;
-				os << "Bit depth of color type PNG_COLOR_TYPE_RGB_ALPHA is " << bitDepth << ". This depth is not supported.";
-				throw PngReaderException(os.str().c_str());
+				auto errMsg = fmt::format(
+					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.",
+					fileName,"PNG_COLOR_TYPE_RGB_ALPHA",bitDepth);
+				throw PngReaderException(errMsg.c_str());
 			} else {
 				textureFormat = TextureData::RGBA;
 				textureDataType = TextureData::Byte;
@@ -282,10 +286,10 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 
 		default:
 			{
-				std::ostringstream os;
-				os << "Un-supported PNG color type" << colorType;
-				LOG4CXX_ERROR(logger,os.str().c_str());
-				throw PngReaderException(os.str().c_str());
+				auto errMsg = fmt::format(
+					"PNG image {0}: Un-supported PNG color type {1}",
+					fileName,colorType);
+				throw PngReaderException(errMsg.c_str());
 			}
 
 		}
@@ -295,10 +299,12 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		LOG4CXX_DEBUG(logger,"PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
 				", the length of the texturedata buffer is " << textureData.getDataBufferLength());
 		if (textureData.getDataBufferLength() != png_get_rowbytes(pngPtr,pngInfo) * height) {
-			std::ostringstream os;
-			os << "Error in PngReader: PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
-					" whereas the length of the texturedata buffer is " << textureData.getDataBufferLength();
-			throw PngReaderException(os.str().c_str());
+			auto errMsg = fmt::format(_(
+				"Error in PNG image {0}: PNG buffer length is {1} but the length of the texture data buffer is {2}."
+				),
+				fileName,(png_get_rowbytes(pngPtr,pngInfo) * height),
+				textureData.getDataBufferLength());
+			throw PngReaderException(errMsg.c_str());
 		}
 
 		rowPointers = png_get_rows(pngPtr,pngInfo);
@@ -313,17 +319,16 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 
 
 		// Read the rows bottom to top into the texture buffer
+		LOG4CXX_DEBUG(logger,"Copy the buffer");
 		for (int i = height - 1; i >= 0; i--) {
 			LOG4CXX_TRACE(logger,"Copy from line " << i << " to line " << ((currRow - texDataPtr) / bytesPerRow));
 			memcpy (currRow,rowPointers[i],bytesPerRow);
 			currRow += bytesPerRow;
 		}
 
-		LOG4CXX_DEBUG(logger,"Copied the buffer");
-
 		// Cleanup
+		LOG4CXX_DEBUG(logger,"Destroy the PNG structures.");
 		png_destroy_read_struct(&pngPtr,&pngInfo,NULL);
-		LOG4CXX_DEBUG(logger,"Destroyed the PNG structures.");
 
 		if(pngFile) {
 			fclose (pngFile);
@@ -333,8 +338,10 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 	}
 	catch (std::exception const &e) {
 
-		// Perform internal cleanup before re-throwing the exception
+		LOG4CXX_ERROR(logger,__PRETTY_FUNCTION__ 
+			<< "Exception: " << e.what());
 
+		// Perform internal cleanup before re-throwing the exception
 		if (rowPointers) {
 			delete rowPointers;
 		}
