@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenVarioFront 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/OpenVarioFront/issues\n"
-"POT-Creation-Date: 2025-07-15 23:04+0200\n"
+"POT-Creation-Date: 2025-07-16 14:51+0200\n"
 "PO-Revision-Date: 2025-07-15 23:04+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -22,7 +22,7 @@ msgid "Could not open JPEG file {0}. errno = {1}: {2}"
 msgstr ""
 
 #: src/lib/GL/GLES/TexHelper/JpegReader.cpp:202
-msgid "Error: Neither a PNG file name was set nor in-memrory data provided."
+msgid "Error: Neither a JPEG file name was set nor in-memrory data provided."
 msgstr ""
 
 #: src/lib/GL/GLES/TexHelper/PngReader.cpp:103
