@@ -291,8 +291,6 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 			jpegInfo.output_height,
 			textureFormat,
 			textureDataType);
-			
-			
 		png_bytep texDataPtr = png_bytep (textureData.getDataPtr());
 		LOG4CXX_DEBUG(logger,"PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
 				", the length of the texturedata buffer is " << textureData.getDataBufferLength());
