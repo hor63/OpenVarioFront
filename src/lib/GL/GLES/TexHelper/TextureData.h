@@ -170,8 +170,12 @@ public:
 	 *
 	 * @return Height of the buffer in texels
 	 */
-GLuint getHeight () const {
+	GLuint getHeight () const {
 		return height;
+	}
+
+	GLuint getBytesPerTexel () {
+		return bytesPerTexel;
 	}
 
 	/** \brief Format of the texture data
