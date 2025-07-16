@@ -256,8 +256,8 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 		LOG4CXX_DEBUG(logger,"\t data_precision        = " << jpegInfo.data_precision);
 		LOG4CXX_DEBUG(logger,"\t out_color_components  = " << jpegInfo.out_color_components);
 		LOG4CXX_DEBUG(logger,"\t output_components     = " << jpegInfo.output_components);
+		LOG4CXX_DEBUG(logger,"\t output_width          = " << jpegInfo.output_width);
 
-		jpeg_read_scanlines
 
 		TextureData::GlFormat textureFormat;
 		TextureData::DataType textureDataType;
@@ -280,7 +280,8 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 			{
 				auto errMsg = fmt::format(
 					"JPEG image {0}: Un-supported JPEG out_color_space {1}",
-					fileName,jpegInfo.out_color_space);
+					fileName,
+					static_cast<int>(jpegInfo.out_color_space));
 				throw JpegReaderException(errMsg.c_str());
 			}
 
@@ -291,6 +292,34 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 			jpegInfo.output_height,
 			textureFormat,
 			textureDataType);
+
+		// Most of the libjpeg specific stuff is coming directly from
+		// https://raw.githubusercontent.com/libjpeg-turbo/libjpeg-turbo/main/src/example.c
+		// Output row buffer
+		JSAMPARRAY buffer = NULL;
+		auto rowStride = jpegInfo.output_width * jpegInfo.output_components;
+		
+		// Do a sanity check
+		LOG4CXX_DEBUG(logger,"\t JPEG rowStride = " << rowStride
+			<< ", TextureData stride = " << textureData.getWidth() * textureData.getBytesPerTexel());
+		if (rowStride != textureData.getWidth() * textureData.getBytesPerTexel()) {
+			auto errMsg = fmt::format(_(
+				"Error: JPEG rowStride = {0} but textureData stride is {1}"),
+				rowStride,
+				textureData.getWidth() * textureData.getBytesPerTexel()
+				);
+			throw JpegReaderException (errMsg.c_str());
+		}
+		
+		buffer = (jpegInfo.mem->alloc_sarray)
+			(/*(j_common_ptr)*/reinterpret_cast<j_common_ptr>(&jpegInfo),
+			JPOOL_IMAGE, rowStride, 1);
+		
+		
+/*			
+
+		//jpeg_read_scanlines
+
 		png_bytep texDataPtr = png_bytep (textureData.getDataPtr());
 		LOG4CXX_DEBUG(logger,"PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
 				", the length of the texturedata buffer is " << textureData.getDataBufferLength());
