@@ -355,6 +355,23 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 		LOG4CXX_DEBUG(logger,"Destroyed the PNG structures.");
 */
 
+		int textureLineNo = textureData.getHeight() - 1;
+		
+		while (jpegInfo.output_scanline < jpegInfo.output_height) {
+			if (textureLineNo < 0 ){
+				auto errMsg = fmt::format (
+					"Error copying JPEG lines to textureData: "
+					"Texture buffer overrun at JPEG scan line {0}.",
+					jpegInfo.output_scanline
+				);
+			}
+			
+			jpeg_read_scanlines(&jpegInfo, buffer, 1);
+			
+			textureLineNo --;
+		}
+		LOG4CXX_DEBUG(logger,"\ttextureLineNo = " << textureLineNo);
+		
 		// Cleanup
 		LOG4CXX_DEBUG(logger,"\tCalling jpeg_finish_decompress");
 		jpeg_finish_decompress(&jpegInfo);
@@ -378,7 +395,7 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 		throw;
 	}
 
-	throw JpegReaderException("Testing only");
+	// throw JpegReaderException("Testing only");
 
 
 }
