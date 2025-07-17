@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenVarioFront 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/OpenVarioFront/issues\n"
-"POT-Creation-Date: 2025-07-16 14:51+0200\n"
+"POT-Creation-Date: 2025-07-17 22:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,42 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:153
+#: src/lib/GL/GLPrograms/GLProgBase.cpp:86
+msgid "Uniform {0} does not exist or is not active in the program {1}."
+msgstr ""
+
+#: src/lib/GL/GLPrograms/GLProgBase.cpp:95
+msgid "Location of uniform {0} cannot be retrieved in program {1}."
+msgstr ""
+
+#: src/lib/GL/GLPrograms/GLProgBase.cpp:111
+msgid "Vertex attribute {0} does not exist or is not active in program {1}."
+msgstr ""
+
+#: src/lib/GL/GLPrograms/GLProgBase.cpp:126
+msgid "Location of vertex attribute {0} cannot be retrieved from program {1}."
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:115
 msgid "Could not open JPEG file {0}. errno = {1}: {2}"
 msgstr ""
 
-#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:202
+#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:164
 msgid "Error: Neither a JPEG file name was set nor in-memrory data provided."
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:242
+msgid "JPEG image {0}: Un-supported JPEG out_color_space {1}"
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:267
+msgid "Error: JPEG rowStride = {0} but textureData stride is {1}"
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/JpegReader.cpp:285
+msgid ""
+"Error copying JPEG lines to textureData: Texture buffer overrun at JPEG scan "
+"line #{0} of {1} lines"
 msgstr ""
 
 #: src/lib/GL/GLES/TexHelper/PngReader.cpp:103
@@ -44,7 +74,20 @@ msgstr ""
 msgid "Error reading PNG image {0}: {1}"
 msgstr ""
 
-#: src/lib/GL/GLES/TexHelper/PngReader.cpp:303
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:242
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:255
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:268
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:281
+msgid ""
+"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not "
+"supported."
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:293
+msgid "PNG image {0}: Un-supported PNG color type {1}"
+msgstr ""
+
+#: src/lib/GL/GLES/TexHelper/PngReader.cpp:306
 msgid ""
 "Error in PNG image {0}: PNG buffer length is {1} but the length of the "
 "texture data buffer is {2}."

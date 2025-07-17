@@ -27,11 +27,15 @@
 #  include <config.h>
 #endif
 
+#include <typeinfo>
 #include <sstream>
 
 #include "OVFCommon.h"
 
 #include "GLPrograms/GLProgBase.h"
+
+#include "fmt/format.h"
+
 
 namespace OevGLES {
 
@@ -78,24 +82,20 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleUniform
 	auto inf = prog.getUniformInfo(uniformName);
 
 	if (!inf) {
-		std::ostringstream str;
-
-		str << "Uniform " << uniformName << " does not exist or is not active in the program.";
-
-		throw ProgramException(str.str().c_str());
-
+		auto errMsg = fmt::format( 
+			_("Uniform {0} does not exist or is not active in the program {1}."),
+			uniformName,typeid(*this).name()
+		);
+		throw ProgramException(errMsg.c_str());
 	}
 
 	uniformLocation = glGetUniformLocation(prog.getProgramHandle(),uniformName);
 	if (uniformLocation == -1) {
-		std::ostringstream str;
-
-		str << "Location of uniform  " << uniformName << " cannot be retrieved.";
-
-		throw ProgramException(str.str().c_str());
-
+		auto errMsg = fmt::format(_(
+			"Location of uniform {0} cannot be retrieved in program {1}."),
+			uniformName,typeid(*this).name());
+		throw ProgramException(errMsg.c_str());
 	}
-
 
 	return inf;
 }
@@ -107,13 +107,10 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleAttribu
 	auto inf = prog.getAttributeInfo(attributeName);
 
 	if (!inf) {
-		std::ostringstream str;
-
-		str << "Vertex attribute " << attributeName << " does not exist or is not active in the program.";
-
-
-		throw ProgramException(str.str().c_str());
-
+		auto errMsg = fmt::format(_(
+			"Vertex attribute {0} does not exist or is not active in program {1}."),
+			attributeName,typeid(*this).name());
+		throw ProgramException(errMsg.c_str());
 	}
 
 	attributeLocation = glGetAttribLocation(prog.getProgramHandle(),attributeName);
@@ -125,6 +122,10 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleAttribu
 
 		throw ProgramException(str.str().c_str());
 
+		auto errMsg = fmt::format(_(
+			"Location of vertex attribute {0} cannot be retrieved from program {1}."),
+			attributeName,typeid(*this).name());
+		throw ProgramException(errMsg.c_str());
 	}
 
 

@@ -216,7 +216,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		LOG4CXX_DEBUG(logger,"Called png_set_sig_bytes");
 
 		png_read_png(pngPtr,pngInfo,
-			PNG_TRANSFORM_EXPAND // expand index to pallets to RGB
+			PNG_TRANSFORM_EXPAND // expand index to palettes to RGB
 			|PNG_TRANSFORM_STRIP_16 // truncate 16-bit samples to 8 bit
 			|PNG_TRANSFORM_PACKING // Expand < 8 bit samples to 8 bit
 			,0);
@@ -224,9 +224,12 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 
 		png_uint_32 width = 0,height =0;
 		int bitDepth = 0, colorType = 0;
-		png_get_IHDR(pngPtr,pngInfo,&width,&height,&bitDepth,&colorType,NULL,NULL,NULL);
+		png_get_IHDR(pngPtr,pngInfo,&width,
+			&height,&bitDepth,&colorType,
+			NULL,NULL,NULL);
 		LOG4CXX_DEBUG(logger,"Called png_get_IHDR");
-		LOG4CXX_DEBUG(logger,"width = "<< width << ", height = "<< height << ", bitDepth = "<< bitDepth << ", colorType = "<< colorType );
+		LOG4CXX_DEBUG(logger,"width = "<< width << ", height = "<< height 
+			<< ", bitDepth = "<< bitDepth << ", colorType = "<< colorType );
 
 		TextureData::GlFormat textureFormat;
 		TextureData::DataType textureDataType;
@@ -236,7 +239,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY");
 			if (bitDepth != 8) {
 				auto errMsg = fmt::format(
-					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.",
+					_("PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported."),
 					fileName,"PNG_COLOR_TYPE_GRAY",bitDepth);
 				throw PngReaderException(errMsg.c_str());
 			} else {
@@ -249,7 +252,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY_ALPHA");
 			if (bitDepth != 8) {
 				auto errMsg = fmt::format(
-					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.",
+					_("PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported."),
 					fileName,"PNG_COLOR_TYPE_GRAY_ALPHA",bitDepth);
 				throw PngReaderException(errMsg.c_str());
 			} else {
@@ -262,7 +265,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGB");
 			if (bitDepth != 8) {
 				auto errMsg = fmt::format(
-					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.",
+					_("PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported."),
 					fileName,"PNG_COLOR_TYPE_RGB",bitDepth);
 				throw PngReaderException(errMsg.c_str());
 			} else {
@@ -275,7 +278,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGBA");
 			if (bitDepth != 8) {
 				auto errMsg = fmt::format(
-					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.",
+					_("PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported."),
 					fileName,"PNG_COLOR_TYPE_RGB_ALPHA",bitDepth);
 				throw PngReaderException(errMsg.c_str());
 			} else {
@@ -287,7 +290,7 @@ void PngReader::readPngToTexture(TextureData &textureData) {
 		default:
 			{
 				auto errMsg = fmt::format(
-					"PNG image {0}: Un-supported PNG color type {1}",
+					_("PNG image {0}: Un-supported PNG color type {1}"),
 					fileName,colorType);
 				throw PngReaderException(errMsg.c_str());
 			}

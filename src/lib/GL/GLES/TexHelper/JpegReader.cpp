@@ -87,38 +87,6 @@ JpegReader::JpegReader(
 JpegReader::~JpegReader() {}
 
 /*
-void JpegReader::readPngDataFromMemoryCallback(jpeg_decompress_struct& jpegInfo,
-							unsigned char* data, size_t dataLength) {
-
-	JpegReader* tis = reinterpret_cast<JpegReader*>(png_get_io_ptr(pngPtr));
-
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": tis = " << tis
-		<< ", data = " << reinterpret_cast<void const*>(data)
-		<< ", length = " << dataLength
-		<< ", memLocation = " << reinterpret_cast<void const*>(tis->memLocation)
-		<< ", memLength " << tis->memLength
-		<< ", posInMemLocation " << tis->posInMemLocation
-		);
-
-	if (dataLength <= (tis->memLength - tis->posInMemLocation)) {
-		std::memcpy(data,&tis->memLocation[tis->posInMemLocation],dataLength);
-		tis->posInMemLocation += dataLength;
-	} else {
-		tis->errorMessage = fmt::format(
-				_("Error reading PNG image {0} from memory."
-				" Requested length is {1} bytes, but only {2} bytes of {3} are left for reading."),
-				tis->fileName,dataLength,(tis->memLength - tis->posInMemLocation),
-				tis->memLength
-			);
-		LOG4CXX_ERROR(logger,"\t" << tis->errorMessage);
-		png_error(pngPtr,
-			tis->errorMessage.c_str());
-	}
-
-}
-*/
-
-/*
 void JpegReader::pngErrorCallback(jpeg_decompress_struct& jpegInfo,char const* errorMsg){
 	JpegReader* tis = reinterpret_cast<JpegReader*>(png_get_error_ptr(pngPtr));
 
@@ -132,13 +100,6 @@ void JpegReader::pngErrorCallback(jpeg_decompress_struct& jpegInfo,char const* e
 	}
 	
 	longjmp(png_jmpbuf(pngPtr), 2);
-}
-
-void JpegReader::pngWarningCallback(jpeg_decompress_struct& jpegInfo,char const* warnMsg){
-	JpegReader* tis = reinterpret_cast<JpegReader*>(png_get_error_ptr(pngPtr));
-
-	tis->warnMesage = warnMsg;
-	
 }
 */
 
@@ -163,7 +124,10 @@ void JpegReader::setupReadFromFile(jpeg_decompress_struct& jpegInfo,FILE* &jpegF
 
 void JpegReader::setupReadFromMemory(jpeg_decompress_struct& jpegInfo) {
 	
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__);
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+		<< ": memLocation = " << reinterpret_cast<void const *>(memLocation)
+		<< ", memLength = " << memLength
+		);
 
 	jpeg_mem_src(&jpegInfo, 
 		reinterpret_cast<unsigned char const *>(memLocation),
@@ -196,8 +160,8 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 		} else {
 			// Setup reading from file; open the file.
 			if (fileName.empty()) {
-				throw JpegReaderException(fmt::format(
-					_("Error: Neither a JPEG file name was set nor in-memrory data provided.")
+				throw JpegReaderException(fmt::format(_(
+					"Error: Neither a JPEG file name was set nor in-memrory data provided.")
 					).c_str());
 			}
 			setupReadFromFile(jpegInfo,jpegFile);
@@ -208,13 +172,11 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file with message: "
 			<< errorMessage);
 			throw JpegReaderException(
-				fmt::format (
-					_("Error reading PNG file {0}: {1}"),
+				fmt::format (_(
+					"Error reading PNG file {0}: {1}"),
 					fileName,errorMessage).c_str());
 		}
 
-		png_set_sig_bytes(pngPtr,0);
-		LOG4CXX_DEBUG(logger,"Called png_set_sig_bytes");
 */
 
 		jpeg_read_header(&jpegInfo, TRUE);
@@ -276,8 +238,8 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 
 		default:
 			{
-				auto errMsg = fmt::format(
-					"JPEG image {0}: Un-supported JPEG out_color_space {1}",
+				auto errMsg = fmt::format(_(
+					"JPEG image {0}: Un-supported JPEG out_color_space {1}"),
 					fileName,
 					static_cast<int>(jpegInfo.out_color_space));
 				throw JpegReaderException(errMsg.c_str());
@@ -319,11 +281,12 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 		
 		while (jpegInfo.output_scanline < jpegInfo.output_height) {
 			if (textureLineNo < 0 ){
-				auto errMsg = fmt::format (
+				auto errMsg = fmt::format (_(
 					"Error copying JPEG lines to textureData: "
-					"Texture buffer overrun at JPEG scan line {0}.",
-					jpegInfo.output_scanline
+					"Texture buffer overrun at JPEG scan line #{0} of {1} lines"),
+					jpegInfo.output_scanline, jpegInfo.output_height
 				);
+				throw JpegReaderException (errMsg.c_str());
 			}
 			
 			jpeg_read_scanlines(&jpegInfo, buffer, 1);
@@ -350,7 +313,7 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 	catch (std::exception const &e) {
 
 		// Perform internal cleanup before re-throwing the exception
-		jpeg_finish_decompress(&jpegInfo);
+		jpeg_abort_decompress(&jpegInfo);
 		jpeg_destroy_decompress(&jpegInfo);
 		if(jpegFile) {
 			fclose (jpegFile);
@@ -358,10 +321,6 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 
 		throw;
 	}
-
-	// throw JpegReaderException("Testing only");
-
-
 }
 
 
