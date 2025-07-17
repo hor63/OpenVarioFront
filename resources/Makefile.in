@@ -132,7 +132,7 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libOEV_resurces_a_AR = $(AR) $(ARFLAGS)
 libOEV_resurces_a_LIBADD =
-am_libOEV_resurces_a_OBJECTS = Vario5m.$(OBJEXT)
+am_libOEV_resurces_a_OBJECTS = Vario5m.$(OBJEXT) Vario5mJPG.$(OBJEXT)
 libOEV_resurces_a_OBJECTS = $(am_libOEV_resurces_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -395,7 +395,7 @@ top_srcdir = @top_srcdir@
 SUFFIXES = .png .jpg .jpeg .s .S
 BINC = $(srcdir)/binary2obj.sh
 noinst_LIBRARIES = libOEV_resurces.a
-libOEV_resurces_a_SOURCES = Vario5m.png
+libOEV_resurces_a_SOURCES = Vario5m.png Vario5mJPG.jpg
 AM_LDFLAGS = $(LOG4CXX_LDFLAGS)
 all: all-am
 

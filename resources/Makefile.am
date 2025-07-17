@@ -34,8 +34,7 @@ BINC = $(srcdir)/binary2obj.sh
 
 
 noinst_LIBRARIES = libOEV_resurces.a
-libOEV_resurces_a_SOURCES = Vario5m.png
-
+libOEV_resurces_a_SOURCES = Vario5m.png Vario5mJPG.jpg
 
 AM_LDFLAGS= $(LOG4CXX_LDFLAGS)
 
