@@ -26,6 +26,7 @@
 
 #include "glib.h"
 #include <csetjmp>
+#include <cstdint>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -163,13 +164,10 @@ void JpegReader::setupReadFromFile(jpeg_decompress_struct& jpegInfo,FILE* &jpegF
 void JpegReader::setupReadFromMemory(jpeg_decompress_struct& jpegInfo) {
 	
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__);
-	throw JpegReaderException("JPEG from memory is not supported yet.");
-/*
 
-	png_set_read_fn(jpegInfo,this,
-		readPngDataFromMemoryCallback);
-	png_init_io(pngPtr,reinterpret_cast<FILE*>(this));
-*/
+	jpeg_mem_src(&jpegInfo, 
+		reinterpret_cast<unsigned char const *>(memLocation),
+		memLength);
 
 }
 
@@ -314,48 +312,10 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 		buffer = (jpegInfo.mem->alloc_sarray)
 			(/*(j_common_ptr)*/reinterpret_cast<j_common_ptr>(&jpegInfo),
 			JPOOL_IMAGE, rowStride, 1);
-		
-		
-/*			
-
-		//jpeg_read_scanlines
-
-		png_bytep texDataPtr = png_bytep (textureData.getDataPtr());
-		LOG4CXX_DEBUG(logger,"PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
-				", the length of the texturedata buffer is " << textureData.getDataBufferLength());
-		if (textureData.getDataBufferLength() != png_get_rowbytes(pngPtr,pngInfo) * height) {
-			std::ostringstream os;
-			os << "Error in JpegReader: PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
-					" whereas the length of the texturedata buffer is " << textureData.getDataBufferLength();
-			throw JpegReaderException(os.str().c_str());
-		}
-
-		rowPointers = png_get_rows(pngPtr,pngInfo);
-		LOG4CXX_DEBUG(logger,"Read image into rows");
-
-
-		png_bytep currRow = texDataPtr;
-		png_size_t bytesPerRow = png_get_rowbytes(pngPtr,pngInfo);
-
-		LOG4CXX_DEBUG(logger,"Bytes per row = " << bytesPerRow);
-		LOG4CXX_DEBUG(logger,"Bytes per pixel = " << bytesPerRow/width);
-
-
-		// Read the rows bottom to top into the texture buffer
-		for (int i = height - 1; i >= 0; i--) {
-			LOG4CXX_TRACE(logger,"Copy from line " << i << " to line " << ((currRow - texDataPtr) / bytesPerRow));
-			memcpy (currRow,rowPointers[i],bytesPerRow);
-			currRow += bytesPerRow;
-		}
-
-		LOG4CXX_DEBUG(logger,"Copied the buffer");
-
-		// Cleanup
-		png_destroy_read_struct(&pngPtr,&pngInfo,NULL);
-		LOG4CXX_DEBUG(logger,"Destroyed the PNG structures.");
-*/
 
 		int textureLineNo = textureData.getHeight() - 1;
+		auto textureDataPtr = 
+			reinterpret_cast<uint8_t *>(textureData.getDataPtr());
 		
 		while (jpegInfo.output_scanline < jpegInfo.output_height) {
 			if (textureLineNo < 0 ){
@@ -367,6 +327,10 @@ void JpegReader::readJpegToTexture(TextureData &textureData) {
 			}
 			
 			jpeg_read_scanlines(&jpegInfo, buffer, 1);
+			
+			auto textureLinePtr = &textureDataPtr[textureLineNo * rowStride];
+			
+			memcpy(textureLinePtr,buffer[0],rowStride);
 			
 			textureLineNo --;
 		}

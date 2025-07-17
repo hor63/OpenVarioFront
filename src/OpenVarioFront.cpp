@@ -61,6 +61,7 @@ static void printEventType (SDL_Event& event);
 static bool handleSLEDvent (SDL_Event& event,OevGLES::GLFramework &framework);
 
 #include "resources/Vario5m.h"
+#include "resources/Vario5mJPG.h"
 
 int main(int argint,char** argv) {
 	int rc = 0;
@@ -85,6 +86,14 @@ int main(int argint,char** argv) {
 		<< ", Vario5m_filename_length = " << Vario5m_filename_length
 		);
 
+	LOG4CXX_INFO (logger,"Vario5mJPG_data = " << reinterpret_cast<void const * const>(Vario5mJPG_data)
+		<< ",Vario5mJPG_end = " << reinterpret_cast<void const * const>(Vario5mJPG_data_end)
+		<< ", Vario5mJPG_size = " << Vario5mJPG_size
+		<< ", &Vario5mJPG_size = " << &Vario5mJPG_size
+		<< ", Vario5mJPG_filename = " << Vario5mJPG_filename
+		<< ", Vario5mJPG_filename_length = " << Vario5mJPG_filename_length
+		);
+
     try {
     	auto glFramework = OevGLES::GLFramework::createFramework();
 		auto glTextGlob = glFramework->getGlTextGlob();
@@ -95,9 +104,9 @@ int main(int argint,char** argv) {
 		glFramework->createRenderSurface(1024,1024,PACKAGE_STRING);
 
 		OevGLES::SquareTextureRenderer varioBackground;
-		varioBackground.setPNGFileName("../../resources/Vario5m.jpg");
-//		varioBackground.setPNGMemoryData(Vario5m_data,
-//			Vario5m_size, Vario5m_filename);
+//		varioBackground.setPNGFileName("../../resources/Vario5m.jpg");
+		varioBackground.setPNGMemoryData(Vario5mJPG_data,
+			Vario5mJPG_size, Vario5mJPG_filename);
 
 		int windowWidth = -1, windowHeight = -1;
 		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
