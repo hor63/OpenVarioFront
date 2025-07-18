@@ -105,7 +105,7 @@ int main(int argint,char** argv) {
 
 		OevGLES::SquareTextureRenderer varioBackground;
 //		varioBackground.setPNGFileName("../../resources/Vario5m.jpg");
-		varioBackground.setPNGMemoryData(Vario5mJPG_data,
+		varioBackground.setImageMemoryData(Vario5mJPG_data,
 			Vario5mJPG_size, Vario5mJPG_filename);
 
 		int windowWidth = -1, windowHeight = -1;

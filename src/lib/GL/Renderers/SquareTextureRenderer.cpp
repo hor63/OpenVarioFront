@@ -125,35 +125,35 @@ SquareTextureRenderer::~SquareTextureRenderer() {
 
  }
 
-void SquareTextureRenderer::setPNGFileName (std::string const &pngFileName) {
+void SquareTextureRenderer::setImageFileName (std::string const &imageFileName) {
 	
 	// Check if the the same file was set before, and in-memory data were
 	// not being setup before.
-	if (memLocation == nullptr && fileName == pngFileName) {
+	if (memLocation == nullptr && fileName == imageFileName) {
 		// no action required.
 		return;
 	}
 	
-	fileName = pngFileName;
+	fileName = imageFileName;
 	// Reset in-memory data if it existed before.
 	memLocation = nullptr;
 	memLen = 0;
 	dirty = true;
 }
 
-void SquareTextureRenderer::setPNGMemoryData(
-		char const * memLocationPNGData,
-		int lenPNGData,
-		std::string const &pngImageName) {
+void SquareTextureRenderer::setImageMemoryData(
+		char const * memLocationImageData,
+		int lenImageData,
+		std::string const &imageName) {
 
-	memLocation = memLocationPNGData;
-	memLen = lenPNGData;
-	fileName = pngImageName;
+	memLocation = memLocationImageData;
+	memLen = lenImageData;
+	fileName = imageName;
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 		<< ": memLocation = " << reinterpret_cast<void const *>(memLocation)
-		<< ", lenPNGData = " << memLen
-		<< ", pngImageName" << fileName);
+		<< ", lenImageData = " << memLen
+		<< ", imageName" << fileName);
 
 	dirty = true;
 
@@ -174,24 +174,24 @@ void SquareTextureRenderer::setupVertexBuffers() {
 		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 		glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 	
-		std::unique_ptr<OevGLES::JpegReader> varioBackgoundReader;
+		std::unique_ptr<OevGLES::JpegReader> imageReader;
 		// Load the texture into GL
 		if (memLocation != nullptr) {
 			LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
-				<< ": create PngReader with memLocation = "
+				<< ": create imageReader with memLocation = "
 				<< reinterpret_cast<void const *>(memLocation)
-				<< ", lenPNGData = " << memLen
-				<< ", pngImageName" << fileName);
-			varioBackgoundReader.reset(new JpegReader (memLocation,memLen,fileName));
+				<< ", lenImageData = " << memLen
+				<< ", imageName" << fileName);
+			imageReader.reset(new JpegReader (memLocation,memLen,fileName));
 		} else {
-			varioBackgoundReader.reset(new JpegReader (fileName.c_str()));
+			imageReader.reset(new JpegReader (fileName.c_str()));
 		}
 		OevGLES::TextureData texData (8,8,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
-		varioBackgoundReader->readJpegToTexture(texData);
-		varioBackgoundTexture.setTextureData(texData);
+		imageReader->readJpegToTexture(texData);
+		glTexture.setTextureData(texData);
 	
-		varioBackgoundTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
-		varioBackgoundTexture.setMinificationFilter(OevGLES::GLTexture::Linear);
+		glTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
+		glTexture.setMinificationFilter(OevGLES::GLTexture::Linear);
 	
 		if (GLFramework::isVertexArrayUsable() && vertexArrayHandle == 0U) {
 	
@@ -288,7 +288,7 @@ void SquareTextureRenderer::draw(
 	} // if (vertexArrayHandle != 0U) {
 
 	// Assign the texture to Texure engine 0, and set the sampler uniform accordingly
-	varioBackgoundTexture.bindToUniformLocation(GL_TEXTURE0,0,glProgram->getTexture0Location());
+	glTexture.bindToUniformLocation(GL_TEXTURE0,0,glProgram->getTexture0Location());
 
 	// The object is opaque. Use the depth buffer, and write to the depth buffer
 	glDepthMask(GL_TRUE);

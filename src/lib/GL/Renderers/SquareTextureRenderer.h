@@ -48,25 +48,26 @@ public:
 
 	virtual ~SquareTextureRenderer();
 
-	/** \brief Switch to external PNG file, and set the path and name of the PNG file
+	/** \brief Switch to external image file, and set the path and name of the image file
 	 * 
-	 * Using this method switches the source of PNG data to an external file.
-	 * If the source had been set to in-memory data using \ref setPNGMemoryData
+	 * Using this method switches the source of image data to an external file.
+	 * If the source had been set to in-memory data using \ref setImageMemoryData
 	 * this info is reset. \ref memLocation is reset to \p nullptr.
 	 * 
-	 * \param pngFileName Name of the PNG file. The name can include a relative
+	 * \param imageFileName Name of the image file. The name can include a relative
 	 		or absolute path.
 	 */
-	void setPNGFileName (std::string const &pngFileName);
+	void setImageFileName (std::string const &imageFileName);
 	
-	/** \brief Return the name of the external PNG file or an empty string.
+	/** \brief Return the name of the image or an empty string.
 	 *
-	 * When the source is set to in-memory data with \ref setPNGMemoryData
-	 * the method returns an empty string.
+	 * When the source is set to in-memory data with \ref setImageMemoryData
+	 * the method returns teh given name of the image.
+	 * Else the call returns the name of the external image file.
 	 *
-	 * \return the path and name of the PNG file or an empty string
+	 * \return the path and name of the image or an empty string
 	 */
-	std::string getPNGFileName (){
+	std::string getImageFileName (){
 		
 		if (memLocation == nullptr) {
 			return std::string();
@@ -75,27 +76,27 @@ public:
 		return fileName;
 	}
 	
-	/** \brief Switch to in-memory PNG data, and set the memory location and length
+	/** \brief Switch to in-memory image data, and set the memory location and length
 	 * 
-	 * \param memLocationPNGData Pointer to the start of the PNG data in memory
+	 * \param memLocationImageData Pointer to the start of the PNG data in memory
 	 * \param lenPNGData Length of the PNG data 
 	 * \param pngImageName Name of the image for diagnostic and debugging purposes
 	 */
-	void setPNGMemoryData(
-		char const * memLocationPNGData,
-		int lenPNGData,
-		std::string const &pngImageName);
+	void setImageMemoryData(
+		char const * memLocationImageData,
+		int lenImageData,
+		std::string const &imageName);
 
 	/// \brief Return structure for \ref getMemoryDataInfo()
 	struct MemoryDataInfo {
 		/// Pointer to the start of the image data in memory.
 		/// Is \p nullptr when the source is not in-memory.
-		char const * memLocationPNGData;
+		char const * memLocationImageData;
 		/// Length of the image data.
 		/// Is 0 when the source is not in-memory
-		int lenPNGData;
+		int lenImageData;
 		/// Name of the image for information purposes only
-		std::string pngImageName;
+		std::string imageName;
 	};
 	
 	/** \brief Get information of in-memory source of image data
@@ -105,9 +106,9 @@ public:
 	 */
 	MemoryDataInfo getMemoryDataInfo() {
 		return MemoryDataInfo {
-			.memLocationPNGData=memLocation,
-			.lenPNGData=memLen,
-			.pngImageName=fileName
+			.memLocationImageData=memLocation,
+			.lenImageData=memLen,
+			.imageName=fileName
 		};
 	}
 
@@ -171,25 +172,25 @@ private:
 
 	GLuint vertexBufferHandle = 0U;
 	GLuint vertexArrayHandle = 0U;
-	OevGLES::GLTexture varioBackgoundTexture;
+	OevGLES::GLTexture glTexture;
 	
-	/** \brief Name of an external PNG file or name of the image from memory
+	/** \brief Name of an external image file or name of the image from memory
 	 *
 	 * When \ref memLocation is \p nullptr it defines path and name of an
-	 * external PNG file.
+	 * external image file.
 	 * 
 	 * Else it defines the name of the image from memory, and is used for diagnostic
 	 * and debugging purposes only
 	 */
 	std::string fileName;
 	
-	/** \brief Location of the PNG data in memory
+	/** \brief Location of the image data in memory
 	 * 
 	 * When you set it you *must* also set \ref memLen. Otherwise exceptions fly.
 	 */
 	char const* memLocation = nullptr;
 
-	/** \brief length of the PNG data defined in \ref memLocation
+	/** \brief length of the image data defined in \ref memLocation
 	 *
 	 * 
 	 */
