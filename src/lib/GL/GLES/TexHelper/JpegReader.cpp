@@ -52,36 +52,30 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-JpegReader::JpegReader(std::string const &fileName)
-	:fileName{fileName}
+JpegReader::JpegReader(std::string const &fileName) 
+	:ImageReaderBase(fileName)
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.JpegReader");
 	}
 #endif
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
-		<< ", fileName = " << this->fileName);
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__);
 }
 
 JpegReader::JpegReader(
 	char const *memLocation,
 	int memLength,
 	std::string const &imageName)
-	:memLocation{memLocation},
-	memLength{memLength},
-	fileName{imageName} 
+	:ImageReaderBase(memLocation, memLength, imageName)
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.JpegReader");
 	}
 #endif
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
-		<< ": memLocation = "
-		<< reinterpret_cast<void const *>(this->memLocation)
-		<< ", lenPNGData = " << this->memLength
-		<< ", fileName = " << this->fileName);
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__);
 }
 
 JpegReader::~JpegReader() {}
@@ -135,7 +129,7 @@ void JpegReader::setupReadFromMemory(jpeg_decompress_struct& jpegInfo) {
 
 }
 
-void JpegReader::readJpegToTexture(TextureData &textureData) {
+void JpegReader::readImageToTexture(TextureData &textureData) {
 
 	FILE					*jpegFile = 0;
 	jpeg_decompress_struct	jpegInfo;

@@ -26,15 +26,18 @@
 #ifndef PNGREADER_H_
 #define PNGREADER_H_
 
-#include <string>
-
-#include "GLES/TexHelper/TextureData.h"
+#include "ImageReaderBase.h"
 
 #include <libpng16/png.h>
 
 namespace OevGLES {
 
-class PngReader {
+/**
+ *
+ *
+ * \see https://raw.githubusercontent.com/libjpeg-turbo/libjpeg-turbo/main/doc/libjpeg.txt
+ */
+class PngReader :public ImageReaderBase {
 public:
 	/// \brief Read a PNG image from a file
 	PngReader(std::string const &fileName);
@@ -42,7 +45,7 @@ public:
 	PngReader(char const *memLocation,int memLength,std::string const &imageName);
 	virtual ~PngReader();
 
-	void readPngToTexture(TextureData &textureData);
+	virtual void readImageToTexture(TextureData &textureData) override;
 
 private:
 
@@ -53,17 +56,6 @@ private:
 							unsigned char* data, size_t dataLength);	
 	void setupReadFromFile(png_struct* pngPtr,FILE* &pngFile);
 	void setupReadFromMemory(png_struct* pngPtr);
-
-
-	/// \brief Either the image file name or the image name when \ref memLocation
-	/// is not \p nullptr.
-	std::string fileName;
-	char const *memLocation = nullptr;
-	int memLength = 0;
-	int posInMemLocation = 0;
-	
-	std::string warnMesage;
-	std::string errorMessage;
 
 };
 

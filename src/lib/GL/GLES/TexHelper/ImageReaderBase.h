@@ -1,11 +1,11 @@
 /*
- * JpegReader.h
+ * ImageReaderBase.h
  *
- *  Created on: Jul 13, 2025
+ *  Created on: Jul 20, 2025
  *      Author: hor
- *
+*
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
- *   Copyright (C) 2018  Kai Horstmann
+ *   Copyright (C) 2025  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,39 +23,44 @@
  *
  */
 
-#ifndef JpegReader_H_
-#define JpegReader_H_
+#ifndef LIB_GL_GLES_TEXHELPER_IMAGEREADERBASE_H_
+#define LIB_GL_GLES_TEXHELPER_IMAGEREADERBASE_H_
 
-#include "ImageReaderBase.h"
 
-#include <jpeglib.h>
+#include <string>
+
+#include "GLES/TexHelper/TextureData.h"
 
 namespace OevGLES {
 
-class JpegReader :public ImageReaderBase {
+class ImageReaderBase {
 public:
 	/// \brief Read The image image from a file
-	JpegReader(std::string const &fileName);
+	ImageReaderBase(std::string const &fileName);
 	/// Read the image from a memory location within the program
-	JpegReader(char const *memLocation,int memLength,std::string const &imageName);
+	ImageReaderBase(char const *memLocation,int memLength,std::string const &imageName);
+
+	virtual ~ImageReaderBase();
+
+	virtual void readImageToTexture(TextureData &textureData) = 0;
 	
-	virtual ~JpegReader();
+	virtual bool checkImageValidity () = 0;
+	
+protected:
 
-	virtual void readImageToTexture(TextureData &textureData) override;
-
-private:
-
-	static void pngErrorCallback(jpeg_decompress_struct& jpegInfo,char const* error_msg);
-	static void pngWarningCallback(jpeg_decompress_struct& jpegInfo,char const* warn_msg);
-
-	static void readPngDataFromMemoryCallback(jpeg_decompress_struct& jpegInfo,
-							unsigned char* data, size_t dataLength);	
-	void setupReadFromFile(jpeg_decompress_struct& jpegInfo,FILE* &pngFile);
-	void setupReadFromMemory(jpeg_decompress_struct& jpegInfo);
+	/// \brief Either the image file name or the image name when \ref memLocation
+	/// is not \p nullptr.
+	std::string fileName;
+	char const *memLocation = nullptr;
+	int memLength = 0;
+	int posInMemLocation = 0;
+	
+	std::string warnMesage;
+	std::string errorMessage;
 
 
 };
 
 } /* namespace OevGLES */
 
-#endif /* JpegReader_H_ */
+#endif /* LIB_GL_GLES_TEXHELPER_IMAGEREADERBASE_H_ */

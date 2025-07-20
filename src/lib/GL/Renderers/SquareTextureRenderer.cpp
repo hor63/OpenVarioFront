@@ -187,7 +187,7 @@ void SquareTextureRenderer::setupVertexBuffers() {
 			imageReader.reset(new JpegReader (fileName.c_str()));
 		}
 		OevGLES::TextureData texData (8,8,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
-		imageReader->readJpegToTexture(texData);
+		imageReader->readImageToTexture(texData);
 		glTexture.setTextureData(texData);
 	
 		glTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);

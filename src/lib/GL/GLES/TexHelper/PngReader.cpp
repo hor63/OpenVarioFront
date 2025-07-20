@@ -22,12 +22,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
-
-#include <csetjmp>
+#include "GLES/TexHelper/ImageReaderBase.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
+
+#include <csetjmp>
 
 #include <cstdio>
 #include <cstdlib>
@@ -48,36 +48,31 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-PngReader::PngReader(std::string const &fileName)
-	:fileName{fileName}
+PngReader::PngReader(std::string const &fileName) 
+	:ImageReaderBase(fileName)
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.PngReader");
 	}
 #endif
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
-		<< ", fileName = " << this->fileName);
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__);
 }
 
 PngReader::PngReader(
 	char const *memLocation,
 	int memLength,
 	std::string const &imageName)
-	:memLocation{memLocation},
-	memLength{memLength},
-	fileName{imageName} 
+	:ImageReaderBase(memLocation, memLength, imageName)
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.PngReader");
 	}
 #endif
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
-		<< ": memLocation = "
-		<< reinterpret_cast<void const *>(this->memLocation)
-		<< ", lenPNGData = " << this->memLength
-		<< ", fileName = " << this->fileName);
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__);
 }
 
 PngReader::~PngReader() {}
@@ -163,7 +158,7 @@ void PngReader::setupReadFromMemory(png_struct* pngPtr) {
 }
 
 
-void PngReader::readPngToTexture(TextureData &textureData) {
+void PngReader::readImageToTexture(TextureData &textureData) {
 
 	FILE			*pngFile = 0;
 	png_structp 	pngPtr = 0;
