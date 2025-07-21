@@ -22,15 +22,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
-
-#include "glib.h"
-#include <csetjmp>
-#include <cstdint>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 
+#include <csetjmp>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -80,24 +77,7 @@ JpegReader::JpegReader(
 
 JpegReader::~JpegReader() {}
 
-/*
-void JpegReader::pngErrorCallback(jpeg_decompress_struct& jpegInfo,char const* errorMsg){
-	JpegReader* tis = reinterpret_cast<JpegReader*>(png_get_error_ptr(pngPtr));
-
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": errorMsg = " << errorMsg);
-	LOG4CXX_DEBUG(logger,"\t errorMsg ptr = " << reinterpret_cast<const void*>(errorMsg)
-		<< " tis->errorMessage ptr = " 
-		<< reinterpret_cast<const void*>(tis->errorMessage.c_str()));
-	
-	if (tis->errorMessage.c_str() != errorMsg) {
-	tis->errorMessage = errorMsg;
-	}
-	
-	longjmp(png_jmpbuf(pngPtr), 2);
-}
-*/
-
-void JpegReader::setupReadFromFile(jpeg_decompress_struct& jpegInfo,FILE* &jpegFile){
+void JpegReader::setupReadFromFile(jpegDEcompressRef jpegInfo,FILE* &jpegFile){
 
 		jpegFile = fopen(fileName.c_str(),"rb");
 		LOG4CXX_DEBUG(logger,"Opened PNG file \"" << fileName 
@@ -116,7 +96,7 @@ void JpegReader::setupReadFromFile(jpeg_decompress_struct& jpegInfo,FILE* &jpegF
 	
 };
 
-void JpegReader::setupReadFromMemory(jpeg_decompress_struct& jpegInfo) {
+void JpegReader::setupReadFromMemory(jpegDEcompressRef jpegInfo) {
 	
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 		<< ": memLocation = " << reinterpret_cast<void const *>(memLocation)
@@ -127,6 +107,10 @@ void JpegReader::setupReadFromMemory(jpeg_decompress_struct& jpegInfo) {
 		reinterpret_cast<unsigned char const *>(memLocation),
 		memLength);
 
+}
+
+void JpegReader::jpegErrorExit (jpegCommonPtr cinfo) {
+	auto error = cinfo->err;
 }
 
 void JpegReader::readImageToTexture(TextureData &textureData) {
@@ -144,6 +128,9 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 	try {
 
 		jpegInfo.err = jpeg_std_error(&jpegError);
+
+		// Client data will survive jpeg_create_decompress()
+		jpegInfo.client_data = this;
 
 		jpeg_create_decompress(&jpegInfo);
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "Created decompress struct.");

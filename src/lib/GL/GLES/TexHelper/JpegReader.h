@@ -28,7 +28,10 @@
 
 #include "ImageReaderBase.h"
 
-#include <jpeglib.h>
+// #include <jpeglib.h>
+// Forward declaration is sufficient here.
+typedef struct jpeg_decompress_struct &jpegDEcompressRef;
+typedef struct jpeg_common_struct *jpegCommonPtr;
 
 namespace OevGLES {
 
@@ -45,13 +48,10 @@ public:
 
 private:
 
-	static void pngErrorCallback(jpeg_decompress_struct& jpegInfo,char const* error_msg);
-	static void pngWarningCallback(jpeg_decompress_struct& jpegInfo,char const* warn_msg);
+	static void jpegErrorExit (jpegCommonPtr cinfo);
 
-	static void readPngDataFromMemoryCallback(jpeg_decompress_struct& jpegInfo,
-							unsigned char* data, size_t dataLength);	
-	void setupReadFromFile(jpeg_decompress_struct& jpegInfo,FILE* &pngFile);
-	void setupReadFromMemory(jpeg_decompress_struct& jpegInfo);
+	void setupReadFromFile(jpegDEcompressRef jpegInfo,FILE* &jpegFile);
+	void setupReadFromMemory(jpegDEcompressRef jpegInfo);
 
 
 };
