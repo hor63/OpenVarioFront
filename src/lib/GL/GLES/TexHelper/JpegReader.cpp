@@ -109,8 +109,50 @@ void JpegReader::setupReadFromMemory(jpegDEcompressRef jpegInfo) {
 
 }
 
+/// \brief 
+struct JpegClientData {
+	std::jmp_buf jumpBuffer;
+	JpegReader* jpegReaderObj;
+};
+
 void JpegReader::jpegErrorExit (jpegCommonPtr cinfo) {
-	auto error = cinfo->err;
+ /* Always display the message */
+  (*cinfo->err->output_message) (cinfo);
+
+  /* Let the memory manager delete any temp files before we die */
+  jpeg_destroy(cinfo);
+
+  exit(EXIT_FAILURE);}
+
+void JpegReader::jpegOutputMessage(jpegCommonPtr cinfo)
+{
+  char buffer[JMSG_LENGTH_MAX];
+
+  /* Create the message */
+  (*cinfo->err->format_message) (cinfo, buffer);
+
+  /* Send it to stderr, adding a newline */
+  fprintf(stderr, "%s\n", buffer);
+}
+
+void JpegReader::jpegEmitMessage(jpegCommonPtr cinfo, int msgLevel)
+{
+  struct jpeg_error_mgr *err = cinfo->err;
+
+  if (msgLevel < 0) {
+    /* It's a warning message.  Since corrupt files may generate many warnings,
+     * the policy implemented here is to show only the first warning,
+     * unless trace_level >= 3.
+     */
+    if (err->num_warnings == 0 || err->trace_level >= 3)
+      (*err->output_message) (cinfo);
+    /* Always count warnings in num_warnings. */
+    err->num_warnings++;
+  } else {
+    /* It's a trace message.  Show it if trace_level >= msg_level. */
+    if (err->trace_level >= msgLevel)
+      (*err->output_message) (cinfo);
+  }
 }
 
 void JpegReader::readImageToTexture(TextureData &textureData) {
@@ -123,14 +165,25 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 	memset(&jpegInfo,0,sizeof(jpegInfo));
 	memset(&jpegError,0,sizeof(jpegError));
 
-	
-
 	try {
-
-		jpegInfo.err = jpeg_std_error(&jpegError);
+		JpegClientData clientData {
+			.jumpBuffer{0},
+			.jpegReaderObj = this
+		};
 
 		// Client data will survive jpeg_create_decompress()
 		jpegInfo.client_data = this;
+
+		if (setjmp(clientData.jumpBuffer) != 0) {
+			// Something catastrophic happened during jpeg decompression
+			// which called JpegReader::jpegErrorExit.
+		}
+
+		jpegInfo.err = jpeg_std_error(&jpegError);
+		// Set function pointer to my own implementation.
+		jpegInfo.err->error_exit = JpegReader::jpegErrorExit;
+		jpegInfo.err->emit_message = JpegReader::jpegEmitMessage;
+		jpegInfo.err->output_message = JpegReader::jpegOutputMessage;
 
 		jpeg_create_decompress(&jpegInfo);
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "Created decompress struct.");

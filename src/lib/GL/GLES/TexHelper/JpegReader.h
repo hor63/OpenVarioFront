@@ -49,6 +49,19 @@ public:
 private:
 
 	static void jpegErrorExit (jpegCommonPtr cinfo);
+	static void jpegOutputMessage(jpegCommonPtr cinfo);
+	
+	/*
+	 * Decide whether to emit a trace or warning message.
+	 * msg_level is one of:
+	 *   -1: recoverable corrupt-data warning, may want to abort.
+	 *    0: important advisory messages (always display to user).
+	 *    1: first level of tracing detail.
+	 *    2,3,...: successively more detailed tracing messages.
+	 * An application might override this method if it wanted to abort on warnings
+	 * or change the policy about which messages to display.
+	 */
+	static void jpegEmitMessage(jpegCommonPtr cinfo, int msgLevel);
 
 	void setupReadFromFile(jpegDEcompressRef jpegInfo,FILE* &jpegFile);
 	void setupReadFromMemory(jpegDEcompressRef jpegInfo);
