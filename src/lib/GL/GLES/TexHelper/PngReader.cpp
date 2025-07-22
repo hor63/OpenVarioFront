@@ -125,7 +125,7 @@ void PngReader::pngErrorCallback(png_struct* pngPtr,char const* errorMsg){
 void PngReader::pngWarningCallback(png_struct* pngPtr,char const* warnMsg){
 	PngReader* tis = reinterpret_cast<PngReader*>(png_get_error_ptr(pngPtr));
 
-	tis->warnMesage = warnMsg;
+	tis->warnMessage = warnMsg;
 	
 }
 

@@ -55,7 +55,7 @@ protected:
 	int memLength = 0;
 	int posInMemLocation = 0;
 	
-	std::string warnMesage;
+	std::string warnMessage;
 	std::string errorMessage;
 
 
