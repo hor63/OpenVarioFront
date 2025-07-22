@@ -29,9 +29,6 @@
 #include <csetjmp>
 #include <cstdint>
 #include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <sstream>
 
 #include "OVFCommon.h"
 
@@ -109,50 +106,76 @@ void JpegReader::setupReadFromMemory(jpegDEcompressRef jpegInfo) {
 
 }
 
-/// \brief 
+/// \brief Store as client_data in the decompression structure.
 struct JpegClientData {
+	/// \brief Jump buffer for longjmp() out of the error_exit function
+	/// 	in case of a non-recoverable error during JPEG decompression.
 	std::jmp_buf jumpBuffer;
 	JpegReader* jpegReaderObj;
 };
 
 void JpegReader::jpegErrorExit (jpegCommonPtr cinfo) {
- /* Always display the message */
-  (*cinfo->err->output_message) (cinfo);
+	auto clientData = reinterpret_cast<JpegClientData*>(cinfo->client_data);
+	char buffer[JMSG_LENGTH_MAX];
 
-  /* Let the memory manager delete any temp files before we die */
-  jpeg_destroy(cinfo);
+	// Format and store the error message
+	(*cinfo->err->format_message) (cinfo, buffer);
+	clientData->jpegReaderObj->errorMessage = buffer;
+	
+	// get the hell outa here
+	std::longjmp(clientData->jumpBuffer,1);
 
-  exit(EXIT_FAILURE);}
+}
 
 void JpegReader::jpegOutputMessage(jpegCommonPtr cinfo)
 {
-  char buffer[JMSG_LENGTH_MAX];
+	auto clientData = reinterpret_cast<JpegClientData*>(cinfo->client_data);
+	char buffer[JMSG_LENGTH_MAX];
 
-  /* Create the message */
-  (*cinfo->err->format_message) (cinfo, buffer);
+	/* Create the message */
+	cinfo->err->format_message (cinfo, buffer);
 
-  /* Send it to stderr, adding a newline */
-  fprintf(stderr, "%s\n", buffer);
+	LOG4CXX_INFO (logger,"Message for JPEG image " 
+		<< clientData->jpegReaderObj->fileName
+		<< ": " << buffer);
+
 }
 
 void JpegReader::jpegEmitMessage(jpegCommonPtr cinfo, int msgLevel)
 {
-  struct jpeg_error_mgr *err = cinfo->err;
+	auto clientData = reinterpret_cast<JpegClientData*>(cinfo->client_data);
+	char buffer[JMSG_LENGTH_MAX];
+	struct jpeg_error_mgr *err = cinfo->err;
 
-  if (msgLevel < 0) {
-    /* It's a warning message.  Since corrupt files may generate many warnings,
-     * the policy implemented here is to show only the first warning,
-     * unless trace_level >= 3.
-     */
-    if (err->num_warnings == 0 || err->trace_level >= 3)
-      (*err->output_message) (cinfo);
-    /* Always count warnings in num_warnings. */
-    err->num_warnings++;
-  } else {
-    /* It's a trace message.  Show it if trace_level >= msg_level. */
-    if (err->trace_level >= msgLevel)
-      (*err->output_message) (cinfo);
-  }
+	if (msgLevel < 0) {
+		/* It's a warning message.  Since corrupt files may generate many
+		 * warnings, I am concatenating them in the JpegReader's warnMessage
+		 */
+		err->num_warnings++;
+		
+		// Create the message
+		cinfo->err->format_message (cinfo, buffer);
+		
+		auto newWarnMsg = fmt::format(
+			"{}\nWarning #{}: {}",
+			clientData->jpegReaderObj->warnMessage,
+			err->num_warnings,
+			buffer);
+		
+		clientData->jpegReaderObj->warnMessage = newWarnMsg;
+
+	} else {
+		/* It's a trace message.  Show it if trace_level >= msg_level. */
+		if (err->trace_level >= msgLevel) {
+			// Create the message
+			cinfo->err->format_message (cinfo, buffer);
+			
+			LOG4CXX_TRACE(logger,"Trace for JPEG image " 
+				<< clientData->jpegReaderObj->fileName
+				<< ", msgLevel = " << msgLevel
+				<< ": " << buffer);
+		}
+	}
 }
 
 void JpegReader::readImageToTexture(TextureData &textureData) {
@@ -172,11 +195,12 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 		};
 
 		// Client data will survive jpeg_create_decompress()
-		jpegInfo.client_data = this;
+		jpegInfo.client_data = &clientData;
 
 		if (setjmp(clientData.jumpBuffer) != 0) {
 			// Something catastrophic happened during jpeg decompression
 			// which called JpegReader::jpegErrorExit.
+			throw JpegReaderException(errorMessage.c_str());
 		}
 
 		jpegInfo.err = jpeg_std_error(&jpegError);
@@ -184,6 +208,9 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 		jpegInfo.err->error_exit = JpegReader::jpegErrorExit;
 		jpegInfo.err->emit_message = JpegReader::jpegEmitMessage;
 		jpegInfo.err->output_message = JpegReader::jpegOutputMessage;
+		if (logger->isTraceEnabled()) {
+			jpegInfo.err->trace_level = 5;
+		}
 
 		jpeg_create_decompress(&jpegInfo);
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "Created decompress struct.");
@@ -200,18 +227,6 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 			}
 			setupReadFromFile(jpegInfo,jpegFile);
 		}
-
-/*
-		if (setjmp(png_jmpbuf(pngPtr))) {
-			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file with message: "
-			<< errorMessage);
-			throw JpegReaderException(
-				fmt::format (_(
-					"Error reading PNG file {0}: {1}"),
-					fileName,errorMessage).c_str());
-		}
-
-*/
 
 		jpeg_read_header(&jpegInfo, TRUE);
 
@@ -333,6 +348,15 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 		}
 		LOG4CXX_DEBUG(logger,"\ttextureLineNo = " << textureLineNo);
 		
+		if (!warnMessage.empty()) {
+			auto errMsg = fmt::format(_(
+				"Warnings during decoding image {} occured. "
+				"The image is probably corrupted. Warnings are: {}"),
+				fileName,warnMessage);
+			
+			throw JpegReaderException(errMsg.c_str());
+		}
+		
 		// Cleanup
 		LOG4CXX_DEBUG(logger,"\tCalling jpeg_finish_decompress");
 		jpeg_finish_decompress(&jpegInfo);
@@ -347,7 +371,6 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 	catch (std::exception const &e) {
 
 		// Perform internal cleanup before re-throwing the exception
-		jpeg_abort_decompress(&jpegInfo);
 		jpeg_destroy_decompress(&jpegInfo);
 		if(jpegFile) {
 			fclose (jpegFile);
