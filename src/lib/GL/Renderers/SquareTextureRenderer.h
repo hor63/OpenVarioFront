@@ -35,6 +35,15 @@ namespace OevGLES {
 
 class SquareTextureRenderer : public RendererBase {
 public:
+	/// If the expected format is not met an exception is being thrown.
+	///
+	/// Exception is \p IMAGE_FORMAT_AUTO.
+	enum ExpectImageFormat {
+		IMAGE_FORMAT_JPEG,
+		IMAGE_FORMAT_PNG,
+		IMAGE_FORMAT_AUTO ///< Check for JPEG or PNG format, and choose yourself
+	};
+
 
 	typedef GLfloat VertexPosition [4];
 	typedef GLfloat TextureCoordinate [2];
@@ -100,9 +109,9 @@ public:
 	};
 	
 	/** \brief Get information of in-memory source of image data
-	 
-	 \return \ref MemoryDataInfo
-	 \see \ref MemoryDataInfo for returned information.
+	 * 
+	 * \return \ref MemoryDataInfo
+	 * \see \ref MemoryDataInfo for returned information.
 	 */
 	MemoryDataInfo getMemoryDataInfo() {
 		return MemoryDataInfo {
@@ -111,6 +120,15 @@ public:
 			.imageName=fileName
 		};
 	}
+
+	ExpectImageFormat getExpectedImageFormat() {
+		return expectedImageFormat;
+	}
+
+	void setExpectedImageFormat(ExpectImageFormat expectedImageFormat) {
+		this->expectedImageFormat = expectedImageFormat;
+	}
+
 
 	/** \brief Setup the vertex arrays, calculate normals... and setup VBOs
 	 *
@@ -160,6 +178,9 @@ private:
 	 *0	V3	  V0
 	 *	0	  1
 	 */
+	
+	
+	ExpectImageFormat expectedImageFormat = IMAGE_FORMAT_AUTO;
 
 	VertexType vertexArray[4]; // Per vertex position as Vec4 and texture coordinate as Vec2
 
