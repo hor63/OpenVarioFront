@@ -380,5 +380,125 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 	}
 }
 
+bool JpegReader::checkImageValidity () {
+	FILE					*jpegFile = 0;
+	jpeg_decompress_struct	jpegInfo;
+	jpeg_error_mgr 			jpegError;
+	TextureData 			*result = 0;
+
+	memset(&jpegInfo,0,sizeof(jpegInfo));
+	memset(&jpegError,0,sizeof(jpegError));
+
+	try {
+		JpegClientData clientData {
+			.jumpBuffer{0},
+			.jpegReaderObj = this
+		};
+
+		// Client data will survive jpeg_create_decompress()
+		jpegInfo.client_data = &clientData;
+
+		if (setjmp(clientData.jumpBuffer) != 0) {
+			// Something catastrophic happened during jpeg decompression
+			// which called JpegReader::jpegErrorExit.
+			throw JpegReaderException(errorMessage.c_str());
+		}
+
+		jpegInfo.err = jpeg_std_error(&jpegError);
+		// Set function pointer to my own implementation.
+		jpegInfo.err->error_exit = JpegReader::jpegErrorExit;
+		jpegInfo.err->emit_message = JpegReader::jpegEmitMessage;
+		jpegInfo.err->output_message = JpegReader::jpegOutputMessage;
+		if (logger->isTraceEnabled()) {
+			jpegInfo.err->trace_level = 5;
+		}
+
+		jpeg_create_decompress(&jpegInfo);
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "Created decompress struct.");
+
+		if (memLocation != nullptr) {
+			// switch to reading from memory
+			setupReadFromMemory(jpegInfo);
+		} else {
+			// Setup reading from file; open the file.
+			if (fileName.empty()) {
+				throw JpegReaderException(fmt::format(_(
+					"Error: Neither a JPEG file name was set nor in-memrory data provided.")
+					).c_str());
+			}
+			setupReadFromFile(jpegInfo,jpegFile);
+		}
+
+		jpeg_read_header(&jpegInfo, TRUE);
+
+		LOG4CXX_DEBUG(logger,"\tImage size = "
+			<< jpegInfo.image_width << 'x' << jpegInfo.image_height);
+			
+		LOG4CXX_DEBUG(logger,"\tout_color_space = " << static_cast<int>(jpegInfo.out_color_space));
+		
+		// Select the format for me.
+		// I only support greyscale or RGB, no Alpha channel, which is poorly
+		// defined for JPEG anyway.
+		// If I need an image with Alpha channel I will use PNG.
+		// Natural images like photos, art are the natural domain of JPEG. But
+		// they usually do not have an Alpha channel.
+		if (jpegInfo.jpeg_color_space == JCS_GRAYSCALE) {
+			jpegInfo.out_color_space = JCS_GRAYSCALE;
+		} else {
+			jpegInfo.out_color_space = JCS_RGB;
+		}
+		// I do not want color maps.
+		jpegInfo.quantize_colors = FALSE;
+		// I will do only one reading pass over the image.
+		jpegInfo.buffered_image = FALSE;
+
+		jpeg_start_decompress(&jpegInfo);
+		LOG4CXX_DEBUG(logger,"\tAfter decompressing: Image size = "
+			<< jpegInfo.output_width << 'x' << jpegInfo.output_height);
+		LOG4CXX_DEBUG(logger,"\t dct_method            = " << jpegInfo.dct_method);
+		LOG4CXX_DEBUG(logger,"\t do_fancy_upsampling   = " << jpegInfo.do_fancy_upsampling);
+		LOG4CXX_DEBUG(logger,"\t do_block_smoothing    = " << jpegInfo.do_block_smoothing);
+		LOG4CXX_DEBUG(logger,"\t enable_1pass_quant    = " << jpegInfo.enable_1pass_quant);
+		LOG4CXX_DEBUG(logger,"\t enable_external_quant = " << jpegInfo.enable_external_quant);
+		LOG4CXX_DEBUG(logger,"\t enable_2pass_quant    = " << jpegInfo.enable_2pass_quant);
+		LOG4CXX_DEBUG(logger,"\t rec_outbuf_heigh      = " << jpegInfo.rec_outbuf_height);
+		LOG4CXX_DEBUG(logger,"\t out_color_components  = " << jpegInfo.out_color_components);
+		LOG4CXX_DEBUG(logger,"\t data_precision        = " << jpegInfo.data_precision);
+		LOG4CXX_DEBUG(logger,"\t out_color_components  = " << jpegInfo.out_color_components);
+		LOG4CXX_DEBUG(logger,"\t output_components     = " << jpegInfo.output_components);
+		LOG4CXX_DEBUG(logger,"\t output_width          = " << jpegInfo.output_width);
+
+
+
+		// Cleanup
+		LOG4CXX_DEBUG(logger,"\tCalling jpeg_abort_decompress");
+		jpeg_abort_decompress(&jpegInfo);
+
+		LOG4CXX_DEBUG(logger,"\tCalling jpeg_destroy_decompress");
+		jpeg_destroy_decompress(&jpegInfo);
+		if(jpegFile) {
+			fclose (jpegFile);
+		}
+
+	}
+	catch (std::exception const &e) {
+
+		// Perform internal cleanup before re-throwing the exception
+		jpeg_destroy_decompress(&jpegInfo);
+		if(jpegFile) {
+			fclose (jpegFile);
+		}
+
+		LOG4CXX_DEBUG(logger,
+			"\tException caught. return false. Exception caused by = " << e.what());
+
+		return false;
+	}
+
+	LOG4CXX_DEBUG(logger,"\tJpeg image " << fileName << " seems valid. return true.");
+
+	return true;
+}
+
 
 } /* namespace OevGLES */

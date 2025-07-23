@@ -45,6 +45,9 @@ public:
 	virtual ~JpegReader();
 
 	virtual void readImageToTexture(TextureData &textureData) override;
+	
+	virtual bool checkImageValidity () override;
+
 
 private:
 
