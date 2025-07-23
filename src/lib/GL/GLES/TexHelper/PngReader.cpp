@@ -151,6 +151,7 @@ void PngReader::setupReadFromMemory(png_struct* pngPtr) {
 	
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__);
 
+	posInMemLocation = 0;
 	png_set_read_fn(pngPtr,this,
 		readPngDataFromMemoryCallback);
 	png_init_io(pngPtr,reinterpret_cast<FILE*>(this));
