@@ -23,6 +23,7 @@
  *
  */
 
+#include "GLES/TexHelper/ImageReaderBase.h"
 #include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -174,8 +175,8 @@ void SquareTextureRenderer::setupVertexBuffers() {
 		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 		glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 	
-		std::unique_ptr<OevGLES::JpegReader> imageReader;
-		// Load the texture into GL
+		// Load and decompress the image into TextureData
+		std::unique_ptr<OevGLES::ImageReaderBase> imageReader;
 		if (memLocation != nullptr) {
 			LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
 				<< ": create imageReader with memLocation = "
@@ -188,6 +189,8 @@ void SquareTextureRenderer::setupVertexBuffers() {
 		}
 		OevGLES::TextureData texData (8,8,OevGLES::TextureData::RGB,OevGLES::TextureData::Byte);
 		imageReader->readImageToTexture(texData);
+
+		// Upload the texture into GL
 		glTexture.setTextureData(texData);
 	
 		glTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
