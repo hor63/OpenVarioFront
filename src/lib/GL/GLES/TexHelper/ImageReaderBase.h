@@ -53,7 +53,6 @@ protected:
 	std::string fileName;
 	char const *memLocation = nullptr;
 	int memLength = 0;
-	int posInMemLocation = 0;
 	
 	std::string warnMessage;
 	std::string errorMessage;

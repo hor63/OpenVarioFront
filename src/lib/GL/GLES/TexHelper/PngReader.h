@@ -49,6 +49,8 @@ public:
 
 private:
 
+	int posInMemLocation = 0;
+
 	static void pngErrorCallback(png_struct* pngPtr,char const* error_msg);
 	static void pngWarningCallback(png_struct* pngPtr,char const* warn_msg);
 
