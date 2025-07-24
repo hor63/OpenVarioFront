@@ -59,6 +59,8 @@ private:
 	void setupReadFromFile(png_struct* pngPtr,FILE* &pngFile);
 	void setupReadFromMemory(png_struct* pngPtr);
 
+	virtual bool checkImageValidity () override;
+
 };
 
 } /* namespace OevGLES */

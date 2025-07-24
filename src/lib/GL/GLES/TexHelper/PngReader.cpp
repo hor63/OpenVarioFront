@@ -360,9 +360,106 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 		throw;
 	}
 
+}
+
+bool PngReader::checkImageValidity () {
+
+	FILE			*pngFile = 0;
+	png_structp 	pngPtr = 0;
+	png_infop   	pngInfo = 0;
 
 
+	try {
 
+		pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
+		LOG4CXX_DEBUG(logger,"Created read struct. pngPtr = " << pngPtr);
+		if (!pngPtr) {
+			throw PngReaderException("png_create_read_struct() failed.");
+		}
+
+		pngInfo = png_create_info_struct(pngPtr);
+		LOG4CXX_DEBUG(logger,"Created info struct. pngInfo = " << pngInfo);
+		if (!pngInfo) {
+			throw PngReaderException("png_create_info_struct() failed.");
+		}
+
+		png_set_error_fn(pngPtr,
+			this, pngErrorCallback,
+			pngWarningCallback);
+
+		if (memLocation != nullptr) {
+			// switch to reading from memory
+			setupReadFromMemory(pngPtr);
+		} else {
+			// Setup reading from file; open the file.
+			if (fileName.empty()) {
+				throw PngReaderException(fmt::format(
+					_("Error: Neither a PNG file name was set nor in-memrory data was provided.")
+					).c_str());
+			}
+			setupReadFromFile(pngPtr,pngFile);
+		}
+
+		if (setjmp(png_jmpbuf(pngPtr))) {
+			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file with message: "
+			<< errorMessage);
+			throw PngReaderException(
+				fmt::format (
+					_("Error reading PNG image {0}: {1}"),
+					fileName,errorMessage).c_str());
+		}
+
+		png_set_sig_bytes(pngPtr,0);
+		LOG4CXX_DEBUG(logger,"Called png_set_sig_bytes");
+
+		png_read_png(pngPtr,pngInfo,
+			PNG_TRANSFORM_EXPAND // expand index to palettes to RGB
+			|PNG_TRANSFORM_STRIP_16 // truncate 16-bit samples to 8 bit
+			|PNG_TRANSFORM_PACKING // Expand < 8 bit samples to 8 bit
+			,0);
+		LOG4CXX_DEBUG(logger,"Called png_read_png");
+
+		png_uint_32 width = 0,height =0;
+		int bitDepth = 0, colorType = 0;
+		png_get_IHDR(pngPtr,pngInfo,&width,
+			&height,&bitDepth,&colorType,
+			NULL,NULL,NULL);
+		LOG4CXX_DEBUG(logger,"Called png_get_IHDR");
+		LOG4CXX_DEBUG(logger,"width = "<< width << ", height = "<< height 
+			<< ", bitDepth = "<< bitDepth << ", colorType = "<< colorType );
+
+
+		// Cleanup
+		LOG4CXX_DEBUG(logger,"Destroy the PNG structures.");
+		png_destroy_read_struct(&pngPtr,&pngInfo,NULL);
+
+		if(pngFile) {
+			fclose (pngFile);
+		}
+
+
+	}
+	catch (std::exception const &e) {
+
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ 
+			<< "Exception: " << e.what());
+
+		if (pngInfo) {
+			png_destroy_info_struct(pngPtr,&pngInfo);
+		}
+
+		if (pngPtr) {
+			png_destroy_read_struct(&pngPtr,NULL,NULL);
+		}
+
+		if (pngFile) {
+			fclose (pngFile);
+		}
+
+		return false;
+	}
+
+	return true;
 }
 
 
