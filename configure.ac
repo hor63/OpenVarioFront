@@ -294,6 +294,7 @@ AC_CONFIG_FILES(Makefile
                 src/Makefile
                 src/lib/GL/Makefile
                 src/lib/util/Makefile
+                src/lib/Controls/Makefile
                 )
 
 AC_SUBST([AC_APP_CXXFLAGS])

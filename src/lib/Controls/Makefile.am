@@ -1,5 +1,5 @@
 #    This file is part of OpenVarioFront, an electronic variometer for glider planes
-#    Copyright (C) 2016  Kai Horstmann
+#    Copyright (C) 2018  Kai Horstmann
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,36 +15,19 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=../resources lib/util lib/GL lib/Controls
-	
-
-bin_PROGRAMS=OpenVarioFront$(EXEEXT)
-
-OpenVarioFront_SOURCES=OpenVarioFront.cpp
- 
-OpenVarioFront_LDADD = \
-	lib/Controls/libOEV_Controls.a \
-	lib/GL/libOEV_GLES.a \
-	lib/util/libOEV_util.a \
-	../resources/libOEV_resurces.a \
-	$(LOG4CXX_LIBS) \
-	$(SDL3_LIBS) \
-	$(PANGO_FT2_LIBS) \
-	$(LIBPNG_LIBS) \
-	$(LIBJPEG_LIBS) \
-	$(GLES2_LIBS)
+noinst_LIBRARIES = libOEV_Controls.a
+libOEV_Controls_a_SOURCES = \
+	ControlBase.cpp
 
 AM_CXXFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
 	-I$(top_srcdir)/src/lib/util \
+	-I$(top_srcdir)/src/lib/Controls \
 	-I$(top_srcdir)/3rdParty/eigen/Eigen \
 	-I$(top_srcdir)/3rdParty/fmt/include \
 	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(PANGO_FT2_CFLAGS) \
 	$(LIBPNG_CFLAGS) $(LIBJPEG_CFLAGS) \
 	$(SDL3_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
 
-AM_LDFLAGS= $(LOG4CXX_LDFLAGS) 
 
-all: $(abs_builddir)/OpenVarioFront.logger.properties
+AM_LDFLAGS= $(LOG4CXX_LDFLAGS)
 
-$(abs_builddir)/OpenVarioFront.logger.properties: $(srcdir)/OpenVarioFront.logger.properties
-	cp $(srcdir)/OpenVarioFront.logger.properties $(abs_builddir)/OpenVarioFront.logger.properties
