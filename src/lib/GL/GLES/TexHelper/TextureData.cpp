@@ -31,7 +31,7 @@
 
 #include "GLES/TexHelper/TextureData.h"
 
-#include "GLES/ExceptionBase.h"
+#include "ExceptionBase.h"
 
 namespace OevGLES {
 

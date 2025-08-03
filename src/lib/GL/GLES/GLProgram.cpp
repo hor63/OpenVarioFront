@@ -33,7 +33,7 @@
 
 
 #include "GLES/GLProgram.h"
-#include "GLES/ExceptionBase.h"
+#include "ExceptionBase.h"
 
 
 namespace OevGLES {

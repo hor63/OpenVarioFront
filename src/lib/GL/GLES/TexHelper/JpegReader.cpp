@@ -36,7 +36,7 @@
 #include "fmt/format.h"
 
 #include "GLES/TexHelper/JpegReader.h"
-#include "GLES/ExceptionBase.h"
+#include "ExceptionBase.h"
 
 #include <jpeglib.h>
 

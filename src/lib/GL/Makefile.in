@@ -134,10 +134,9 @@ libOEV_GLES_a_AR = $(AR) $(ARFLAGS)
 libOEV_GLES_a_LIBADD =
 am_libOEV_GLES_a_OBJECTS = GLFramework.$(OBJEXT) \
 	sysSDLWindow.$(OBJEXT) SDLRenderSurface.$(OBJEXT) \
-	GLShader.$(OBJEXT) GLProgram.$(OBJEXT) ExceptionBase.$(OBJEXT) \
-	GLTexture.$(OBJEXT) TextureData.$(OBJEXT) \
-	ImageReaderBase.$(OBJEXT) PngReader.$(OBJEXT) \
-	JpegReader.$(OBJEXT) GLProgBase.$(OBJEXT) \
+	GLShader.$(OBJEXT) GLProgram.$(OBJEXT) GLTexture.$(OBJEXT) \
+	TextureData.$(OBJEXT) ImageReaderBase.$(OBJEXT) \
+	PngReader.$(OBJEXT) JpegReader.$(OBJEXT) GLProgBase.$(OBJEXT) \
 	GLProgDiffuseLight.$(OBJEXT) GLProgDiffLightTexture.$(OBJEXT) \
 	GLProgTextTexture.$(OBJEXT) GLProgDiffLightCircle.$(OBJEXT) \
 	RendererBase.$(OBJEXT) AnalogHandRenderer.$(OBJEXT) \
@@ -168,8 +167,8 @@ am__depfiles_remade = ./$(DEPDIR)/AnalogHandRenderer.Po \
 	./$(DEPDIR)/CircleFilledRenderer.Po \
 	./$(DEPDIR)/CirclePartialArcRenderer.Po \
 	./$(DEPDIR)/CirclePolygonVertexContainer.Po \
-	./$(DEPDIR)/ExceptionBase.Po ./$(DEPDIR)/GLFramework.Po \
-	./$(DEPDIR)/GLProgBase.Po ./$(DEPDIR)/GLProgDiffLightCircle.Po \
+	./$(DEPDIR)/GLFramework.Po ./$(DEPDIR)/GLProgBase.Po \
+	./$(DEPDIR)/GLProgDiffLightCircle.Po \
 	./$(DEPDIR)/GLProgDiffLightTexture.Po \
 	./$(DEPDIR)/GLProgDiffuseLight.Po \
 	./$(DEPDIR)/GLProgTextTexture.Po ./$(DEPDIR)/GLProgram.Po \
@@ -449,7 +448,7 @@ top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libOEV_GLES.a
 libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
 	GLES/SDL/sysSDLWindow.cpp GLES/SDL/SDLRenderSurface.cpp \
-	GLES/GLShader.cpp GLES/GLProgram.cpp GLES/ExceptionBase.cpp \
+	GLES/GLShader.cpp GLES/GLProgram.cpp \
 	GLES/GLTexture.cpp GLES/TexHelper/TextureData.cpp \
 	GLES/TexHelper/ImageReaderBase.cpp \
 	GLES/TexHelper/PngReader.cpp GLES/TexHelper/JpegReader.cpp \
@@ -526,7 +525,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CircleFilledRenderer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CirclePartialArcRenderer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CirclePolygonVertexContainer.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExceptionBase.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLFramework.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgBase.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffLightCircle.Po@am__quote@ # am--include-marker
@@ -646,20 +644,6 @@ GLProgram.obj: GLES/GLProgram.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLProgram.cpp' object='GLProgram.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgram.obj `if test -f 'GLES/GLProgram.cpp'; then $(CYGPATH_W) 'GLES/GLProgram.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLProgram.cpp'; fi`
-
-ExceptionBase.o: GLES/ExceptionBase.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExceptionBase.o -MD -MP -MF $(DEPDIR)/ExceptionBase.Tpo -c -o ExceptionBase.o `test -f 'GLES/ExceptionBase.cpp' || echo '$(srcdir)/'`GLES/ExceptionBase.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExceptionBase.Tpo $(DEPDIR)/ExceptionBase.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/ExceptionBase.cpp' object='ExceptionBase.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExceptionBase.o `test -f 'GLES/ExceptionBase.cpp' || echo '$(srcdir)/'`GLES/ExceptionBase.cpp
-
-ExceptionBase.obj: GLES/ExceptionBase.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExceptionBase.obj -MD -MP -MF $(DEPDIR)/ExceptionBase.Tpo -c -o ExceptionBase.obj `if test -f 'GLES/ExceptionBase.cpp'; then $(CYGPATH_W) 'GLES/ExceptionBase.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/ExceptionBase.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExceptionBase.Tpo $(DEPDIR)/ExceptionBase.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/ExceptionBase.cpp' object='ExceptionBase.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExceptionBase.obj `if test -f 'GLES/ExceptionBase.cpp'; then $(CYGPATH_W) 'GLES/ExceptionBase.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/ExceptionBase.cpp'; fi`
 
 GLTexture.o: GLES/GLTexture.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLTexture.o -MD -MP -MF $(DEPDIR)/GLTexture.Tpo -c -o GLTexture.o `test -f 'GLES/GLTexture.cpp' || echo '$(srcdir)/'`GLES/GLTexture.cpp
@@ -1104,7 +1088,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/CircleFilledRenderer.Po
 	-rm -f ./$(DEPDIR)/CirclePartialArcRenderer.Po
 	-rm -f ./$(DEPDIR)/CirclePolygonVertexContainer.Po
-	-rm -f ./$(DEPDIR)/ExceptionBase.Po
 	-rm -f ./$(DEPDIR)/GLFramework.Po
 	-rm -f ./$(DEPDIR)/GLProgBase.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightCircle.Po
@@ -1177,7 +1160,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/CircleFilledRenderer.Po
 	-rm -f ./$(DEPDIR)/CirclePartialArcRenderer.Po
 	-rm -f ./$(DEPDIR)/CirclePolygonVertexContainer.Po
-	-rm -f ./$(DEPDIR)/ExceptionBase.Po
 	-rm -f ./$(DEPDIR)/GLFramework.Po
 	-rm -f ./$(DEPDIR)/GLProgBase.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightCircle.Po

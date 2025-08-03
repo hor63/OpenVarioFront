@@ -31,7 +31,7 @@
 #include "OVFCommon.h"
 
 #include "GLES/GLTexture.h"
-#include "GLES/ExceptionBase.h"
+#include "ExceptionBase.h"
 
 
 #if defined HAVE_LOG4CXX_H
