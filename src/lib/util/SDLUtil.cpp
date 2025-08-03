@@ -1,10 +1,10 @@
 /*
- *  sysEGLWindow.cpp
+ * SDLUtil.cpp
  *
- *  System dependent part of the EGL classes. Here for X11
- *
- *  Created on: Apr 23, 2018
+ *  Created on: Aug 3, 2025
  *      Author: hor
+ *
+ *  Mostly error handling support for SDL calls
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2018  Kai Horstmann
@@ -24,55 +24,43 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
-#include <log4cxx/logger.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include "SDLUtil.h"
 
-#include <sstream>
+#include <SDL3/SDL_error.h>
+
+#include "fmt/base.h"
+#include "fmt/format.h"
 
 #include "OVFCommon.h"
 
-#include "GLES/sysSDLWindow.h"
 #include "ExceptionBase.h"
-#include "SDLUtil.h"
 
 namespace OevGLES {
-
-SDLNativeWindow::~SDLNativeWindow() {
-	closeNativeWindow();
-}
-
-void SDLNativeWindow::openNativeGLES2Window( GLint width, GLint height,
-		char const* windowName) {
-
-#if defined HAVE_LOG4CXX_H
-    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");
-#endif
-
-    sdlWindow = SDL_CreateWindow(windowName,
-    		width, height,
-			SDL_WINDOW_OPENGL);
 	
-	if (sdlWindow == nullptr) {
-		reportSDLError(std::source_location::current(), "SDL_CreateWindow");
-	}
-	
-}
+void reportSDLError( std::source_location const& sourceLocation,char const *sdlFunctionName) {
+	std::string sdlErrorMsg;
+	auto sdlErrorMsgCStr = SDL_GetError();
 
-void SDLNativeWindow::closeNativeWindow() {
-
-	if (sdlWindow != nullptr) {
-		SDL_DestroyWindow(sdlWindow);
-
-		sdlWindow = nullptr;
+	if (sdlErrorMsgCStr == nullptr) {
+		sdlErrorMsg = _("No SDL error message found");
+		sdlErrorMsgCStr = sdlErrorMsg.c_str();
 	}
 
+	auto errorText = fmt::format (fmt::runtime(_(
+		"An error occurred in SDL function {0} at {1}:{2} in function {3}. Message:\n{4}"
+		)),
+		sdlFunctionName,
+		sourceLocation.file_name(),sourceLocation.line(),sourceLocation.function_name(),
+		sdlErrorMsgCStr);
+	
+	throw SDLException (errorText.c_str());
 }
 
+} // namespace OevGLES {
 
-} // namespace OevGLES
+
+

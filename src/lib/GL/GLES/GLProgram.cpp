@@ -169,11 +169,11 @@ void GLProgram::linkProgram () {
 
 	if (!vertexShader) {
 		LOG4CXX_FATAL(logger,"Vertex shader is undefined");
-		throw ProgramException("Vertex shader is undefined");
+		throw ShaderProgramException("Vertex shader is undefined");
 	}
 	if (!fragmentShader) {
 		LOG4CXX_FATAL(logger,"Fragment shader is undefined");
-		throw ProgramException("Fragment shader is undefined");
+		throw ShaderProgramException("Fragment shader is undefined");
 	}
 
 	// Re-compile the shaders if necessary
@@ -184,7 +184,7 @@ void GLProgram::linkProgram () {
 	programHandle = glCreateProgram();
 	LOG4CXX_DEBUG(logger, "program handle = " << programHandle);
 	if (programHandle == 0) {
-		throw ProgramException ("GLCreateProgram returned 0.");
+		throw ShaderProgramException ("GLCreateProgram returned 0.");
 	}
 
 	// Attach the shaders
@@ -212,7 +212,7 @@ void GLProgram::linkProgram () {
 		delete infoString;
 
 		LOG4CXX_FATAL(logger,errString);
-		throw ProgramException(errString.c_str());
+		throw ShaderProgramException(errString.c_str());
 	}
 
 	retrieveShaderVariableInfos();

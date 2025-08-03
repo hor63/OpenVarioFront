@@ -10,6 +10,7 @@
 #endif
 
 #include "GLES/GLFramework.h"
+#include "SDLUtil.h"
 
 namespace OevGLES {
 
@@ -55,9 +56,15 @@ void GLFramework::createRenderSurface(GLint width, GLint height,
 	SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 
 	// I want EGL as bridge to the native window and display system.
-	SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1");
+	if (!SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1")) {
+		reportSDLError(std::source_location::current(),
+			 "SDL_Init(SDL_HINT_VIDEO_FORCE_EGL,1)");
+	}
 
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
+		reportSDLError(std::source_location::current(),
+			 "SDL_Init");
+	}
 
 	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__ << "Create native window, eglSurface and eglContext. Window size = "
 			<< width << "x" << height);

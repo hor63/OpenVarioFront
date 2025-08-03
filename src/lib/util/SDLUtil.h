@@ -1,9 +1,10 @@
 /*
- * SDLRenderSurface.h
+ * SDLUtil.h
  *
- *  Created on: Apr 24, 2018
+ *  Created on: Aug 3, 2025
  *      Author: hor
  *
+ *  Mostly error handling support for SDL calls *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2018  Kai Horstmann
  *
@@ -23,54 +24,15 @@
  *
  */
 
-#ifndef GLES_EGLRENDERSURFACE_H_
-#define GLES_EGLRENDERSURFACE_H_
+#ifndef LIB_UTIL_SDLUTIL_H_
+#define LIB_UTIL_SDLUTIL_H_
 
-#include "GLES/GLFramework.h"
-#include "GLES/sysSDLWindow.h"
-
-// Forward declaration
-struct SDL_GLContextState;
+#include <source_location>
 
 namespace OevGLES {
+	
+void reportSDLError( std::source_location const& sourceLocation,char const *sdlFunctionName);
 
-class GLFramework;
+} // namespace OevGLES {
 
-class SDLRenderSurface {
-	friend class GLFramework;
-public:
-
-	virtual ~SDLRenderSurface();
-
-	void createRenderSurface (GLint width, GLint height,
-			char const* windowName);
-
-	void makeContextCurrent();
-
-	SDLNativeWindow& getNativeWindow() {
-		return nativeWindow;
-	}
-
-	GLFramework& getGlFramework() {
-		return glFramework;
-	}
-
-protected:
-
-	GLFramework& glFramework;
-	SDLNativeWindow nativeWindow;
-
-	SDL_GLContextState* glContext = nullptr;
-
-    GLint eglMajorVersion = 2;
-    GLint eglMinorVersion = 0;
-
-	SDLRenderSurface(GLFramework& framework);
-
-};
-
-#include "GLES/GLFramework.h"
-
-} /* namespace OevGLES */
-
-#endif /* GLES_EGLRENDERSURFACE_H_ */
+#endif /* LIB_UTIL_SDLUTIL_H_ */

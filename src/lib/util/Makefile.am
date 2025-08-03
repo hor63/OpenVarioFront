@@ -18,6 +18,7 @@
 noinst_LIBRARIES = libOEV_util.a
 libOEV_util_a_SOURCES = VecMat.cpp \
 	ExceptionBase.cpp \
+	SDLUtil.cpp \
 	../../../3rdParty/fmt/src/format.cc \
 	../../../3rdParty/fmt/src/os.cc
 

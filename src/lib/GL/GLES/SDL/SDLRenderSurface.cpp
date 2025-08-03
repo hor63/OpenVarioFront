@@ -2,7 +2,7 @@
  * EGLRenderSurface.cpp
  *
  *  Created on: Apr 24, 2018
- *      Author: hor
+ *	  Author: hor
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
  *   Copyright (C) 2018  Kai Horstmann
@@ -23,17 +23,18 @@
  *
  */
 
-#include "SDL3/SDL_video.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 
 #include <sstream>
 
+#include "SDL3/SDL_video.h"
+
 #include "OVFCommon.h"
 
 #include "GLES/GLFramework.h"
-#include "ExceptionBase.h"
+#include "SDLUtil.h"
 
 namespace OevGLES {
 
@@ -64,22 +65,32 @@ SDLRenderSurface::~SDLRenderSurface() {
 void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 		char const* windowName) {
 
-    // Leave defaults SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+	// Leave defaults SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+	if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES)
+		|| !SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2)
+		|| !SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0)
+		|| !SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1)
+		|| !SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+		|| !SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16)
+// Some GLES implementation do not support multisampled rendering, e.g 
+// older Intel I915 integrated GPUs
+//		|| !SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1)
+//		|| !SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4)
+		) {
+		reportSDLError(std::source_location::current(), "SDL_GL_SetAttribute (mult.)");
+	}
 
 	nativeWindow.openNativeGLES2Window(
 			width, height, windowName);
 
 	glContext = SDL_GL_CreateContext (nativeWindow);
+	if (glContext == nullptr) {
+		reportSDLError(std::source_location::current(), "SDL_GL_CreateContext");
+	}
 
-	SDL_GL_MakeCurrent(nativeWindow,glContext);
+	if(!SDL_GL_MakeCurrent(nativeWindow,glContext)) {
+		reportSDLError(std::source_location::current(), "SDL_GL_MakeCurrent");
+	}
 
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
@@ -112,7 +123,9 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 
 void SDLRenderSurface::makeContextCurrent() {
 
-	SDL_GL_MakeCurrent(nativeWindow, glContext);
+	if(!SDL_GL_MakeCurrent(nativeWindow,glContext)) {
+		reportSDLError(std::source_location::current(), "SDL_GL_MakeCurrent");
+	}
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
 }

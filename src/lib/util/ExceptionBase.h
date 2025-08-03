@@ -69,9 +69,9 @@ public:
 		{}
 };
 
-class ProgramException :public ExceptionBase {
+class ShaderProgramException :public ExceptionBase {
 public:
-	ProgramException(char const *description)
+	ShaderProgramException(char const *description)
 		:ExceptionBase {description}
 		{}
 };
@@ -100,6 +100,13 @@ public:
 class GLTextRenderException :public ExceptionBase {
 public:
 	GLTextRenderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class SDLException :public ExceptionBase {
+public:
+	SDLException(char const *description)
 		:ExceptionBase {description}
 		{}
 };
