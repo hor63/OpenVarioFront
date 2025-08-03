@@ -95,8 +95,8 @@ void PngReader::readPngDataFromMemoryCallback(png_struct* pngPtr,
 		tis->posInMemLocation += dataLength;
 	} else {
 		tis->errorMessage = fmt::format(
-				_("Error reading PNG image {0} from memory."
-				" Requested length is {1} bytes, but only {2} bytes of {3} are left for reading."),
+				fmt::runtime(_("Error reading PNG image {0} from memory."
+				" Requested length is {1} bytes, but only {2} bytes of {3} are left for reading.")),
 				tis->fileName,dataLength,(tis->memLength - tis->posInMemLocation),
 				tis->memLength
 			);
@@ -137,8 +137,8 @@ void PngReader::setupReadFromFile(png_struct* pngPtr,FILE* &pngFile){
 
 		if (pngFile == nullptr) {
 			errorMessage = 
-				fmt::format(_(
-					"Could not open PNG file {0}. errno = {1}: {2}"),
+				fmt::format(fmt::runtime(_(
+					"Could not open PNG file {0}. errno = {1}: {2}")),
 					fileName,errno,std::strerror(errno));
 			throw PngReaderException(errorMessage.c_str());
 		}
@@ -192,8 +192,8 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 		} else {
 			// Setup reading from file; open the file.
 			if (fileName.empty()) {
-				throw PngReaderException(fmt::format(
-					_("Error: Neither a PNG file name was set nor in-memrory data was provided.")
+				throw PngReaderException(fmt::format(fmt::runtime(_(
+					"Error: Neither a PNG file name was set nor in-memrory data was provided."))
 					).c_str());
 			}
 			setupReadFromFile(pngPtr,pngFile);
@@ -204,7 +204,7 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 			<< errorMessage);
 			throw PngReaderException(
 				fmt::format (
-					_("Error reading PNG image {0}: {1}"),
+					fmt::runtime(_("Error reading PNG image {0}: {1}")),
 					fileName,errorMessage).c_str());
 		}
 
@@ -234,8 +234,8 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 		case PNG_COLOR_TYPE_GRAY:
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY");
 			if (bitDepth != 8) {
-				auto errMsg = fmt::format(
-					_("PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported."),
+				auto errMsg = fmt::format(fmt::runtime(_(
+					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.")),
 					fileName,"PNG_COLOR_TYPE_GRAY",bitDepth);
 				throw PngReaderException(errMsg.c_str());
 			} else {
@@ -247,8 +247,8 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 		case PNG_COLOR_TYPE_GRAY_ALPHA:
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_GRAY_ALPHA");
 			if (bitDepth != 8) {
-				auto errMsg = fmt::format(
-					_("PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported."),
+				auto errMsg = fmt::format(fmt::runtime(_(
+					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.")),
 					fileName,"PNG_COLOR_TYPE_GRAY_ALPHA",bitDepth);
 				throw PngReaderException(errMsg.c_str());
 			} else {
@@ -260,8 +260,8 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 		case PNG_COLOR_TYPE_RGB:
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGB");
 			if (bitDepth != 8) {
-				auto errMsg = fmt::format(
-					_("PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported."),
+				auto errMsg = fmt::format(fmt::runtime(_(
+					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.")),
 					fileName,"PNG_COLOR_TYPE_RGB",bitDepth);
 				throw PngReaderException(errMsg.c_str());
 			} else {
@@ -273,8 +273,8 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 		case PNG_COLOR_TYPE_RGB_ALPHA:
 			LOG4CXX_DEBUG(logger,"Color type is PNG_COLOR_TYPE_RGBA");
 			if (bitDepth != 8) {
-				auto errMsg = fmt::format(
-					_("PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported."),
+				auto errMsg = fmt::format(fmt::runtime(_(
+					"PNG image {0}: Bit depth of color type {1} is {2}. This depth is not supported.")),
 					fileName,"PNG_COLOR_TYPE_RGB_ALPHA",bitDepth);
 				throw PngReaderException(errMsg.c_str());
 			} else {
@@ -285,8 +285,8 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 
 		default:
 			{
-				auto errMsg = fmt::format(
-					_("PNG image {0}: Un-supported PNG color type {1}"),
+				auto errMsg = fmt::format(fmt::runtime(
+					_("PNG image {0}: Un-supported PNG color type {1}")),
 					fileName,colorType);
 				throw PngReaderException(errMsg.c_str());
 			}
@@ -298,9 +298,9 @@ void PngReader::readImageToTexture(TextureData &textureData) {
 		LOG4CXX_DEBUG(logger,"PNG buffer length is " << (png_get_rowbytes(pngPtr,pngInfo) * height) <<
 				", the length of the texturedata buffer is " << textureData.getDataBufferLength());
 		if (textureData.getDataBufferLength() != png_get_rowbytes(pngPtr,pngInfo) * height) {
-			auto errMsg = fmt::format(_(
+			auto errMsg = fmt::format(fmt::runtime(_(
 				"Error in PNG image {0}: PNG buffer length is {1} but the length of the texture data buffer is {2}."
-				),
+				)),
 				fileName,(png_get_rowbytes(pngPtr,pngInfo) * height),
 				textureData.getDataBufferLength());
 			throw PngReaderException(errMsg.c_str());
@@ -393,8 +393,8 @@ bool PngReader::checkImageValidity () {
 		} else {
 			// Setup reading from file; open the file.
 			if (fileName.empty()) {
-				throw PngReaderException(fmt::format(
-					_("Error: Neither a PNG file name was set nor in-memrory data was provided.")
+				throw PngReaderException(fmt::format(fmt::runtime(_(
+					"Error: Neither a PNG file name was set nor in-memrory data was provided."))
 					).c_str());
 			}
 			setupReadFromFile(pngPtr,pngFile);
@@ -404,8 +404,8 @@ bool PngReader::checkImageValidity () {
 			LOG4CXX_ERROR(logger,"LibPng called longjmp during reading PNG file with message: "
 			<< errorMessage);
 			throw PngReaderException(
-				fmt::format (
-					_("Error reading PNG image {0}: {1}"),
+				fmt::format (fmt::runtime(
+					_("Error reading PNG image {0}: {1}")),
 					fileName,errorMessage).c_str());
 		}
 

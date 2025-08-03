@@ -50,8 +50,12 @@ GLFramework::~GLFramework() {
 void GLFramework::createRenderSurface(GLint width, GLint height,
 		const char *windowName) {
 
+	SDL_ClearError();
+
 	SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
-    SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1");
+
+	// I want EGL as bridge to the native window and display system.
+	SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1");
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 

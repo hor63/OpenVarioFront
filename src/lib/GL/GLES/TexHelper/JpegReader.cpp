@@ -82,8 +82,8 @@ void JpegReader::setupReadFromFile(jpegDEcompressRef jpegInfo,FILE* &jpegFile){
 
 		if (jpegFile == nullptr) {
 			errorMessage = 
-				fmt::format(_(
-					"Could not open JPEG file {0}. errno = {1}: {2}"),
+				fmt::format(fmt::runtime(_(
+					"Could not open JPEG file {0}. errno = {1}: {2}")),
 					fileName,errno,std::strerror(errno));
 			throw JpegReaderException(errorMessage.c_str());
 		}
@@ -221,8 +221,8 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 		} else {
 			// Setup reading from file; open the file.
 			if (fileName.empty()) {
-				throw JpegReaderException(fmt::format(_(
-					"Error: Neither a JPEG file name was set nor in-memrory data provided.")
+				throw JpegReaderException(fmt::format(fmt::runtime(_(
+					"Error: Neither a JPEG file name was set nor in-memrory data provided."))
 					).c_str());
 			}
 			setupReadFromFile(jpegInfo,jpegFile);
@@ -287,8 +287,8 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 
 		default:
 			{
-				auto errMsg = fmt::format(_(
-					"JPEG image {0}: Un-supported JPEG out_color_space {1}"),
+				auto errMsg = fmt::format(fmt::runtime(_(
+					"JPEG image {0}: Un-supported JPEG out_color_space {1}")),
 					fileName,
 					static_cast<int>(jpegInfo.out_color_space));
 				throw JpegReaderException(errMsg.c_str());
@@ -312,8 +312,8 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 		LOG4CXX_DEBUG(logger,"\t JPEG rowStride = " << rowStride
 			<< ", TextureData stride = " << textureData.getWidth() * textureData.getBytesPerTexel());
 		if (rowStride != textureData.getWidth() * textureData.getBytesPerTexel()) {
-			auto errMsg = fmt::format(_(
-				"Error: JPEG rowStride = {0} but textureData stride is {1}"),
+			auto errMsg = fmt::format(fmt::runtime(_(
+				"Error: JPEG rowStride = {0} but textureData stride is {1}")),
 				rowStride,
 				textureData.getWidth() * textureData.getBytesPerTexel()
 				);
@@ -330,9 +330,9 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 		
 		while (jpegInfo.output_scanline < jpegInfo.output_height) {
 			if (textureLineNo < 0 ){
-				auto errMsg = fmt::format (_(
+				auto errMsg = fmt::format (fmt::runtime(_(
 					"Error copying JPEG lines to textureData: "
-					"Texture buffer overrun at JPEG scan line #{0} of {1} lines"),
+					"Texture buffer overrun at JPEG scan line #{0} of {1} lines")),
 					jpegInfo.output_scanline, jpegInfo.output_height
 				);
 				throw JpegReaderException (errMsg.c_str());
@@ -349,9 +349,9 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 		LOG4CXX_DEBUG(logger,"\ttextureLineNo = " << textureLineNo);
 		
 		if (!warnMessage.empty()) {
-			auto errMsg = fmt::format(_(
+			auto errMsg = fmt::format(fmt::runtime(_(
 				"Warnings during decoding image {} occured. "
-				"The image is probably corrupted. Warnings are: {}"),
+				"The image is probably corrupted. Warnings are: {}")),
 				fileName,warnMessage);
 			
 			throw JpegReaderException(errMsg.c_str());
@@ -422,8 +422,8 @@ bool JpegReader::checkImageValidity () {
 		} else {
 			// Setup reading from file; open the file.
 			if (fileName.empty()) {
-				throw JpegReaderException(fmt::format(_(
-					"Error: Neither a JPEG file name was set nor in-memrory data provided.")
+				throw JpegReaderException(fmt::format(fmt::runtime(_(
+					"Error: Neither a JPEG file name was set nor in-memrory data provided."))
 					).c_str());
 			}
 			setupReadFromFile(jpegInfo,jpegFile);

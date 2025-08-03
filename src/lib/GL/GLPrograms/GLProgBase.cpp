@@ -82,8 +82,8 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleUniform
 	auto inf = prog.getUniformInfo(uniformName);
 
 	if (!inf) {
-		auto errMsg = fmt::format( 
-			_("Uniform {0} does not exist or is not active in the program {1}."),
+		auto errMsg = fmt::format(fmt::runtime( 
+			_("Uniform {0} does not exist or is not active in the program {1}.")),
 			uniformName,typeid(*this).name()
 		);
 		throw ProgramException(errMsg.c_str());
@@ -91,8 +91,8 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleUniform
 
 	uniformLocation = glGetUniformLocation(prog.getProgramHandle(),uniformName);
 	if (uniformLocation == -1) {
-		auto errMsg = fmt::format(_(
-			"Location of uniform {0} cannot be retrieved in program {1}."),
+		auto errMsg = fmt::format(fmt::runtime(_(
+			"Location of uniform {0} cannot be retrieved in program {1}.")),
 			uniformName,typeid(*this).name());
 		throw ProgramException(errMsg.c_str());
 	}
@@ -107,8 +107,8 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleAttribu
 	auto inf = prog.getAttributeInfo(attributeName);
 
 	if (!inf) {
-		auto errMsg = fmt::format(_(
-			"Vertex attribute {0} does not exist or is not active in program {1}."),
+		auto errMsg = fmt::format(fmt::runtime(_(
+			"Vertex attribute {0} does not exist or is not active in program {1}.")),
 			attributeName,typeid(*this).name());
 		throw ProgramException(errMsg.c_str());
 	}
@@ -122,8 +122,8 @@ GLProgram::ShaderVariableInfo const * OevGLES::GLProgBase::retrieveSingleAttribu
 
 		throw ProgramException(str.str().c_str());
 
-		auto errMsg = fmt::format(_(
-			"Location of vertex attribute {0} cannot be retrieved from program {1}."),
+		auto errMsg = fmt::format(fmt::runtime(_(
+			"Location of vertex attribute {0} cannot be retrieved from program {1}.")),
 			attributeName,typeid(*this).name());
 		throw ProgramException(errMsg.c_str());
 	}

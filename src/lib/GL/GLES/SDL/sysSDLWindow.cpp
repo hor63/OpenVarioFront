@@ -48,8 +48,6 @@ SDLNativeWindow::~SDLNativeWindow() {
 void SDLNativeWindow::openNativeGLES2Window( GLint width, GLint height,
 		char const* windowName) {
 
-	std::ostringstream errString;
-
 #if defined HAVE_LOG4CXX_H
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("OpenVarioFront.openNativeWindow");
 #endif
@@ -58,6 +56,7 @@ void SDLNativeWindow::openNativeGLES2Window( GLint width, GLint height,
     		width, height,
 			SDL_WINDOW_OPENGL);
 
+	
 }
 
 void SDLNativeWindow::closeNativeWindow() {
