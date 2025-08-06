@@ -9,6 +9,8 @@
 #define LIB_CONTROLS_CONTROLBASE_H_
 
 #include <cstdint>
+#include <string>
+#include <uuid.h>
 
 #include <Renderers/RendererBase.h>
 
@@ -72,14 +74,37 @@ public:
 	/// Adjusts \ref size accordingly, but leaves \ref pos unchanged.
 	void setTopRight (Pos newTopRight);
 
+	/// \see \ref posOrSizeDirty
 	auto isPosOrSizeDirty() {
 		return posOrSizeDirty;
-
 	}
+	/// \see \ref posOrSizeDirty
+	void setPosOrSizeDirty(bool isPosOrSizeDirty = true);
 
-
+	/// \see \ref dirty
+	auto isDirty(){
+		return dirty;
+	}
+	/// \see \ref dirty
+	void setDirty(bool isDirty = true);
+	
+	
 private:
+	
+	/// \brief The name can be used for anything the control wishes to do with it
+	std::string name;
 
+	/// \brief UUID for import and export
+	uuid_t uuid = {0};
+
+	/** \brief Parent and owner of the control
+	 *
+	 * The root control points to itself, i.e. this == this->parent is
+	 * the root control
+	 */
+	ControlBase *parent = nullptr;
+
+	
 	/// \brief Official (bottom right) position of the control
 	Pos position;
 	/// \brief the bounding box around the control
@@ -87,8 +112,30 @@ private:
 	/// \brief Derived and redundant convenience coordinates based on \ref position and \ref size
 	Pos topRight;
 	
+	/// \brief Only position or size changed, but not content.
 	bool posOrSizeDirty = true;
 	
+	/// \brief A complete re-draw is due because content, position, size or visual attributes changed.
+	bool dirty = true;
+	
+	/// \brief Control has the keyboard input focus
+	bool hasFocus = false;
+	
+	bool visible = true;
+	
+	/** \brief The control is operable
+	 *
+	 * Inactive controls are visible (governed by \ref visible)
+	 * but cannot get the input focus, do not react to mouse clicks,
+	 * and appear incactive (typically greyish or mute colors)
+	 *
+	 */
+	bool active = true;
+
+	int tabOrder = 0;
+	ControlBase *tabPredecessor = nullptr;
+	ControlBase *tabSuccessor = nullptr;
+	ControlBase *tabContainer = nullptr;
 };
 
 } /* namespace OevControls */
