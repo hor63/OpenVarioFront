@@ -24,7 +24,7 @@ libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
 	GLES/TexHelper/PngReader.cpp GLES/TexHelper/JpegReader.cpp \
 	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \
 	GLPrograms/GLProgDiffLightTexture.cpp GLPrograms/GLProgTextTexture.cpp \
-	GLPrograms/GLProgDiffLightCircle.cpp \
+	GLPrograms/GLProgDiffLightCircle.cpp GLPrograms/GLProgSimpleFill.cpp \
 	Renderers/RendererBase.cpp Renderers/AnalogHandRenderer.cpp \
 	Renderers/SquareTextureRenderer.cpp Renderers/CirclePolygonVertexContainer.cpp \
 	Renderers/CircleBaseRenderer.cpp Renderers/CircleFilledRenderer.cpp \
