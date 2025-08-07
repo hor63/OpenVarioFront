@@ -85,8 +85,6 @@ attribute vec4 vertexColor;
 
 varying vec4 varFragColor;
 
-const float cZero = 0.0;
-
 void main () { 
 	float diffuseLightFactor = abs(dot(lightDir,normalize(vec3((mvMatrix * vertexNormal)))));
 	vec4 lightColor = ambientLightColor + (diffuseLightFactor * lightColor);
