@@ -19,11 +19,7 @@ noinst_LIBRARIES = libOEV_Controls.a
 libOEV_Controls_a_SOURCES = \
 	ControlBase.cpp
 
-AM_CXXFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
-	-I$(top_srcdir)/src/lib/util \
-	-I$(top_srcdir)/src/lib/Controls \
-	-I$(top_srcdir)/3rdParty/eigen/Eigen \
-	-I$(top_srcdir)/3rdParty/fmt/include \
+AM_CXXFLAGS=$(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)
 
 #	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(PANGO_FT2_CFLAGS) \

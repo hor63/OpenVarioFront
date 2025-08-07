@@ -33,10 +33,7 @@ libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
 	GLTextRender/GLTextFontCache.cpp GLTextRender/GLTextPangoCPPWrappers.cpp \
 	GLTextRender/GLTextFontTexture.cpp
 
-AM_CXXFLAGS=-I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
-	-I$(top_srcdir)/src/lib/util \
-	-I$(top_srcdir)/3rdParty/eigen/Eigen \
-	-I$(top_srcdir)/3rdParty/fmt/include \
+AM_CXXFLAGS=$(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)
 
 #	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(PANGO_FT2_CFLAGS) \

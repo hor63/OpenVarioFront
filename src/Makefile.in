@@ -329,6 +329,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+INTERNAL_CFLAGS = @INTERNAL_CFLAGS@
 INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LD = @LD@
@@ -476,10 +477,7 @@ OpenVarioFront_LDADD = \
 #	$(LIBPNG_LIBS) \
 #	$(LIBJPEG_LIBS) \
 #	$(GLES2_LIBS)
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/src/lib/GL \
-	-I$(top_srcdir)/src/lib/util \
-	-I$(top_srcdir)/3rdParty/eigen/Eigen \
-	-I$(top_srcdir)/3rdParty/fmt/include \
+AM_CXXFLAGS = $(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)
 
 
