@@ -111,6 +111,13 @@ public:
 		{}
 };
 
+class ControlsException :public ExceptionBase {
+public:
+	ControlsException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
 } /* namespace OevGLES */
 
 #endif /* SRC_EXCEPTIONBASE_H_ */
