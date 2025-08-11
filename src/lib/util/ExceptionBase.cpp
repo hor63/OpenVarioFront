@@ -27,7 +27,7 @@
 
 #include "ExceptionBase.h"
 
-namespace OevGLES {
+namespace OevUtil {
 
 
 ExceptionBase::~ExceptionBase() {
@@ -38,4 +38,4 @@ const char* ExceptionBase::what() const noexcept {
 }
 
 
-} /* namespace OevGLES */
+} /* namespace OevUtil */

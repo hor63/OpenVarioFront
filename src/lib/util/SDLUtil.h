@@ -29,10 +29,10 @@
 
 #include <source_location>
 
-namespace OevGLES {
+namespace OevUtil {
 	
 void reportSDLError( std::source_location const& sourceLocation,char const *sdlFunctionName);
 
-} // namespace OevGLES {
+} // namespace OevUtil {
 
 #endif /* LIB_UTIL_SDLUTIL_H_ */

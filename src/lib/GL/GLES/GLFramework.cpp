@@ -57,12 +57,12 @@ void GLFramework::createRenderSurface(GLint width, GLint height,
 
 	// I want EGL as bridge to the native window and display system.
 	if (!SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1")) {
-		reportSDLError(std::source_location::current(),
+		OevUtil::reportSDLError(std::source_location::current(),
 			 "SDL_Init(SDL_HINT_VIDEO_FORCE_EGL,1)");
 	}
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
-		reportSDLError(std::source_location::current(),
+		OevUtil::reportSDLError(std::source_location::current(),
 			 "SDL_Init");
 	}
 

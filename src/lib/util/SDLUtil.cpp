@@ -39,7 +39,7 @@
 
 #include "ExceptionBase.h"
 
-namespace OevGLES {
+namespace OevUtil {
 	
 void reportSDLError( std::source_location const& sourceLocation,char const *sdlFunctionName) {
 	std::string sdlErrorMsg;
@@ -60,7 +60,7 @@ void reportSDLError( std::source_location const& sourceLocation,char const *sdlF
 	throw SDLException (errorText.c_str());
 }
 
-} // namespace OevGLES {
+} // namespace OevUtil {
 
 
 

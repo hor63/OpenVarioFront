@@ -49,7 +49,7 @@ void ControlBase::setSize (Size size) {
 				"Control {0}:{1}: Error in ControlBase::setSize(): width and size must be > 0. "
 				"newSize is {2}x{3}")),
 				uuidStr,name,size.width,size.height);
-		throw OevGLES::ControlsException(_(
+		throw ControlsException(_(
 			errTxt.c_str()));
 	}
 	this->size = size;
@@ -68,7 +68,7 @@ void ControlBase::setTopRight (Pos topRight) {
 				"Control {0}:{1}: Error in ControlBase::setTopRight(): . "
 				"newTopRight is {2}x{3}")),
 				uuidStr,name,topRight.x,topRight.y);
-		throw OevGLES::ControlsException(_(
+		throw ControlsException(_(
 			errTxt.c_str()));
 	}
 	

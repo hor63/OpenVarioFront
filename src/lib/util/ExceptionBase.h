@@ -31,7 +31,7 @@
 #include <exception>
 #include <string>
 
-namespace OevGLES {
+namespace OevUtil {
 
 class ExceptionBase :public std::exception {
 public:
@@ -47,63 +47,6 @@ private:
 	 std::string description;
 };
 
-class NativeWindowException :public ExceptionBase {
-public:
-	NativeWindowException(char const *description)
-		:ExceptionBase {description}
-		{}
-
-};
-
-class EGLException :public ExceptionBase {
-public:
-	EGLException(char const *description)
-		:ExceptionBase {description}
-		{}
-};
-
-class ShaderException :public ExceptionBase {
-public:
-	ShaderException(char const *description)
-		:ExceptionBase {description}
-		{}
-};
-
-class ShaderProgramException :public ExceptionBase {
-public:
-	ShaderProgramException(char const *description)
-		:ExceptionBase {description}
-		{}
-};
-
-class TextureException :public ExceptionBase {
-public:
-	TextureException(char const *description)
-		:ExceptionBase {description}
-		{}
-};
-
-class PngReaderException :public ExceptionBase {
-public:
-	PngReaderException(char const *description)
-		:ExceptionBase {description}
-		{}
-};
-
-class JpegReaderException :public ExceptionBase {
-public:
-	JpegReaderException(char const *description)
-		:ExceptionBase {description}
-		{}
-};
-
-class GLTextRenderException :public ExceptionBase {
-public:
-	GLTextRenderException(char const *description)
-		:ExceptionBase {description}
-		{}
-};
-
 class SDLException :public ExceptionBase {
 public:
 	SDLException(char const *description)
@@ -111,13 +54,80 @@ public:
 		{}
 };
 
-class ControlsException :public ExceptionBase {
+}; // namespace OevUtil
+
+
+namespace OevGLES {
+
+class NativeWindowException :public OevUtil::ExceptionBase {
+public:
+	NativeWindowException(char const *description)
+		:ExceptionBase {description}
+		{}
+
+};
+
+class EGLException :public OevUtil::ExceptionBase {
+public:
+	EGLException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class ShaderException :public OevUtil::ExceptionBase {
+public:
+	ShaderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class ShaderProgramException :public OevUtil::ExceptionBase {
+public:
+	ShaderProgramException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class TextureException :public OevUtil::ExceptionBase {
+public:
+	TextureException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class PngReaderException :public OevUtil::ExceptionBase {
+public:
+	PngReaderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class JpegReaderException :public OevUtil::ExceptionBase {
+public:
+	JpegReaderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+class GLTextRenderException :public OevUtil::ExceptionBase {
+public:
+	GLTextRenderException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
+} /* namespace OevGLES */
+
+namespace OevControls {
+	
+class ControlsException :public OevUtil::ExceptionBase {
 public:
 	ControlsException(char const *description)
 		:ExceptionBase {description}
 		{}
 };
 
-} /* namespace OevGLES */
+} // namespace OevControls
+
 
 #endif /* SRC_EXCEPTIONBASE_H_ */

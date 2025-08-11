@@ -77,7 +77,7 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 //		|| !SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1)
 //		|| !SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4)
 		) {
-		reportSDLError(std::source_location::current(), "SDL_GL_SetAttribute (mult.)");
+		OevUtil::reportSDLError(std::source_location::current(), "SDL_GL_SetAttribute (mult.)");
 	}
 
 	nativeWindow.openNativeGLES2Window(
@@ -85,11 +85,11 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 
 	glContext = SDL_GL_CreateContext (nativeWindow);
 	if (glContext == nullptr) {
-		reportSDLError(std::source_location::current(), "SDL_GL_CreateContext");
+		OevUtil::reportSDLError(std::source_location::current(), "SDL_GL_CreateContext");
 	}
 
 	if(!SDL_GL_MakeCurrent(nativeWindow,glContext)) {
-		reportSDLError(std::source_location::current(), "SDL_GL_MakeCurrent");
+		OevUtil::reportSDLError(std::source_location::current(), "SDL_GL_MakeCurrent");
 	}
 
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
@@ -124,7 +124,7 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 void SDLRenderSurface::makeContextCurrent() {
 
 	if(!SDL_GL_MakeCurrent(nativeWindow,glContext)) {
-		reportSDLError(std::source_location::current(), "SDL_GL_MakeCurrent");
+		OevUtil::reportSDLError(std::source_location::current(), "SDL_GL_MakeCurrent");
 	}
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
