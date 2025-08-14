@@ -28,8 +28,12 @@ void ControlBase::setName(std::string const & name) {
 	this->name = name;
 }
 
-void ControlBase::setUuid (uuid_t const uuid) {
-	memcpy (this->uuid,uuid,sizeof(this->uuid));
+void ControlBase::setUuid (OevUtil::Uuid && uuid) {
+	this->uuid = std::move(uuid);
+}
+
+void ControlBase::setUuid (char const* uuidString) {
+	uuid.setUuidString(uuidString);
 }
 
 void ControlBase::setParent (ControlsContainer *parent) {
@@ -42,13 +46,11 @@ void ControlBase::setPosition (Pos position) {
 
 void ControlBase::setSize (Size size) {
 	if (size.height <= 0 || size.width <= 0) {
-		char uuidStr[UUID_STR_LEN] = {'\0'};
-		uuid_unparse(uuid,uuidStr);
 		auto errTxt = fmt::format (
 			fmt::runtime(_(
 				"Control {0}:{1}: Error in ControlBase::setSize(): width and size must be > 0. "
 				"newSize is {2}x{3}")),
-				uuidStr,name,size.width,size.height);
+				uuid.getUuidString(),name,size.width,size.height);
 		throw ControlsException(_(
 			errTxt.c_str()));
 	}
@@ -61,13 +63,11 @@ void ControlBase::setSize (Size size) {
 void ControlBase::setTopRight (Pos topRight) {
 	if (topRight.x <= position.x ||
 		topRight.y <= position.y) {
-		char uuidStr[UUID_STR_LEN] = {'\0'};
-		uuid_unparse(uuid,uuidStr);
 		auto errTxt = fmt::format (
 			fmt::runtime(_(
 				"Control {0}:{1}: Error in ControlBase::setTopRight(): . "
 				"newTopRight is {2}x{3}")),
-				uuidStr,name,topRight.x,topRight.y);
+				uuid.getUuidString(),name,topRight.x,topRight.y);
 		throw ControlsException(_(
 			errTxt.c_str()));
 	}

@@ -10,10 +10,10 @@
 
 #include <cstdint>
 #include <string>
-#include <uuid.h>
 
 #include "Renderers/RendererBase.h"
 #include "VecMat.h"
+#include "Uuid.h"
 
 namespace OevControls {
 
@@ -46,11 +46,17 @@ public:
 	void setName(std::string const & name);
 
 	/// \see \ref uuid
-	auto const getUuid() const {
+	auto const &getUuid() const {
 		return uuid;
 	}
+	/// UUID content is moved, not copied.
+	/// The source's content is cleared.
 	/// \see \ref uuid
-	void setUuid (uuid_t const uuid);
+	void setUuid (OevUtil::Uuid && uuid);
+
+	/// \brief Set the UUID from a string, e.g. from a resource file
+	/// \see \ref uuid
+	void setUuid (char const* uuidString);
 
 	/// \see \ref parent
 	ControlsContainer const* getParent() const {
@@ -209,7 +215,7 @@ private:
 	std::string name;
 
 	/// \brief UUID for import and export
-	uuid_t uuid = {0};
+	OevUtil::Uuid uuid;
 
 	/** \brief Parent and owner of the control
 	 *
