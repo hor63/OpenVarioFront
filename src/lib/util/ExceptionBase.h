@@ -54,6 +54,13 @@ public:
 		{}
 };
 
+class UuidException :public ExceptionBase {
+public:
+	UuidException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
 }; // namespace OevUtil
 
 

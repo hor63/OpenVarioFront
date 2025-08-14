@@ -30,26 +30,72 @@
 
 #include <string>
 #include <array>
+#include <string_view>
 
 namespace OevUtil {
-
+/** \brief Wrapper around [libuuid](https://linux.die.net/man/3/libuuid)
+ *
+ * This class completely hides the hideous API of libuuid with its use of a raw
+ * array of unsigned char.
+ *
+ * I am letting the system choose the best algorithm for generating new IIUDs.
+ * If you want more control you can use libuuid directly, and use one of the
+ * constructors with a defined UUID value.
+ *
+ */
 class Uuid final {
 public:
 
 
 	static constexpr int numBytesUUID = 16;
+	/// \brief The number of bytes in the UUID string including the terminating'\0'
 	static constexpr int numCharsUUIDString = 37;
+	static constexpr std::string_view nullUUIDString 
+		{"00000000-0000-0000-0000-000000000000"};
 
 	using UuidBinaryT = std::array<unsigned char,numBytesUUID>;
 
+	/// \brief constructs a NULL UUID
 	Uuid();
+	/// \brief Constructs a UUID from a string in the form
+	/// xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 	Uuid(char const *uuidString);
+	/// \brief Constructs a UUIID from binary UUID data
 	Uuid(UuidBinaryT const & uuidBinary);
 	virtual ~Uuid();
+	/// \brief I am guarding the uniqueness of UUIDs. You can only move a UUID
+	/// but not copy one.
 	Uuid(const Uuid &other) = delete;
+	/// \brief Move constructor
 	Uuid(Uuid &&other);
+	/// \brief I am guarding the uniqueness of UUIDs. You can only move a UUID
+	/// but not copy one.
 	Uuid& operator=(const Uuid &other) = delete;
+	/// \brief Move assignment
 	Uuid& operator=(Uuid &&other);
+	
+	/// \brief Reset the UUID to a NULL-UUID, i.e. to
+	/// "00000000-0000-0000-0000-000000000000"
+	void reset();
+	/// \brief generate a new UUID for this.
+	void generateNewUUID();
+	
+	/// \brief Is the UUID 0-values, i.e. is it the NULL-UUID = 
+	/// "00000000-0000-0000-0000-000000000000"?
+	bool isNull() const;
+	
+	UuidBinaryT const & getUuidBinaryData() const {
+		return uuidBinary;
+	}
+	
+	/// Automatically updates \ref uuidString too.
+	void setUuidBinaryData (UuidBinaryT const & uuidBinary);
+	
+	std::string const& getUuidString() const {
+		return uuidString;
+	}
+	
+	void setUuidString (char const* uuidString);
 	
 private:
 
