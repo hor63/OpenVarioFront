@@ -37,6 +37,11 @@ public:
 
 	ControlBase();
 	virtual ~ControlBase();
+	// Copy constructors and assignment operators are explicitly prohibited. 
+	ControlBase(const ControlBase &other) = delete;
+	ControlBase(ControlBase &&other) = delete;
+	ControlBase& operator=(const ControlBase &other) = delete;
+	ControlBase& operator=(ControlBase &&other) = delete;
 
 	/// \see \ref name
 	auto const& getName() const {
