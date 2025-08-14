@@ -132,7 +132,8 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libOEV_Controls_a_AR = $(AR) $(ARFLAGS)
 libOEV_Controls_a_LIBADD =
-am_libOEV_Controls_a_OBJECTS = ControlBase.$(OBJEXT)
+am_libOEV_Controls_a_OBJECTS = ControlBase.$(OBJEXT) \
+	ControlsContainer.$(OBJEXT)
 libOEV_Controls_a_OBJECTS = $(am_libOEV_Controls_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -149,7 +150,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/ControlBase.Po
+am__depfiles_remade = ./$(DEPDIR)/ControlBase.Po \
+	./$(DEPDIR)/ControlsContainer.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -422,7 +424,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libOEV_Controls.a
 libOEV_Controls_a_SOURCES = \
-	ControlBase.cpp
+	ControlBase.cpp ControlsContainer.cpp
 
 AM_CXXFLAGS = $(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)
@@ -481,6 +483,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ControlBase.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ControlsContainer.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -640,6 +643,7 @@ clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
 
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/ControlBase.Po
+	-rm -f ./$(DEPDIR)/ControlsContainer.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -686,6 +690,7 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/ControlBase.Po
+	-rm -f ./$(DEPDIR)/ControlsContainer.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
