@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
 
 #include "Renderers/RendererBase.h"
 #include "VecMat.h"
@@ -17,8 +18,16 @@
 
 namespace OevControls {
 
-// forward declaration
+// forward declarations
+class ControlBase;
 class ControlsContainer;
+
+// smart pointer declarations
+using ControlBasePtr     = std::shared_ptr<ControlBase>;
+using ControlBaseWeakPtr = std::weak_ptr<ControlBase>;
+
+using ControlsContainerPtr     = std::shared_ptr<ControlsContainer>;
+using ControlsContainerWeakPtr = std::weak_ptr<ControlsContainer>;
 
 class ControlBase : public OevGLES::RendererBase {
 public:
@@ -197,21 +206,21 @@ public:
 		return tabPredecessor;
 	}
 	/// \see \ref tabPredecessor
-	void setTabPredecessor (ControlBase *tabPredecessor);
+	void setTabPredecessor (ControlBaseWeakPtr tabPredecessor);
 	
 	/// \see \ref tabSuccessor
 	auto getTabSuccessor () {
 		return tabSuccessor;
 	}
 	/// \see \ref tabSuccessor
-	void setTabSuccessor (ControlBase *tabSuccessor);
+	void setTabSuccessor (ControlBaseWeakPtr tabSuccessor);
 	
 	/// \see \ref tabContainer
 	auto getTabContainer () const {
 		return tabContainer;
 	}
 	/// \see \ref tabContainer
-	void setTabContainer (ControlsContainer *tabContainer);
+	void setTabContainer (ControlsContainerWeakPtr tabContainer);
 
 	
 private:
@@ -279,9 +288,9 @@ private:
 	 */
 	
 	int tabSequence = 0;
-	ControlBase *tabPredecessor = nullptr;
-	ControlBase *tabSuccessor = nullptr;
-	ControlsContainer *tabContainer = nullptr;
+	ControlBaseWeakPtr tabPredecessor;
+	ControlBaseWeakPtr tabSuccessor;
+	ControlsContainerWeakPtr tabContainer;
 };
 
 } /* namespace OevControls */

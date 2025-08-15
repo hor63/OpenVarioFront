@@ -118,15 +118,15 @@ void ControlBase::setTabSequence(int tabSequence) {
 	this->tabSequence = tabSequence;
 }
 
-void ControlBase::setTabPredecessor (ControlBase *tabPredecessor) {
+void ControlBase::setTabPredecessor (ControlBaseWeakPtr tabPredecessor) {
 	this->tabPredecessor = tabPredecessor;
 }
 
-void ControlBase::setTabSuccessor (ControlBase *tabSuccessor) {
+void ControlBase::setTabSuccessor (ControlBaseWeakPtr tabSuccessor) {
 	this->tabSuccessor = tabSuccessor;
 }
 
-void ControlBase::setTabContainer (ControlsContainer *tabContainer) {
+void ControlBase::setTabContainer (ControlsContainerWeakPtr tabContainer) {
 	this->tabContainer = tabContainer;
 }
 
