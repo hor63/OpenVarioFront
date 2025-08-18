@@ -73,11 +73,11 @@ public:
 	void setUuid (char const* uuidString);
 
 	/// \see \ref parent
-	ControlsContainer const* getParent() const {
+	auto const &getParent() const {
 		return parent;
 	}
 	/// \see \ref parent
-	void setParent (ControlsContainer *parent);
+	void setParent (ControlsContainerWeakPtr const parent);
 
 	/// \see \ref position
 	auto getPosition () const {
@@ -236,7 +236,7 @@ private:
 	 * The root control points to itself, i.e. this == this->parent is
 	 * the root control
 	 */
-	ControlsContainer *parent = nullptr;
+	ControlsContainerWeakPtr parent;
 
 	
 	/// \brief Official (bottom right) position of the control
@@ -294,5 +294,7 @@ private:
 };
 
 } /* namespace OevControls */
+
+
 
 #endif /* LIB_CONTROLS_CONTROLBASE_H_ */

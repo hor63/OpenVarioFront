@@ -4,14 +4,14 @@
  *  Created on: Jul 2, 2025
  *      Author: hor
  */
-#include "ExceptionBase.h"
-#include "fmt/base.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-
-#include "fmt/format.h"
 #include "OVFCommon.h"
+
+#include "ExceptionBase.h"
+#include "fmt/base.h"
+#include "fmt/format.h"
 
 #include "lib/Controls/ControlBase.h"
 
@@ -36,7 +36,7 @@ void ControlBase::setUuid (char const* uuidString) {
 	uuid.setUuidString(uuidString);
 }
 
-void ControlBase::setParent (ControlsContainer *parent) {
+void ControlBase::setParent (ControlsContainerWeakPtr const parent) {
 	this->parent = parent;
 }
 
