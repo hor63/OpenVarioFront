@@ -63,14 +63,10 @@ public:
 	/// \brief Constructs a UUIID from binary UUID data
 	Uuid(UuidBinaryT const & uuidBinary);
 	virtual ~Uuid();
-	/// \brief I am guarding the uniqueness of UUIDs. You can only move a UUID
-	/// but not copy one.
-	Uuid(const Uuid &other) = delete;
+	Uuid(const Uuid &other) = default;
 	/// \brief Move constructor
 	Uuid(Uuid &&other);
-	/// \brief I am guarding the uniqueness of UUIDs. You can only move a UUID
-	/// but not copy one.
-	Uuid& operator=(const Uuid &other) = delete;
+	Uuid& operator=(const Uuid &other) = default;
 	/// \brief Move assignment
 	Uuid& operator=(Uuid &&other);
 	
@@ -97,6 +93,10 @@ public:
 	
 	void setUuidString (char const* uuidString);
 	
+	bool operator == (Uuid const& u1) const{
+		return uuidString == u1.uuidString;
+	}
+	
 private:
 
 	std::string uuidString;
@@ -104,5 +104,15 @@ private:
 };
 
 } /* namespace OevUtil */
+
+template<>
+struct std::hash<OevUtil::Uuid>
+{
+    std::size_t operator()(const OevUtil::Uuid& uuid) const noexcept
+    {
+        std::size_t h = std::hash<std::string>{}(uuid.getUuidString());
+        return h;
+    }
+};
 
 #endif /* LIB_UTIL_UUID_H_ */
