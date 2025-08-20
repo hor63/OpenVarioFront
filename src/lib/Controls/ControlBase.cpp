@@ -4,6 +4,7 @@
  *  Created on: Jul 2, 2025
  *      Author: hor
  */
+#include <utility>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -17,27 +18,12 @@
 
 namespace OevControls {
 
-ControlBase::ControlBase() {
-
-}
 
 ControlBase::~ControlBase() {
 }
 
 void ControlBase::setName(std::string const & name) {
 	this->name = name;
-}
-
-void ControlBase::setUuid (OevUtil::Uuid && uuid) {
-	this->uuid = std::move(uuid);
-}
-
-void ControlBase::setUuid (char const* uuidString) {
-	uuid.setUuidString(uuidString);
-}
-
-void ControlBase::setParent (ControlsContainerWeakPtr const parent) {
-	this->parent = parent;
 }
 
 void ControlBase::setPosition (Pos position) {

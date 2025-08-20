@@ -44,7 +44,13 @@ public:
 		int32_t height = 0;
 	};
 
-	ControlBase();
+	ControlBase(ControlsContainerWeakPtr && parent,
+		OevUtil::Uuid && uuid,
+		char const* name = "")
+		:parent {std::move(parent)},
+		uuid {std::move(uuid)},
+		name {name}
+		{}
 	virtual ~ControlBase();
 	// Copy constructors and assignment operators are explicitly prohibited. 
 	ControlBase(const ControlBase &other) = delete;
@@ -63,21 +69,11 @@ public:
 	auto const &getUuid() const {
 		return uuid;
 	}
-	/// UUID content is moved, not copied.
-	/// The source's content is cleared.
-	/// \see \ref uuid
-	void setUuid (OevUtil::Uuid && uuid);
-
-	/// \brief Set the UUID from a string, e.g. from a resource file
-	/// \see \ref uuid
-	void setUuid (char const* uuidString);
 
 	/// \see \ref parent
 	auto const &getParent() const {
 		return parent;
 	}
-	/// \see \ref parent
-	void setParent (ControlsContainerWeakPtr const parent);
 
 	/// \see \ref position
 	auto getPosition () const {

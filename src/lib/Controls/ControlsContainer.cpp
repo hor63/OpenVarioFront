@@ -25,6 +25,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "ControlBase.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -36,24 +37,21 @@
 
 namespace OevControls {
 
-ControlsContainer::ControlsContainer() {
-
-}
 
 ControlsContainer::~ControlsContainer() {
 	// TODO Auto-generated destructor stub
 }
 
-void ControlsContainer::addControl(ControlBasePtr &&controlPtr) {
+void ControlsContainer::addControl(ControlBasePtr const &controlPtr) {
 	controlsMap.insert(std::pair(controlPtr->getUuid(),controlPtr));
 }
 
-void ControlsContainer::appendControlToTabGroup (ControlBaseWeakPtr &&controlWeakPtr) {
+void ControlsContainer::appendControlToTabGroup (ControlBaseWeakPtr const &controlWeakPtr) {
 	tabGroup.push_back(controlWeakPtr);
 }
 
 void ControlsContainer::insertControlInTabGroupBefore (ControlsWeakListT::iterator ref,
-		ControlBaseWeakPtr &&controlWeakPtr) {
+		ControlBaseWeakPtr const &controlWeakPtr) {
 	tabGroup.insert (ref,controlWeakPtr);
 }
 

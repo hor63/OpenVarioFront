@@ -43,17 +43,23 @@ public:
 	using ControlsMapT = std::unordered_map<OevUtil::Uuid, ControlBasePtr>;
 	using ControlsWeakListT = std::list<ControlBaseWeakPtr>;
 
-	ControlsContainer();
+	ControlsContainer(ControlsContainerWeakPtr && parent,
+		OevUtil::Uuid && uuid,
+		char const* name = "")
+		:ControlBase(std::move(parent),
+			std::move(uuid),
+			name)
+	{}
 	virtual ~ControlsContainer();
 	ControlsContainer(const ControlsContainer &other) = delete;
 	ControlsContainer(ControlsContainer &&other) = delete;
 	ControlsContainer& operator=(const ControlsContainer &other) = delete;
 	ControlsContainer& operator=(ControlsContainer &&other) = delete;
 	
-	void addControl(ControlBasePtr &&controlPtr);
-	void appendControlToTabGroup (ControlBaseWeakPtr &&controlWeakPtr);
+	void addControl(ControlBasePtr const &controlPtr);
+	void appendControlToTabGroup (ControlBaseWeakPtr const &controlWeakPtr);
 	void insertControlInTabGroupBefore (ControlsWeakListT::iterator ref,
-		ControlBaseWeakPtr &&controlWeakPtr);
+		ControlBaseWeakPtr const &controlWeakPtr);
 	
 protected:
 
