@@ -103,6 +103,44 @@ private:
 	UuidBinaryT uuidBinary;
 };
 
+constexpr int hexCharToNum (char c) {
+	
+	int res = -1;
+	
+	if (c >= '0' && c <= '9') {
+		res = c - '0';
+	}
+	if (c >= 'a' && c <= 'f') {
+		res = c - 'a' + 10;
+	}
+	if (c >= 'A' && c <= 'F') {
+		res = c - 'A' + 10;
+	}
+
+	return res;
+}
+
+constexpr Uuid::UuidBinaryT strToUuidBinary (const char str[]) {
+	Uuid::UuidBinaryT res;
+	
+	int k = 0;
+	
+	for (int i = 0; i < Uuid::numCharsUUIDString -1;) {
+		if (i == 8 || i == 13 || i == 18 || i == 23){
+			++i;
+		} else {
+			res[k] = hexCharToNum(str[i]) * 16;
+			++i;
+			res[k] = res[k] + hexCharToNum(str[i]);
+			++k;
+			++i;
+		}
+	}
+	
+	return res;
+}
+
+
 } /* namespace OevUtil */
 
 template<>
