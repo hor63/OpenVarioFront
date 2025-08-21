@@ -120,6 +120,8 @@ constexpr int hexCharToNum (char c) {
 	return res;
 }
 
+/// \brief can be used to produce the binary UUID raw data
+/// from a UUID string which you may produce with uuidgen.
 constexpr Uuid::UuidBinaryT strToUuidBinary (const char str[]) {
 	Uuid::UuidBinaryT res;
 	
@@ -127,6 +129,8 @@ constexpr Uuid::UuidBinaryT strToUuidBinary (const char str[]) {
 	
 	for (int i = 0; i < Uuid::numCharsUUIDString -1;) {
 		if (i == 8 || i == 13 || i == 18 || i == 23){
+			// Here are the '-' separators in a UUID string.
+			// so I am skipping over these.
 			++i;
 		} else {
 			res[k] = hexCharToNum(str[i]) * 16;
@@ -140,6 +144,23 @@ constexpr Uuid::UuidBinaryT strToUuidBinary (const char str[]) {
 	return res;
 }
 
+constexpr bool checkUuidString (const char str[]) {
+	bool res = true;
+	int i = 0;
+	for (; i < Uuid::numCharsUUIDString -1;) {
+		if (i == 8 || i == 13 || i == 18 || i == 23){
+			res = res && (str[i] == '-');
+			++i;
+		} else {
+			res = res && (hexCharToNum(str[i]) >= 0);
+			++i;
+		}
+	}
+
+	res = res && (str[i] == '\0');
+
+	return res;
+}
 
 } /* namespace OevUtil */
 
