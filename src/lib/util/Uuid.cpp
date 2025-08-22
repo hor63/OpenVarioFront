@@ -19,73 +19,41 @@
 
 namespace OevUtil {
 
-Uuid::Uuid()
-	:uuidString {nullUUIDString},
-	 uuidBinary {0}
-{
-	
-	static_assert(sizeof(uuid_t) == sizeof(uuidBinary));
-	static_assert(numCharsUUIDString == UUID_STR_LEN);
-	
-}
-
-Uuid::Uuid(char const *uuidString)
-	:uuidString{uuidString},
-	 uuidBinary {0}
-{
-	
-	if (this->uuidString.length() != (numCharsUUIDString-1)) {
-		auto errStr = fmt::format(fmt::runtime(
-			_("Error in {0}: UUID string {1} is not {2} bytes long.")),
-			__PRETTY_FUNCTION__,
-			this->uuidString,(numCharsUUIDString-1)
-			);
-		throw UuidException(errStr.c_str());
-	}
-	
-	if (::uuid_parse(this->uuidString.c_str(), &uuidBinary[0]) != 0) {
-		auto errStr = fmt::format(fmt::runtime(
-			_("Error in {0}: UUID string {1} is not valid.")),
-			__PRETTY_FUNCTION__,
-			this->uuidString);
-		throw UuidException(errStr.c_str());
-	}
-}
+static constexpr Uuid nullUuid;
 
 Uuid::Uuid(UuidBinaryT const & uuidBinary) :
-	uuidBinary {uuidBinary},
-	uuidString {nullUUIDString}
+	uuidBinary {uuidBinary}
 {
-	::uuid_unparse(&uuidBinary[0], uuidString.data());
-}
-
-Uuid::~Uuid() {
+	// these static asserts are within this method because uuidBinary is private.
+	// Otherwise I would have placed them outside a method.]
+	static_assert(sizeof(uuid_t) == sizeof(uuidBinary));
+	static_assert(numCharsUUIDString == UUID_STR_LEN);
+	::uuid_unparse(&uuidBinary[0], uuidStrArray);
 }
 
 Uuid::Uuid(Uuid &&other) :
-	uuidBinary{other.uuidBinary},
-	uuidString {std::move(other.uuidString)}
+	uuidBinary{other.uuidBinary}
 {
 
-	other.uuidString = nullUUIDString;
-	other.uuidBinary.fill(0);
+	memcpy(uuidStrArray,other.uuidStrArray,numCharsUUIDString);
+	
+	other = nullUuid;
 
 }
 
 Uuid& Uuid::operator=(Uuid &&other) {
 
 	uuidBinary = other.uuidBinary;
-	uuidString = std::move(other.uuidString);
-
-	other.uuidString = nullUUIDString;
-	other.uuidBinary.fill(0);
+	memcpy(uuidStrArray,other.uuidStrArray,numCharsUUIDString);
+	
+	other = nullUuid;
 
 	return *this;
 }
 
 void Uuid::reset() {
-	uuidString = nullUUIDString;
-	uuidBinary.fill(0);
+	
+	*this = nullUuid;
 }
 
 void Uuid::generateNewUUID() {

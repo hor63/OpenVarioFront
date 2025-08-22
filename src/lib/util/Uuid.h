@@ -29,10 +29,37 @@
 #define LIB_UTIL_UUID_H_
 
 #include <string>
+#include <cstring>
 #include <array>
 #include <string_view>
 
 namespace OevUtil {
+
+
+/** \brief Normal library functions are not constexpr.
+ *
+ * This function however is. Since it is being call at compile time,
+ * screw performance concerns.
+ */
+
+constexpr int hexCharToNum (char c) {
+	
+	int res = -1;
+	
+	if (c >= '0' && c <= '9') {
+		res = c - '0';
+	}
+	if (c >= 'a' && c <= 'f') {
+		res = c - 'a' + 10;
+	}
+	if (c >= 'A' && c <= 'F') {
+		res = c - 'A' + 10;
+	}
+
+	return res;
+}
+
+
 /** \brief Wrapper around [libuuid](https://linux.die.net/man/3/libuuid)
  *
  * This class completely hides the hideous API of libuuid with its use of a raw
@@ -50,19 +77,25 @@ public:
 	static constexpr int numBytesUUID = 16;
 	/// \brief The number of bytes in the UUID string including the terminating'\0'
 	static constexpr int numCharsUUIDString = 37;
-	static constexpr std::string_view nullUUIDString 
-		{"00000000-0000-0000-0000-000000000000"};
-
+		
 	using UuidBinaryT = std::array<unsigned char,numBytesUUID>;
 
 	/// \brief constructs a NULL UUID
-	Uuid();
+	constexpr Uuid() = default;
 	/// \brief Constructs a UUID from a string in the form
 	/// xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-	Uuid(char const *uuidString);
+	constexpr Uuid(char const *uuidString) {
+		if (checkUuidString(uuidString)) {
+			uuidBinary = strToUuidBinary(uuidString);
+			// memcpy is not constexpr, so I need to copy the string myself.
+			// std::memcpy(uuidStrArray,uuidString,sizeof(uuidStrArray));
+			for (int i = 0; i < numCharsUUIDString ; ++i) {
+				uuidStrArray[i] = uuidString[i];
+			}
+		}
+	}
 	/// \brief Constructs a UUIID from binary UUID data
 	Uuid(UuidBinaryT const & uuidBinary);
-	virtual ~Uuid();
 	Uuid(const Uuid &other) = default;
 	/// \brief Move constructor
 	Uuid(Uuid &&other);
@@ -87,7 +120,7 @@ public:
 	/// Automatically updates \ref uuidString too.
 	void setUuidBinaryData (UuidBinaryT const & uuidBinary);
 	
-	std::string const& getUuidString() const {
+	std::string_view const& getUuidString() const {
 		return uuidString;
 	}
 	
@@ -96,71 +129,54 @@ public:
 	bool operator == (Uuid const& u1) const{
 		return uuidString == u1.uuidString;
 	}
+
+	/// \brief can be used to produce the binary UUID raw data
+	/// from a UUID string which you may produce with uuidgen.
+	static constexpr Uuid::UuidBinaryT strToUuidBinary (const char str[]) {
+		Uuid::UuidBinaryT res;
+		
+		int k = 0;
+		
+		for (int i = 0; i < Uuid::numCharsUUIDString -1;) {
+			if (i == 8 || i == 13 || i == 18 || i == 23){
+				// Here are the '-' separators in a UUID string.
+				// so I am skipping over these.
+				++i;
+			} else {
+				res[k] = hexCharToNum(str[i]) * 16;
+				++i;
+				res[k] = res[k] + hexCharToNum(str[i]);
+				++k;
+				++i;
+			}
+		}
+		
+		return res;
+	}
+
+	static constexpr bool checkUuidString (const char str[]) {
+		bool res = true;
+		int i = 0;
+		for (; i < Uuid::numCharsUUIDString -1;) {
+			if (i == 8 || i == 13 || i == 18 || i == 23){
+				res = res && (str[i] == '-');
+				++i;
+			} else {
+				res = res && (hexCharToNum(str[i]) >= 0);
+				++i;
+			}
+		}
+	
+		res = res && (str[i] == '\0');
+	
+		return res;
+	}
 	
 private:
-
-	std::string uuidString;
-	UuidBinaryT uuidBinary;
+	char uuidStrArray [numCharsUUIDString] = "00000000-0000-0000-0000-000000000000";
+	std::string_view uuidString = uuidStrArray;
+	UuidBinaryT uuidBinary = {0};
 };
-
-constexpr int hexCharToNum (char c) {
-	
-	int res = -1;
-	
-	if (c >= '0' && c <= '9') {
-		res = c - '0';
-	}
-	if (c >= 'a' && c <= 'f') {
-		res = c - 'a' + 10;
-	}
-	if (c >= 'A' && c <= 'F') {
-		res = c - 'A' + 10;
-	}
-
-	return res;
-}
-
-/// \brief can be used to produce the binary UUID raw data
-/// from a UUID string which you may produce with uuidgen.
-constexpr Uuid::UuidBinaryT strToUuidBinary (const char str[]) {
-	Uuid::UuidBinaryT res;
-	
-	int k = 0;
-	
-	for (int i = 0; i < Uuid::numCharsUUIDString -1;) {
-		if (i == 8 || i == 13 || i == 18 || i == 23){
-			// Here are the '-' separators in a UUID string.
-			// so I am skipping over these.
-			++i;
-		} else {
-			res[k] = hexCharToNum(str[i]) * 16;
-			++i;
-			res[k] = res[k] + hexCharToNum(str[i]);
-			++k;
-			++i;
-		}
-	}
-	
-	return res;
-}
-
-constexpr bool checkUuidString (const char str[]) {
-	bool res = true;
-	int i = 0;
-	for (; i < Uuid::numCharsUUIDString -1;) {
-		if (i == 8 || i == 13 || i == 18 || i == 23){
-			res = res && (str[i] == '-');
-			++i;
-		} else {
-			res = res && (hexCharToNum(str[i]) >= 0);
-			++i;
-		}
-	}
-
-	res = res && (str[i] == '\0');
-
-	return res;
-}
 
 } /* namespace OevUtil */
 
@@ -169,7 +185,7 @@ struct std::hash<OevUtil::Uuid>
 {
     std::size_t operator()(const OevUtil::Uuid& uuid) const noexcept
     {
-        std::size_t h = std::hash<std::string>{}(uuid.getUuidString());
+        std::size_t h = std::hash<std::string_view>{}(uuid.getUuidString());
         return h;
     }
 };
