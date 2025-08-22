@@ -19,7 +19,39 @@
 
 namespace OevUtil {
 
-static constexpr Uuid nullUuid;
+static const Uuid nullUuid;
+
+Uuid::Uuid(char const *uuidString) {
+	
+	if (strlen(uuidString) != (NumCharsUUIDString-1)) {
+		auto errStr = fmt::format(fmt::runtime(
+			_("Error in {0}: UUID string \"{1}\" is not {2} bytes long.")),
+			__PRETTY_FUNCTION__,
+			uuidString,(NumCharsUUIDString-1)
+			);
+		throw UuidException(errStr.c_str());
+	}
+	
+	if (!checkUuidString(uuidString) ||
+		(::uuid_parse(uuidString, uuidBinary.data()) != 0)) {
+		auto errStr = fmt::format(fmt::runtime(
+			_("Error in {0}: String \"{1}\" is not a valid UUID.")),
+			__PRETTY_FUNCTION__,
+			uuidString);
+		throw UuidException(errStr.c_str());
+	}
+	
+	this->uuidString = uuidString;
+	
+}
+
+
+Uuid::Uuid(Uuid &&other) :
+	uuidBinary{other.uuidBinary},
+	uuidString{other.uuidString}
+{
+	other = nullUuid;
+}
 
 Uuid::Uuid(UuidBinaryT const & uuidBinary) :
 	uuidBinary {uuidBinary}
@@ -27,24 +59,15 @@ Uuid::Uuid(UuidBinaryT const & uuidBinary) :
 	// these static asserts are within this method because uuidBinary is private.
 	// Otherwise I would have placed them outside a method.]
 	static_assert(sizeof(uuid_t) == sizeof(uuidBinary));
-	static_assert(numCharsUUIDString == UUID_STR_LEN);
-	::uuid_unparse(&uuidBinary[0], uuidStrArray);
-}
-
-Uuid::Uuid(Uuid &&other) :
-	uuidBinary{other.uuidBinary}
-{
-
-	memcpy(uuidStrArray,other.uuidStrArray,numCharsUUIDString);
+	static_assert(NumCharsUUIDString == UUID_STR_LEN);
 	
-	other = nullUuid;
-
+	::uuid_unparse(uuidBinary.data(), uuidString.data());
 }
 
 Uuid& Uuid::operator=(Uuid &&other) {
 
+	uuidString = other.uuidString;
 	uuidBinary = other.uuidBinary;
-	memcpy(uuidStrArray,other.uuidStrArray,numCharsUUIDString);
 	
 	other = nullUuid;
 
@@ -58,49 +81,45 @@ void Uuid::reset() {
 
 void Uuid::generateNewUUID() {
 	
-	::uuid_generate(&uuidBinary[0]);
+	::uuid_generate(uuidBinary.data());
 	
-	if (uuidString.length() != (numCharsUUIDString -1)) {
-		uuidString = nullUUIDString;
-	}
-	::uuid_unparse(&uuidBinary[0], uuidString.data());
+	::uuid_unparse(uuidBinary.data(), uuidString.data());
 
 }
 	
 bool Uuid::isNull() const {
 	
-	return ::uuid_is_null(&uuidBinary[0]) != 0;
+	return ::uuid_is_null(uuidBinary.data()) != 0;
 }
 	
 void Uuid::setUuidBinaryData (UuidBinaryT const & uuidBinary) {
 	this->uuidBinary = uuidBinary;
 	
-	if (uuidString.length() != (numCharsUUIDString -1)) {
-		uuidString = nullUUIDString;
-	}
-	::uuid_unparse(&uuidBinary[0], uuidString.data());
+	::uuid_unparse(uuidBinary.data(), uuidString.data());
 }
 	
 void Uuid::setUuidString (char const* uuidString) {
 
-	this->uuidString = uuidString;
-	
-	if (this->uuidString.length() != (numCharsUUIDString-1)) {
+	if (strlen(uuidString) != (NumCharsUUIDString-1)) {
 		auto errStr = fmt::format(fmt::runtime(
 			_("Error in {0}: UUID string \"{1}\" is not {2} bytes long.")),
 			__PRETTY_FUNCTION__,
-			this->uuidString,(numCharsUUIDString-1)
+			uuidString,(NumCharsUUIDString-1)
 			);
 		throw UuidException(errStr.c_str());
 	}
 	
-	if (::uuid_parse(this->uuidString.c_str(), &uuidBinary[0]) != 0) {
+	if (!checkUuidString(uuidString) ||
+		(::uuid_parse(uuidString, uuidBinary.data()) != 0)) {
 		auto errStr = fmt::format(fmt::runtime(
 			_("Error in {0}: String \"{1}\" is not a valid UUID.")),
 			__PRETTY_FUNCTION__,
-			this->uuidString);
+			uuidString);
 		throw UuidException(errStr.c_str());
 	}
+	
+	this->uuidString = uuidString;
+	
 }
 	
 

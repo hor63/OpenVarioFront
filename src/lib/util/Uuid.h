@@ -74,33 +74,26 @@ class Uuid final {
 public:
 
 
-	static constexpr int numBytesUUID = 16;
+	static constexpr int NumBytesUUID = 16;
 	/// \brief The number of bytes in the UUID string including the terminating'\0'
-	static constexpr int numCharsUUIDString = 37;
+	static constexpr int NumCharsUUIDString = 37;
 		
-	using UuidBinaryT = std::array<unsigned char,numBytesUUID>;
+	using UuidBinaryT = std::array<unsigned char,NumBytesUUID>;
+	using UuidStringArrayT = std::array<char,NumCharsUUIDString>;
 
 	/// \brief constructs a NULL UUID
-	constexpr Uuid() = default;
-	/// \brief Constructs a UUID from a string in the form
-	/// xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-	constexpr Uuid(char const *uuidString) {
-		if (checkUuidString(uuidString)) {
-			uuidBinary = strToUuidBinary(uuidString);
-			// memcpy is not constexpr, so I need to copy the string myself.
-			// std::memcpy(uuidStrArray,uuidString,sizeof(uuidStrArray));
-			for (int i = 0; i < numCharsUUIDString ; ++i) {
-				uuidStrArray[i] = uuidString[i];
-			}
-		}
-	}
+	Uuid() = default;
+	/** \brief Constructs a UUID from a string in the form
+	 * xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+	 */
+	Uuid(char const *uuidString);
+	Uuid(const Uuid &other) = default;
+	/// \brief Move constructor; other gets the NULL-UUID assigned.
+	Uuid(Uuid &&other);
 	/// \brief Constructs a UUIID from binary UUID data
 	Uuid(UuidBinaryT const & uuidBinary);
-	Uuid(const Uuid &other) = default;
-	/// \brief Move constructor
-	Uuid(Uuid &&other);
 	Uuid& operator=(const Uuid &other) = default;
-	/// \brief Move assignment
+	/// \brief Move assignment; other gets the NULL-UUID assigned.
 	Uuid& operator=(Uuid &&other);
 	
 	/// \brief Reset the UUID to a NULL-UUID, i.e. to
@@ -120,24 +113,24 @@ public:
 	/// Automatically updates \ref uuidString too.
 	void setUuidBinaryData (UuidBinaryT const & uuidBinary);
 	
-	std::string_view const& getUuidString() const {
+	std::string const& getUuidString() const {
 		return uuidString;
 	}
 	
 	void setUuidString (char const* uuidString);
 	
 	bool operator == (Uuid const& u1) const{
-		return uuidString == u1.uuidString;
+		return uuidBinary == u1.uuidBinary;
 	}
 
 	/// \brief can be used to produce the binary UUID raw data
 	/// from a UUID string which you may produce with uuidgen.
-	static constexpr Uuid::UuidBinaryT strToUuidBinary (const char str[]) {
+	static constexpr Uuid::UuidBinaryT strToUuidBinary (char const *str) {
 		Uuid::UuidBinaryT res;
 		
 		int k = 0;
 		
-		for (int i = 0; i < Uuid::numCharsUUIDString -1;) {
+		for (int i = 0; i < Uuid::NumCharsUUIDString -1;) {
 			if (i == 8 || i == 13 || i == 18 || i == 23){
 				// Here are the '-' separators in a UUID string.
 				// so I am skipping over these.
@@ -154,10 +147,11 @@ public:
 		return res;
 	}
 
-	static constexpr bool checkUuidString (const char str[]) {
+	/// \brief check if
+	static constexpr bool checkUuidString (char const *str) {
 		bool res = true;
 		int i = 0;
-		for (; i < Uuid::numCharsUUIDString -1;) {
+		for (; i < Uuid::NumCharsUUIDString -1;) {
 			if (i == 8 || i == 13 || i == 18 || i == 23){
 				res = res && (str[i] == '-');
 				++i;
@@ -173,8 +167,7 @@ public:
 	}
 	
 private:
-	char uuidStrArray [numCharsUUIDString] = "00000000-0000-0000-0000-000000000000";
-	std::string_view uuidString = uuidStrArray;
+	std::string uuidString = "00000000-0000-0000-0000-000000000000";
 	UuidBinaryT uuidBinary = {0};
 };
 
