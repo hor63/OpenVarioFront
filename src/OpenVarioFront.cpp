@@ -46,7 +46,7 @@
 #include "Renderers/CircleFilledRenderer.h"
 #include "Renderers/CirclePartialArcRenderer.h"
 #include "GLTextRender/GLTextRenderer.h"
-
+#include "RootControl.h"
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
 #if defined Success
@@ -107,6 +107,8 @@ int main(int argint,char** argv) {
 //		varioBackground.setPNGFileName("../../resources/Vario5m.jpg");
 		varioBackground.setImageMemoryData(Vario5mJPG_data,
 			Vario5mJPG_size, Vario5mJPG_filename);
+
+		auto rootCtrlPtr = OevControls::RootControl::getRootWindowPtr().lock();
 
 		int windowWidth = -1, windowHeight = -1;
 		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
