@@ -18,6 +18,27 @@
 
 namespace OevControls {
 
+ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
+		OevUtil::Uuid const & uuid,
+		char const* name)
+		:parent {parent},
+		uuid {uuid},
+		name {name}
+{
+	auto parentPtr = parent.lock();
+	
+	if (parentPtr) {
+		throw ControlsException (
+			"Error in ControlBase::ControlBase: parent must be a valid pointer"
+			"to an existing ControlsContainer");
+	}
+	
+	// The distincive property of the root control is that its parent points to itself.
+	if (reinterpret_cast<void const*>(parentPtr.get())
+		== reinterpret_cast<void const*>(this)) {
+		rootControl = true;
+	}
+}
 
 ControlBase::~ControlBase() {
 }

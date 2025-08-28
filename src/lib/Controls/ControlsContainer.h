@@ -43,11 +43,11 @@ public:
 	using ControlsMapT = std::unordered_map<OevUtil::Uuid, ControlBasePtr>;
 	using ControlsWeakListT = std::list<ControlBaseWeakPtr>;
 
-	ControlsContainer(ControlsContainerWeakPtr && parent,
-		OevUtil::Uuid && uuid,
+	ControlsContainer(ControlsContainerWeakPtr  const &parent,
+		OevUtil::Uuid const & uuid,
 		char const* name = "")
-		:ControlBase(std::move(parent),
-			std::move(uuid),
+		:ControlBase(parent,
+			uuid,
 			name)
 	{}
 	virtual ~ControlsContainer();
@@ -61,6 +61,16 @@ public:
 	void insertControlInTabGroupBefore (ControlsWeakListT::iterator ref,
 		ControlBaseWeakPtr const &controlWeakPtr);
 	
+	void drawChildren (
+		OevGLES::Mat4 const &modelMatrix,
+		OevGLES::Mat4 const &viewMatrix,
+		OevGLES::Mat4 const &ProjMatrix,
+		OevGLES::Mat4 const &MVMatrix,
+		OevGLES::Mat4 const &MVPMatrix,
+		OevGLES::Vec3 const &lightDir,
+		OevGLES::Vec4 const &lightColor,
+		OevGLES::Vec4 const &ambientLightColor
+	);
 protected:
 
 ControlsMapT controlsMap;

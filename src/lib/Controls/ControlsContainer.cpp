@@ -39,7 +39,7 @@ namespace OevControls {
 
 
 ControlsContainer::~ControlsContainer() {
-	// TODO Auto-generated destructor stub
+
 }
 
 void ControlsContainer::addControl(ControlBasePtr const &controlPtr) {
@@ -55,4 +55,29 @@ void ControlsContainer::insertControlInTabGroupBefore (ControlsWeakListT::iterat
 	tabGroup.insert (ref,controlWeakPtr);
 }
 
+void ControlsContainer::drawChildren (
+	OevGLES::Mat4 const &modelMatrix,
+	OevGLES::Mat4 const &viewMatrix,
+	OevGLES::Mat4 const &ProjMatrix,
+	OevGLES::Mat4 const &MVMatrix,
+	OevGLES::Mat4 const &MVPMatrix,
+	OevGLES::Vec3 const &lightDir,
+	OevGLES::Vec4 const &lightColor,
+	OevGLES::Vec4 const &ambientLightColor
+	) {
+	for (auto child: controlsMap) {
+		if (child.second->isVisible()) {
+			child.second->draw(
+				modelMatrix,
+				viewMatrix,
+				ProjMatrix,
+				MVMatrix,
+				MVPMatrix,
+				lightDir,
+				lightColor,
+				ambientLightColor
+				);
+		}
+	}
+}
 } /* namespace OevControls */

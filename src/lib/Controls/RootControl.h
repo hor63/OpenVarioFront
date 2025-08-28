@@ -20,8 +20,8 @@ public:
 	using RootControlWeakPtrT = std::weak_ptr<RootControl>;
 
 	/// End users cannot directly create an object
-	RootControl(ControlsContainerWeakPtr && parent,
-		OevUtil::Uuid && uuid,
+	RootControl(ControlsContainerWeakPtr  const &parent,
+		OevUtil::Uuid const & uuid,
 		char const* name = "root");
 
 	virtual ~RootControl();

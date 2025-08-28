@@ -44,13 +44,10 @@ public:
 		int32_t height = 0;
 	};
 
-	ControlBase(ControlsContainerWeakPtr && parent,
-		OevUtil::Uuid && uuid,
-		char const* name = "")
-		:parent {std::move(parent)},
-		uuid {std::move(uuid)},
-		name {name}
-		{}
+	ControlBase(ControlsContainerWeakPtr const &parent,
+		OevUtil::Uuid const & uuid,
+		char const* name = "");
+
 	virtual ~ControlBase();
 	// Copy constructors and assignment operators are explicitly prohibited. 
 	ControlBase(const ControlBase &other) = delete;
@@ -218,6 +215,9 @@ public:
 	/// \see \ref tabContainer
 	void setTabContainer (ControlsContainerWeakPtr tabContainer);
 
+	bool isRootControl() {
+		return rootControl;
+	}
 	
 private:
 	
@@ -277,12 +277,15 @@ private:
 	/// \brief This control receives the equivalent of a click when you hit enter in a dialog.
 	bool defaultControl = false;
 
+
+	/// \Brief is this control the root control?
+	bool rootControl = false;
+	
 	/** \brief Sequence of controls to receive the focus when switching with the TAB key.
 	 *
 	 * A tab sequence = 0 means the control is not part of the tab group
 	 * and thus will never receive the focus when you switch focus with the TAB key.
 	 */
-	
 	int tabSequence = 0;
 	ControlBaseWeakPtr tabPredecessor;
 	ControlBaseWeakPtr tabSuccessor;
