@@ -21,6 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -31,10 +32,10 @@
 
 #include <cmath>
 
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
-#include <ostream>
 #if defined HAVE_LOG4CXX_H
 #	include <log4cxx/logger.h>
 #endif
@@ -180,6 +181,13 @@ using Vec4 = Eigen::Matrix<GLfloat,4,1>;
 using Mat2 = Eigen::Matrix<GLfloat,2,2>;
 using Mat3 = Eigen::Matrix<GLfloat,3,3>;
 using Mat4 = Eigen::Matrix<GLfloat,4,4>;
+
+using Vec2ShPtr = std::shared_ptr<Vec2>;
+using Vec3ShPtr = std::shared_ptr<Vec3>;
+using Vec4ShPtr = std::shared_ptr<Vec4>;
+using Mat2ShPtr = std::shared_ptr<Mat2>;
+using Mat3ShPtr = std::shared_ptr<Mat3>;
+using Mat4ShPtr = std::shared_ptr<Mat4>;
 
 /** \brief Constructs and returns a translation matrix
  *
