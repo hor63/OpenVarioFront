@@ -223,12 +223,7 @@ void SquareTextureRenderer::setupVertexBuffers() {
 	} // if (dirty) {
 }
 
-void SquareTextureRenderer::draw(
-		const OevGLES::Mat4& modelMatrix,
-		const OevGLES::Mat4& viewMatrix, const OevGLES::Mat4& ProjMatrix,
-		const OevGLES::Mat4& MVMatrix, const OevGLES::Mat4& MVPMatrix,
-		const OevGLES::Vec3& lightDir, const OevGLES::Vec4& lightColor,
-		const OevGLES::Vec4& ambientLightColor ) {
+void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	if (dirty) {
 		setupVertexBuffers();

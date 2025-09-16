@@ -137,10 +137,146 @@ private:
 	bool doRestoreBlendAttributes = false;
 };
 
+/// \brief Alias for setting standard mode blending, i.e. simulating transparency
+/// by the source (vertex color) alpha value
 using BlendAttributeSetRestoreStd =
 		BlendAttributeSetRestore<
 			GL_TRUE,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA,GL_ONE,
 			GL_ZERO,GL_FUNC_ADD,GL_FUNC_ADD>;
+
+/** \brief Holds the standard vectors and matrixes commonly used as uniforms for
+	rendering stuff, particular for \ref RendererBase::draw().
+	
+	The class stores shared pointers to the uniform data.
+	This makes it economical to copy objects because they reference to the same
+	data, and also makes it easy to inherit shared data.
+	
+	You can replace data with the set routines.
+	The set routines will also create new instances of the MV or MVP matrixes.
+	
+	You can also edit the data in-place with the non-const get methods this
+	will change the data for all copies of this!
+	In case that you modify model, view or perspective matrix do not forget
+	to call \ref recalcMVMatrix() or \ref recalcMVPMatrix() respective. Use or 
+	abuse this functionality at your own peril.
+*/
+class RenderStandardUniforms {
+public:
+	void setModelMatrix (Mat4ShPtr const &modelMatrixPtr) {
+		modelMatrix = modelMatrixPtr;
+		resetMVMatrix();
+	}
+	
+	void setViewMatrix (Mat4ShPtr const &viewMatrixPtr) {
+		viewMatrix = viewMatrixPtr;
+		resetMVMatrix();
+	}
+
+	void setProjMatrix (Mat4ShPtr const &projMatrixPtr) {
+		projMatrix = projMatrixPtr;
+		resetMVPMatrix();
+	}
+	void setLightDir (Vec3ShPtr const &lightDirPtr) {
+		lightDir = lightDirPtr;
+	}
+	void setLightColor (Vec4ShPtr const &lightColorPtr) {
+		lightColor = lightColorPtr;
+	}
+	void setAmbientLightColor (Vec4ShPtr const &ambientLightColorPtr) {
+		ambientLightColor = ambientLightColorPtr;
+	}
+
+	Mat4ShPtr & getModelMatrix () {
+		return modelMatrix;
+	}
+	Mat4ShPtr & getViewMatrix () {
+		return viewMatrix;
+	}
+	Mat4ShPtr & getProjMatrix () {
+		return projMatrix;
+	}
+	Mat4ShPtr & getMVMatrix () {
+		return MVMatrix;
+	}
+	Mat4ShPtr & getMVPMatrix () {
+		return MVPMatrix;
+	}
+	Vec3ShPtr & getLightDir () {
+		return lightDir;
+	}
+	Vec4ShPtr & getLightColor () {
+		return lightColor;
+	}
+	Vec4ShPtr & getAmbientLightColor () {
+		return ambientLightColor;
+	}
+
+	Mat4ShPtr const & getModelMatrix () const {
+		return modelMatrix;
+	}
+	Mat4ShPtr const & getViewMatrix () const {
+		return viewMatrix;
+	}
+	Mat4ShPtr const & getProjMatrix () const {
+		return projMatrix;
+	}
+	Mat4ShPtr const & getMVMatrix () const {
+		return MVMatrix;
+	}
+	Mat4ShPtr const & getMVPMatrix () const {
+		return MVPMatrix;
+	}
+	Vec3ShPtr const & getLightDir () const {
+		return lightDir;
+	}
+	Vec4ShPtr const & getLightColor () const {
+		return lightColor;
+	}
+	Vec4ShPtr const & getAmbientLightColor () const {
+		return ambientLightColor;
+	}
+
+	void recalcMVMatrix() {
+		if (modelMatrix && viewMatrix) {
+			// At this point MVMatrix is guaranteed to be valid.
+			*MVMatrix = *viewMatrix.get() * *modelMatrix.get();
+			recalcMVPMatrix();
+		}
+	}
+	
+	void recalcMVPMatrix() {
+		if (MVMatrix && projMatrix) {
+			// At this point MVPMatrix is guaranteed to be valid.
+			*MVPMatrix = *projMatrix.get() * *MVMatrix.get();
+		}
+	}
+
+private:
+	Mat4ShPtr modelMatrix;
+	Mat4ShPtr viewMatrix;
+	Mat4ShPtr projMatrix;
+	Mat4ShPtr MVMatrix;
+	Mat4ShPtr MVPMatrix;
+	Vec3ShPtr lightDir;
+	Vec4ShPtr lightColor;
+	Vec4ShPtr ambientLightColor;
+
+	void resetMVMatrix() {
+		if (modelMatrix && viewMatrix) {
+			MVMatrix.reset(new Mat4(*viewMatrix.get() * *modelMatrix.get()));
+			resetMVPMatrix();
+		} else {
+			MVMatrix.reset();
+			MVPMatrix.reset();
+		}
+	}
+	
+	void resetMVPMatrix() {
+		if (MVMatrix && projMatrix) {
+							MVPMatrix.reset(new Mat4(*projMatrix.get() * *MVMatrix.get()));
+		}
+	}
+};
 
 class RendererBase {
 public:
@@ -166,28 +302,11 @@ public:
 	 *
 	 * Pure virtual interface
 	 *
-	 * \param modelMatrix Model matrix, moves the object around from model to world space
-	 * \param viewMatrix View matrix, used to move from world to eye space
-	 * \param ProjMatrix Projection matrix, used to create the 3-dimensional effects on a 2D screen
-	 * \param MVMatrix Model-View Matrix
-	 * \param MVPMatrix Model/View/Projection matrix
-	 * \param lightDir Direction to the light source, normalized
-	 * \param lightColor Color of the light source, normalized color values.
-	 * \param ambientLightColor Color of the ambient light, normalized color values.
+	 * \param stdUniformData Reference to the standard uniforms for rendering.
 	 */
-	virtual void draw(
-			OevGLES::Mat4 const &modelMatrix,
-			OevGLES::Mat4 const &viewMatrix,
-			OevGLES::Mat4 const &ProjMatrix,
-			OevGLES::Mat4 const &MVMatrix,
-			OevGLES::Mat4 const &MVPMatrix,
-			OevGLES::Vec3 const &lightDir,
-			OevGLES::Vec4 const &lightColor,
-			OevGLES::Vec4 const &ambientLightColor
-			) = 0;
+	virtual void draw(RenderStandardUniforms const &stdUniformData) = 0;
 
 protected:
-
 };
 
 } // namespace OevGLES

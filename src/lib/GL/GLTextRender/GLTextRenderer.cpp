@@ -674,24 +674,15 @@ void GLTextRenderer::setupVertexBuffersGlyphs () {
 
 }
 
-void GLTextRenderer::draw(
-			OevGLES::Mat4 const &modelMatrix,
-			OevGLES::Mat4 const &viewMatrix,
-			OevGLES::Mat4 const &ProjMatrix,
-			OevGLES::Mat4 const &MVMatrix,
-			OevGLES::Mat4 const &MVPMatrix,
-			OevGLES::Vec3 const &lightDir,
-			OevGLES::Vec4 const &lightColor,
-			OevGLES::Vec4 const &ambientLightColor
-			) {
+void GLTextRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	if (drawBackground) {
 		drawTextBoxBackground(
-				MVMatrix,
-				MVPMatrix,
-				lightDir,
-				lightColor,
-				ambientLightColor
+				*stdUniformData.getMVMatrix().get(),
+				*stdUniformData.getMVPMatrix().get(),
+				*stdUniformData.getLightDir().get(),
+				*stdUniformData.getLightColor().get(),
+				*stdUniformData.getAmbientLightColor().get()
 				);
 
 		glEnable(GL_POLYGON_OFFSET_FILL);
@@ -709,7 +700,7 @@ void GLTextRenderer::draw(
 	glGetIntegerv(GL_DEPTH_FUNC,&depthFuncBackup);
 	glDepthFunc(GL_LEQUAL);
 
-	drawGlyphs(MVPMatrix);
+	drawGlyphs(*stdUniformData.getMVPMatrix().get());
 
 	glDepthFunc(depthFuncBackup);
 
