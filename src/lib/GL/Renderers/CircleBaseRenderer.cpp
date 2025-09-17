@@ -132,11 +132,7 @@ void CircleBaseRenderer::setupVertexBuffers() {
 	}
 }
 
-void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
-		const OevGLES::Mat4 &viewMatrix, const OevGLES::Mat4 &ProjMatrix,
-		const OevGLES::Mat4 &MVMatrix, const OevGLES::Mat4 &MVPMatrix,
-		const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
-		const OevGLES::Vec4 &ambientLightColor) {
+void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	if (dirty) {
 		setupVertexBuffers();
@@ -146,62 +142,82 @@ void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 	glProgram->useProgram();
 
 	// Set up the uniforms
-	glUniform4fv(glProgram->getVecFactorPrimaryVertexLocation(),1,vecFactorPrimaryVertex);
-	glUniform4fv(glProgram->getVecFactorSecondVertexLocation(),1,vecFactorSecondVertex);
-	glUniform4fv(glProgram->getVecFactorNormalVectorLocation(),1,vecFactorNormalVector);
+	glUniform4fv(glProgram->getVecFactorPrimaryVertexLocation(), 1,
+				 vecFactorPrimaryVertex);
+	glUniform4fv(glProgram->getVecFactorSecondVertexLocation(), 1,
+				 vecFactorSecondVertex);
+	glUniform4fv(glProgram->getVecFactorNormalVectorLocation(), 1,
+				 vecFactorNormalVector);
 
-	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
-	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(), 1, GL_FALSE,
+					   &(stdUniformData.getMVPMatrix()(0, 0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(), 1, GL_FALSE,
+					   &(stdUniformData.getMVMatrix()(0, 0)));
 
-	glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
-	glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
-	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
+	glUniform3fv(glProgram->getLightDirLocation(), 1,
+				 &(stdUniformData.getLightDir()(0)));
+	glUniform4fv(glProgram->getLightColorLocation(), 1,
+				 &(stdUniformData.getLightColor()(0)));
+	glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
+				 &(stdUniformData.getAmbientLightColor()(0)));
 
 	// Set up the attributes
 	if (vertexArrayStruct->vertexArrayHandle != 0U) {
 		GLFramework::glBindVertexArrayOES(vertexArrayStruct->vertexArrayHandle);
 	} else {
 
-		glBindBuffer(GL_ARRAY_BUFFER,vertexArrayStruct->vertexBufferHandle);
-	
+		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayStruct->vertexBufferHandle);
+
 		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-		glVertexAttribPointer(glProgram->getVertexPosLocation(),
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
-					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
-				GL_FLOAT,
-				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
-	
+		glVertexAttribPointer(
+			glProgram->getVertexPosLocation(),
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+					   position) /
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+						   position[0]),
+			GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+			reinterpret_cast<void *>(offsetof(
+				CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+				position)));
+
 		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
-		glVertexAttribPointer(glProgram->getVertexNormalLocation(),
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
-					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
-				GL_FLOAT,
-				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
-	
+		glVertexAttribPointer(
+			glProgram->getVertexNormalLocation(),
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+					   normal) /
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+						   normal[0]),
+			GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+			reinterpret_cast<void *>(offsetof(
+				CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+				normal)));
+
 		glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-		glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
-				1,
-				GL_FLOAT,
-				GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void*>(offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+		glVertexAttribPointer(
+			glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+			reinterpret_cast<void *>(offsetof(
+				CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+				isSecondaryCircle)));
 	} // if (vertexArrayStruct->vertexArrayHandle != 0U) {}
 
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
-	glVertexAttrib4fv(glProgram->getVertexColorLocation(),&bodyColor(0));
+	glVertexAttrib4fv(glProgram->getVertexColorLocation(), &bodyColor(0));
 
 	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
 
 	// Draw in transparent mode when the Alpha value is not totally opaque.
 	if (bodyColor(3) < 1.0f) {
-		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
+		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(
+			new BlendAttributeSetRestoreStd);
 	}
 
 	// I am omitting the circle center at the start of the vertex array.
 	// Therefore I am starting at position 2, and the number of vertexes
 	// is 2 less that the number of vertexes in the buffer.
-	glDrawArrays( GL_TRIANGLE_STRIP, 2, vertexArrayStruct->numVertexes - 2);
+	glDrawArrays(GL_TRIANGLE_STRIP, 2, vertexArrayStruct->numVertexes - 2);
 
 	if (vertexArrayStruct->vertexArrayHandle != 0U) {
 		GLFramework::glBindVertexArrayOES(0U);
@@ -210,11 +226,10 @@ void CircleBaseRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
 		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
 		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
-	
-		glBindBuffer(GL_ARRAY_BUFFER,0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glUseProgram(0);
 	} // if (vertexArrayStruct->vertexArrayHandle != 0U) {
-
 }
 
 } /* namespace OevGLES */

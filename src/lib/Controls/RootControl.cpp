@@ -101,26 +101,8 @@ void RootControl::setupVertexBuffers () {
 	
 }
 
-void RootControl::draw(
-			OevGLES::Mat4 const &modelMatrix,
-			OevGLES::Mat4 const &viewMatrix,
-			OevGLES::Mat4 const &ProjMatrix,
-			OevGLES::Mat4 const &MVMatrix,
-			OevGLES::Mat4 const &MVPMatrix,
-			OevGLES::Vec3 const &lightDir,
-			OevGLES::Vec4 const &lightColor,
-			OevGLES::Vec4 const &ambientLightColor
-			) {
-	drawChildren(
-		modelMatrix,
-		viewMatrix,
-		ProjMatrix,
-		MVMatrix,
-		MVPMatrix,
-		lightDir,
-		lightColor,
-		ambientLightColor
-		);
+void RootControl::draw(OevGLES::RenderStandardUniforms const &stdUniformData) {
+	drawChildren(stdUniformData);
 }
 
 

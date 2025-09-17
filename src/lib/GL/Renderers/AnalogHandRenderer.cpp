@@ -172,77 +172,86 @@ void AnalogHandRenderer::setupVertexBuffers() {
 
 }
 
-void AnalogHandRenderer::draw(
-		const OevGLES::Mat4& modelMatrix,
-		const OevGLES::Mat4& viewMatrix, const OevGLES::Mat4& ProjMatrix,
-		const OevGLES::Mat4& MVMatrix, const OevGLES::Mat4& MVPMatrix,
-		const OevGLES::Vec3& lightDir, const OevGLES::Vec4& lightColor,
-		const OevGLES::Vec4& ambientLightColor ) {
+void AnalogHandRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
-	GLfloat* bufferOffset = 0;
+	GLfloat *bufferOffset = 0;
 
 	// make my program current
 	glProgram->useProgram();
 
+	LOG4CXX_DEBUG(logger,
+				  "lightDir = " << stdUniformData.getLightDir().transpose());
+#if defined HAVE_LOG4CXX_H
+	if (logger->isDebugEnabled()) {
+		GLfloat *p0 = vertexArray;
+		for (int k = 0; k < 6; k += 2) {
+			Eigen::Map<OevGLES::Vec4> vecXNormal4(p0 + (k * 4) + 4);
+			OevGLES::Vec3 vecXNormal =
+				(stdUniformData.getMVMatrix() * vecXNormal4).block<3, 1>(0, 0);
 
-	LOG4CXX_DEBUG(logger,"lightDir = " << lightDir.transpose());
-	GLfloat* p0 = vertexArray;
-	for (int k = 0;k < 6 ; k+= 2) {
-		Eigen::Map<OevGLES::Vec4> vecXNormal4 ( p0 + (k*4) + 4);
-		OevGLES::Vec3 vecXNormal = (MVMatrix * vecXNormal4).block<3,1>(0,0);
-
-		LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] Normal = [" << vecXNormal4.transpose() << ']');
-		LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] MVMatrix * Normal = [" << vecXNormal.transpose() << ']');
-		LOG4CXX_DEBUG(logger,"lightDir dot normal = " << lightDir.dot(vecXNormal));
-
+			LOG4CXX_DEBUG(logger, "Vec4 [" << k << "] Normal = ["
+										   << vecXNormal4.transpose() << ']');
+			LOG4CXX_DEBUG(logger, "Vec4 [" << k << "] MVMatrix * Normal = ["
+										   << vecXNormal.transpose() << ']');
+			LOG4CXX_DEBUG(logger,
+						  "lightDir dot normal = "
+							  << stdUniformData.getLightDir().dot(vecXNormal));
+		}
 	}
+#endif // #if defined HAVE_LOG4CXX_H
 
 	// Set the uniforms
-	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
-	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(), 1, GL_FALSE,
+					   &(stdUniformData.getMVPMatrix()(0, 0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(), 1, GL_FALSE,
+					   &(stdUniformData.getMVMatrix()(0, 0)));
 
-	glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
-	glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
-	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
-
+	glUniform3fv(glProgram->getLightDirLocation(), 1,
+				 &(stdUniformData.getLightDir()(0)));
+	glUniform4fv(glProgram->getLightColorLocation(), 1,
+				 &(stdUniformData.getLightColor()(0)));
+	glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
+				 &(stdUniformData.getAmbientLightColor()(0)));
 
 	// set the color attribute constant
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
-	glVertexAttrib4fv(glProgram->getVertexColorLocation(),handColor);
+	glVertexAttrib4fv(glProgram->getVertexColorLocation(), handColor);
 
 	if (GLFramework::isVertexArrayUsable()) {
 		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
 	} else {
 		// re-bind the buffer object
-		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
-	
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferHandle);
+
 		// setup the vertex coordinates
 		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-		glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+		glVertexAttribPointer(glProgram->getVertexPosLocation(), 4, GL_FLOAT,
+							  GL_FALSE, 8 * sizeof(GLfloat), bufferOffset);
 		// setup the vertex normals
-		bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
+		bufferOffset +=
+			4; // Advance the offset by 4 floats to the vertex normals.
 		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
-		glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+		glVertexAttribPointer(glProgram->getVertexNormalLocation(), 4, GL_FLOAT,
+							  GL_FALSE, 8 * sizeof(GLfloat), bufferOffset);
 	} // 	if (GLFramework::isVertexArrayUsable()) {
 
 	// The object is opaque. Use the depth buffer, and write to the depth buffer
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 
-	glDrawArrays(GL_TRIANGLES,0,12);
+	glDrawArrays(GL_TRIANGLES, 0, 12);
 
 	if (GLFramework::isVertexArrayUsable()) {
 		GLFramework::glBindVertexArrayOES(0U);
 	} else {
 		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
 		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
-	
-		glBindBuffer(GL_ARRAY_BUFFER,0);
-	
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	} // if (GLFramework::isVertexArrayUsable()) {
 
 	glUseProgram(0);
-
 }
 
 } // namespace OevGLES

@@ -58,11 +58,7 @@ public:
 	virtual ~CircleFilledRenderer();
 
 	virtual void setupVertexBuffers() override;
-	virtual void draw(const OevGLES::Mat4 &modelMatrix,
-			const OevGLES::Mat4 &viewMatrix, const OevGLES::Mat4 &ProjMatrix,
-			const OevGLES::Mat4 &MVMatrix, const OevGLES::Mat4 &MVPMatrix,
-			const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
-			const OevGLES::Vec4 &ambientLightColor) override;
+	virtual void draw(RenderStandardUniforms const &stdUniformData) override;
 
 	/// \brief Set the z-offset of the center of the circle.
 	///

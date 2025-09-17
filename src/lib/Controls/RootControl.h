@@ -33,16 +33,7 @@ public:
 	static RootControlWeakPtrT getRootWindowPtr();
 
 	virtual void setupVertexBuffers () override;
-	virtual void draw(
-			OevGLES::Mat4 const &modelMatrix,
-			OevGLES::Mat4 const &viewMatrix,
-			OevGLES::Mat4 const &ProjMatrix,
-			OevGLES::Mat4 const &MVMatrix,
-			OevGLES::Mat4 const &MVPMatrix,
-			OevGLES::Vec3 const &lightDir,
-			OevGLES::Vec4 const &lightColor,
-			OevGLES::Vec4 const &ambientLightColor
-			) override;
+	virtual void draw(OevGLES::RenderStandardUniforms const &stdUniformData) override;
 
 	
 private:

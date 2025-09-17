@@ -78,11 +78,7 @@ void CircleFilledRenderer::setupVertexBuffers() {
 	} // if (dirty)
 }
 
-void CircleFilledRenderer::draw(const OevGLES::Mat4 &modelMatrix,
-		const OevGLES::Mat4 &viewMatrix, const OevGLES::Mat4 &ProjMatrix,
-		const OevGLES::Mat4 &MVMatrix, const OevGLES::Mat4 &MVPMatrix,
-		const OevGLES::Vec3 &lightDir, const OevGLES::Vec4 &lightColor,
-		const OevGLES::Vec4 &ambientLightColor) {
+void CircleFilledRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	if (dirty) {
 		setupVertexBuffers();
 	}
@@ -91,69 +87,96 @@ void CircleFilledRenderer::draw(const OevGLES::Mat4 &modelMatrix,
 	glProgram->useProgram();
 
 	// Set up the uniforms
-	glUniform4fv(glProgram->getVecFactorPrimaryVertexLocation(),1,vecFactorPrimaryVertex);
-	glUniform4fv(glProgram->getVecFactorSecondVertexLocation(),1,vecFactorSecondVertex);
-	glUniform4fv(glProgram->getVecFactorNormalVectorLocation(),1,vecFactorNormalVector);
+	glUniform4fv(glProgram->getVecFactorPrimaryVertexLocation(), 1,
+				 vecFactorPrimaryVertex);
+	glUniform4fv(glProgram->getVecFactorSecondVertexLocation(), 1,
+				 vecFactorSecondVertex);
+	glUniform4fv(glProgram->getVecFactorNormalVectorLocation(), 1,
+				 vecFactorNormalVector);
 
-	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
-	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(), 1, GL_FALSE,
+					   &(stdUniformData.getMVPMatrix()(0, 0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(), 1, GL_FALSE,
+					   &(stdUniformData.getMVMatrix()(0, 0)));
 
-	glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
-	glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
-	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
+	glUniform3fv(glProgram->getLightDirLocation(), 1,
+				 &(stdUniformData.getLightDir()(0)));
+	glUniform4fv(glProgram->getLightColorLocation(), 1,
+				 &(stdUniformData.getLightColor()(0)));
+	glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
+				 &(stdUniformData.getAmbientLightColor()(0)));
 
 	// Set up the attributes
-	glBindBuffer(GL_ARRAY_BUFFER,vertexArrayStruct->vertexBufferHandle);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexArrayStruct->vertexBufferHandle);
 
 	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-	glVertexAttribPointer(glProgram->getVertexPosLocation(),
-			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::position[0]),
-			GL_FLOAT,
-			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) * 2, // Only every 2 vertexes
-			reinterpret_cast<void*>(sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) + // The primary element is the second of the tuple.
-					offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,position)));
+	glVertexAttribPointer(
+		glProgram->getVertexPosLocation(),
+		sizeof(
+			CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+					   position[0]),
+		GL_FLOAT, GL_FALSE,
+		sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+			2, // Only every 2 vertexes
+		reinterpret_cast<void *>(
+			sizeof(CirclePolygonVertexContainer::
+					   CirclePolygonVertexStruct) + // The primary element is
+													// the second of the tuple.
+			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+					 position)));
 
 	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
-	glVertexAttribPointer(glProgram->getVertexNormalLocation(),
-			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal[0]),
-			GL_FLOAT,
-			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) * 2, // Only every 2 vertexes
-			reinterpret_cast<void*>(sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) + // The primary element is the second of the tuple.
-					offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,normal)));
+	glVertexAttribPointer(
+		glProgram->getVertexNormalLocation(),
+		sizeof(
+			CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+					   normal[0]),
+		GL_FLOAT, GL_FALSE,
+		sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+			2, // Only every 2 vertexes
+		reinterpret_cast<void *>(
+			sizeof(CirclePolygonVertexContainer::
+					   CirclePolygonVertexStruct) + // The primary element is
+													// the second of the tuple.
+			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+					 normal)));
 
 	glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-	glVertexAttribPointer(glProgram->getIsSecondaryVertexLocation(),
-			1,
-			GL_FLOAT,
-			GL_FALSE,sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) * 2, // Only every 2 vertexes
-			reinterpret_cast<void*>(sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) + // The primary element is the second of the tuple.
-					offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,isSecondaryCircle)));
+	glVertexAttribPointer(
+		glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT, GL_FALSE,
+		sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+			2, // Only every 2 vertexes
+		reinterpret_cast<void *>(
+			sizeof(CirclePolygonVertexContainer::
+					   CirclePolygonVertexStruct) + // The primary element is
+													// the second of the tuple.
+			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+					 isSecondaryCircle)));
 
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
-	glVertexAttrib4fv(glProgram->getVertexColorLocation(),&bodyColor(0));
+	glVertexAttrib4fv(glProgram->getVertexColorLocation(), &bodyColor(0));
 
 	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
 
 	// Draw in transparent mode when the Alpha value is not totally opaque.
 	if (bodyColor(3) < 1.0f) {
-		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
+		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(
+			new BlendAttributeSetRestoreStd);
 	}
 
 	// I am starting with vertex #0, i.e. the circle center.
 	// But I am omitting every second vertex in the buffer.
 	// Thus I am hitting the only the primary circle vertexes.
-	glDrawArrays( GL_TRIANGLE_FAN, 0, (vertexArrayStruct->numVertexes / 2));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, (vertexArrayStruct->numVertexes / 2));
 
 	glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
 	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
 	glDisableVertexAttribArray(glProgram->getVertexPosLocation());
 
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glUseProgram(0);
-
-
 }
 
 } /* namespace OevGLES */

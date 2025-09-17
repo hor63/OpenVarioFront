@@ -233,7 +233,7 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glProgram->useProgram();
 
 
-	LOG4CXX_TRACE(logger,"lightDir = " << lightDir.transpose());
+	LOG4CXX_TRACE(logger,"lightDir = " << stdUniformData.getLightDir().transpose());
 
 	/*
 	GLfloat* p0 = vertexArray;
@@ -249,12 +249,12 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	*/
 
 	// Set the uniforms
-	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
-	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(stdUniformData.getMVPMatrix()(0,0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(stdUniformData.getMVMatrix() (0,0)));
 
-	glUniform3fv(glProgram->getLightDirLocation(),1,&(lightDir(0)));
-	glUniform4fv(glProgram->getLightColorLocation(),1,&(lightColor(0)));
-	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
+	glUniform3fv(glProgram->getLightDirLocation(),1,&(stdUniformData.getLightDir()(0)));
+	glUniform4fv(glProgram->getLightColorLocation(),1,&(stdUniformData.getLightColor()(0)));
+	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(stdUniformData.getAmbientLightColor()(0)));
 
 
 	// set the color attribute constant

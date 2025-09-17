@@ -61,16 +61,7 @@ public:
 	void insertControlInTabGroupBefore (ControlsWeakListT::iterator ref,
 		ControlBaseWeakPtr const &controlWeakPtr);
 	
-	void drawChildren (
-		OevGLES::Mat4 const &modelMatrix,
-		OevGLES::Mat4 const &viewMatrix,
-		OevGLES::Mat4 const &ProjMatrix,
-		OevGLES::Mat4 const &MVMatrix,
-		OevGLES::Mat4 const &MVPMatrix,
-		OevGLES::Vec3 const &lightDir,
-		OevGLES::Vec4 const &lightColor,
-		OevGLES::Vec4 const &ambientLightColor
-	);
+	void drawChildren (OevGLES::RenderStandardUniforms const &stdUniformData);
 protected:
 
 ControlsMapT controlsMap;
