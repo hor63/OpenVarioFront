@@ -116,7 +116,6 @@ int main(int argint,char** argv) {
 		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
 
 		OevGLES::AngleDeg objectRotationAngle = 0.0_deg;
-		OevGLES::Mat4 modelMatrixBack = OevGLES::translationMatrix(-0,0,-1);
 		// OevGLES::Vec4 camPos = {3,4,static_cast<float>(windowWidth*2),1};
 		OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowHeight*2),1};
 		OevGLES::Vec3 up = {0,1,0};
@@ -178,10 +177,6 @@ int main(int argint,char** argv) {
 //		std::cout << "Pointer to glGenVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glGenVertexArraysOES")) << std::endl;
 //		std::cout << "Pointer to glIsVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glIsVertexArrayOES")) << std::endl;
 
-		OevGLES::Mat4 projMatrix = OevGLES::projectionMatrix(windowHeight,windowHeight*3,
-				static_cast<double>(windowWidth)/static_cast<double>(windowHeight),apertureAngle);
-
-		OevGLES::Mat4 modelMatrixText = OevGLES::translationMatrix(-300,220,0);
 		OevGLES::GLTextRenderer glTextRend (glTextGlob);
 
 		glTextRend.setFontSize(30);
@@ -221,6 +216,31 @@ int main(int argint,char** argv) {
 		glTextRend.setBackgroundColor(whiteTransparent0_5Color);
 		glTextRend.setDrawBackground(true);
 
+		OevGLES::RenderStandardUniforms handUniforms;
+		handUniforms.setModelMatrix(
+			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
+			
+		handUniforms.setViewMatrix(
+			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
+			
+		handUniforms.setProjMatrix(std::make_shared<Mat4>(
+			OevGLES::projectionMatrix(windowHeight, windowHeight * 3,
+									  static_cast<double>(windowWidth) /
+										  static_cast<double>(windowHeight),
+									  apertureAngle)));
+
+		OevGLES::RenderStandardUniforms circ1Uniforms (handUniforms);
+		circ1Uniforms.setModelMatrix(
+			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
+
+		OevGLES::RenderStandardUniforms backgroundImgUniforms (handUniforms);
+		backgroundImgUniforms.setModelMatrix(std::make_shared<Mat4>(OevGLES::translationMatrix(-0,0,-1)));
+
+		OevGLES::RenderStandardUniforms textUniforms (handUniforms);
+		textUniforms.setModelMatrix(std::make_shared<Mat4>(OevGLES::translationMatrix(-300,220,0)));
+		textUniforms.setViewMatrix(std::make_shared<Mat4>(OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up)));
+
+		
 		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
@@ -237,25 +257,12 @@ int main(int argint,char** argv) {
 				// rotationAngle = 360.0f;
 			}
 
-			OevGLES::Mat4 modelMatrix = OevGLES::rotationMatrixZ(objectRotationAngle) * OevGLES::Mat4::Identity();
+			handUniforms.getModelMatrix() = OevGLES::rotationMatrixZ(objectRotationAngle) * OevGLES::Mat4::Identity();
 
-			OevGLES::Mat4 modelMatrixCirc1 = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * modelMatrix;
+			circ1Uniforms.getModelMatrix() = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * handUniforms.getModelMatrix();
 
-			OevGLES::Mat4 viewMatrix = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngle) * camPos).block<3,1>(0,0),origin,up);
-			OevGLES::Mat4 MVMatrix = viewMatrix * modelMatrix;
-			OevGLES::Mat4 MVPMatrix = projMatrix * MVMatrix;
+			handUniforms.getViewMatrix() = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngle) * camPos).block<3,1>(0,0),origin,up);
 
-			OevGLES::Mat4 MVMatrixCirc1 = viewMatrix * modelMatrixCirc1;
-			OevGLES::Mat4 MVPMatrixCirc1 = projMatrix * MVMatrixCirc1;
-
-			OevGLES::Mat4 MVMatrixBack = viewMatrix * modelMatrixBack;
-			OevGLES::Mat4 MVPMatrixBack = projMatrix * viewMatrix * modelMatrixBack;
-
-			OevGLES::Mat4 viewMatrixText = OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up);
-//			OevGLES::Mat4 MVMatrixText = viewMatrixText * modelMatrixText;
-			OevGLES::Mat4 MVMatrixText = viewMatrix * modelMatrixText;
-//			OevGLES::Mat4 MVPMatrixText = projMatrix * viewMatrixText * modelMatrixText;
-			OevGLES::Mat4 MVPMatrixText = projMatrix * viewMatrix * modelMatrixText;
 
 			// Light dir is in eye space, rotate the light with the viewers point of view
 			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(rotationAngle) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});
