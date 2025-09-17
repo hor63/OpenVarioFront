@@ -26,6 +26,7 @@
 #ifndef RENDERERBASE_H_
 #define RENDERERBASE_H_
 
+#include <cassert>
 #include "GLPrograms/GLProgBase.h"
 
 #if defined Success
@@ -186,55 +187,124 @@ public:
 		ambientLightColor = ambientLightColorPtr;
 	}
 
-	Mat4ShPtr & getModelMatrix () {
+	Mat4ShPtr & getModelMatrixPtr () {
 		return modelMatrix;
 	}
-	Mat4ShPtr & getViewMatrix () {
+	Mat4ShPtr & getViewMatrixPtr () {
 		return viewMatrix;
 	}
-	Mat4ShPtr & getProjMatrix () {
+	Mat4ShPtr & getProjMatrixPtr () {
 		return projMatrix;
 	}
-	Mat4ShPtr & getMVMatrix () {
+	Mat4ShPtr & getMVMatrixPtr () {
 		return MVMatrix;
 	}
-	Mat4ShPtr & getMVPMatrix () {
+	Mat4ShPtr & getMVPMatrixPtr () {
 		return MVPMatrix;
 	}
-	Vec3ShPtr & getLightDir () {
+	Vec3ShPtr & getLightDirPtr () {
 		return lightDir;
 	}
-	Vec4ShPtr & getLightColor () {
+	Vec4ShPtr & getLightColorPtr () {
 		return lightColor;
 	}
-	Vec4ShPtr & getAmbientLightColor () {
+	Vec4ShPtr & getAmbientLightColorPtr () {
 		return ambientLightColor;
 	}
 
-	Mat4ShPtr const & getModelMatrix () const {
+	Mat4ShPtr const & getModelMatrixPtr () const {
 		return modelMatrix;
 	}
-	Mat4ShPtr const & getViewMatrix () const {
+	Mat4ShPtr const & getViewMatrixPtr () const {
 		return viewMatrix;
 	}
-	Mat4ShPtr const & getProjMatrix () const {
+	Mat4ShPtr const & getProjMatrixPtr () const {
 		return projMatrix;
 	}
-	Mat4ShPtr const & getMVMatrix () const {
+	Mat4ShPtr const & getMVMatrixPtr () const {
 		return MVMatrix;
 	}
-	Mat4ShPtr const & getMVPMatrix () const {
+	Mat4ShPtr const & getMVPMatrixPtr () const {
 		return MVPMatrix;
 	}
-	Vec3ShPtr const & getLightDir () const {
+	Vec3ShPtr const & getLightDirPtr () const {
 		return lightDir;
 	}
-	Vec4ShPtr const & getLightColor () const {
+	Vec4ShPtr const & getLightColorPtr () const {
 		return lightColor;
 	}
-	Vec4ShPtr const & getAmbientLightColor () const {
+	Vec4ShPtr const & getAmbientLightColorPtr () const {
 		return ambientLightColor;
 	}
+
+	Mat4 & getModelMatrix () {
+		
+		assert (modelMatrix.operator bool());
+		return *modelMatrix;
+	}
+	Mat4 & getViewMatrix () {
+		assert (viewMatrix.operator bool());
+		return *viewMatrix;
+	}
+	Mat4 & getProjMatrix () {
+		assert (projMatrix.operator bool());
+		return *projMatrix;
+	}
+	Mat4 & getMVMatrix () {
+		assert (MVMatrix.operator bool());
+		return *MVMatrix;
+	}
+	Mat4 & getMVPMatrix () {
+		assert (MVPMatrix.operator bool());
+		return *MVPMatrix;
+	}
+	Vec3 & getLightDir () {
+		assert (lightDir.operator bool());
+		return *lightDir;
+	}
+	Vec4 & getLightColor () {
+		assert (lightColor.operator bool());
+		return *lightColor;
+	}
+	Vec4 & getAmbientLightColor () {
+		assert (ambientLightColor.operator bool());
+		return *ambientLightColor;
+	}
+
+	Mat4 const & getModelMatrix () const {
+		
+		assert (modelMatrix.operator bool());
+		return *modelMatrix;
+	}
+	Mat4 const & getViewMatrix () const {
+		assert (viewMatrix.operator bool());
+		return *viewMatrix;
+	}
+	Mat4 const & getProjMatrix () const {
+		assert (projMatrix.operator bool());
+		return *projMatrix;
+	}
+	Mat4 const & getMVMatrix () const {
+		assert (MVMatrix.operator bool());
+		return *MVMatrix;
+	}
+	Mat4 const & getMVPMatrix () const {
+		assert (MVPMatrix.operator bool());
+		return *MVPMatrix;
+	}
+	Vec3 const & getLightDir () const {
+		assert (lightDir.operator bool());
+		return *lightDir;
+	}
+	Vec4 const & getLightColor () const {
+		assert (lightColor.operator bool());
+		return *lightColor;
+	}
+	Vec4 const & getAmbientLightColor () const {
+		assert (ambientLightColor.operator bool());
+		return *ambientLightColor;
+	}
+
 
 	void recalcMVMatrix() {
 		if (modelMatrix && viewMatrix) {
