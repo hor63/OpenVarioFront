@@ -25,17 +25,15 @@
  *
  */
 
-#include "ControlsContainer.h"
-#include "SDL3/SDL_events.h"
-#include "SDL3/SDL_keyboard.h"
-#include "SDL3/SDL_video.h"
-#include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-
+#include <memory>
 #include <iostream>
 #include <fstream>
+#include "SDL3/SDL_events.h"
+#include "SDL3/SDL_keyboard.h"
+#include "SDL3/SDL_video.h"
 
 #include "OVFCommon.h"
 
@@ -121,9 +119,6 @@ int main(int argint,char** argv) {
 		OevGLES::Vec3 up = {0,1,0};
 		OevGLES::Vec3 origin = {0,0,0};
 		OevGLES::Vec4 lightDir4;
-		OevGLES::Vec3 lightDir;
-		OevGLES::Vec4 ambientLightColor {0.5f,0.5f,0.5f,1.0f};
-		OevGLES::Vec4 lightColor {0.5f,0.5f,0.3f,1.0f};
 		OevGLES::Vec4 whiteTransparent0_5Color {1.0f,1.0f,1.0f,0.5f};
 		OevGLES::Vec4 whiteTransparent0_8Color {1.0f,1.0f,1.0f,0.8f};
 // 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
@@ -217,28 +212,36 @@ int main(int argint,char** argv) {
 		glTextRend.setDrawBackground(true);
 
 		OevGLES::RenderStandardUniforms handUniforms;
-		handUniforms.setModelMatrix(
+		handUniforms.setModelMatrixPtr(
 			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
 			
-		handUniforms.setViewMatrix(
+		handUniforms.setViewMatrixPtr(
 			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
 			
-		handUniforms.setProjMatrix(std::make_shared<Mat4>(
+		handUniforms.setProjMatrixPtr(std::make_shared<Mat4>(
 			OevGLES::projectionMatrix(windowHeight, windowHeight * 3,
 									  static_cast<double>(windowWidth) /
 										  static_cast<double>(windowHeight),
 									  apertureAngle)));
 
+		handUniforms.setAmbientLightColorPtr(
+			std::make_shared<Vec4>(OevGLES::Vec4{0.5f, 0.5f, 0.5f, 1.0f}));
+
+		handUniforms.setLightColorPtr(
+			std::make_shared<Vec4>(OevGLES::Vec4{0.5f, 0.5f, 0.3f, 1.0f}));
+
+		handUniforms.setLightDirPtr(std::make_shared<Vec3>(OevGLES::Vec3{0.0f,0.0f,1.0f}));
+
 		OevGLES::RenderStandardUniforms circ1Uniforms (handUniforms);
-		circ1Uniforms.setModelMatrix(
+		circ1Uniforms.setModelMatrixPtr(
 			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
 
 		OevGLES::RenderStandardUniforms backgroundImgUniforms (handUniforms);
-		backgroundImgUniforms.setModelMatrix(std::make_shared<Mat4>(OevGLES::translationMatrix(-0,0,-1)));
+		backgroundImgUniforms.setModelMatrixPtr(std::make_shared<Mat4>(OevGLES::translationMatrix(-0,0,-1)));
 
 		OevGLES::RenderStandardUniforms textUniforms (handUniforms);
-		textUniforms.setModelMatrix(std::make_shared<Mat4>(OevGLES::translationMatrix(-300,220,0)));
-		textUniforms.setViewMatrix(std::make_shared<Mat4>(OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up)));
+		textUniforms.setModelMatrixPtr(std::make_shared<Mat4>(OevGLES::translationMatrix(-300,220,0)));
+		textUniforms.setViewMatrixPtr(std::make_shared<Mat4>(OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up)));
 
 		
 		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {
@@ -257,17 +260,24 @@ int main(int argint,char** argv) {
 				// rotationAngle = 360.0f;
 			}
 
-			handUniforms.getModelMatrix() = OevGLES::rotationMatrixZ(objectRotationAngle) * OevGLES::Mat4::Identity();
+			handUniforms.getModelMatrix() =
+				OevGLES::rotationMatrixZ(objectRotationAngle) *
+				OevGLES::Mat4::Identity();
+			handUniforms.getViewMatrix() = OevGLES::viewMatrix(
+				(OevGLES::rotationMatrixY(rotationAngle) * camPos)
+					.block<3, 1>(0, 0),
+				origin, up);
+			handUniforms.recalcMVMatrix();
 
 			circ1Uniforms.getModelMatrix() = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * handUniforms.getModelMatrix();
 
-			handUniforms.getViewMatrix() = OevGLES::viewMatrix((OevGLES::rotationMatrixY(rotationAngle) * camPos).block<3,1>(0,0),origin,up);
-
-
-			// Light dir is in eye space, rotate the light with the viewers point of view
-			lightDir4 = viewMatrix * (OevGLES::rotationMatrixY(rotationAngle) * OevGLES::Vec4  {-6.0f,10.0f,10.0f,0.0f});
-			lightDir = lightDir4.block<3,1>(0,0);
-			lightDir.normalize();
+			// Light dir is in eye space, rotate the light with the viewers
+			// point of view
+			lightDir4 = handUniforms.getViewMatrix() *
+						(OevGLES::rotationMatrixY(rotationAngle) *
+						 OevGLES::Vec4{-6.0f, 10.0f, 10.0f, 0.0f});
+			handUniforms.getLightDir() = Vec3(lightDir4.block<3, 1>(0, 0));
+			handUniforms.getLightDir().normalize();
 
 			glClearColor(0.2f,0.2f,0.01f,1.0f);
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);

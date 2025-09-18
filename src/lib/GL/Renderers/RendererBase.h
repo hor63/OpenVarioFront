@@ -163,187 +163,187 @@ using BlendAttributeSetRestoreStd =
 */
 class RenderStandardUniforms {
 public:
-	void setModelMatrix (Mat4ShPtr const &modelMatrixPtr) {
-		modelMatrix = modelMatrixPtr;
+	void setModelMatrixPtr (Mat4ShPtr const &modelMatrixPtr) {
+		this->modelMatrixPtr = modelMatrixPtr;
 		resetMVMatrix();
 	}
 	
-	void setViewMatrix (Mat4ShPtr const &viewMatrixPtr) {
-		viewMatrix = viewMatrixPtr;
+	void setViewMatrixPtr (Mat4ShPtr const &viewMatrixPtr) {
+		this->viewMatrixPtr = viewMatrixPtr;
 		resetMVMatrix();
 	}
 
-	void setProjMatrix (Mat4ShPtr const &projMatrixPtr) {
-		projMatrix = projMatrixPtr;
+	void setProjMatrixPtr (Mat4ShPtr const &projMatrixPtr) {
+		this->projMatrixPtr = projMatrixPtr;
 		resetMVPMatrix();
 	}
-	void setLightDir (Vec3ShPtr const &lightDirPtr) {
-		lightDir = lightDirPtr;
+	void setLightDirPtr (Vec3ShPtr const &lightDirPtr) {
+		this->lightDirPtr = lightDirPtr;
 	}
-	void setLightColor (Vec4ShPtr const &lightColorPtr) {
-		lightColor = lightColorPtr;
+	void setLightColorPtr (Vec4ShPtr const &lightColorPtr) {
+		this->lightColorPtr = lightColorPtr;
 	}
-	void setAmbientLightColor (Vec4ShPtr const &ambientLightColorPtr) {
-		ambientLightColor = ambientLightColorPtr;
+	void setAmbientLightColorPtr (Vec4ShPtr const &ambientLightColorPtr) {
+		this->ambientLightColorPtr = ambientLightColorPtr;
 	}
 
 	Mat4ShPtr & getModelMatrixPtr () {
-		return modelMatrix;
+		return modelMatrixPtr;
 	}
 	Mat4ShPtr & getViewMatrixPtr () {
-		return viewMatrix;
+		return viewMatrixPtr;
 	}
 	Mat4ShPtr & getProjMatrixPtr () {
-		return projMatrix;
+		return projMatrixPtr;
 	}
 	Mat4ShPtr & getMVMatrixPtr () {
-		return MVMatrix;
+		return MVMatrixPtr;
 	}
 	Mat4ShPtr & getMVPMatrixPtr () {
-		return MVPMatrix;
+		return MVPMatrixPtr;
 	}
 	Vec3ShPtr & getLightDirPtr () {
-		return lightDir;
+		return lightDirPtr;
 	}
 	Vec4ShPtr & getLightColorPtr () {
-		return lightColor;
+		return lightColorPtr;
 	}
 	Vec4ShPtr & getAmbientLightColorPtr () {
-		return ambientLightColor;
+		return ambientLightColorPtr;
 	}
 
 	Mat4ShPtr const & getModelMatrixPtr () const {
-		return modelMatrix;
+		return modelMatrixPtr;
 	}
 	Mat4ShPtr const & getViewMatrixPtr () const {
-		return viewMatrix;
+		return viewMatrixPtr;
 	}
 	Mat4ShPtr const & getProjMatrixPtr () const {
-		return projMatrix;
+		return projMatrixPtr;
 	}
 	Mat4ShPtr const & getMVMatrixPtr () const {
-		return MVMatrix;
+		return MVMatrixPtr;
 	}
 	Mat4ShPtr const & getMVPMatrixPtr () const {
-		return MVPMatrix;
+		return MVPMatrixPtr;
 	}
 	Vec3ShPtr const & getLightDirPtr () const {
-		return lightDir;
+		return lightDirPtr;
 	}
 	Vec4ShPtr const & getLightColorPtr () const {
-		return lightColor;
+		return lightColorPtr;
 	}
 	Vec4ShPtr const & getAmbientLightColorPtr () const {
-		return ambientLightColor;
+		return ambientLightColorPtr;
 	}
 
 	Mat4 & getModelMatrix () {
 		
-		assert (modelMatrix.operator bool());
-		return *modelMatrix;
+		assert (modelMatrixPtr.operator bool());
+		return *modelMatrixPtr;
 	}
 	Mat4 & getViewMatrix () {
-		assert (viewMatrix.operator bool());
-		return *viewMatrix;
+		assert (viewMatrixPtr.operator bool());
+		return *viewMatrixPtr;
 	}
 	Mat4 & getProjMatrix () {
-		assert (projMatrix.operator bool());
-		return *projMatrix;
+		assert (projMatrixPtr.operator bool());
+		return *projMatrixPtr;
 	}
 	Mat4 & getMVMatrix () {
-		assert (MVMatrix.operator bool());
-		return *MVMatrix;
+		assert (MVMatrixPtr.operator bool());
+		return *MVMatrixPtr;
 	}
 	Mat4 & getMVPMatrix () {
-		assert (MVPMatrix.operator bool());
-		return *MVPMatrix;
+		assert (MVPMatrixPtr.operator bool());
+		return *MVPMatrixPtr;
 	}
 	Vec3 & getLightDir () {
-		assert (lightDir.operator bool());
-		return *lightDir;
+		assert (lightDirPtr.operator bool());
+		return *lightDirPtr;
 	}
 	Vec4 & getLightColor () {
-		assert (lightColor.operator bool());
-		return *lightColor;
+		assert (lightColorPtr.operator bool());
+		return *lightColorPtr;
 	}
 	Vec4 & getAmbientLightColor () {
-		assert (ambientLightColor.operator bool());
-		return *ambientLightColor;
+		assert (ambientLightColorPtr.operator bool());
+		return *ambientLightColorPtr;
 	}
 
 	Mat4 const & getModelMatrix () const {
 		
-		assert (modelMatrix.operator bool());
-		return *modelMatrix;
+		assert (modelMatrixPtr.operator bool());
+		return *modelMatrixPtr;
 	}
 	Mat4 const & getViewMatrix () const {
-		assert (viewMatrix.operator bool());
-		return *viewMatrix;
+		assert (viewMatrixPtr.operator bool());
+		return *viewMatrixPtr;
 	}
 	Mat4 const & getProjMatrix () const {
-		assert (projMatrix.operator bool());
-		return *projMatrix;
+		assert (projMatrixPtr.operator bool());
+		return *projMatrixPtr;
 	}
 	Mat4 const & getMVMatrix () const {
-		assert (MVMatrix.operator bool());
-		return *MVMatrix;
+		assert (MVMatrixPtr.operator bool());
+		return *MVMatrixPtr;
 	}
 	Mat4 const & getMVPMatrix () const {
-		assert (MVPMatrix.operator bool());
-		return *MVPMatrix;
+		assert (MVPMatrixPtr.operator bool());
+		return *MVPMatrixPtr;
 	}
 	Vec3 const & getLightDir () const {
-		assert (lightDir.operator bool());
-		return *lightDir;
+		assert (lightDirPtr.operator bool());
+		return *lightDirPtr;
 	}
 	Vec4 const & getLightColor () const {
-		assert (lightColor.operator bool());
-		return *lightColor;
+		assert (lightColorPtr.operator bool());
+		return *lightColorPtr;
 	}
 	Vec4 const & getAmbientLightColor () const {
-		assert (ambientLightColor.operator bool());
-		return *ambientLightColor;
+		assert (ambientLightColorPtr.operator bool());
+		return *ambientLightColorPtr;
 	}
 
 
 	void recalcMVMatrix() {
-		if (modelMatrix && viewMatrix) {
+		if (modelMatrixPtr && viewMatrixPtr) {
 			// At this point MVMatrix is guaranteed to be valid.
-			*MVMatrix = *viewMatrix.get() * *modelMatrix.get();
+			*MVMatrixPtr = *viewMatrixPtr.get() * *modelMatrixPtr.get();
 			recalcMVPMatrix();
 		}
 	}
 	
 	void recalcMVPMatrix() {
-		if (MVMatrix && projMatrix) {
+		if (MVMatrixPtr && projMatrixPtr) {
 			// At this point MVPMatrix is guaranteed to be valid.
-			*MVPMatrix = *projMatrix.get() * *MVMatrix.get();
+			*MVPMatrixPtr = *projMatrixPtr.get() * *MVMatrixPtr.get();
 		}
 	}
 
 private:
-	Mat4ShPtr modelMatrix;
-	Mat4ShPtr viewMatrix;
-	Mat4ShPtr projMatrix;
-	Mat4ShPtr MVMatrix;
-	Mat4ShPtr MVPMatrix;
-	Vec3ShPtr lightDir;
-	Vec4ShPtr lightColor;
-	Vec4ShPtr ambientLightColor;
+	Mat4ShPtr modelMatrixPtr;
+	Mat4ShPtr viewMatrixPtr;
+	Mat4ShPtr projMatrixPtr;
+	Mat4ShPtr MVMatrixPtr;
+	Mat4ShPtr MVPMatrixPtr;
+	Vec3ShPtr lightDirPtr;
+	Vec4ShPtr lightColorPtr;
+	Vec4ShPtr ambientLightColorPtr;
 
 	void resetMVMatrix() {
-		if (modelMatrix && viewMatrix) {
-			MVMatrix.reset(new Mat4(*viewMatrix.get() * *modelMatrix.get()));
+		if (modelMatrixPtr && viewMatrixPtr) {
+			MVMatrixPtr.reset(new Mat4(*viewMatrixPtr.get() * *modelMatrixPtr.get()));
 			resetMVPMatrix();
 		} else {
-			MVMatrix.reset();
-			MVPMatrix.reset();
+			MVMatrixPtr.reset();
+			MVPMatrixPtr.reset();
 		}
 	}
 	
 	void resetMVPMatrix() {
-		if (MVMatrix && projMatrix) {
-							MVPMatrix.reset(new Mat4(*projMatrix.get() * *MVMatrix.get()));
+		if (MVMatrixPtr && projMatrixPtr) {
+			MVPMatrixPtr.reset(new Mat4(*projMatrixPtr.get() * *MVMatrixPtr.get()));
 		}
 	}
 };
