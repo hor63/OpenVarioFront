@@ -265,9 +265,9 @@ void CirclePartialArcRenderer::draw(RenderStandardUniforms const &stdUniformData
 		CircleBaseRenderer::draw(stdUniformData);
 	} else { // if (isFullCircle) {
 		Mat4 MVMatrixStartAngle =
-			stdUniformData.getMVMatrix() * rotMatrixStartAngle;
+			stdUniformData.getMVMatrixC() * rotMatrixStartAngle;
 		Mat4 MVPMatrixStartAngle =
-			stdUniformData.getMVPMatrix() * rotMatrixStartAngle;
+			stdUniformData.getMVPMatrixC() * rotMatrixStartAngle;
 		// First activate the program
 		glProgram->useProgram();
 
@@ -285,11 +285,11 @@ void CirclePartialArcRenderer::draw(RenderStandardUniforms const &stdUniformData
 						   &(MVPMatrixStartAngle(0, 0)));
 
 		glUniform3fv(glProgram->getLightDirLocation(), 1,
-					 &(stdUniformData.getLightDir()(0)));
+					 &(stdUniformData.getLightDirC()(0)));
 		glUniform4fv(glProgram->getLightColorLocation(), 1,
-					 &(stdUniformData.getLightColor()(0)));
+					 &(stdUniformData.getLightColorC()(0)));
 		glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
-					 &(stdUniformData.getAmbientLightColor()(0)));
+					 &(stdUniformData.getAmbientLightColorC()(0)));
 
 		// Set up the attributes
 		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayStruct->vertexBufferHandle);

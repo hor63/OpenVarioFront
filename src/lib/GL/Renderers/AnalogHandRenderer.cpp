@@ -180,14 +180,14 @@ void AnalogHandRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glProgram->useProgram();
 
 	LOG4CXX_DEBUG(logger,
-				  "lightDir = " << stdUniformData.getLightDir().transpose());
+				  "lightDir = " << stdUniformData.getLightDirC().transpose());
 #if defined HAVE_LOG4CXX_H
 	if (logger->isDebugEnabled()) {
 		GLfloat *p0 = vertexArray;
 		for (int k = 0; k < 6; k += 2) {
 			Eigen::Map<OevGLES::Vec4> vecXNormal4(p0 + (k * 4) + 4);
 			OevGLES::Vec3 vecXNormal =
-				(stdUniformData.getMVMatrix() * vecXNormal4).block<3, 1>(0, 0);
+				(stdUniformData.getMVMatrixC() * vecXNormal4).block<3, 1>(0, 0);
 
 			LOG4CXX_DEBUG(logger, "Vec4 [" << k << "] Normal = ["
 										   << vecXNormal4.transpose() << ']');
@@ -195,23 +195,23 @@ void AnalogHandRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 										   << vecXNormal.transpose() << ']');
 			LOG4CXX_DEBUG(logger,
 						  "lightDir dot normal = "
-							  << stdUniformData.getLightDir().dot(vecXNormal));
+							  << stdUniformData.getLightDirC().dot(vecXNormal));
 		}
 	}
 #endif // #if defined HAVE_LOG4CXX_H
 
 	// Set the uniforms
 	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(), 1, GL_FALSE,
-					   &(stdUniformData.getMVPMatrix()(0, 0)));
+					   &(stdUniformData.getMVPMatrixC()(0, 0)));
 	glUniformMatrix4fv(glProgram->getMvMatrixLocation(), 1, GL_FALSE,
-					   &(stdUniformData.getMVMatrix()(0, 0)));
+					   &(stdUniformData.getMVMatrixC()(0, 0)));
 
 	glUniform3fv(glProgram->getLightDirLocation(), 1,
-				 &(stdUniformData.getLightDir()(0)));
+				 &(stdUniformData.getLightDirC()(0)));
 	glUniform4fv(glProgram->getLightColorLocation(), 1,
-				 &(stdUniformData.getLightColor()(0)));
+				 &(stdUniformData.getLightColorC()(0)));
 	glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
-				 &(stdUniformData.getAmbientLightColor()(0)));
+				 &(stdUniformData.getAmbientLightColorC()(0)));
 
 	// set the color attribute constant
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());

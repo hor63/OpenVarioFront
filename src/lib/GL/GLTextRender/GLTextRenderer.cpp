@@ -678,11 +678,11 @@ void GLTextRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	if (drawBackground) {
 		drawTextBoxBackground(
-				stdUniformData.getMVMatrix(),
-				stdUniformData.getMVPMatrix(),
-				stdUniformData.getLightDir(),
-				stdUniformData.getLightColor(),
-				stdUniformData.getAmbientLightColor()
+				stdUniformData.getMVMatrixC(),
+				stdUniformData.getMVPMatrixC(),
+				stdUniformData.getLightDirC(),
+				stdUniformData.getLightColorC(),
+				stdUniformData.getAmbientLightColorC()
 				);
 
 		glEnable(GL_POLYGON_OFFSET_FILL);
@@ -700,7 +700,7 @@ void GLTextRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glGetIntegerv(GL_DEPTH_FUNC,&depthFuncBackup);
 	glDepthFunc(GL_LEQUAL);
 
-	drawGlyphs(stdUniformData.getMVPMatrix());
+	drawGlyphs(stdUniformData.getMVPMatrixC());
 
 	glDepthFunc(depthFuncBackup);
 

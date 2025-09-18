@@ -150,16 +150,16 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 				 vecFactorNormalVector);
 
 	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(), 1, GL_FALSE,
-					   &(stdUniformData.getMVPMatrix()(0, 0)));
+					   &(stdUniformData.getMVPMatrixC()(0, 0)));
 	glUniformMatrix4fv(glProgram->getMvMatrixLocation(), 1, GL_FALSE,
-					   &(stdUniformData.getMVMatrix()(0, 0)));
+					   &(stdUniformData.getMVMatrixC()(0, 0)));
 
 	glUniform3fv(glProgram->getLightDirLocation(), 1,
-				 &(stdUniformData.getLightDir()(0)));
+				 &(stdUniformData.getLightDirC()(0)));
 	glUniform4fv(glProgram->getLightColorLocation(), 1,
-				 &(stdUniformData.getLightColor()(0)));
+				 &(stdUniformData.getLightColorC()(0)));
 	glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
-				 &(stdUniformData.getAmbientLightColor()(0)));
+				 &(stdUniformData.getAmbientLightColorC()(0)));
 
 	// Set up the attributes
 	if (vertexArrayStruct->vertexArrayHandle != 0U) {

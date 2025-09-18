@@ -232,8 +232,8 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	// make my program current
 	glProgram->useProgram();
 
-
-	LOG4CXX_TRACE(logger,"lightDir = " << stdUniformData.getLightDir().transpose());
+	LOG4CXX_TRACE(logger,
+				  "lightDir = " << stdUniformData.getLightDirC().transpose());
 
 	/*
 	GLfloat* p0 = vertexArray;
@@ -241,69 +241,76 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 		Eigen::Map<OevGLES::Vec4> vecXNormal4 ( p0 + (k*4) + 4);
 		OevGLES::Vec3 vecXNormal = (MVMatrix * vecXNormal4).block<3,1>(0,0);
 
-		LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] Normal = [" << vecXNormal4.transpose() << ']');
-		LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] MVMatrix * Normal = [" << vecXNormal.transpose() << ']');
-		LOG4CXX_DEBUG(logger,"lightDir dot normal = " << lightDir.dot(vecXNormal));
+		LOG4CXX_DEBUG(logger,"Vec4 [" << k << "] Normal = [" <<
+	vecXNormal4.transpose() << ']'); LOG4CXX_DEBUG(logger,"Vec4 [" << k << "]
+	MVMatrix * Normal = [" << vecXNormal.transpose() << ']');
+		LOG4CXX_DEBUG(logger,"lightDir dot normal = " <<
+	lightDir.dot(vecXNormal));
 
 	}
 	*/
 
 	// Set the uniforms
-	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(),1,GL_FALSE,&(stdUniformData.getMVPMatrix()(0,0)));
-	glUniformMatrix4fv(glProgram->getMvMatrixLocation(),1,GL_FALSE,&(stdUniformData.getMVMatrix() (0,0)));
+	glUniformMatrix4fv(glProgram->getMvpMatrixLocation(), 1, GL_FALSE,
+					   &(stdUniformData.getMVPMatrixC()(0, 0)));
+	glUniformMatrix4fv(glProgram->getMvMatrixLocation(), 1, GL_FALSE,
+					   &(stdUniformData.getMVMatrixC()(0, 0)));
 
-	glUniform3fv(glProgram->getLightDirLocation(),1,&(stdUniformData.getLightDir()(0)));
-	glUniform4fv(glProgram->getLightColorLocation(),1,&(stdUniformData.getLightColor()(0)));
-	glUniform4fv(glProgram->getAmbientLightColorLocation(),1,&(stdUniformData.getAmbientLightColor()(0)));
-
+	glUniform3fv(glProgram->getLightDirLocation(), 1,
+				 &(stdUniformData.getLightDirC()(0)));
+	glUniform4fv(glProgram->getLightColorLocation(), 1,
+				 &(stdUniformData.getLightColorC()(0)));
+	glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
+				 &(stdUniformData.getAmbientLightColorC()(0)));
 
 	// set the color attribute constant
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
-	glVertexAttrib4fv(glProgram->getVertexColorLocation(),textureBaseColor);
+	glVertexAttrib4fv(glProgram->getVertexColorLocation(), textureBaseColor);
 
 	// set the vertex normal constant
 	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
-	glVertexAttrib4fv(glProgram->getVertexNormalLocation(),textureNormal);
+	glVertexAttrib4fv(glProgram->getVertexNormalLocation(), textureNormal);
 
 	if (vertexArrayHandle != 0U) {
 		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
 	} else {
 		// re-bind the buffer object
-		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
-	
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferHandle);
+
 		// setup the vertex coordinates
 		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-		glVertexAttribPointer(glProgram->getVertexPosLocation(),
-			4,GL_FLOAT,GL_FALSE,
-			sizeof (VertexType),
-			reinterpret_cast<void*>(offsetof(VertexType,position)));
+		glVertexAttribPointer(
+			glProgram->getVertexPosLocation(), 4, GL_FLOAT, GL_FALSE,
+			sizeof(VertexType),
+			reinterpret_cast<void *>(offsetof(VertexType, position)));
 		// setup the texture coordinates
 		glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
-		glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),
-			2,GL_FLOAT,GL_FALSE,
-			sizeof (VertexType),
-			reinterpret_cast<void*>(offsetof(VertexType,textureCoordinate)));
+		glVertexAttribPointer(
+			glProgram->getVertexTexture0PosLocation(), 2, GL_FLOAT, GL_FALSE,
+			sizeof(VertexType),
+			reinterpret_cast<void *>(offsetof(VertexType, textureCoordinate)));
 	} // if (vertexArrayHandle != 0U) {
 
-	// Assign the texture to Texure engine 0, and set the sampler uniform accordingly
-	glTexture.bindToUniformLocation(GL_TEXTURE0,0,glProgram->getTexture0Location());
+	// Assign the texture to Texure engine 0, and set the sampler uniform
+	// accordingly
+	glTexture.bindToUniformLocation(GL_TEXTURE0, 0,
+									glProgram->getTexture0Location());
 
 	// The object is opaque. Use the depth buffer, and write to the depth buffer
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	if (vertexArrayHandle != 0U) {
 		GLFramework::glBindVertexArrayOES(0U);
 	} else {
 		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
 		glDisableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
-		glBindBuffer(GL_ARRAY_BUFFER,0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	} // if (vertexArrayHandle != 0U) {
 
 	glUseProgram(0);
-
 }
 
 } // namespace OevGLES

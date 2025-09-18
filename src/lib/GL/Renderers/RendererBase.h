@@ -163,6 +163,7 @@ using BlendAttributeSetRestoreStd =
 */
 class RenderStandardUniforms {
 public:
+
 	void setModelMatrixPtr (Mat4ShPtr const &modelMatrixPtr) {
 		this->modelMatrixPtr = modelMatrixPtr;
 		resetMVMatrix();
@@ -250,14 +251,9 @@ public:
 		assert (projMatrixPtr.operator bool());
 		return *projMatrixPtr;
 	}
-	Mat4 & getMVMatrix () {
-		assert (MVMatrixPtr.operator bool());
-		return *MVMatrixPtr;
-	}
-	Mat4 & getMVPMatrix () {
-		assert (MVPMatrixPtr.operator bool());
-		return *MVPMatrixPtr;
-	}
+	// There is no writable access to the MV and MVP matrixes.
+	// They are derived from the M, V and P matrixes automatically.
+	
 	Vec3 & getLightDir () {
 		assert (lightDirPtr.operator bool());
 		return *lightDirPtr;
@@ -271,36 +267,36 @@ public:
 		return *ambientLightColorPtr;
 	}
 
-	Mat4 const & getModelMatrix () const {
+	Mat4 const & getModelMatrixC () const {
 		
 		assert (modelMatrixPtr.operator bool());
 		return *modelMatrixPtr;
 	}
-	Mat4 const & getViewMatrix () const {
+	Mat4 const & getViewMatrixC () const {
 		assert (viewMatrixPtr.operator bool());
 		return *viewMatrixPtr;
 	}
-	Mat4 const & getProjMatrix () const {
+	Mat4 const & getProjMatrixC () const {
 		assert (projMatrixPtr.operator bool());
 		return *projMatrixPtr;
 	}
-	Mat4 const & getMVMatrix () const {
+	Mat4 const & getMVMatrixC () const {
 		assert (MVMatrixPtr.operator bool());
 		return *MVMatrixPtr;
 	}
-	Mat4 const & getMVPMatrix () const {
+	Mat4 const & getMVPMatrixC () const {
 		assert (MVPMatrixPtr.operator bool());
 		return *MVPMatrixPtr;
 	}
-	Vec3 const & getLightDir () const {
+	Vec3 const & getLightDirC () const {
 		assert (lightDirPtr.operator bool());
 		return *lightDirPtr;
 	}
-	Vec4 const & getLightColor () const {
+	Vec4 const & getLightColorC () const {
 		assert (lightColorPtr.operator bool());
 		return *lightColorPtr;
 	}
-	Vec4 const & getAmbientLightColor () const {
+	Vec4 const & getAmbientLightColorC () const {
 		assert (ambientLightColorPtr.operator bool());
 		return *ambientLightColorPtr;
 	}
