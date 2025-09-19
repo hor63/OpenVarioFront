@@ -25,9 +25,9 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 		uuid {uuid},
 		name {name}
 {
-	auto parentPtr = parent.lock();
+	auto parentPtr = this->parent.lock();
 	
-	if (parentPtr) {
+	if (!parentPtr) {
 		throw ControlsException (
 			"Error in ControlBase::ControlBase: parent must be a valid pointer"
 			"to an existing ControlsContainer");
