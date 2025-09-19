@@ -173,10 +173,7 @@ public:
 		Mat4 matrix4;
 		int32_t changeCounter;
 		
-		Mat4WithChangeCounter() 
-			: matrix4{Mat4::Identity()}
-			, changeCounter {1}
-		{}
+		Mat4WithChangeCounter(); 
 		Mat4WithChangeCounter(Mat4WithChangeCounter const &s) = default;
 		Mat4WithChangeCounter & operator = (Mat4WithChangeCounter const & s) = default;
 	};
@@ -184,21 +181,9 @@ public:
 
 	RenderStandardUniforms();
 
-	Mat4 & getModelMatrix () {
-		maxMatrixChangeCounter ++;
-		modelMatrixPtr->changeCounter = maxMatrixChangeCounter;
-		return modelMatrixPtr->matrix4;
-	}
-	Mat4 & getViewMatrix () {
-		maxMatrixChangeCounter ++;
-		projMatrixPtr->changeCounter = maxMatrixChangeCounter;
-		return viewMatrixPtr->matrix4;
-	}
-	Mat4 & getProjMatrix () {
-		maxMatrixChangeCounter ++;
-		projMatrixPtr->changeCounter = maxMatrixChangeCounter;
-		return projMatrixPtr->matrix4;
-	}
+	Mat4 & getModelMatrix ();
+	Mat4 & getViewMatrix ();
+	Mat4 & getProjMatrix ();
 	// There is no writable access to the MV and MVP matrixes.
 	// They are derived from the M, V and P matrixes automatically.
 	
@@ -221,22 +206,11 @@ public:
 	Mat4 const & getProjMatrixC () const {
 		return projMatrixPtr->matrix4;
 	}
-	Mat4 const &getMVMatrixC() const {
-		if (std::max(modelMatrixPtr->changeCounter,
-					 viewMatrixPtr->changeCounter) >
-			MVMatrixPtr->changeCounter) {
-			recalcMVMatrix();
-		}
-		return MVMatrixPtr->matrix4;
+	Mat4 const &getMVMatrixC() const;
+	Mat4 const &getMVPMatrixC() const;
+	Vec3 const &getLightDirC() const {
+		return *lightDirPtr;
 	}
-	Mat4 const &getMVPMatrixC() const {
-		if (std::max(projMatrixPtr->changeCounter, MVMatrixPtr->changeCounter) >
-			MVPMatrixPtr->changeCounter) {
-			recalcMVMatrix();
-		}
-		return MVPMatrixPtr->matrix4;
-	}
-	Vec3 const &getLightDirC() const { return *lightDirPtr; }
 	Vec4 const & getLightColorC () const {
 		return *lightColorPtr;
 	}
@@ -244,39 +218,16 @@ public:
 		return *ambientLightColorPtr;
 	}
 
-	void resetModelMatrixPtr() {
-		modelMatrixPtr.reset(new Mat4WithChangeCounter(*modelMatrixPtr));
-		resetMVMatrix();
-	}
-	void resetViewMatrixPtr() {
-		viewMatrixPtr.reset(new Mat4WithChangeCounter(*viewMatrixPtr));
-		resetMVMatrix();
-	}
-	void resetProjMatrixPtr() {
-		projMatrixPtr.reset(new Mat4WithChangeCounter(*projMatrixPtr));
-		resetMVPMatrix();
-	}
-	void resetLightDirPtr() {
-		lightDirPtr.reset(new Vec3(*lightDirPtr));
-	}
-	void resetLightColorPtr() {
-		lightColorPtr.reset(new Vec4(*lightColorPtr));
-	}
-	void resetAmbientLightColorPtr() {
-		ambientLightColorPtr.reset(new Vec4(*ambientLightColorPtr));
-	}
+	void resetModelMatrixPtr();
+	void resetViewMatrixPtr();
+	void resetProjMatrixPtr();
+	void resetLightDirPtr();
+	void resetLightColorPtr();
+	void resetAmbientLightColorPtr();
 
-
-	void recalcMVMatrix() const {
-		MVMatrixPtr->changeCounter = maxMatrixChangeCounter;
-		MVMatrixPtr->matrix4 = viewMatrixPtr->matrix4 * modelMatrixPtr->matrix4;
-		recalcMVPMatrix();
-	}
+	void recalcMVMatrix() const;
 	
-	void recalcMVPMatrix() const {
-		MVPMatrixPtr->changeCounter = maxMatrixChangeCounter;
-		MVPMatrixPtr->matrix4 = projMatrixPtr->matrix4 * MVMatrixPtr->matrix4;
-	}
+	void recalcMVPMatrix() const;
 
 private:
 
@@ -291,14 +242,8 @@ private:
 	Vec4ShPtr lightColorPtr;
 	Vec4ShPtr ambientLightColorPtr;
 
-	void resetMVMatrix() {
-		MVMatrixPtr.reset(new Mat4WithChangeCounter(*MVMatrixPtr));
-		resetMVPMatrix();
-	}
-	
-	void resetMVPMatrix() {
-		MVPMatrixPtr.reset(new Mat4WithChangeCounter(*MVPMatrixPtr));
-	}
+	void resetMVMatrix();
+	void resetMVPMatrix();
 };
 
 class RendererBase {

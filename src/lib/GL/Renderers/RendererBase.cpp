@@ -30,9 +30,29 @@
 
 #include "Renderers/RendererBase.h"
 
+#include "OVFCommon.h"
+
+#if defined HAVE_LOG4CXX_H
+	static log4cxx::LoggerPtr loggerRenderStandardUniforms;
+#endif
+
+
 namespace OevGLES {
 
 int32_t RenderStandardUniforms::maxMatrixChangeCounter = 1;
+
+RenderStandardUniforms::Mat4WithChangeCounter::Mat4WithChangeCounter() 
+			: matrix4{Mat4::Identity()}
+			, changeCounter {1}
+{
+#if defined HAVE_LOG4CXX_H
+		// Get the logger if necessary
+		if (!loggerRenderStandardUniforms) {
+			loggerRenderStandardUniforms = log4cxx::Logger::getLogger("OpenVarioFront.Renderers.RenderStandardUniforms");
+		}
+#endif
+
+}
 
 
 RenderStandardUniforms::RenderStandardUniforms() 
@@ -52,9 +72,124 @@ RenderStandardUniforms::RenderStandardUniforms()
 		Vec4{0,0,0,1}))
 	,ambientLightColorPtr (std::make_shared<Vec4>(
 		Vec4{0,0,0,1}))
-	{}
+{}
 
+Mat4 & RenderStandardUniforms::getModelMatrix () {
+	maxMatrixChangeCounter ++;
+	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
+		__PRETTY_FUNCTION__ << ": new maxMatrixChangeCounter = " 
+		<< maxMatrixChangeCounter);
+	modelMatrixPtr->changeCounter = maxMatrixChangeCounter;
+	return modelMatrixPtr->matrix4;
+}
+Mat4 & RenderStandardUniforms::getViewMatrix () {
+	maxMatrixChangeCounter ++;
+	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
+		__PRETTY_FUNCTION__ << ": new maxMatrixChangeCounter = " 
+		<< maxMatrixChangeCounter);
+	viewMatrixPtr->changeCounter = maxMatrixChangeCounter;
+	return viewMatrixPtr->matrix4;
+}
+Mat4 & RenderStandardUniforms::getProjMatrix () {
+	maxMatrixChangeCounter ++;
+	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
+		__PRETTY_FUNCTION__ << ": new maxMatrixChangeCounter = " 
+		<< maxMatrixChangeCounter);
+	projMatrixPtr->changeCounter = maxMatrixChangeCounter;
+	return projMatrixPtr->matrix4;
+}
 
+Mat4 const &RenderStandardUniforms::getMVMatrixC() const {
+	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
+		__PRETTY_FUNCTION__ << ": modelMatrixPtr->changeCounter = "
+		<< modelMatrixPtr->changeCounter
+		<< ", viewMatrixPtr->changeCounter = "
+		<< viewMatrixPtr->changeCounter
+		<< ", MVMatrixPtr->changeCounter = "
+		<< MVMatrixPtr->changeCounter);
+	if (std::max(modelMatrixPtr->changeCounter,
+				 viewMatrixPtr->changeCounter) >
+		MVMatrixPtr->changeCounter) {
+		recalcMVMatrix();
+	}
+	return MVMatrixPtr->matrix4;
+}
+Mat4 const &RenderStandardUniforms::getMVPMatrixC() const {
+	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
+		__PRETTY_FUNCTION__ << ": modelMatrixPtr->changeCounter = "
+		<< modelMatrixPtr->changeCounter
+		<< ", viewMatrixPtr->changeCounter = "
+		<< viewMatrixPtr->changeCounter
+		<< ", MVMatrixPtr->changeCounter = "
+		<< MVMatrixPtr->changeCounter);
+	if (std::max(modelMatrixPtr->changeCounter,
+				 viewMatrixPtr->changeCounter) >
+		MVMatrixPtr->changeCounter) {
+		recalcMVMatrix();
+	}
+	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
+		__PRETTY_FUNCTION__ << ": projMatrixPtr->changeCounter = "
+		<< projMatrixPtr->changeCounter
+		<< ", MVMatrixPtr->changeCounter = "
+		<< MVMatrixPtr->changeCounter
+		<< ", MVPMatrixPtr->changeCounter = "
+		<< MVPMatrixPtr->changeCounter);
+	if (std::max(projMatrixPtr->changeCounter, MVMatrixPtr->changeCounter) >
+		MVPMatrixPtr->changeCounter) {
+		recalcMVPMatrix();
+	}
+	return MVPMatrixPtr->matrix4;
+}
+
+void RenderStandardUniforms::resetModelMatrixPtr() {
+	modelMatrixPtr.reset(new Mat4WithChangeCounter(*modelMatrixPtr));
+	resetMVMatrix();
+}
+void RenderStandardUniforms::resetViewMatrixPtr() {
+	viewMatrixPtr.reset(new Mat4WithChangeCounter(*viewMatrixPtr));
+	resetMVMatrix();
+}
+void RenderStandardUniforms::resetProjMatrixPtr() {
+	projMatrixPtr.reset(new Mat4WithChangeCounter(*projMatrixPtr));
+	resetMVPMatrix();
+}
+void RenderStandardUniforms::resetLightDirPtr() {
+	lightDirPtr.reset(new Vec3(*lightDirPtr));
+}
+void RenderStandardUniforms::resetLightColorPtr() {
+	lightColorPtr.reset(new Vec4(*lightColorPtr));
+}
+void RenderStandardUniforms::resetAmbientLightColorPtr() {
+	ambientLightColorPtr.reset(new Vec4(*ambientLightColorPtr));
+}
+
+void RenderStandardUniforms::recalcMVMatrix() const {
+	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
+		__PRETTY_FUNCTION__ << ": old MVMatrixPtr->changeCounter = "
+		<< MVMatrixPtr->changeCounter
+		<< ", new Value is" << maxMatrixChangeCounter);
+	MVMatrixPtr->changeCounter = maxMatrixChangeCounter;
+	MVMatrixPtr->matrix4 = viewMatrixPtr->matrix4 * modelMatrixPtr->matrix4;
+	recalcMVPMatrix();
+}
+
+void RenderStandardUniforms::recalcMVPMatrix() const {
+	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
+		__PRETTY_FUNCTION__ << ": old MVPMatrixPtr->changeCounter = "
+		<< MVPMatrixPtr->changeCounter
+		<< ", new Value is" << maxMatrixChangeCounter);
+	MVPMatrixPtr->changeCounter = maxMatrixChangeCounter;
+	MVPMatrixPtr->matrix4 = projMatrixPtr->matrix4 * MVMatrixPtr->matrix4;
+}
+
+void RenderStandardUniforms::resetMVMatrix() {
+	MVMatrixPtr.reset(new Mat4WithChangeCounter(*MVMatrixPtr));
+	resetMVPMatrix();
+}
+
+void RenderStandardUniforms::resetMVPMatrix() {
+	MVPMatrixPtr.reset(new Mat4WithChangeCounter(*MVPMatrixPtr));
+}
 
 RendererBase::RendererBase()
 { }

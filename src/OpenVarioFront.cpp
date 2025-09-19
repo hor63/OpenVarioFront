@@ -267,7 +267,7 @@ int main(int argint,char** argv) {
 				(OevGLES::rotationMatrixY(rotationAngle) * camPos)
 					.block<3, 1>(0, 0),
 				origin, up);
-			handUniforms.recalcMVMatrix();
+			//handUniforms.recalcMVMatrix();
 
 			circ1Uniforms.getModelMatrix() = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * handUniforms.getModelMatrix();
 			arc1Uniforms.getModelMatrix() = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * circ1Uniforms.getModelMatrix();
