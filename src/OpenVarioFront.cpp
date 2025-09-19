@@ -176,7 +176,8 @@ int main(int argint,char** argv) {
 
 		glTextRend.setFontSize(30);
 //		glTextRend.setFonts("Noto Sans");
-		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Sans Thai, Noto Sans Bengali, Noto Sans CJK SC");
+//		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Sans Thai, Noto Sans Bengali, Noto Sans CJK SC");
+		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
 		glTextRend.setText(
 				  "0123456789||0ABCDEFGHIJK"
 				"\n一个对此心怀恶意的流氓"
@@ -212,38 +213,37 @@ int main(int argint,char** argv) {
 		glTextRend.setDrawBackground(true);
 
 		OevGLES::RenderStandardUniforms handUniforms;
-		handUniforms.setModelMatrixPtr(
-			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
-			
-		handUniforms.setViewMatrixPtr(
-			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
-			
-		handUniforms.setProjMatrixPtr(std::make_shared<Mat4>(
+		handUniforms.getProjMatrix() =
 			OevGLES::projectionMatrix(windowHeight, windowHeight * 3,
 									  static_cast<double>(windowWidth) /
 										  static_cast<double>(windowHeight),
-									  apertureAngle)));
+									  apertureAngle);
 
-		handUniforms.setAmbientLightColorPtr(
-			std::make_shared<Vec4>(OevGLES::Vec4{0.5f, 0.5f, 0.5f, 1.0f}));
+		handUniforms.getAmbientLightColor() =
+			OevGLES::Vec4{0.5f, 0.5f, 0.5f, 1.0f};
 
-		handUniforms.setLightColorPtr(
-			std::make_shared<Vec4>(OevGLES::Vec4{0.5f, 0.5f, 0.3f, 1.0f}));
+		handUniforms.getLightColor() =
+			OevGLES::Vec4{0.5f, 0.5f, 0.3f, 1.0f};
 
-		handUniforms.setLightDirPtr(std::make_shared<Vec3>(OevGLES::Vec3{0.0f,0.0f,1.0f}));
+		handUniforms.getLightDir() = OevGLES::Vec3{0.0f,0.0f,1.0f};
 
 		OevGLES::RenderStandardUniforms circ1Uniforms (handUniforms);
-		circ1Uniforms.setModelMatrixPtr(
-			std::make_shared<Mat4>(OevGLES::Mat4::Identity()));
+		circ1Uniforms.resetModelMatrixPtr();
+		OevGLES::RenderStandardUniforms arc1Uniforms (circ1Uniforms);
+		arc1Uniforms.resetModelMatrixPtr();
 
 		OevGLES::RenderStandardUniforms backgroundImgUniforms (handUniforms);
-		backgroundImgUniforms.setModelMatrixPtr(std::make_shared<Mat4>(OevGLES::translationMatrix(-0,0,-1)));
+		backgroundImgUniforms.resetModelMatrixPtr();
+		backgroundImgUniforms.getModelMatrix() = 
+			OevGLES::translationMatrix(-0,0,-1);
 
 		OevGLES::RenderStandardUniforms textUniforms (handUniforms);
-		textUniforms.setModelMatrixPtr(std::make_shared<Mat4>(OevGLES::translationMatrix(-300,220,0)));
-		textUniforms.setViewMatrixPtr(std::make_shared<Mat4>(OevGLES::viewMatrix(camPos.block<3,1>(0,0),origin,up)));
+		textUniforms.resetModelMatrixPtr();
+		textUniforms.getModelMatrix() = OevGLES::translationMatrix(-300,220,0);
+		textUniforms.resetViewMatrixPtr();
+		textUniforms.getViewMatrix() =
+			OevGLES::viewMatrix(camPos.block<3, 1>(0, 0), origin, up);
 
-		
 		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
@@ -270,7 +270,7 @@ int main(int argint,char** argv) {
 			handUniforms.recalcMVMatrix();
 
 			circ1Uniforms.getModelMatrix() = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * handUniforms.getModelMatrix();
-
+			arc1Uniforms.getModelMatrix() = OevGLES::translationMatrix(0.0f,0.0f,20.0f) * circ1Uniforms.getModelMatrix();
 			// Light dir is in eye space, rotate the light with the viewers
 			// point of view
 			lightDir4 = handUniforms.getViewMatrix() *
@@ -282,16 +282,16 @@ int main(int argint,char** argv) {
 			glClearColor(0.2f,0.2f,0.01f,1.0f);
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-			hand.draw(modelMatrix,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
-			varioBackground.draw(modelMatrixBack,viewMatrix,projMatrix,MVMatrixBack,MVPMatrixBack,lightDir,lightColor,ambientLightColor);
+			hand.draw(handUniforms);
+			varioBackground.draw(backgroundImgUniforms);
 
-			glTextRend.draw(modelMatrixText,viewMatrixText , projMatrix, MVMatrixText, MVPMatrixText, lightDir, lightColor, ambientLightColor);
+			glTextRend.draw(textUniforms);
 
-			ring1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrix,MVPMatrix,lightDir,lightColor,ambientLightColor);
-			//circ1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrixCirc1,MVPMatrixCirc1,lightDir,lightColor,ambientLightColor);
-			
 			arc1.setArcRange(objectRotationAngle / 2.0f - 90.0_deg);
-			arc1.draw(modelMatrixCirc1,viewMatrix,projMatrix,MVMatrixCirc1,MVPMatrixCirc1,lightDir,lightColor,ambientLightColor);
+			arc1.draw(arc1Uniforms);
+
+			ring1.draw(circ1Uniforms);
+			//circ1.draw(circ1Uniforms);
 
 			// sleep(3);
 
