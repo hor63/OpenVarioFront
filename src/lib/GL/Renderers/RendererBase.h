@@ -26,7 +26,10 @@
 #ifndef RENDERERBASE_H_
 #define RENDERERBASE_H_
 
+#include <algorithm>
 #include <cassert>
+#include <cstdint>
+#include <memory>
 #include "GLPrograms/GLProgBase.h"
 
 #if defined Success
@@ -152,195 +155,149 @@ using BlendAttributeSetRestoreStd =
 	This makes it economical to copy objects because they reference to the same
 	data, and also makes it easy to inherit shared data.
 	
-	You can replace data with the set routines.
-	The set routines will also create new instances of the MV or MVP matrixes.
+	You can replace shared pointers with the reset routines.
+	The reset routines will also create new instances of the MV or MVP matrixes
+	when necessary.
+	Once you replace a shared pointer with a new one the attribute will become
+	independent from the copy source.
 	
-	You can also edit the data in-place with the non-const get methods this
-	will change the data for all copies of this!
-	In case that you modify model, view or perspective matrix do not forget
-	to call \ref recalcMVMatrix() or \ref recalcMVPMatrix() respective. Use or 
-	abuse this functionality at your own peril.
+	You can also edit the data in-place with the non-const get methods. This
+	will change the data for all copies of this which share the shared pointers
+	In case that you modify model, view or perspective matrix the MV and MVP
+	matrixes will be re-calculated when you call a getter method for them.
 */
 class RenderStandardUniforms {
 public:
 
-	void setModelMatrixPtr (Mat4ShPtr const &modelMatrixPtr) {
-		this->modelMatrixPtr = modelMatrixPtr;
-		resetMVMatrix();
-	}
-	
-	void setViewMatrixPtr (Mat4ShPtr const &viewMatrixPtr) {
-		this->viewMatrixPtr = viewMatrixPtr;
-		resetMVMatrix();
-	}
+	struct Mat4WithChangeCounter {
+		Mat4 matrix4;
+		int32_t changeCounter;
+		
+		Mat4WithChangeCounter() 
+			: matrix4{Mat4::Identity()}
+			, changeCounter {1}
+		{}
+		Mat4WithChangeCounter(Mat4WithChangeCounter const &s) = default;
+		Mat4WithChangeCounter & operator = (Mat4WithChangeCounter const & s) = default;
+	};
+	using Mat4WithChangeCounterPtr = std::shared_ptr<Mat4WithChangeCounter>;
 
-	void setProjMatrixPtr (Mat4ShPtr const &projMatrixPtr) {
-		this->projMatrixPtr = projMatrixPtr;
-		resetMVPMatrix();
-	}
-	void setLightDirPtr (Vec3ShPtr const &lightDirPtr) {
-		this->lightDirPtr = lightDirPtr;
-	}
-	void setLightColorPtr (Vec4ShPtr const &lightColorPtr) {
-		this->lightColorPtr = lightColorPtr;
-	}
-	void setAmbientLightColorPtr (Vec4ShPtr const &ambientLightColorPtr) {
-		this->ambientLightColorPtr = ambientLightColorPtr;
-	}
-
-	Mat4ShPtr & getModelMatrixPtr () {
-		return modelMatrixPtr;
-	}
-	Mat4ShPtr & getViewMatrixPtr () {
-		return viewMatrixPtr;
-	}
-	Mat4ShPtr & getProjMatrixPtr () {
-		return projMatrixPtr;
-	}
-	Mat4ShPtr & getMVMatrixPtr () {
-		return MVMatrixPtr;
-	}
-	Mat4ShPtr & getMVPMatrixPtr () {
-		return MVPMatrixPtr;
-	}
-	Vec3ShPtr & getLightDirPtr () {
-		return lightDirPtr;
-	}
-	Vec4ShPtr & getLightColorPtr () {
-		return lightColorPtr;
-	}
-	Vec4ShPtr & getAmbientLightColorPtr () {
-		return ambientLightColorPtr;
-	}
-
-	Mat4ShPtr const & getModelMatrixPtr () const {
-		return modelMatrixPtr;
-	}
-	Mat4ShPtr const & getViewMatrixPtr () const {
-		return viewMatrixPtr;
-	}
-	Mat4ShPtr const & getProjMatrixPtr () const {
-		return projMatrixPtr;
-	}
-	Mat4ShPtr const & getMVMatrixPtr () const {
-		return MVMatrixPtr;
-	}
-	Mat4ShPtr const & getMVPMatrixPtr () const {
-		return MVPMatrixPtr;
-	}
-	Vec3ShPtr const & getLightDirPtr () const {
-		return lightDirPtr;
-	}
-	Vec4ShPtr const & getLightColorPtr () const {
-		return lightColorPtr;
-	}
-	Vec4ShPtr const & getAmbientLightColorPtr () const {
-		return ambientLightColorPtr;
-	}
+	RenderStandardUniforms();
 
 	Mat4 & getModelMatrix () {
-		
-		assert (modelMatrixPtr.operator bool());
-		return *modelMatrixPtr;
+		maxMatrixChangeCounter ++;
+		modelMatrixPtr->changeCounter = maxMatrixChangeCounter;
+		return modelMatrixPtr->matrix4;
 	}
 	Mat4 & getViewMatrix () {
-		assert (viewMatrixPtr.operator bool());
-		return *viewMatrixPtr;
+		maxMatrixChangeCounter ++;
+		projMatrixPtr->changeCounter = maxMatrixChangeCounter;
+		return viewMatrixPtr->matrix4;
 	}
 	Mat4 & getProjMatrix () {
-		assert (projMatrixPtr.operator bool());
-		return *projMatrixPtr;
+		maxMatrixChangeCounter ++;
+		projMatrixPtr->changeCounter = maxMatrixChangeCounter;
+		return projMatrixPtr->matrix4;
 	}
 	// There is no writable access to the MV and MVP matrixes.
 	// They are derived from the M, V and P matrixes automatically.
 	
 	Vec3 & getLightDir () {
-		assert (lightDirPtr.operator bool());
 		return *lightDirPtr;
 	}
 	Vec4 & getLightColor () {
-		assert (lightColorPtr.operator bool());
 		return *lightColorPtr;
 	}
 	Vec4 & getAmbientLightColor () {
-		assert (ambientLightColorPtr.operator bool());
 		return *ambientLightColorPtr;
 	}
 
 	Mat4 const & getModelMatrixC () const {
-		
-		assert (modelMatrixPtr.operator bool());
-		return *modelMatrixPtr;
+		return modelMatrixPtr->matrix4;
 	}
 	Mat4 const & getViewMatrixC () const {
-		assert (viewMatrixPtr.operator bool());
-		return *viewMatrixPtr;
+		return viewMatrixPtr->matrix4;
 	}
 	Mat4 const & getProjMatrixC () const {
-		assert (projMatrixPtr.operator bool());
-		return *projMatrixPtr;
+		return projMatrixPtr->matrix4;
 	}
-	Mat4 const & getMVMatrixC () const {
-		assert (MVMatrixPtr.operator bool());
-		return *MVMatrixPtr;
+	Mat4 const &getMVMatrixC() const {
+		if (std::max(modelMatrixPtr->changeCounter,
+					 viewMatrixPtr->changeCounter) >
+			MVMatrixPtr->changeCounter) {
+			recalcMVMatrix();
+		}
+		return MVMatrixPtr->matrix4;
 	}
-	Mat4 const & getMVPMatrixC () const {
-		assert (MVPMatrixPtr.operator bool());
-		return *MVPMatrixPtr;
+	Mat4 const &getMVPMatrixC() const {
+		if (std::max(projMatrixPtr->changeCounter, MVMatrixPtr->changeCounter) >
+			MVPMatrixPtr->changeCounter) {
+			recalcMVMatrix();
+		}
+		return MVPMatrixPtr->matrix4;
 	}
-	Vec3 const & getLightDirC () const {
-		assert (lightDirPtr.operator bool());
-		return *lightDirPtr;
-	}
+	Vec3 const &getLightDirC() const { return *lightDirPtr; }
 	Vec4 const & getLightColorC () const {
-		assert (lightColorPtr.operator bool());
 		return *lightColorPtr;
 	}
 	Vec4 const & getAmbientLightColorC () const {
-		assert (ambientLightColorPtr.operator bool());
 		return *ambientLightColorPtr;
 	}
 
+	void resetModelMatrixPtr() {
+		modelMatrixPtr.reset(new Mat4WithChangeCounter(*modelMatrixPtr));
+		resetMVMatrix();
+	}
+	void resetViewMatrixPtr() {
+		viewMatrixPtr.reset(new Mat4WithChangeCounter(*viewMatrixPtr));
+		resetMVMatrix();
+	}
+	void resetProjMatrixPtr() {
+		projMatrixPtr.reset(new Mat4WithChangeCounter(*projMatrixPtr));
+		resetMVPMatrix();
+	}
+	void resetLightDirPtr() {
+		lightDirPtr.reset(new Vec3(*lightDirPtr));
+	}
+	void resetLightColorPtr() {
+		lightColorPtr.reset(new Vec4(*lightColorPtr));
+	}
+	void resetAmbientLightColorPtr() {
+		ambientLightColorPtr.reset(new Vec4(*ambientLightColorPtr));
+	}
 
-	void recalcMVMatrix() {
-		if (modelMatrixPtr && viewMatrixPtr) {
-			// At this point MVMatrix is guaranteed to be valid.
-			*MVMatrixPtr = *viewMatrixPtr.get() * *modelMatrixPtr.get();
-			recalcMVPMatrix();
-		}
+
+	void recalcMVMatrix() const {
+		MVMatrixPtr->changeCounter = maxMatrixChangeCounter;
+		MVMatrixPtr->matrix4 = viewMatrixPtr->matrix4 * modelMatrixPtr->matrix4;
+		recalcMVPMatrix();
 	}
 	
-	void recalcMVPMatrix() {
-		if (MVMatrixPtr && projMatrixPtr) {
-			// At this point MVPMatrix is guaranteed to be valid.
-			*MVPMatrixPtr = *projMatrixPtr.get() * *MVMatrixPtr.get();
-		}
+	void recalcMVPMatrix() const {
+		MVPMatrixPtr->changeCounter = maxMatrixChangeCounter;
+		MVPMatrixPtr->matrix4 = projMatrixPtr->matrix4 * MVMatrixPtr->matrix4;
 	}
 
 private:
-	Mat4ShPtr modelMatrixPtr;
-	Mat4ShPtr viewMatrixPtr;
-	Mat4ShPtr projMatrixPtr;
-	Mat4ShPtr MVMatrixPtr;
-	Mat4ShPtr MVPMatrixPtr;
+
+	static int32_t maxMatrixChangeCounter;
+
+	Mat4WithChangeCounterPtr modelMatrixPtr;
+	Mat4WithChangeCounterPtr viewMatrixPtr;
+	Mat4WithChangeCounterPtr projMatrixPtr;
+	mutable Mat4WithChangeCounterPtr MVMatrixPtr;
+	mutable Mat4WithChangeCounterPtr MVPMatrixPtr;
 	Vec3ShPtr lightDirPtr;
 	Vec4ShPtr lightColorPtr;
 	Vec4ShPtr ambientLightColorPtr;
 
 	void resetMVMatrix() {
-		if (modelMatrixPtr && viewMatrixPtr) {
-			MVMatrixPtr.reset(new Mat4(*viewMatrixPtr.get() * *modelMatrixPtr.get()));
-			resetMVPMatrix();
-		} else {
-			MVMatrixPtr.reset();
-			MVPMatrixPtr.reset();
-		}
+		MVMatrixPtr.reset(new Mat4WithChangeCounter(*MVMatrixPtr));
+		resetMVPMatrix();
 	}
 	
 	void resetMVPMatrix() {
-		if (MVMatrixPtr && projMatrixPtr) {
-			MVPMatrixPtr.reset(new Mat4(*projMatrixPtr.get() * *MVMatrixPtr.get()));
-		}
+		MVPMatrixPtr.reset(new Mat4WithChangeCounter(*MVPMatrixPtr));
 	}
 };
 

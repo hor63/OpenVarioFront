@@ -23,6 +23,7 @@
  *
  */
 
+#include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -30,6 +31,29 @@
 #include "Renderers/RendererBase.h"
 
 namespace OevGLES {
+
+int32_t RenderStandardUniforms::maxMatrixChangeCounter = 1;
+
+
+RenderStandardUniforms::RenderStandardUniforms() 
+	:modelMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
+		Mat4WithChangeCounter()))
+	,viewMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
+		Mat4WithChangeCounter()))
+	,projMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
+		Mat4WithChangeCounter()))
+	,MVMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
+		Mat4WithChangeCounter()))
+	,MVPMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
+		Mat4WithChangeCounter()))
+	,lightDirPtr (std::make_shared<Vec3>(
+		Vec3{0,0,1}))
+	,lightColorPtr (std::make_shared<Vec4>(
+		Vec4{0,0,0,1}))
+	,ambientLightColorPtr (std::make_shared<Vec4>(
+		Vec4{0,0,0,1}))
+	{}
+
 
 
 RendererBase::RendererBase()
