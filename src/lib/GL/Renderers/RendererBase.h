@@ -270,12 +270,6 @@ public:
 	 
 	 \see \ref modelMatrixPtr
 	 \see \ref getModelMatrix() read/write access
-	/** \brief Read-only access to the light color array.
-	 
-	 \see \ref lightColorPtr
-	 \see \ref getLightColor() read/write access
-	*/
-
 	*/
 	Mat4 const & getModelMatrixC () const {
 		return modelMatrixPtr->matrix4;
