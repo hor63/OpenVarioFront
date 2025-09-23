@@ -85,7 +85,7 @@ public:
 	auto getSize() const {
 		return size;
 	}
-	/// Leaves \ref pos unchanged, but adjusts \ref topRight accordingly
+	/// Leaves \ref position unchanged, but adjusts \ref topRight accordingly
 	/// \see \ref size
 	void setSize (Size size);
 
@@ -119,7 +119,7 @@ public:
 		return size.height;
 	}
 
-	/// Adjusts \ref size accordingly, but leaves \ref pos unchanged.
+	/// Adjusts \ref size accordingly, but leaves \ref position unchanged.
 	/// \see \ref topRight
 	void setTopRight (Pos topRight);
 
@@ -278,7 +278,7 @@ private:
 	bool defaultControl = false;
 
 
-	/// \Brief is this control the root control?
+	/// \brief is this control the root control?
 	bool rootControl = false;
 	
 	/** \brief Sequence of controls to receive the focus when switching with the TAB key.

@@ -278,7 +278,7 @@ public:
 	/** \brief Read-only access to the view matrix.
 	 
 	 \see \ref viewMatrixPtr
-	 \see \ref getviewMatrix() read/write access
+	 \see \ref getViewMatrix() read/write access
 	*/
 	Mat4 const & getViewMatrixC () const {
 		return viewMatrixPtr->matrix4;
@@ -287,7 +287,7 @@ public:
 	/** \brief Read-only access to the projection matrix.
 	 
 	 \see \ref projMatrixPtr
-	 \see \ref getprojMatrix() read/write access
+	 \see \ref getProjMatrix() read/write access
 	*/
 	Mat4 const & getProjMatrixC () const {
 		return projMatrixPtr->matrix4;
@@ -297,7 +297,7 @@ public:
 	 
 	 \ref MVMatrixPtr is automatically re-calculated when \ref modelMatrixPtr
 	 and/or \ref viewMatrixPtr have been modified by calls to 
-	 \ref getModelMatrix() or \ref getViewMatix().
+	 \ref getModelMatrix() or \ref getViewMatrix().
 	 
 	 Therefore \ref MVMatrixPtr is declared mutable to be updated also for
 	 constant objects.
@@ -313,7 +313,7 @@ public:
 	 
 	 \ref MVPMatrixPtr is automatically re-calculated when \ref modelMatrixPtr
 	 and/or \ref viewMatrixPtr and/or \ref projMatrixPtr have been modified by
-	 calls to \ref getModelMatrix() or \ref getViewMatix() or
+	 calls to \ref getModelMatrix() or \ref getViewMatrix() or
 	 \ref getProjMatrix().
 	 
 	 Therefore \ref MVPMatrixPtr is declared mutable to be updated also for
@@ -424,21 +424,21 @@ public:
 	 The value of the ambient light color array remains the same.
 	 But changes to it will not affect any previous copies of \p this.
 	
-	\see \ref AmbientLightColorPtr
+	\see \ref ambientLightColorPtr
 	*/
 	void resetAmbientLightColorPtr();
 
 	/** \brief Recalculate the model-view matrix calling also 
 	 \ref recalcMVPMatrix()
 	 
-	 Despite declared const it changes \ref MVMatrix which is therefore
+	 Despite declared const it changes \ref MVMatrixPtr which is therefore
 	 declared mutable
 	*/
 	void recalcMVMatrix() const;
 	
 	/** \brief Recalculate the model-view-projection matrix
 	 
-	 Despite declared const it changes \ref MVPMatrix which is therefore
+	 Despite declared const it changes \ref MVPMatrixPtr which is therefore
 	 declared mutable
 	*/
 	void recalcMVPMatrix() const;

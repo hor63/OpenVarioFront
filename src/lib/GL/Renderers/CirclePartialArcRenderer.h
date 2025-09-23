@@ -80,7 +80,7 @@ public:
 
 protected:
 
-	/// Dirty flag for \ref startAngleDeg and \ref arcRangeDeg
+	/// Dirty flag for \ref startAngle and \ref arcRange
 	bool dirtyArcAngles= true;
 
 	/** \brief The angle where the arc (visible part of the circle starts)
@@ -88,7 +88,7 @@ protected:
 	 * The angle can be positive or negative, and exceed +360.0 or -360.0.
 	 *
 	 * Internally the angle is normalized as a positive angle between 0 and 360.0
-	 * to \ref startAngleDegNormalized
+	 * to \ref startAngleNormalized
 	 */
 	AngleDeg startAngle = AngleDeg::makeAngle(0.0f);
 
@@ -103,7 +103,7 @@ protected:
 	/// Calculated from \ref startAngleNormalized
 	Mat4 rotMatrixStartAngle;
 	
-	/** \brief The visible part of the circle in degrees starting from \ref startAngleDeg
+	/** \brief The visible part of the circle in degrees starting from \ref startAngle
 	 *
 	 * You can define the range positive (counter-clock wise) or negative (clock-wise).
 	 *
@@ -118,20 +118,20 @@ protected:
 	 *
 	 * The normalized arc range is
 	 *   - positive
-	 *   - 0.0 <= \p arcRangeDegNormalized <= 360.0
-	 *   - | \ref arcRangeDeg | > 360.0 is cropped to 360.0. More than a full circle
+	 *   - 0.0 <= \p arcRangeNormalized <= 360.0
+	 *   - | \ref arcRange | > 360.0 is cropped to 360.0. More than a full circle
 	 *     is not a thing.
 	 *
-	 * A negative \ref arcRangeDeg also affects \ref startAngleDegNormalized because
+	 * A negative \ref arcRange also affects \ref startAngleNormalized because
 	 * I need to start at the original end of the arc and draw the arc other way around.
 	 */
 	AngleRad arcRangeNormalized = 2.0_rad * M_PI;
 	
-	/// \brief \p true when | \ref arcRangeDeg | >= 360.0 
+	/// \brief \p true when | \ref arcRange | >= 360.0 
 	bool isFullCircle = true;
 	
 	/// Number of segments of the \ref vertexArrayStruct object
-	/// to approximate the \ref arcRangeDeg angle.
+	/// to approximate the \ref arcRange angle.
 	uint32_t numSegmentsArc = 0U;
 	
 	/// Number of vertexes to draw to form the coarse part of the arc 
@@ -163,10 +163,10 @@ protected:
 	GLuint vertexArrayHandleArcEnd = 0U;
 
 	
-	/** \brief Take \ref startAngleDeg and \ref arcRangeDeg and normalize them
-	 * into \ref startAngleDegNormalized and \ref arcRangeDegNormalized
+	/** \brief Take \ref startAngle and \ref arcRange and normalize them
+	 * into \ref startAngleNormalized and \ref arcRangeNormalized
 	 *
-	 \see \ref startAngleDegNormalized and \ref arcRangeDegNormalized
+	 \see \ref startAngleNormalized and \ref arcRangeNormalized
 	 */
 	void normalizeAngles ();
 };

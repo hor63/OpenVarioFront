@@ -215,7 +215,7 @@ Mat4 scalingMatrix (GLfloat x, GLfloat y, GLfloat z );
  *
  * \see <a href="http://antongerdelan.net/teaching/3dprog1/maths_cheat_sheet.pdf" >Dr Anton Gerdelan's 3d Math cheat sheet</a>
  *
- * @param adX Angle in Degrees around the X-Axis
+ * @param angleAroundX Angle in Degrees around the X-Axis
  * @return Rotation matrix around the X axis
  */
 Mat4 rotationMatrixX (AngleRad angleAroundX);
@@ -224,7 +224,7 @@ Mat4 rotationMatrixX (AngleRad angleAroundX);
  *
  * \see <a href="http://antongerdelan.net/teaching/3dprog1/maths_cheat_sheet.pdf" >Dr Anton Gerdelan's 3d Math cheat sheet</a>
  *
- * @param adY Angle in Degrees around the Y-Axis
+ * @param angleAroundY Angle in Degrees around the Y-Axis
  * @return Rotation matrix around the Y axis
  */
 Mat4 rotationMatrixY (AngleRad angleAroundY);
@@ -233,7 +233,7 @@ Mat4 rotationMatrixY (AngleRad angleAroundY);
  *
  * \see <a href="http://antongerdelan.net/teaching/3dprog1/maths_cheat_sheet.pdf" >Dr Anton Gerdelan's 3d Math cheat sheet</a>
  *
- * @param adZ Angle in Degrees around the Z-Axis
+ * @param angleAroundZ Angle in Degrees around the Z-Axis
  * @return Rotation matrix around the Z axis
  */
 Mat4 rotationMatrixZ (AngleRad angleAroundZ);
