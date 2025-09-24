@@ -109,7 +109,7 @@ protected:
 	 *
 	 * If \p arcRangeDeg is <= -360.0 or is >= 360.0 the arc degrades to a full circle.
 	 
-	 * If the range angle is negative it is made positive, and \ref startAngleDegNormalized
+	 * If the range angle is negative it is made positive, and \ref startAngleNormalized
 	 * now starts at the previous end. Thus the arc can progress in positive direction.
 	 */
 	AngleDeg arcRange = 360.0_deg;

@@ -88,8 +88,8 @@ public:
 	/** \brief Switch to in-memory image data, and set the memory location and length
 	 * 
 	 * \param memLocationImageData Pointer to the start of the PNG data in memory
-	 * \param lenPNGData Length of the PNG data 
-	 * \param pngImageName Name of the image for diagnostic and debugging purposes
+	 * \param lenImageData Length of the PNG data 
+	 * \param imageName Name of the image for diagnostic and debugging purposes
 	 */
 	void setImageMemoryData(
 		char const * memLocationImageData,
@@ -137,14 +137,7 @@ public:
 
 	/** \brief Draw the rendered object.
 	 *
-	 * \param modelMatrix Model matrix, moves the object around from model to world space
-	 * \param viewMatrix View matrix, used to move from world to eye space
-	 * \param ProjMatrix Projection matrix, used to create the 3-dimensional effects on a 2D screen
-	 * \param MVMatrix Model-View Matrix
-	 * \param MVPMatrix Model/View/Projection matrix
-	 * \param lightDir Direction to the light source, normalized
-	 * \param lightColor Color of the light source, normalized color values.
-	 * \param ambientLightColor Color of the ambient light, normalized color values.
+	 * \param stdUniformData Reference to the standard uniforms for rendering.
 	 */
 	virtual void draw(RenderStandardUniforms const &stdUniformData) override;
 

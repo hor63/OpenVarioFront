@@ -44,14 +44,7 @@ public:
 
 	/** \brief Draw the rendered object.
 	 *
-	 * \param modelMatrix Model matrix, moves the object around from model to world space
-	 * \param viewMatrix View matrix, used to move from world to eye space
-	 * \param ProjMatrix Projection matrix, used to create the 3-dimensional effects on a 2D screen
-	 * \param MVMatrix Model-View Matrix
-	 * \param MVPMatrix Model/View/Projection matrix
-	 * \param lightDir Direction to the light source, normalized
-	 * \param lightColor Color of the light source, normalized color values.
-	 * \param ambientLightColor Color of the ambient light, normalized color values.
+	 * \param stdUniformData Reference to the standard uniforms for rendering.
 	 */
 	virtual void draw(RenderStandardUniforms const &stdUniformData) override;
 

@@ -86,7 +86,7 @@ public:
 		 * and less vertexes than in \ref maxSegmentVertexArray.
 		 * 
 		 * This factor here gives you the stepping within \ref maxSegmentVertexArray
-		 * to access the first vertex for segment #n in your polygon within 
+		 * to access the first vertex for segment \#n in your polygon within 
 		 * \ref maxSegmentVertexArray.
 		 * 
 		 */
