@@ -23,6 +23,7 @@
  *
  */
 
+#include "RootControl.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -128,6 +129,15 @@ void SDLRenderSurface::makeContextCurrent() {
 	}
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
+}
+
+OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr() {
+	
+	if (!rootControlPtr) {
+		rootControlPtr = OevControls::RootControl::makeRootControl(*this);
+	}
+	
+	return rootControlPtr;
 }
 
 #if defined HAVE_LOG4CXX_H

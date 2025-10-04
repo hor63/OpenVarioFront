@@ -5,6 +5,7 @@
  *      Author: hor
  */
 
+#include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -34,8 +35,7 @@ GLFrameworkSharedPtr GLFramework::createFramework() {
 }
 
 GLFramework::GLFramework()
-	:sdlSurface{*this},
-	 circleVertexContainer()
+	:circleVertexContainer()
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -48,59 +48,82 @@ GLFramework::GLFramework()
 GLFramework::~GLFramework() {
 }
 
-void GLFramework::createRenderSurface(GLint width, GLint height,
+SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint height,
 		const char *windowName) {
 
 	SDL_ClearError();
 
-	SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
-
-	// I want EGL as bridge to the native window and display system.
-	if (!SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1")) {
-		OevUtil::reportSDLError(std::source_location::current(),
-			 "SDL_Init(SDL_HINT_VIDEO_FORCE_EGL,1)");
+	if (!initDone) {
+		SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
+	
+		// I want EGL as bridge to the native window and display system.
+		if (!SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL,"1")) {
+			OevUtil::reportSDLError(std::source_location::current(),
+				 "SDL_Init(SDL_HINT_VIDEO_FORCE_EGL,1)");
+		}
+	
+		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
+			OevUtil::reportSDLError(std::source_location::current(),
+				 "SDL_Init");
+		}
+	
 	}
-
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
-		OevUtil::reportSDLError(std::source_location::current(),
-			 "SDL_Init");
-	}
-
 	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__ << "Create native window, eglSurface and eglContext. Window size = "
 			<< width << "x" << height);
-	sdlSurface.createRenderSurface(width,height,PACKAGE_STRING);
+	auto sdlSurface = std::make_shared<SDLRenderSurface>(*this);
+	sdlSurface->createRenderSurface(width,height,windowName);
+	renderSurfacePtrMap.insert(std::pair(SDL_GetWindowID(sdlSurface->getNativeWindow()),sdlSurface));
 
-	if (glBindVertexArrayOES == nullptr) {
-		glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
-	}
-	if (glDeleteVertexArraysOES == nullptr) {
-		glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
-	}
-	if (glGenVertexArraysOES == nullptr) {
-		glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
-	}
-	if (glIsVertexArrayOES == nullptr) {
-		glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
-	}
+	if (!initDone) {
 
-	if (!vertexArrayUsable) {
-		std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
-		auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
-	
-		if (glBindVertexArrayOES != nullptr
-				&& glDeleteVertexArraysOES != nullptr
-				&& glGenVertexArraysOES != nullptr
-				&& glIsVertexArrayOES != nullptr
-				&& foundPos != std::string::npos
-				) {
-			vertexArrayUsable = true;
-		} else {
-			vertexArrayUsable = false;
+		if (glBindVertexArrayOES == nullptr) {
+			glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
 		}
-	} // if (!vertexArrayUsable) {
+		if (glDeleteVertexArraysOES == nullptr) {
+			glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
+		}
+		if (glGenVertexArraysOES == nullptr) {
+			glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
+		}
+		if (glIsVertexArrayOES == nullptr) {
+			glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
+		}
+	
+		if (!vertexArrayUsable) {
+			std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
+			auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
+		
+			if (glBindVertexArrayOES != nullptr
+					&& glDeleteVertexArraysOES != nullptr
+					&& glGenVertexArraysOES != nullptr
+					&& glIsVertexArrayOES != nullptr
+					&& foundPos != std::string::npos
+					) {
+				vertexArrayUsable = true;
+			} else {
+				vertexArrayUsable = false;
+			}
+		} // if (!vertexArrayUsable) {
+	
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " << vertexArrayUsable);
+		
+		initDone = true;
+	}
 
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " << vertexArrayUsable);
-
+	return sdlSurface;
 }
+
+SDLRenderSurfaceWeakPtr GLFramework::getRenderSurfacePtr(SDL_WindowID windowID) {
+	SDLRenderSurfaceWeakPtr ret;
+	
+	auto iter = renderSurfacePtrMap.find(windowID);
+	
+	if (iter != renderSurfacePtrMap.end()) {
+		ret = iter->second;
+	}
+	
+	return ret;
+}
+
 
 } /* namespace OevGLES */

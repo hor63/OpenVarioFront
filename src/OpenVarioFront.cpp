@@ -101,17 +101,23 @@ int main(int argint,char** argv) {
 
 		glTextGlobPtr->setResolutionDPI(96, 96);
 
-		glFramework->createRenderSurface(1024,1024,PACKAGE_STRING);
+		auto renderSurfacePtr1 =
+			glFramework->createRenderSurface(1024, 1024, PACKAGE_STRING).lock();
+			
+//		auto renderSurfacePtr2 =
+//			glFramework->createRenderSurface(1024, 1024, "SecondaryWindow").lock();
+
+		renderSurfacePtr1->makeContextCurrent();
 
 		OevGLES::SquareTextureRenderer varioBackground;
 //		varioBackground.setPNGFileName("../../resources/Vario5m.jpg");
 		varioBackground.setImageMemoryData(Vario5mJPG_data,
 			Vario5mJPG_size, Vario5mJPG_filename);
 
-		auto rootCtrlPtr = OevControls::RootControl::getRootWindowPtr().lock();
+		auto rootCtrlPtr = renderSurfacePtr1->getRootControlPtr();
 
 		int windowWidth = -1, windowHeight = -1;
-		SDL_GetWindowSize(glFramework->getSDLSurface().getNativeWindow(),&windowWidth,&windowHeight);
+		SDL_GetWindowSize(renderSurfacePtr1->getNativeWindow(),&windowWidth,&windowHeight);
 
 		OevGLES::AngleDeg objectRotationAngle = 0.0_deg;
 		// OevGLES::Vec4 camPos = {3,4,static_cast<float>(windowWidth*2),1};
@@ -253,6 +259,8 @@ int main(int argint,char** argv) {
 				}
 			}
 
+			renderSurfacePtr1->makeContextCurrent();
+
 			if (rotationAngle >= 360.0_deg) {
 				// Let the scene rotate forever.
 				rotationAngle = rotationAngle - 360.0_deg;
@@ -295,8 +303,18 @@ int main(int argint,char** argv) {
 
 			// sleep(3);
 
-			SDL_GL_SwapWindow(glFramework->getSDLSurface().getNativeWindow());
+			SDL_GL_SwapWindow(renderSurfacePtr1->getNativeWindow());
 
+/*			
+			renderSurfacePtr2->makeContextCurrent();
+			glClearColor(0.2f,0.2f,0.01f,1.0f);
+			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+			hand.draw(handUniforms);
+			glTextRend.draw(textUniforms);
+			arc1.draw(arc1Uniforms);
+			SDL_GL_SwapWindow(renderSurfacePtr2->getNativeWindow());
+			renderSurfacePtr1->makeContextCurrent();
+*/
 			objectRotationAngle = objectRotationAngle + 1.0_deg;
 
 			if (objectRotationAngle >= 360.0_deg) {
@@ -531,7 +549,7 @@ static void printEventType (SDL_Event& event) {
 		    /* Mouse events */
 		    
 			case SDL_EVENT_MOUSE_MOTION:
-			std::cout << "SDL event is SDL_EVENT_MOUSE_MOTION" << std::endl;
+			// std::cout << "SDL event is SDL_EVENT_MOUSE_MOTION" << std::endl;
 			break;
 		    
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -685,28 +703,33 @@ static bool handleSLEDvent (SDL_Event& event,OevGLES::GLFramework &framework) {
 	}
 	
 	if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
-		SDL_Window * sdlWindow = framework.getSDLSurface().getNativeWindow();
-		std::cout << "sdlWindow = " << reinterpret_cast<void*>(sdlWindow)
-			<< ", SDL_TextInputActive(sdlWindow) = " << SDL_TextInputActive(sdlWindow)
-			<< std::endl;
-			
-		if (SDL_TextInputActive(sdlWindow)) {
-			SDL_StopTextInput(sdlWindow);
-		} else {
-			
-			auto rc = SDL_StartTextInput(sdlWindow);
-			
-			std::cout << "SDL_StartTextInput returned " << rc << std::endl;
-			
-			SDL_Rect rect;
-			int cursor;
-			rc = SDL_GetTextInputArea (sdlWindow,&rect,&cursor);
-			std::cout << "SDL_GetTextInputArea returned " << rc
-				<< ", pos = " << rect.x << "x" << rect.y
-				<< ", size (WxH) = " << rect.w << "x" << rect.h
-				<< ", cursor = " << cursor
+		auto windowID = event.button.windowID;
+		auto renderSurfacePtr = 
+			framework.getRenderSurfacePtr(windowID).lock();
+		if (renderSurfacePtr) {
+			SDL_Window *sdlWindow = renderSurfacePtr->getNativeWindow();
+			std::cout << "sdlWindow = " << reinterpret_cast<void*>(sdlWindow)
+				<< ", SDL_TextInputActive(sdlWindow) = " << SDL_TextInputActive(sdlWindow)
 				<< std::endl;
-		}
+				
+			if (SDL_TextInputActive(sdlWindow)) {
+				SDL_StopTextInput(sdlWindow);
+			} else {
+				
+				auto rc = SDL_StartTextInput(sdlWindow);
+				
+				std::cout << "SDL_StartTextInput returned " << rc << std::endl;
+				
+				SDL_Rect rect;
+				int cursor;
+				rc = SDL_GetTextInputArea (sdlWindow,&rect,&cursor);
+				std::cout << "SDL_GetTextInputArea returned " << rc
+					<< ", pos = " << rect.x << "x" << rect.y
+					<< ", size (WxH) = " << rect.w << "x" << rect.h
+					<< ", cursor = " << cursor
+					<< std::endl;
+			}
+		} // if (renderSurfacePtr) {
 	}
 
 	if (event.type == SDL_EVENT_TEXT_EDITING) {

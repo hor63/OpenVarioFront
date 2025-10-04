@@ -23,10 +23,12 @@ namespace OevControls {
 
 
 
-static RootControl::RootControlSharedPtrT theRootControl;
 static OevUtil::Uuid const rootContolUUID ("4c99a482-52f0-44b3-bb3b-a5a4cc506095");
 
-RootControl::RootControlWeakPtrT RootControl::getRootWindowPtr() {
+RootControlSharedPtr RootControl::makeRootControl(
+	OevGLES::SDLRenderSurface &renderSurface) {
+
+RootControlSharedPtr newRootControlPtr;
 
 #if defined HAVE_LOG4CXX_H
 		// Get the logger if necessary
@@ -35,35 +37,35 @@ RootControl::RootControlWeakPtrT RootControl::getRootWindowPtr() {
 		}
 #endif
 
-		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__);
-	
-	if(!theRootControl) {
-		// Now things are getting tricky:
-		// I need a pointer of the object before it is constructed
-		// because the parent of the root control is the root control itself.
-		// Bring in the allocators
-		using RootControlAllocator = std::allocator<RootControl>;
-		using RootControlAllocatorTraits = std::allocator_traits<RootControlAllocator>;
-		RootControlAllocator rootCtlAllocator;
-		
-		RootControl* rawPtr = rootCtlAllocator.allocate(1);
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__);
 
-		LOG4CXX_DEBUG(logger,"\trawPtr = " << reinterpret_cast<void const *>(rawPtr));
-		
-		theRootControl.reset(rawPtr);
-		
-		RootControlAllocatorTraits::construct(rootCtlAllocator, rawPtr, theRootControl, rootContolUUID,"root");
-		
-	}
+	// Now things are getting tricky:
+	// I need a pointer of the object before it is constructed
+	// because the parent of the root control is the root control itself.
+	// Bring in the allocators
+	using RootControlAllocator = std::allocator<RootControl>;
+	using RootControlAllocatorTraits = std::allocator_traits<RootControlAllocator>;
+	RootControlAllocator rootCtlAllocator;
 	
-	return theRootControl;
+	RootControl* rawPtr = rootCtlAllocator.allocate(1);
+
+	LOG4CXX_DEBUG(logger,"\trawPtr = " << reinterpret_cast<void const *>(rawPtr));
+	
+	newRootControlPtr.reset(rawPtr);
+	
+	RootControlAllocatorTraits::construct(rootCtlAllocator, rawPtr,
+										  newRootControlPtr, rootContolUUID,
+										  renderSurface, "root");
+
+	return newRootControlPtr;
 }
-
 
 RootControl::RootControl(ControlsContainerWeakPtr  const &parent,
 		OevUtil::Uuid const & uuid,
+		OevGLES::SDLRenderSurface &renderSurface,
 		char const* name)
-	:ControlsContainer(parent,uuid,name) 
+	:ControlsContainer(parent,uuid,name),
+	 renderSurface{renderSurface}
 {
 	#if defined HAVE_LOG4CXX_H
 		// Get the logger if necessary

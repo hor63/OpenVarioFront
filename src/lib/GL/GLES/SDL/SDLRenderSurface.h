@@ -26,6 +26,8 @@
 #ifndef GLES_EGLRENDERSURFACE_H_
 #define GLES_EGLRENDERSURFACE_H_
 
+#include <memory>
+
 #include "GLES/GLFramework.h"
 #include "GLES/sysSDLWindow.h"
 
@@ -34,11 +36,24 @@ struct SDL_GLContextState;
 
 namespace OevGLES {
 
+class SDLRenderSurface;
+using SDLRenderSurfaceSharedPtr = std::shared_ptr<SDLRenderSurface>;
+using SDLRenderSurfaceWeakPtr = std::weak_ptr<SDLRenderSurface>;
+
+} // namespace OevGLES {
+
+#include "RootControl.h"
+
+namespace OevGLES {
+
 class GLFramework;
+
 
 class SDLRenderSurface {
 	friend class GLFramework;
 public:
+
+	SDLRenderSurface(GLFramework& framework);
 
 	virtual ~SDLRenderSurface();
 
@@ -54,6 +69,12 @@ public:
 	GLFramework& getGlFramework() {
 		return glFramework;
 	}
+	
+	/* \brief Return the root control associated with the render surface.
+	 * 
+	 * The root control is being created when it did not yet exist.
+	 */
+	OevControls::RootControlWeakPtr getRootControlPtr();
 
 protected:
 
@@ -65,11 +86,12 @@ protected:
     GLint eglMajorVersion = 2;
     GLint eglMinorVersion = 0;
 
-	SDLRenderSurface(GLFramework& framework);
+	OevControls::RootControlSharedPtr rootControlPtr;
 
 };
 
-#include "GLES/GLFramework.h"
+using SDLRenderSurfaceSharedPtr = std::shared_ptr<SDLRenderSurface>;
+using SDLRenderSurfaceWeakPtr = std::weak_ptr<SDLRenderSurface>;
 
 } /* namespace OevGLES */
 
