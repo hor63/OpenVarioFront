@@ -131,7 +131,10 @@ OpenVarioFront_OBJECTS = $(am_OpenVarioFront_OBJECTS)
 am__DEPENDENCIES_1 =
 OpenVarioFront_DEPENDENCIES = lib/Controls/libOEV_Controls.a \
 	lib/GL/libOEV_GLES.a lib/util/libOEV_util.a \
-	../resources/libOEV_resurces.a $(am__DEPENDENCIES_1)
+	../resources/libOEV_resurces.a \
+	../src/lib/Controls/libOEV_Controls.a \
+	../src/lib/GL/libOEV_GLES.a ../src/lib/util/libOEV_util.a \
+	../src/../resources/libOEV_resurces.a $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -468,6 +471,10 @@ OpenVarioFront_LDADD = \
 	lib/GL/libOEV_GLES.a \
 	lib/util/libOEV_util.a \
 	../resources/libOEV_resurces.a \
+	../src/lib/Controls/libOEV_Controls.a \
+	../src/lib/GL/libOEV_GLES.a \
+	../src/lib/util/libOEV_util.a \
+	../src/../resources/libOEV_resurces.a \
 	$(EXTERN_LIBRARY_LIBS)
 
 
@@ -484,7 +491,9 @@ AM_CXXFLAGS = $(INTERNAL_CFLAGS) \
 #	$(LOG4CXX_CXXFLAGS) $(FREETYPE2_CFLAGS) $(PANGO_FT2_CFLAGS) \
 #	$(LIBPNG_CFLAGS) $(LIBJPEG_CFLAGS) \
 #	$(SDL3_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
-AM_LDFLAGS = $(EXTERN_LIBRARY_LDFLAGS) 
+AM_LDFLAGS = \
+	$(EXTERN_LIBRARY_LDFLAGS) 
+
 all: all-recursive
 
 .SUFFIXES:

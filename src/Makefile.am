@@ -27,6 +27,10 @@ OpenVarioFront_LDADD = \
 	lib/GL/libOEV_GLES.a \
 	lib/util/libOEV_util.a \
 	../resources/libOEV_resurces.a \
+	../src/lib/Controls/libOEV_Controls.a \
+	../src/lib/GL/libOEV_GLES.a \
+	../src/lib/util/libOEV_util.a \
+	../src/../resources/libOEV_resurces.a \
 	$(EXTERN_LIBRARY_LIBS)
 	
 #	$(LOG4CXX_LIBS) \
@@ -43,7 +47,8 @@ AM_CXXFLAGS=$(INTERNAL_CFLAGS) \
 #	$(LIBPNG_CFLAGS) $(LIBJPEG_CFLAGS) \
 #	$(SDL3_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
 
-AM_LDFLAGS= $(EXTERN_LIBRARY_LDFLAGS) 
+AM_LDFLAGS= \
+	$(EXTERN_LIBRARY_LDFLAGS) 
 
 all: $(abs_builddir)/OpenVarioFront.logger.properties
 
