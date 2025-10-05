@@ -90,6 +90,13 @@ public:
 		return vertexArrayUsable;
 	}
 
+	/** \brief SDL event handler and dispatcher
+	 * 
+	 * Window related events are forwarded to the respective \ref SDLRenderSurface
+	 * and releated
+	 */
+	bool handleSLEDvent (SDL_Event& event);
+
 private:
 
 	GLTextGlobalsSharedPtr glTextGlob;
