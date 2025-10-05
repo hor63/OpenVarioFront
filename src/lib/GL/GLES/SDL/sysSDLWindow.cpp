@@ -56,7 +56,7 @@ void SDLNativeWindow::openNativeGLES2Window( GLint width, GLint height,
 
     sdlWindow = SDL_CreateWindow(windowName,
     		width, height,
-			SDL_WINDOW_OPENGL);
+			SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
 	
 	if (sdlWindow == nullptr) {
 		OevUtil::reportSDLError(std::source_location::current(), "SDL_CreateWindow");
