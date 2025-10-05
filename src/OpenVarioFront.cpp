@@ -25,6 +25,7 @@
  *
  */
 
+#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -341,6 +342,11 @@ int main(int argint,char** argv) {
 }
 
 static void printEventType (SDL_Event& event) {
+	struct {
+		GLint x; GLint y;
+		GLint width; GLint height;
+	} viewPortDimensions;
+	
 	
 	switch (event.type) {
 			
@@ -422,18 +428,37 @@ static void printEventType (SDL_Event& event) {
 		    
 			case SDL_EVENT_WINDOW_EXPOSED:
 			std::cout << "SDL event is SDL_EVENT_WINDOW_EXPOSED" << std::endl;
+				std::cout << " Live change = " << event.window.data1 << std::endl;
+				glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
+				std::cout << "GL viewport at " << viewPortDimensions.x
+					<< 'x' << viewPortDimensions.y
+					<< ", size = " << viewPortDimensions.width
+					<< 'x' << viewPortDimensions.height << std::endl;
 			break;
 		    
 			case SDL_EVENT_WINDOW_MOVED:
-			std::cout << "SDL event is SDL_EVENT_WINDOW_MOVED" << std::endl;
 			break;
 		    
 			case SDL_EVENT_WINDOW_RESIZED:
 			std::cout << "SDL event is SDL_EVENT_WINDOW_RESIZED" << std::endl;
+				std::cout << " Window was resized to " << event.window.data1 
+					<< 'x' << event.window.data2 << std::endl;
+				glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
+				std::cout << "GL viewport at " << viewPortDimensions.x
+					<< 'x' << viewPortDimensions.y
+					<< ", size = " << viewPortDimensions.width
+					<< 'x' << viewPortDimensions.height << std::endl;
 			break;
 		    
 			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-			std::cout << "SDL event is SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED" << std::endl;
+				std::cout << "SDL event is SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED" << std::endl;
+				std::cout << " Pixel size changed to " << event.window.data1 
+					<< 'x' << event.window.data2 << std::endl;
+				glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
+				std::cout << "GL viewport at " << viewPortDimensions.x
+					<< 'x' << viewPortDimensions.y
+					<< ", size = " << viewPortDimensions.width
+					<< 'x' << viewPortDimensions.height << std::endl;
 			break;
 		    
 			case SDL_EVENT_WINDOW_METAL_VIEW_RESIZED:
