@@ -28,8 +28,8 @@
 
 #include <memory>
 
-#include "GLES/GLFramework.h"
 #include "GLES/sysSDLWindow.h"
+#include "GLES/GLFramework.h"
 
 // Forward declaration
 struct SDL_GLContextState;
@@ -75,6 +75,13 @@ public:
 	 * The root control is being created when it did not yet exist.
 	 */
 	OevControls::RootControlWeakPtr getRootControlPtr();
+	
+	/** \brief SDL event handler and dispatcher
+	 * 
+	 * Window related events are forwarded here, and must be handled here.
+	 */
+	bool handleSLEDvent (SDL_Event& event);
+
 
 protected:
 

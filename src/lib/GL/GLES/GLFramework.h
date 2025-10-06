@@ -93,9 +93,9 @@ public:
 	/** \brief SDL event handler and dispatcher
 	 * 
 	 * Window related events are forwarded to the respective \ref SDLRenderSurface
-	 * and releated
+	 * and related window
 	 */
-	bool handleSLEDvent (SDL_Event& event);
+	bool handleSdlEvent (SDL_Event& event);
 
 private:
 

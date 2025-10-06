@@ -5,6 +5,7 @@
  *      Author: hor
  */
 
+#include <log4cxx/logger.h>
 #include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -125,7 +126,15 @@ SDLRenderSurfaceWeakPtr GLFramework::getRenderSurfacePtr(SDL_WindowID windowID) 
 	return ret;
 }
 
-bool GLFramework::handleSLEDvent (SDL_Event& event) {
+bool GLFramework::handleSdlEvent (SDL_Event& event) {
+
+	if (event.type == SDL_EVENT_QUIT) {
+		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+			<< ": Event type = SDL_EVENT_QUIT; return false, and terminate"
+		);
+
+		return false;
+		}
 
 	SDL_WindowID windowID = 0;
 	
@@ -163,11 +172,21 @@ bool GLFramework::handleSLEDvent (SDL_Event& event) {
 		event.common.type <= SDL_EVENT_LAST-1)
 		windowID = event.user.windowID;
 
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+		<< ": windowID = " << windowID
+		);
+
 	if (windowID != 0) {
 		auto renderSurfaceIter = renderSurfacePtrMap.find(windowID);
+		if (renderSurfaceIter != renderSurfacePtrMap.end()) {
+			LOG4CXX_DEBUG(logger, "\tFound window  " 
+				<< SDL_GetWindowTitle(renderSurfaceIter->second->getNativeWindow())
+			);
+			return renderSurfaceIter->second->handleSLEDvent(event);
+		}
 	}
 
-	
+	return true;
 }
 
 } /* namespace OevGLES */
