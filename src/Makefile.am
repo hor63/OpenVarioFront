@@ -21,16 +21,10 @@ SUBDIRS=../resources lib/util lib/GL lib/Controls
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
 OpenVarioFront_SOURCES=OpenVarioFront.cpp
- 
+
+
 OpenVarioFront_LDADD = \
-	lib/Controls/libOEV_Controls.a \
-	lib/GL/libOEV_GLES.a \
-	lib/util/libOEV_util.a \
-	../resources/libOEV_resurces.a \
-	../src/lib/Controls/libOEV_Controls.a \
-	../src/lib/GL/libOEV_GLES.a \
-	../src/lib/util/libOEV_util.a \
-	../src/../resources/libOEV_resurces.a \
+	$(LOCAL_LIBS_GROUP) \
 	$(EXTERN_LIBRARY_LIBS)
 	
 #	$(LOG4CXX_LIBS) \

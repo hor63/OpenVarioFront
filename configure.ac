@@ -285,6 +285,14 @@ PKG_CHECK_MODULES([UUID], [uuid])
 AC_SUBST([UUID_CFLAGS])
 AC_SUBST([UUID_LIBS])
 
+LOCAL_LIBS_GROUP="-Wl,--start-group \
+	-Wl,lib/Controls/libOEV_Controls.a \
+	-Wl,lib/GL/libOEV_GLES.a \
+	-Wl,lib/util/libOEV_util.a \
+	-Wl,../resources/libOEV_resurces.a \
+	-Wl,--end-group"
+AC_SUBST([LOCAL_LIBS_GROUP])
+
 EXTERN_LIBRARY_CFLAGS="$GLES2_CFLAGS \
  $LOG4CXX_CXXFLAGS $FREETYPE2_CFLAGS \
  $LIBPNG_CFLAGS $LIBJPEG_CFLAGS $SDL3_CFLAGS\

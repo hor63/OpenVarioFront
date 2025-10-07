@@ -129,12 +129,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_OpenVarioFront_OBJECTS = OpenVarioFront.$(OBJEXT)
 OpenVarioFront_OBJECTS = $(am_OpenVarioFront_OBJECTS)
 am__DEPENDENCIES_1 =
-OpenVarioFront_DEPENDENCIES = lib/Controls/libOEV_Controls.a \
-	lib/GL/libOEV_GLES.a lib/util/libOEV_util.a \
-	../resources/libOEV_resurces.a \
-	../src/lib/Controls/libOEV_Controls.a \
-	../src/lib/GL/libOEV_GLES.a ../src/lib/util/libOEV_util.a \
-	../src/../resources/libOEV_resurces.a $(am__DEPENDENCIES_1)
+OpenVarioFront_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -351,6 +347,7 @@ LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIPO = @LIPO@
 LN_S = @LN_S@
+LOCAL_LIBS_GROUP = @LOCAL_LIBS_GROUP@
 LOG4CXX_CXXFLAGS = @LOG4CXX_CXXFLAGS@
 LOG4CXX_LDFLAGS = @LOG4CXX_LDFLAGS@
 LOG4CXX_LIBS = @LOG4CXX_LIBS@
@@ -467,14 +464,7 @@ SUBDIRS = ../resources lib/util lib/GL lib/Controls
 bin_PROGRAMS = OpenVarioFront$(EXEEXT)
 OpenVarioFront_SOURCES = OpenVarioFront.cpp
 OpenVarioFront_LDADD = \
-	lib/Controls/libOEV_Controls.a \
-	lib/GL/libOEV_GLES.a \
-	lib/util/libOEV_util.a \
-	../resources/libOEV_resurces.a \
-	../src/lib/Controls/libOEV_Controls.a \
-	../src/lib/GL/libOEV_GLES.a \
-	../src/lib/util/libOEV_util.a \
-	../src/../resources/libOEV_resurces.a \
+	$(LOCAL_LIBS_GROUP) \
 	$(EXTERN_LIBRARY_LIBS)
 
 
