@@ -140,6 +140,10 @@ OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr() {
 	return rootControlPtr;
 }
 
+bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
+	return true;
+}
+
 #if defined HAVE_LOG4CXX_H
 
 /*
