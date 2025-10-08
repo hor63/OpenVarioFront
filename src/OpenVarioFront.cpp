@@ -722,6 +722,7 @@ static void printEventType (SDL_Event& event) {
 static bool handleSLEDvent (SDL_Event& event,OevGLES::GLFramework &framework) {
 
 	printEventType (event);
+	framework.handleSdlEvent(event);
 	
 	if (event.type == SDL_EVENT_QUIT) {
 		return false;

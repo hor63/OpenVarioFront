@@ -28,6 +28,12 @@ bool GLFramework::vertexArrayUsable = false;
 
 
 GLFrameworkSharedPtr GLFramework::createFramework() {
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("OpenVarioFront.GLFramework");
+	}
+#endif
+
 	GLFrameworkSharedPtr ret ( new GLFramework);
 
 	ret->glTextGlob.reset (new GLTextGlobals(ret));
@@ -74,6 +80,9 @@ SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint heig
 	auto sdlSurface = std::make_shared<SDLRenderSurface>(*this);
 	sdlSurface->createRenderSurface(width,height,windowName);
 	renderSurfacePtrMap.insert(std::pair(SDL_GetWindowID(sdlSurface->getNativeWindow()),sdlSurface));
+
+	LOG4CXX_DEBUG(logger, "\t SDL Window ID = " 
+		<< SDL_GetWindowID(sdlSurface->getNativeWindow()));
 
 	if (!initDone) {
 

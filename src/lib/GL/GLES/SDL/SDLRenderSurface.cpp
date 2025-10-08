@@ -22,17 +22,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
-#include "RootControl.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 
-#include <sstream>
-
-#include "SDL3/SDL_video.h"
-
 #include "OVFCommon.h"
+
+#include "RootControl.h"
 
 #include "GLES/GLFramework.h"
 #include "SDLUtil.h"
@@ -141,6 +137,35 @@ OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr() {
 }
 
 bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
+	struct {
+		GLint x; GLint y;
+		GLint width; GLint height;
+	} viewPortDimensions;
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ 
+		<< ": event.type = " << event.type);
+
+	switch (event.type) {
+		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+			makeContextCurrent();
+			LOG4CXX_DEBUG(logger, "\tSDL event is SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED");
+			LOG4CXX_DEBUG(logger, "\t Window size changed to " << event.window.data1 
+				<< 'x' << event.window.data2 << " Pixels");
+			glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
+			LOG4CXX_DEBUG(logger, "\t GL viewport at " << viewPortDimensions.x
+				<< 'x' << viewPortDimensions.y
+				<< ", size = " << viewPortDimensions.width
+				<< 'x' << viewPortDimensions.height);
+			glViewport(0, 0, event.window.data1, event.window.data2);
+			glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
+			LOG4CXX_DEBUG(logger, "\t New GL viewport at " << viewPortDimensions.x
+				<< 'x' << viewPortDimensions.y
+				<< ", size = " << viewPortDimensions.width
+				<< 'x' << viewPortDimensions.height);
+		break;
+	} // switch (event.type)
+
+
 	return true;
 }
 
