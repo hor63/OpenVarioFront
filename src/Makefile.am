@@ -22,6 +22,16 @@ bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
 OpenVarioFront_SOURCES=OpenVarioFront.cpp
 
+LOCAL_LIBS_GROUP = \
+	lib/Controls/libOEV_Controls.a \
+	lib/GL/libOEV_GLES.a \
+	lib/util/libOEV_util.a \
+	../resources/libOEV_resurces.a \
+	./lib/Controls/libOEV_Controls.a \
+	./lib/GL/libOEV_GLES.a \
+	./lib/util/libOEV_util.a \
+	./../resources/libOEV_resurces.a
+
 
 OpenVarioFront_LDADD = \
 	$(LOCAL_LIBS_GROUP) \
