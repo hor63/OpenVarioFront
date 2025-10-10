@@ -36,7 +36,7 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 	// The distincive property of the root control is that its parent points to itself.
 	if (reinterpret_cast<void const*>(parentPtr.get())
 		== reinterpret_cast<void const*>(this)) {
-		rootControl = true;
+		isRootControl_ = true;
 	}
 }
 
@@ -118,7 +118,7 @@ void ControlBase::setCanTakeFocus (bool takesFocus) {
 }
 
 void ControlBase::setDefaultControl (bool isDefaultControl) {
-	this->defaultControl = isDefaultControl;
+	this->isDefaultControl_ = isDefaultControl;
 }
 
 void ControlBase::setTabSequence(int tabSequence) {

@@ -182,7 +182,7 @@ public:
 
 	/// \see \ref defaultControl
 	auto isDefaultControl() {
-		return defaultControl;
+		return isDefaultControl_;
 	}
 	/// \see \ref defaultControl
 	void setDefaultControl (bool defaultControl = false);
@@ -216,7 +216,7 @@ public:
 	void setTabContainer (ControlsContainerWeakPtr tabContainer);
 
 	bool isRootControl() {
-		return rootControl;
+		return isRootControl_;
 	}
 	
 private:
@@ -235,7 +235,7 @@ private:
 	ControlsContainerWeakPtr parent;
 
 	
-	/// \brief Official (bottom right) position of the control
+	/// \brief Official (bottom right) position of the control relative to its \ref parent
 	Pos position;
 	/// \brief the bounding box around the control
 	Size size;
@@ -275,11 +275,11 @@ private:
 	bool takesFocus = false;
 	
 	/// \brief This control receives the equivalent of a click when you hit enter in a dialog.
-	bool defaultControl = false;
+	bool isDefaultControl_ = false;
 
 
 	/// \brief is this control the root control?
-	bool rootControl = false;
+	bool isRootControl_ = false;
 	
 	/** \brief Sequence of controls to receive the focus when switching with the TAB key.
 	 *
