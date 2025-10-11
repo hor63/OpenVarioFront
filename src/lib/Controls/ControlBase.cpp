@@ -48,7 +48,25 @@ void ControlBase::setName(std::string const & name) {
 }
 
 void ControlBase::setPosition (Pos position) {
-	this->position = position;
+	if (this->position.x != position.x ||
+		this->position.y != position.y) {
+		this->position = position;
+		onPositionChanged();
+	}
+}
+
+void ControlBase::onPositionChanged() {
+	locTranslationMatrix(0,3) = position.x;
+	locTranslationMatrix(1,3) = position.y;
+	
+	#warning ToDo: Calculate the rest.
+	
+}
+
+void ControlBase::onParentPositionChanged(
+	OevGLES::RenderStandardUniforms &parentUniforms) {
+	#warning ToDo: Fill out
+
 }
 
 void ControlBase::setSize (Size size) {
@@ -61,10 +79,26 @@ void ControlBase::setSize (Size size) {
 		throw ControlsException(_(
 			errTxt.c_str()));
 	}
-	this->size = size;
 	
-	topRight.x = position.x + size.width;
-	topRight.y = position.y + size.height;
+	if (this->size.height != size.height ||
+		this->size.width != size.width) {
+		this->size = size;
+		
+		topRight.x = position.x + size.width;
+		topRight.y = position.y + size.height;
+		
+		onSizeChanged();
+	}
+}
+
+void ControlBase::onSizeChanged() {
+		#warning ToDo: Fill out
+
+}
+
+void ControlBase::onResetRenderUniforms(OevGLES::RenderStandardUniforms& parentUniforms){
+		#warning ToDo: Fill out
+
 }
 
 void ControlBase::setTopRight (Pos topRight) {

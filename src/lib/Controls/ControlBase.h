@@ -80,6 +80,23 @@ public:
 	/// \ref size unchanged.
 	/// \see \ref position
 	void setPosition (Pos position);
+	/** \brief Request to re-calculate the own model matrix when the own position
+	 * changed.
+	 */
+	virtual void onPositionChanged();
+	/** \brief Request to re-calculate the own model matrix when the position of
+	 * the parent changed.
+	 *
+	 * Assume that the shared pointers to the projection and view matrix remain
+	 * un-changed. Their values may of course change.
+	 */
+	virtual void onParentPositionChanged(OevGLES::RenderStandardUniforms& parentUniforms);
+
+	/**
+	 * One or more shared pointers of the parent uniforms have changed. Take over
+	 * the shared ones from the parent, or re-calculate your own ones from the parent.
+	 */
+	virtual void onResetRenderUniforms(OevGLES::RenderStandardUniforms& parentUniforms);
 
 	/// \see \ref size
 	auto getSize() const {
@@ -88,6 +105,9 @@ public:
 	/// Leaves \ref position unchanged, but adjusts \ref topRight accordingly
 	/// \see \ref size
 	void setSize (Size size);
+	/** \brief Request to re-calculate the own model matrix when the own size changed.
+	 */
+	virtual void onSizeChanged();
 
 	/// \see \ref topRight
 	auto getTopRight() const {
@@ -236,11 +256,34 @@ private:
 
 	
 	/// \brief Official (bottom right) position of the control relative to its \ref parent
-	Pos position;
+	Pos position = {0,0};
 	/// \brief the bounding box around the control
-	Size size;
+	Size size = {1,1};
 	/// \brief Derived and redundant convenience coordinates based on \ref position and \ref size
-	Pos topRight;
+	///
+	/// \p topRight is like \ref position also relative to position of \ref parent.
+	Pos topRight = {1,1};
+	
+	// Helpers for rendering
+	
+	/**
+	 * Perspective and view matrixes are supposed to be shared acreoss the entire
+	 * controls hierarchy.
+	 *
+	 * The model matrix remains local. It is calculated from the parent's model matrix
+	 * translated by the own position.
+	 */ 
+	OevGLES::RenderStandardUniforms renderUniforms;
+	
+	/**
+	 * Used to quickly recalculate the local model matrix from the parent's
+	 * model matrix. 
+	 */
+	OevGLES::Mat4 locTranslationMatrix = OevGLES::Mat4::Identity();
+	
+	/** \brief Remember the parent's model matrix.
+	*/
+	OevGLES::RenderStandardUniforms::Mat4WithChangeCounterPtr parentModelMatrixPtr;
 	
 	/// \brief Default is black on white
 	OevGLES::Vec4 foregroundColor = {0,0,0,1};
@@ -291,6 +334,8 @@ private:
 	ControlBaseWeakPtr tabSuccessor;
 	ControlsContainerWeakPtr tabContainer;
 };
+
+static constexpr auto s = sizeof(ControlBase);
 
 } /* namespace OevControls */
 
