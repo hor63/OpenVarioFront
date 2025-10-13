@@ -8,6 +8,7 @@
 #ifndef LIB_CONTROLS_CONTROLBASE_H_
 #define LIB_CONTROLS_CONTROLBASE_H_
 
+#include <GLES2/gl2.h>
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -34,14 +35,14 @@ public:
 
 	struct Pos {
 		/// \brief x goes to the left
-		int32_t x = 0;
+		GLfloat x = 0;
 		/// \brief y goes from bottom to top, as usual in GL-world.
-		int32_t y = 0;
+		GLfloat y = 0;
 	};
 
 	struct Size {
-		int32_t width = 0;
-		int32_t height = 0;
+		GLfloat width = 0;
+		GLfloat height = 0;
 	};
 
 	ControlBase(ControlsContainerWeakPtr const &parent,
@@ -87,16 +88,16 @@ public:
 	/** \brief Request to re-calculate the own model matrix when the position of
 	 * the parent changed.
 	 *
-	 * Assume that the shared pointers to the projection and view matrix remain
+	 * Assume that the shared pointers of the parent's projection, view and model matrix remain
 	 * un-changed. Their values may of course change.
 	 */
-	virtual void onParentPositionChanged(OevGLES::RenderStandardUniforms& parentUniforms);
+	virtual void onParentPositionChanged();
 
 	/**
 	 * One or more shared pointers of the parent uniforms have changed. Take over
 	 * the shared ones from the parent, or re-calculate your own ones from the parent.
 	 */
-	virtual void onResetRenderUniforms(OevGLES::RenderStandardUniforms& parentUniforms);
+	virtual void onResetParentRenderUniforms(OevGLES::RenderStandardUniforms& parentUniforms);
 
 	/// \see \ref size
 	auto getSize() const {
@@ -267,7 +268,7 @@ private:
 	// Helpers for rendering
 	
 	/**
-	 * Perspective and view matrixes are supposed to be shared acreoss the entire
+	 * Perspective and view matrixes are supposed to be shared across the entire
 	 * controls hierarchy.
 	 *
 	 * The model matrix remains local. It is calculated from the parent's model matrix

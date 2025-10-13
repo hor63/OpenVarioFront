@@ -59,13 +59,29 @@ void ControlBase::onPositionChanged() {
 	locTranslationMatrix(0,3) = position.x;
 	locTranslationMatrix(1,3) = position.y;
 	
-	#warning ToDo: Calculate the rest.
+	renderUniforms.getModelMatrix() =
+		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
 	
 }
 
-void ControlBase::onParentPositionChanged(
+void ControlBase::onParentPositionChanged() {
+
+	renderUniforms.getModelMatrix() =
+		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
+}
+
+void ControlBase::onResetParentRenderUniforms(
 	OevGLES::RenderStandardUniforms &parentUniforms) {
-	#warning ToDo: Fill out
+
+	auto saveModelMatrixPtr = renderUniforms.getModelMatrixPtr();
+	
+	parentModelMatrixPtr = parentUniforms.getModelMatrixPtr();
+	renderUniforms = parentUniforms;
+
+	renderUniforms.setModelMatrixPtr(saveModelMatrixPtr);
+
+	renderUniforms.getModelMatrix() =
+		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
 
 }
 
@@ -92,13 +108,7 @@ void ControlBase::setSize (Size size) {
 }
 
 void ControlBase::onSizeChanged() {
-		#warning ToDo: Fill out
-
-}
-
-void ControlBase::onResetRenderUniforms(OevGLES::RenderStandardUniforms& parentUniforms){
-		#warning ToDo: Fill out
-
+	// Nothing to the here for me.
 }
 
 void ControlBase::setTopRight (Pos topRight) {
@@ -107,16 +117,21 @@ void ControlBase::setTopRight (Pos topRight) {
 		auto errTxt = fmt::format (
 			fmt::runtime(_(
 				"Control {0}:{1}: Error in ControlBase::setTopRight(): . "
-				"newTopRight is {2}x{3}")),
+				"newTopRight is {2}x{3}, which is left or below position")),
 				uuid.getUuidString(),name,topRight.x,topRight.y);
 		throw ControlsException(_(
 			errTxt.c_str()));
 	}
 	
-	this->topRight = topRight;
-	
-	size.width  = topRight.x - position.x ;
-	size.height = topRight.y - position.y;
+	if (this->topRight.x != topRight.x ||
+		this->topRight.y != topRight.y) {
+		this->topRight = topRight;
+		
+		size.width  = topRight.x - position.x ;
+		size.height = topRight.y - position.y;
+		
+		onSizeChanged();
+	}
 }
 
 void ControlBase::setForegroundColor (OevGLES::Vec4 const& foregroundColor) {
