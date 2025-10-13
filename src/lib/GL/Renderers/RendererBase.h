@@ -290,7 +290,7 @@ public:
 	 \see \ref getProjMatrix() read/write access
 	*/
 	Mat4 const & getProjMatrixC () const {
-		return projMatrixPtr->matrix4;
+		return projectionMatrixPtr->matrix4;
 	}
 
 	/** \brief Read-only access to the model-view matrix.
@@ -353,7 +353,7 @@ public:
 		return *ambientLightColorPtr;
 	}
 
-	/** Create a copy of the model matrix, and store it in a new shared pointer.
+	/** \brief Create a copy of the model matrix, and store it in a new shared pointer.
 	 
 	 This method un-shares the model matrix with all other copies of \p this.
 	 The value of the model matrix remains the same.
@@ -362,11 +362,31 @@ public:
 	 \ref resetMVPMatrix() are called to create new independent instances of
 	 these shared pointers and their data too.
 	
-	\see \ref modelMatrixPtr
+	 \see \ref modelMatrixPtr
 	*/
 	void resetModelMatrixPtr();
+	
+	/** \brief Set a new shared pointer for the model matrix.
+	
+	 This method un-shares the model matrix with all other copies of \p this
+	 And replaces it with \p modelMatrixPtr.
+	 You are responsible to filling the matrix to which the shared pointer links
+	 yourself with valid data.
+	 
+	 To keep the derived matrixes consistent \ref resetMVMatrix() and 
+	 \ref resetMVPMatrix() are called to create new independent instances of
+	 these shared pointers and their data too.
+	
+	 \see \ref modelMatrixPtr
+	*/
+	void setModelMatrixPtr(Mat4WithChangeCounterPtr const& modelMatrixPtr);
 
-	/** Create a copy of the view matrix, and store it in a new shared pointer.
+	/// \see \ref modelMatrixPtr
+	auto const& getModelMatrixPtr() const {
+		return modelMatrixPtr;
+	}
+
+	/** \brief Create a copy of the view matrix, and store it in a new shared pointer.
 	 
 	 This method un-shares the view matrix with all other copies of \p this.
 	 The value of the view matrix remains the same.
@@ -379,7 +399,27 @@ public:
 	*/
 	void resetViewMatrixPtr();
 
-	/** Create a copy of the projection matrix, and store it in a new shared pointer.
+	/** \brief Set a new shared pointer for the view matrix.
+	
+	 This method un-shares the view matrix with all other copies of \p this
+	 And replaces it with \p viewMatrixPtr.
+	 You are responsible to filling the matrix to which the shared pointer links
+	 yourself with valid data.
+	 
+	 To keep the derived matrixes consistent \ref resetMVMatrix() and 
+	 \ref resetMVPMatrix() are called to create new independent instances of
+	 these shared pointers and their data too.
+	
+	 \see \ref viewMatrixPtr
+	*/
+	void setViewMatrixPtr(Mat4WithChangeCounterPtr const& viewMatrixPtr);
+
+	/// \see \ref viewMatrixPtr
+	auto const& getViewMatrixPtr() const {
+		return viewMatrixPtr;
+	}
+
+	/** \brief Create a copy of the projection matrix, and store it in a new shared pointer.
 	 
 	 This method un-shares the projection matrix with all other copies of \p this.
 	 The value of the projection matrix remains the same.
@@ -388,9 +428,29 @@ public:
 	 \ref resetMVPMatrix() is called to create new independent instance of
 	 that shared pointer and its data too.
 	
-	\see \ref viewMatrixPtr
+	\see \ref projectionMatrixPtr
 	*/
-	void resetProjMatrixPtr();
+	void resetProjectionMatrixPtr();
+
+	/** \brief Set a new shared pointer for the projection matrix.
+	
+	 This method un-shares the projection matrix with all other copies of \p this
+	 And replaces it with \p projectionMatrixPtr.
+	 You are responsible to filling the matrix to which the shared pointer links
+	 yourself with valid data.
+	 
+	 To keep the derived matrixes consistent \ref resetMVMatrix() and 
+	 \ref resetMVPMatrix() are called to create new independent instances of
+	 these shared pointers and their data too.
+	
+	 \see \ref projectionMatrixPtr
+	*/
+	void setProjectionMatrixPtr(Mat4WithChangeCounterPtr const& projectionMatrixPtr);
+
+	/// \see \ref projectionMatrixPtr
+	auto const& getProjectionMatrixPtr() const {
+		return projectionMatrixPtr;
+	}
 
 	/** Create a copy of the light direction vector, and store it in a new
 	 shared pointer.
@@ -452,7 +512,7 @@ private:
 	/// \brief Initialized to unity matrix.
 	Mat4WithChangeCounterPtr viewMatrixPtr;
 	/// \brief Initialized to unity matrix.
-	Mat4WithChangeCounterPtr projMatrixPtr;
+	Mat4WithChangeCounterPtr projectionMatrixPtr;
 	
 	/** \brief Initialized to unity matrix.
 	 

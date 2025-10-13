@@ -60,7 +60,7 @@ RenderStandardUniforms::RenderStandardUniforms()
 		Mat4WithChangeCounter()))
 	,viewMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
 		Mat4WithChangeCounter()))
-	,projMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
+	,projectionMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
 		Mat4WithChangeCounter()))
 	,MVMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
 		Mat4WithChangeCounter()))
@@ -95,8 +95,8 @@ Mat4 & RenderStandardUniforms::getProjMatrix () {
 	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
 		__PRETTY_FUNCTION__ << ": new maxMatrixChangeCounter = " 
 		<< maxMatrixChangeCounter);
-	projMatrixPtr->changeCounter = maxMatrixChangeCounter;
-	return projMatrixPtr->matrix4;
+	projectionMatrixPtr->changeCounter = maxMatrixChangeCounter;
+	return projectionMatrixPtr->matrix4;
 }
 
 Mat4 const &RenderStandardUniforms::getMVMatrixC() const {
@@ -129,12 +129,12 @@ Mat4 const &RenderStandardUniforms::getMVPMatrixC() const {
 	}
 	LOG4CXX_DEBUG(loggerRenderStandardUniforms,
 		__PRETTY_FUNCTION__ << ": projMatrixPtr->changeCounter = "
-		<< projMatrixPtr->changeCounter
+		<< projectionMatrixPtr->changeCounter
 		<< ", MVMatrixPtr->changeCounter = "
 		<< MVMatrixPtr->changeCounter
 		<< ", MVPMatrixPtr->changeCounter = "
 		<< MVPMatrixPtr->changeCounter);
-	if (std::max(projMatrixPtr->changeCounter, MVMatrixPtr->changeCounter) >
+	if (std::max(projectionMatrixPtr->changeCounter, MVMatrixPtr->changeCounter) >
 		MVPMatrixPtr->changeCounter) {
 		recalcMVPMatrix();
 	}
@@ -145,14 +145,29 @@ void RenderStandardUniforms::resetModelMatrixPtr() {
 	modelMatrixPtr.reset(new Mat4WithChangeCounter(*modelMatrixPtr));
 	resetMVMatrix();
 }
+void RenderStandardUniforms::setModelMatrixPtr(
+		Mat4WithChangeCounterPtr const &modelMatrixPtr) {
+	this->modelMatrixPtr = modelMatrixPtr;
+	resetMVMatrix();
+	}
 void RenderStandardUniforms::resetViewMatrixPtr() {
 	viewMatrixPtr.reset(new Mat4WithChangeCounter(*viewMatrixPtr));
 	resetMVMatrix();
 }
-void RenderStandardUniforms::resetProjMatrixPtr() {
-	projMatrixPtr.reset(new Mat4WithChangeCounter(*projMatrixPtr));
+void RenderStandardUniforms::setViewMatrixPtr(
+		Mat4WithChangeCounterPtr const &viewMatrixPtr) {
+	this->viewMatrixPtr = viewMatrixPtr;	
+	resetMVMatrix();
+	}
+void RenderStandardUniforms::resetProjectionMatrixPtr() {
+	projectionMatrixPtr.reset(new Mat4WithChangeCounter(*projectionMatrixPtr));
 	resetMVPMatrix();
 }
+void RenderStandardUniforms::setProjectionMatrixPtr(
+		Mat4WithChangeCounterPtr const &projectionMatrixPtr){
+	this->projectionMatrixPtr = projectionMatrixPtr;
+	resetMVPMatrix();
+	}
 void RenderStandardUniforms::resetLightDirPtr() {
 	lightDirPtr.reset(new Vec3(*lightDirPtr));
 }
@@ -179,7 +194,7 @@ void RenderStandardUniforms::recalcMVPMatrix() const {
 		<< MVPMatrixPtr->changeCounter
 		<< ", new Value is" << maxMatrixChangeCounter);
 	MVPMatrixPtr->changeCounter = maxMatrixChangeCounter;
-	MVPMatrixPtr->matrix4 = projMatrixPtr->matrix4 * MVMatrixPtr->matrix4;
+	MVPMatrixPtr->matrix4 = projectionMatrixPtr->matrix4 * MVMatrixPtr->matrix4;
 }
 
 void RenderStandardUniforms::resetMVMatrix() {
