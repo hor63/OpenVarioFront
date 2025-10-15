@@ -65,11 +65,6 @@ public:
 	
 	// overridden callbacks upon changes or actions
 	
-	/** \brief Request to re-calculate the own model matrix or vertex arrays when the own size changed.
-	 *
-	 * For control containers like dialogs the layout of the child controls is warranted.
-	 */
-	virtual void onSizeChanged() override;
 	/** \brief Request to re-calculate the own model matrix when the own position
 	 * changed.
 	 */

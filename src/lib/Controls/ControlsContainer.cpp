@@ -58,10 +58,38 @@ void ControlsContainer::insertControlInTabGroupBefore (ControlsWeakListT::iterat
 void ControlsContainer::drawChildren (
 		OevGLES::RenderStandardUniforms const &stdUniformData) {
 			
-	for (auto child: controlsMap) {
+	for (auto& child: controlsMap) {
 		if (child.second->isVisible()) {
 			child.second->draw(stdUniformData);
 		}
 	}
 }
+
+void ControlsContainer::onPositionChanged() {
+	ControlBase::onPositionChanged();
+	
+	for (auto & control : controlsMap) {
+		control.second->onParentPositionChanged();
+	}
+}
+
+void ControlsContainer::onParentPositionChanged() {
+	ControlBase::onParentPositionChanged();
+	
+	for (auto & control : controlsMap) {
+		control.second->onParentPositionChanged();
+	}
+}
+
+void ControlsContainer::onResetParentRenderUniforms(OevGLES::RenderStandardUniforms &parentUniforms) {
+	ControlBase::onResetParentRenderUniforms(parentUniforms);
+	
+	// Forward the own renderUniforms as parentUniforms to the children
+	for (auto & control : controlsMap) {
+		control.second->onResetParentRenderUniforms(renderUniforms);
+	}
+
+}
+
+
 } /* namespace OevControls */
