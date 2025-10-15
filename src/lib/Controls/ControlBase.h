@@ -248,7 +248,7 @@ public:
 	virtual void onResetParentRenderUniforms(
 		OevGLES::RenderStandardUniforms &parentUniforms);
 
-private:
+protected:
 	
 	/// \brief The name can be used for anything the control wishes to do with it
 	std::string name;
