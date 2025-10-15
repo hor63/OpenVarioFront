@@ -55,36 +55,6 @@ void ControlBase::setPosition (Pos position) {
 	}
 }
 
-void ControlBase::onPositionChanged() {
-	locTranslationMatrix(0,3) = position.x;
-	locTranslationMatrix(1,3) = position.y;
-	
-	renderUniforms.getModelMatrix() =
-		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
-	
-}
-
-void ControlBase::onParentPositionChanged() {
-
-	renderUniforms.getModelMatrix() =
-		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
-}
-
-void ControlBase::onResetParentRenderUniforms(
-	OevGLES::RenderStandardUniforms &parentUniforms) {
-
-	auto saveModelMatrixPtr = renderUniforms.getModelMatrixPtr();
-	
-	parentModelMatrixPtr = parentUniforms.getModelMatrixPtr();
-	renderUniforms = parentUniforms;
-
-	renderUniforms.setModelMatrixPtr(saveModelMatrixPtr);
-
-	renderUniforms.getModelMatrix() =
-		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
-
-}
-
 void ControlBase::setSize (Size size) {
 	if (size.height <= 0 || size.width <= 0) {
 		auto errTxt = fmt::format (
@@ -105,10 +75,6 @@ void ControlBase::setSize (Size size) {
 		
 		onSizeChanged();
 	}
-}
-
-void ControlBase::onSizeChanged() {
-	// Nothing to the here for me.
 }
 
 void ControlBase::setTopRight (Pos topRight) {
@@ -185,5 +151,40 @@ void ControlBase::setTabSuccessor (ControlBaseWeakPtr tabSuccessor) {
 void ControlBase::setTabContainer (ControlsContainerWeakPtr tabContainer) {
 	this->tabContainer = tabContainer;
 }
+
+void ControlBase::onSizeChanged() {
+	// Nothing to the here for me.
+}
+
+void ControlBase::onPositionChanged() {
+	locTranslationMatrix(0,3) = position.x;
+	locTranslationMatrix(1,3) = position.y;
+	
+	renderUniforms.getModelMatrix() =
+		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
+	
+}
+
+void ControlBase::onParentPositionChanged() {
+
+	renderUniforms.getModelMatrix() =
+		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
+}
+
+void ControlBase::onResetParentRenderUniforms(
+	OevGLES::RenderStandardUniforms &parentUniforms) {
+
+	auto saveModelMatrixPtr = renderUniforms.getModelMatrixPtr();
+	
+	parentModelMatrixPtr = parentUniforms.getModelMatrixPtr();
+	renderUniforms = parentUniforms;
+
+	renderUniforms.setModelMatrixPtr(saveModelMatrixPtr);
+
+	renderUniforms.getModelMatrix() =
+		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
+
+}
+
 
 } /* namespace OevControls */

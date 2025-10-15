@@ -81,23 +81,6 @@ public:
 	/// \ref size unchanged.
 	/// \see \ref position
 	void setPosition (Pos position);
-	/** \brief Request to re-calculate the own model matrix when the own position
-	 * changed.
-	 */
-	virtual void onPositionChanged();
-	/** \brief Request to re-calculate the own model matrix when the position of
-	 * the parent changed.
-	 *
-	 * Assume that the shared pointers of the parent's projection, view and model matrix remain
-	 * un-changed. Their values may of course change.
-	 */
-	virtual void onParentPositionChanged();
-
-	/**
-	 * One or more shared pointers of the parent uniforms have changed. Take over
-	 * the shared ones from the parent, or re-calculate your own ones from the parent.
-	 */
-	virtual void onResetParentRenderUniforms(OevGLES::RenderStandardUniforms& parentUniforms);
 
 	/// \see \ref size
 	auto getSize() const {
@@ -106,9 +89,6 @@ public:
 	/// Leaves \ref position unchanged, but adjusts \ref topRight accordingly
 	/// \see \ref size
 	void setSize (Size size);
-	/** \brief Request to re-calculate the own model matrix when the own size changed.
-	 */
-	virtual void onSizeChanged();
 
 	/// \see \ref topRight
 	auto getTopRight() const {
@@ -239,7 +219,35 @@ public:
 	bool isRootControl() {
 		return isRootControl_;
 	}
-	
+
+	// Callbacks upon changes or actions
+
+	/** \brief Request to re-calculate the own model matrix or vertex arrays
+	 * when the own size changed.
+	 *
+	 * For control containers like dialogs the layout of the child controls is
+	 * warranted.
+	 */
+	virtual void onSizeChanged();
+	/** \brief Request to re-calculate the own model matrix when the own position
+	 * changed.
+	 */
+	virtual void onPositionChanged();
+	/** \brief Request to re-calculate the own model matrix when the position of
+	 * the parent changed.
+	 *
+	 * Assume that the shared pointers of the parent's projection, view and model matrix remain
+	 * un-changed. Their values may of course change.
+	 */
+	virtual void onParentPositionChanged();
+
+	/**
+	 * One or more shared pointers of the parent uniforms have changed. Take over
+	 * the shared ones from the parent, or re-calculate your own ones from the parent.
+	 */
+	virtual void onResetParentRenderUniforms(
+		OevGLES::RenderStandardUniforms &parentUniforms);
+
 private:
 	
 	/// \brief The name can be used for anything the control wishes to do with it
