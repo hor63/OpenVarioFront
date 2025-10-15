@@ -62,6 +62,33 @@ public:
 		ControlBaseWeakPtr const &controlWeakPtr);
 	
 	void drawChildren (OevGLES::RenderStandardUniforms const &stdUniformData);
+	
+	// overridden callbacks upon changes or actions
+	
+	/** \brief Request to re-calculate the own model matrix or vertex arrays when the own size changed.
+	 *
+	 * For control containers like dialogs the layout of the child controls is warranted.
+	 */
+	virtual void onSizeChanged() override;
+	/** \brief Request to re-calculate the own model matrix when the own position
+	 * changed.
+	 */
+	virtual void onPositionChanged() override;
+	/** \brief Request to re-calculate the own model matrix when the position of
+	 * the parent changed.
+	 *
+	 * Assume that the shared pointers of the parent's projection, view and model matrix remain
+	 * un-changed. Their values may of course change.
+	 */
+	virtual void onParentPositionChanged() override;
+
+	/**
+	 * One or more shared pointers of the parent uniforms have changed. Take over
+	 * the shared ones from the parent, or re-calculate your own ones from the parent.
+	 */
+	virtual void onResetParentRenderUniforms(
+		OevGLES::RenderStandardUniforms &parentUniforms) override;
+
 protected:
 
 ControlsMapT controlsMap;
