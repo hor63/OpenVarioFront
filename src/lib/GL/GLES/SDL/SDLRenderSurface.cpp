@@ -162,11 +162,16 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 				<< 'x' << viewPortDimensions.y
 				<< ", size = " << viewPortDimensions.width
 				<< 'x' << viewPortDimensions.height);
+			
+			onWindowResize();
 		break;
 	} // switch (event.type)
 
 
 	return true;
+}
+void SDLRenderSurface::onWindowResize() {
+	#warning Fill me
 }
 
 #if defined HAVE_LOG4CXX_H
