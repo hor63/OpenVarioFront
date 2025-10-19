@@ -93,6 +93,7 @@ protected:
     GLint eglMajorVersion = 2;
     GLint eglMinorVersion = 0;
 
+	/// \brief Each render surface, a.k.a. base window can have one root control.
 	OevControls::RootControlSharedPtr rootControlPtr;
 
 };

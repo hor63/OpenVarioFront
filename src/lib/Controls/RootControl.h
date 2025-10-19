@@ -32,7 +32,7 @@ public:
 
 	/** End users must not directly create an object
 	 * 
-	 * I made it really hard to do because where parent points must be identical
+	 * I made it really hard to do because \p parent must point 
 	 * to \p this. This can only be done by \ref makeRootControl
 	 *
 	 * \see makeRootControl
@@ -62,7 +62,13 @@ private:
 	/// to store the reference.
 	OevGLES::SDLRenderSurface &renderSurface;
 
-	/// \brief Only to be called by good friends
+	/** \brief Only to be called by good friends
+	 * 
+	 * Here some dirty tricks are used to allow to pass a parent reference to the root control object
+	 * that points to itself.
+	 * Essentially I am splitting the allocation of the memory space and calling the constructor, like container
+	 * classes do.
+	 */
 	static RootControlSharedPtr
 	makeRootControl(OevGLES::SDLRenderSurface &renderSurface);
 
