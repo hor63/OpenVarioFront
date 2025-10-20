@@ -16,6 +16,7 @@
 #include "Renderers/RendererBase.h"
 #include "VecMat.h"
 #include "Uuid.h"
+#include "GLES/SDL/SDLRenderSurface.h"
 
 namespace OevControls {
 
@@ -33,17 +34,14 @@ using ControlsContainerWeakPtr = std::weak_ptr<ControlsContainer>;
 class ControlBase : public OevGLES::RendererBase {
 public:
 
-	struct Pos {
+	struct PosPixel {
 		/// \brief x goes to the left
-		GLfloat x = 0;
+		int xPixel = 0;
 		/// \brief y goes from bottom to top, as usual in GL-world.
-		GLfloat y = 0;
+		int yPixel = 0;
 	};
 
-	struct Size {
-		GLfloat width = 0;
-		GLfloat height = 0;
-	};
+	using SizePixel = OevGLES::SDLRenderSurface::SizePixel;
 
 	ControlBase(ControlsContainerWeakPtr const &parent,
 		OevUtil::Uuid const & uuid,
@@ -80,7 +78,7 @@ public:
 	/// Moves \ref topRight accordingly but leaves
 	/// \ref size unchanged.
 	/// \see \ref position
-	void setPosition (Pos position);
+	void setPosition (PosPixel position);
 
 	/// \see \ref size
 	auto getSize() const {
@@ -88,7 +86,7 @@ public:
 	}
 	/// Leaves \ref position unchanged, but adjusts \ref topRight accordingly
 	/// \see \ref size
-	void setSize (Size size);
+	void setSize (SizePixel size);
 
 	/// \see \ref topRight
 	auto getTopRight() const {
@@ -97,32 +95,32 @@ public:
 
 	/// \see \ref position
 	auto getX() const {
-		return position.x;
+		return position.xPixel;
 	}
 	/// \see \ref position
 	auto getY() const {
-		return position.y;
+		return position.yPixel;
 	}
 	/// \see \ref topRight
 	auto getRight() const {
-		return topRight.x;
+		return topRight.xPixel;
 	}
 	/// \see \ref topRight
 	auto getTop() const {
-		return topRight.y;
+		return topRight.yPixel;
 	}
 	/// \see \ref size
 	auto getWidth() const {
-		return size.width;
+		return size.widthPixel;
 	}
 	/// \see \ref size
 	auto getHeight() const {
-		return size.height;
+		return size.heightPixel;
 	}
 
 	/// Adjusts \ref size accordingly, but leaves \ref position unchanged.
 	/// \see \ref topRight
-	void setTopRight (Pos topRight);
+	void setTopRight (PosPixel topRight);
 
 	/// \see \ref foregroundColor
 	auto const & getForegroundColor () const {
@@ -265,13 +263,13 @@ protected:
 
 	
 	/// \brief Official (bottom right) position of the control relative to its \ref parent
-	Pos position = {0,0};
+	PosPixel position = {0,0};
 	/// \brief the bounding box around the control
-	Size size = {1,1};
+	SizePixel size = {1,1};
 	/// \brief Derived and redundant convenience coordinates based on \ref position and \ref size
 	///
 	/// \p topRight is like \ref position also relative to position of \ref parent.
-	Pos topRight = {1,1};
+	PosPixel topRight = {1,1};
 	
 	// Helpers for rendering
 	

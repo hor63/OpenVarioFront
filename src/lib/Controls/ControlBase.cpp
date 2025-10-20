@@ -47,54 +47,54 @@ void ControlBase::setName(std::string const & name) {
 	this->name = name;
 }
 
-void ControlBase::setPosition (Pos position) {
-	if (this->position.x != position.x ||
-		this->position.y != position.y) {
+void ControlBase::setPosition (PosPixel position) {
+	if (this->position.xPixel != position.xPixel ||
+		this->position.yPixel != position.yPixel) {
 		this->position = position;
 		onPositionChanged();
 	}
 }
 
-void ControlBase::setSize (Size size) {
-	if (size.height <= 0 || size.width <= 0) {
+void ControlBase::setSize (SizePixel size) {
+	if (size.heightPixel <= 0 || size.widthPixel <= 0) {
 		auto errTxt = fmt::format (
 			fmt::runtime(_(
 				"Control {0}:{1}: Error in ControlBase::setSize(): width and size must be > 0. "
 				"newSize is {2}x{3}")),
-				uuid.getUuidString(),name,size.width,size.height);
+				uuid.getUuidString(),name,size.widthPixel,size.heightPixel);
 		throw ControlsException(_(
 			errTxt.c_str()));
 	}
 	
-	if (this->size.height != size.height ||
-		this->size.width != size.width) {
+	if (this->size.heightPixel != size.heightPixel ||
+		this->size.widthPixel != size.widthPixel) {
 		this->size = size;
 		
-		topRight.x = position.x + size.width;
-		topRight.y = position.y + size.height;
+		topRight.xPixel = position.xPixel + size.widthPixel;
+		topRight.yPixel = position.yPixel + size.heightPixel;
 		
 		onSizeChanged();
 	}
 }
 
-void ControlBase::setTopRight (Pos topRight) {
-	if (topRight.x <= position.x ||
-		topRight.y <= position.y) {
+void ControlBase::setTopRight (PosPixel topRight) {
+	if (topRight.xPixel <= position.xPixel ||
+		topRight.yPixel <= position.yPixel) {
 		auto errTxt = fmt::format (
 			fmt::runtime(_(
 				"Control {0}:{1}: Error in ControlBase::setTopRight(): . "
 				"newTopRight is {2}x{3}, which is left or below position")),
-				uuid.getUuidString(),name,topRight.x,topRight.y);
+				uuid.getUuidString(),name,topRight.xPixel,topRight.yPixel);
 		throw ControlsException(_(
 			errTxt.c_str()));
 	}
 	
-	if (this->topRight.x != topRight.x ||
-		this->topRight.y != topRight.y) {
+	if (this->topRight.xPixel != topRight.xPixel ||
+		this->topRight.yPixel != topRight.yPixel) {
 		this->topRight = topRight;
 		
-		size.width  = topRight.x - position.x ;
-		size.height = topRight.y - position.y;
+		size.widthPixel  = topRight.xPixel - position.xPixel ;
+		size.heightPixel = topRight.yPixel - position.yPixel;
 		
 		onSizeChanged();
 	}
@@ -157,8 +157,8 @@ void ControlBase::onSizeChanged() {
 }
 
 void ControlBase::onPositionChanged() {
-	locTranslationMatrix(0,3) = position.x;
-	locTranslationMatrix(1,3) = position.y;
+	locTranslationMatrix(0,3) = position.xPixel;
+	locTranslationMatrix(1,3) = position.yPixel;
 	
 	renderUniforms.getModelMatrix() =
 		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
