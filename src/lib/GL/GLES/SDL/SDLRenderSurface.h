@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "Renderers/RendererBase.h"
 #include "GLES/sysSDLWindow.h"
 #include "GLES/GLFramework.h"
 
@@ -42,7 +43,14 @@ using SDLRenderSurfaceWeakPtr = std::weak_ptr<SDLRenderSurface>;
 
 } // namespace OevGLES {
 
-#include "RootControl.h"
+namespace OevControls {
+
+class RootControl;
+
+using RootControlSharedPtr = std::shared_ptr<RootControl>;
+using RootControlWeakPtr = std::weak_ptr<RootControl>;
+
+}
 
 namespace OevGLES {
 
@@ -52,6 +60,11 @@ class GLFramework;
 class SDLRenderSurface {
 	friend class GLFramework;
 public:
+
+	struct SizePixel {
+		int widthPixel = 0;
+		int heightPixel = 0;
+	};
 
 	SDLRenderSurface(GLFramework& framework);
 
@@ -96,7 +109,7 @@ public:
 		return baseUniforms;
 	}
 
-	/** \brief Called when a resize message is received.
+	/** \brief Called when a resize message is received or when the window is created.
 	 *
 	 * The default implementation re-calculates \ref baseUniforms to adjust the projection and view matrixes to
 	 * the described properties of \ref baseUniforms.
@@ -112,6 +125,13 @@ protected:
 
 	GLFramework& glFramework;
 	SDLNativeWindow nativeWindow;
+
+	/** \brief Current window size.
+	 *
+	 * Is being set by \ref onWindowResize() which is called when the window is created initially,
+	 * or when a resize event is received.
+	 */
+	SizePixel windowSize;
 
 	SDL_GLContextState* glContext = nullptr;
 
@@ -146,7 +166,8 @@ protected:
 	 *
 	 * \see \ref baseUniforms how projection and view matrix are calculated by default.
 	 */
-	void calculateViewProjectionMatrix();
+	virtual void calculateViewProjectionMatrix();
+	
 };
 
 // using SDLRenderSurfaceSharedPtr = std::shared_ptr<SDLRenderSurface>;

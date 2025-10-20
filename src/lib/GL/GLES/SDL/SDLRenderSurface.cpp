@@ -116,6 +116,8 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 			<< ", size = " << viewportCoords.width << 'x' << viewportCoords.height
 			);
 
+	onWindowResize();
+
 }
 
 void SDLRenderSurface::makeContextCurrent() {
@@ -171,7 +173,42 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 	return true;
 }
 void SDLRenderSurface::onWindowResize() {
-	#warning Fill me
+
+	SDL_GetWindowSizeInPixels(nativeWindow, &windowSize.widthPixel,&windowSize.heightPixel);
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ 
+		<< ": Window size = " << windowSize.widthPixel << 'x' << windowSize.heightPixel);
+		
+	calculateViewProjectionMatrix();
+}
+
+void SDLRenderSurface::calculateViewProjectionMatrix() {
+	
+	OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowSize.heightPixel*2),1};
+
+	// Assume the initial view point is exactly on the z-axis.
+	// My goal is to find the aperture angle at which from this viewpoint
+	// one coordinate unit in x or y direction is exactly one pixel.
+	// Thus with the aperture angle I see exactly the window height.
+	// To calculate the aperture angle the the ArcTan of
+	// (windowHeight/2) / viewerDistance
+	// is half of the aperture angle.
+	OevGLES::AngleRad apertureAngle = 
+		OevGLES::AngleRad::makeAngle(atan((
+			static_cast<double>(windowSize.heightPixel)/2.0)/camPos(2,0))) * 2.0;
+
+	OevGLES::Vec3 up = {0,1,0};
+	OevGLES::Vec3 origin = {0,0,0};
+
+	baseUniforms.getViewMatrix() =
+		OevGLES::viewMatrix(camPos.block<3, 1>(0, 0), origin, up);
+	baseUniforms.getProjMatrix() =
+		OevGLES::projectionMatrix(
+			static_cast<GLfloat>(windowSize.heightPixel),
+			static_cast<GLfloat>(windowSize.heightPixel * 3),
+			static_cast<GLfloat>(windowSize.widthPixel) /
+			static_cast<GLfloat>(windowSize.heightPixel),
+			apertureAngle);
+
 }
 
 #if defined HAVE_LOG4CXX_H
