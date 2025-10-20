@@ -11,14 +11,6 @@
 #include "ControlsContainer.h"
 #include <memory>
 
-namespace OevControls {
-
-class RootControl;
-
-using RootControlSharedPtr = std::shared_ptr<RootControl>;
-using RootControlWeakPtr = std::weak_ptr<RootControl>;
-
-} // namespace OevControls {
 
 #include "GLES/SDL/SDLRenderSurface.h"
 
