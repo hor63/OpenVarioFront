@@ -103,7 +103,7 @@ int main(int argint,char** argv) {
 		glTextGlobPtr->setResolutionDPI(96, 96);
 
 		auto renderSurfacePtr1 =
-			glFramework->createRenderSurface(1024, 1024, PACKAGE_STRING).lock();
+			glFramework->createRenderSurface(1000, 1000, PACKAGE_STRING).lock();
 			
 //		auto renderSurfacePtr2 =
 //			glFramework->createRenderSurface(1024, 1024, "SecondaryWindow").lock();
