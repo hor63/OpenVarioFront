@@ -22,6 +22,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "Renderers/RendererBase.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -110,6 +111,10 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 		GLint width; GLint height;
 	} viewportCoords;
 
+	SDL_GetWindowSizeInPixels(nativeWindow, &windowSize.widthPixel,&windowSize.heightPixel);
+	LOG4CXX_DEBUG(logger, 
+		" Window size = " << windowSize.widthPixel << 'x' << windowSize.heightPixel);
+
 	glGetIntegerv (GL_VIEWPORT, &viewportCoords.x);
 	LOG4CXX_DEBUG(logger,"Viewport pos = "
 			<< viewportCoords.x << 'x' << viewportCoords.y
@@ -139,32 +144,19 @@ OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr() {
 }
 
 bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
-	struct {
-		GLint x; GLint y;
-		GLint width; GLint height;
-	} viewPortDimensions;
-
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ 
 		<< ": event.type = " << event.type);
 
 	switch (event.type) {
 		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-			makeContextCurrent();
 			LOG4CXX_DEBUG(logger, "\tSDL event is SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED");
 			LOG4CXX_DEBUG(logger, "\t Window size changed to " << event.window.data1 
 				<< 'x' << event.window.data2 << " Pixels");
-			glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
-			LOG4CXX_DEBUG(logger, "\t GL viewport at " << viewPortDimensions.x
-				<< 'x' << viewPortDimensions.y
-				<< ", size = " << viewPortDimensions.width
-				<< 'x' << viewPortDimensions.height);
-			glViewport(0, 0, event.window.data1, event.window.data2);
-			glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
-			LOG4CXX_DEBUG(logger, "\t New GL viewport at " << viewPortDimensions.x
-				<< 'x' << viewPortDimensions.y
-				<< ", size = " << viewPortDimensions.width
-				<< 'x' << viewPortDimensions.height);
 			
+			SDL_GetWindowSizeInPixels(nativeWindow, &windowSize.widthPixel,&windowSize.heightPixel);
+			LOG4CXX_DEBUG(logger, 
+				" Window size = " << windowSize.widthPixel << 'x' << windowSize.heightPixel);
+		
 			onWindowResize();
 		break;
 	} // switch (event.type)
@@ -173,11 +165,25 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 	return true;
 }
 void SDLRenderSurface::onWindowResize() {
+	struct {
+		GLint x; GLint y;
+		GLint width; GLint height;
+	} viewPortDimensions;
 
-	SDL_GetWindowSizeInPixels(nativeWindow, &windowSize.widthPixel,&windowSize.heightPixel);
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ 
-		<< ": Window size = " << windowSize.widthPixel << 'x' << windowSize.heightPixel);
-		
+	makeContextCurrent();
+
+	glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": GL viewport at " << viewPortDimensions.x
+		<< 'x' << viewPortDimensions.y
+		<< ", size = " << viewPortDimensions.width
+		<< 'x' << viewPortDimensions.height);
+	glViewport(0, 0, windowSize.widthPixel, windowSize.heightPixel);
+	glGetIntegerv(GL_VIEWPORT, &viewPortDimensions.x);
+	LOG4CXX_DEBUG(logger, "\t New GL viewport at " << viewPortDimensions.x
+		<< 'x' << viewPortDimensions.y
+		<< ", size = " << viewPortDimensions.width
+		<< 'x' << viewPortDimensions.height);
+
 	calculateViewProjectionMatrix();
 }
 
@@ -199,8 +205,14 @@ void SDLRenderSurface::calculateViewProjectionMatrix() {
 	OevGLES::Vec3 up = {0,1,0};
 	OevGLES::Vec3 origin = {0,0,0};
 
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": camPos \n" << camPos
+		<< ", aperture angle = " << OevGLES::AngleDeg(apertureAngle).getAngleValue());
+
 	baseUniforms.getViewMatrix() =
 		OevGLES::viewMatrix(camPos.block<3, 1>(0, 0), origin, up);
+		
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": viewMatrix \n" << baseUniforms.getViewMatrixC());
+	
 	baseUniforms.getProjMatrix() =
 		OevGLES::projectionMatrix(
 			static_cast<GLfloat>(windowSize.heightPixel),
@@ -208,6 +220,43 @@ void SDLRenderSurface::calculateViewProjectionMatrix() {
 			static_cast<GLfloat>(windowSize.widthPixel) /
 			static_cast<GLfloat>(windowSize.heightPixel),
 			apertureAngle);
+
+	LOG4CXX_DEBUG(logger, "\t projectionMatrix =\n" << baseUniforms.getProjMatrixC()
+		<< "\n\t ViewMatrix = \n" << baseUniforms.getViewMatrixC()
+		<< "\n\t MVPMatrix = \n" << baseUniforms.getMVPMatrixC()
+		);
+
+/* Just a number tests how the MVP matrix applies incl. division by w
+	Vec4 pos1 {0,0,0,1};
+	Vec4 projectedPos1 = baseUniforms.getMVPMatrixC() * pos1;
+	LOG4CXX_DEBUG(logger, "\t pos1 = " << pos1.transpose()
+		<< ", projected pos1 = " << (projectedPos1.transpose() / projectedPos1(3,0)));
+
+	Vec4 pos2 {500,500,0,1};
+	Vec4 projectedPos2 = baseUniforms.getMVPMatrixC() * pos2;
+	LOG4CXX_DEBUG(logger, "\t pos2 = " << pos2.transpose()
+		<< ", projected pos2 = " << (projectedPos2.transpose() / projectedPos2(3,0)));
+
+	pos1(2,0) = -500;
+	projectedPos1 = baseUniforms.getMVPMatrixC() * pos1;
+	LOG4CXX_DEBUG(logger, "\t pos1 = " << pos1.transpose()
+		<< ", projected pos1 = " << (projectedPos1.transpose() / projectedPos1(3,0)));
+
+	pos2(2,0) = -500;
+	projectedPos2 = baseUniforms.getMVPMatrixC() * pos2;
+	LOG4CXX_DEBUG(logger, "\t pos2 = " << pos2.transpose()
+		<< ", projected pos2 = " << (projectedPos2.transpose() / projectedPos2(3,0)));
+
+	pos2(2,0) = -1000;
+	projectedPos2 = baseUniforms.getMVPMatrixC() * pos2;
+	LOG4CXX_DEBUG(logger, "\t pos2 = " << pos2.transpose()
+		<< ", projected pos2 = " << (projectedPos2.transpose() / projectedPos2(3,0)));
+
+	pos2(2,0) = 1000;
+	projectedPos2 = baseUniforms.getMVPMatrixC() * pos2;
+	LOG4CXX_DEBUG(logger, "\t pos2 = " << pos2.transpose()
+		<< ", projected pos2 = " << (projectedPos2.transpose() / projectedPos2(3,0)));
+*/
 
 }
 
