@@ -189,7 +189,9 @@ void SDLRenderSurface::onWindowResize() {
 
 void SDLRenderSurface::calculateViewProjectionMatrix() {
 	
-	OevGLES::Vec4 camPos = {0,0,static_cast<float>(windowSize.heightPixel*2),1};
+	OevGLES::Vec3 camPos = {static_cast<GLfloat>(windowSize.widthPixel) / 2.0f,
+		static_cast<GLfloat>(windowSize.heightPixel) / 2.0f,
+		static_cast<float>(windowSize.heightPixel*2)};
 
 	// Assume the initial view point is exactly on the z-axis.
 	// My goal is to find the aperture angle at which from this viewpoint
@@ -200,16 +202,17 @@ void SDLRenderSurface::calculateViewProjectionMatrix() {
 	// is half of the aperture angle.
 	OevGLES::AngleRad apertureAngle = 
 		OevGLES::AngleRad::makeAngle(atan((
-			static_cast<double>(windowSize.heightPixel)/2.0)/camPos(2,0))) * 2.0;
+			static_cast<double>(windowSize.heightPixel)/2.0)/camPos(2,0)) * 2.0);
 
 	OevGLES::Vec3 up = {0,1,0};
-	OevGLES::Vec3 origin = {0,0,0};
+	OevGLES::Vec3 lookAtPos = camPos;
+	lookAtPos(2,0) = 0.0f;
 
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": camPos \n" << camPos
 		<< ", aperture angle = " << OevGLES::AngleDeg(apertureAngle).getAngleValue());
 
 	baseUniforms.getViewMatrix() =
-		OevGLES::viewMatrix(camPos.block<3, 1>(0, 0), origin, up);
+		OevGLES::viewMatrix(camPos, lookAtPos, up);
 		
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": viewMatrix \n" << baseUniforms.getViewMatrixC());
 	
@@ -226,13 +229,13 @@ void SDLRenderSurface::calculateViewProjectionMatrix() {
 		<< "\n\t MVPMatrix = \n" << baseUniforms.getMVPMatrixC()
 		);
 
-/* Just a number tests how the MVP matrix applies incl. division by w
+/* Just a number tests how the MVP matrix applies incl. division by w +/
 	Vec4 pos1 {0,0,0,1};
 	Vec4 projectedPos1 = baseUniforms.getMVPMatrixC() * pos1;
 	LOG4CXX_DEBUG(logger, "\t pos1 = " << pos1.transpose()
 		<< ", projected pos1 = " << (projectedPos1.transpose() / projectedPos1(3,0)));
 
-	Vec4 pos2 {500,500,0,1};
+	Vec4 pos2 {1000,1000,0,1};
 	Vec4 projectedPos2 = baseUniforms.getMVPMatrixC() * pos2;
 	LOG4CXX_DEBUG(logger, "\t pos2 = " << pos2.transpose()
 		<< ", projected pos2 = " << (projectedPos2.transpose() / projectedPos2(3,0)));
@@ -256,7 +259,7 @@ void SDLRenderSurface::calculateViewProjectionMatrix() {
 	projectedPos2 = baseUniforms.getMVPMatrixC() * pos2;
 	LOG4CXX_DEBUG(logger, "\t pos2 = " << pos2.transpose()
 		<< ", projected pos2 = " << (projectedPos2.transpose() / projectedPos2(3,0)));
-*/
+/+ */
 
 }
 
