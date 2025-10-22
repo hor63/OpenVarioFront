@@ -47,7 +47,7 @@ void ControlBase::setName(std::string const & name) {
 	this->name = name;
 }
 
-void ControlBase::setPosition (PosPixel position) {
+void ControlBase::setPosition (PosPixel const& position) {
 	if (this->position.xPixel != position.xPixel ||
 		this->position.yPixel != position.yPixel) {
 		this->position = position;
@@ -55,7 +55,7 @@ void ControlBase::setPosition (PosPixel position) {
 	}
 }
 
-void ControlBase::setSize (SizePixel size) {
+void ControlBase::setSize (SizePixel const& size) {
 	if (size.heightPixel <= 0 || size.widthPixel <= 0) {
 		auto errTxt = fmt::format (
 			fmt::runtime(_(
@@ -77,7 +77,7 @@ void ControlBase::setSize (SizePixel size) {
 	}
 }
 
-void ControlBase::setTopRight (PosPixel topRight) {
+void ControlBase::setTopRight (PosPixel const& topRight) {
 	if (topRight.xPixel <= position.xPixel ||
 		topRight.yPixel <= position.yPixel) {
 		auto errTxt = fmt::format (
@@ -140,15 +140,15 @@ void ControlBase::setTabSequence(int tabSequence) {
 	this->tabSequence = tabSequence;
 }
 
-void ControlBase::setTabPredecessor (ControlBaseWeakPtr tabPredecessor) {
+void ControlBase::setTabPredecessor (ControlBaseWeakPtr const& tabPredecessor) {
 	this->tabPredecessor = tabPredecessor;
 }
 
-void ControlBase::setTabSuccessor (ControlBaseWeakPtr tabSuccessor) {
+void ControlBase::setTabSuccessor (ControlBaseWeakPtr const& tabSuccessor) {
 	this->tabSuccessor = tabSuccessor;
 }
 
-void ControlBase::setTabContainer (ControlsContainerWeakPtr tabContainer) {
+void ControlBase::setTabContainer (ControlsContainerWeakPtr const& tabContainer) {
 	this->tabContainer = tabContainer;
 }
 

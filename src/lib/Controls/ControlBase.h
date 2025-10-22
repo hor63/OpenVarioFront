@@ -78,7 +78,7 @@ public:
 	/// Moves \ref topRight accordingly but leaves
 	/// \ref size unchanged.
 	/// \see \ref position
-	void setPosition (PosPixel position);
+	void setPosition (PosPixel const& position);
 
 	/// \see \ref size
 	auto getSize() const {
@@ -86,7 +86,7 @@ public:
 	}
 	/// Leaves \ref position unchanged, but adjusts \ref topRight accordingly
 	/// \see \ref size
-	void setSize (SizePixel size);
+	void setSize (SizePixel const& size);
 
 	/// \see \ref topRight
 	auto getTopRight() const {
@@ -120,7 +120,7 @@ public:
 
 	/// Adjusts \ref size accordingly, but leaves \ref position unchanged.
 	/// \see \ref topRight
-	void setTopRight (PosPixel topRight);
+	void setTopRight (PosPixel const& topRight);
 
 	/// \see \ref foregroundColor
 	auto const & getForegroundColor () const {
@@ -154,7 +154,7 @@ public:
 	auto hasFocus() const {
 		return hasFocus_;
 	}
-	/// \see \ref hasFocus_
+	/// \see \ref hasFocus_t.CHAR_COL_DECL_LENGTH
 	void setHasFocus(bool hasFocus = true);
 	
 	/// \see \ref visible
@@ -183,8 +183,8 @@ public:
 	auto isDefaultControl() {
 		return isDefaultControl_;
 	}
-	/// \see \ref isDefaultControl_
-	void setDefaultControl (bool defaultControl = false);
+	/// \see \ref isDefaultControl__
+	void setDefaultControl (bool isDefaultControl = false);
 
 	/// \see \ref tabSequence
 	auto getTabSequence() {
@@ -198,21 +198,21 @@ public:
 		return tabPredecessor;
 	}
 	/// \see \ref tabPredecessor
-	void setTabPredecessor (ControlBaseWeakPtr tabPredecessor);
+	void setTabPredecessor (ControlBaseWeakPtr const& tabPredecessor);
 	
 	/// \see \ref tabSuccessor
 	auto getTabSuccessor () {
 		return tabSuccessor;
 	}
 	/// \see \ref tabSuccessor
-	void setTabSuccessor (ControlBaseWeakPtr tabSuccessor);
+	void setTabSuccessor (ControlBaseWeakPtr const& tabSuccessor);
 	
 	/// \see \ref tabContainer
 	auto getTabContainer () const {
 		return tabContainer;
 	}
 	/// \see \ref tabContainer
-	void setTabContainer (ControlsContainerWeakPtr tabContainer);
+	void setTabContainer (ControlsContainerWeakPtr const& tabContainer);
 
 	bool isRootControl() {
 		return isRootControl_;
