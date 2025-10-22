@@ -185,6 +185,10 @@ void SDLRenderSurface::onWindowResize() {
 		<< 'x' << viewPortDimensions.height);
 
 	calculateViewProjectionMatrix();
+	
+	if (rootControlPtr) {
+		rootControlPtr->setSize(windowSize);
+	}
 }
 
 void SDLRenderSurface::calculateViewProjectionMatrix() {
