@@ -1,5 +1,5 @@
 /*
- * EGLRenderSurface.cpp
+ * SDLRenderSurface.cpp
  *
  *  Created on: Apr 24, 2018
  *	  Author: hor
