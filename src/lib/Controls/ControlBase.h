@@ -179,11 +179,11 @@ public:
 	/// \see \ref takesFocus
 	void setCanTakeFocus (bool takesFocus = false);
 
-	/// \see \ref defaultControl
+	/// \see \ref isDefaultControl_
 	auto isDefaultControl() {
 		return isDefaultControl_;
 	}
-	/// \see \ref defaultControl
+	/// \see \ref isDefaultControl_
 	void setDefaultControl (bool defaultControl = false);
 
 	/// \see \ref tabSequence

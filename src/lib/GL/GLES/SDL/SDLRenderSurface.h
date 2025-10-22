@@ -144,21 +144,28 @@ protected:
 	/** \brief Base set of render uniforms
 	 * 
 	 * Default values are:
-	 * - Camera position is 2*WindowHeight back (positive Z), x and y = 0, looking to the origin.
+	 * - Camera position is z = 2*WindowHeight back, x = indowWidth/2 and y = windowHeight/2, looking at the 
+	 *		lookAt point.\n
+	 *		The lookAt point has the same x and y position as the camera position, but y = 0.
 	 * - Projection Matrix: Builds a frustum box 
 	 * 		of -WindowWidth/2 <= x <= WindowWidth, -WindowHeight/2 <= y<= 
 	 * 		WindowHeight, -WindowHeight <= z <= WindowHeight at the camera position \n
 	 *		The aperture angle is calculated from the camera position that one unit in the model space is exactly
 	 *		one pixel on the screen.
-	 *	- View matrix is the looking from the camera position to origin. Up is positive Y direction
-	 *	- Model matrix is unity.
-	 * 	- (Spot) Light direction is 0,0,1
-	 *	- (Spot) Light color is 0.5, 0.5, 0.3, 1.0 (Alpha)
-	 *	- Ambient Light color is 0.5, 0.5, 0.5, 1.0 (Alpha)
+	 * - View matrix is the looking from the camera position to the lookAt point. Up is positive Y direction.
+	 *		This means in view space x=0 and y=0 is the lower left corner of the frustum on the y=0 plane.
+	 *		For 2D modelling using y=0 x and y are in pixel size on the screen, and originate in the lower left corner
+	 *		of the screen.
+	 * - Model matrix is unity.
+	 * - (Spot) Light direction is 0,0,1
+	 * - (Spot) Light color is 0.5, 0.5, 0.3, 1.0 (Alpha)
+	 * - Ambient Light color is 0.5, 0.5, 0.5, 1.0 (Alpha)
 	 *
 	 * This setup allows direct 2-D rendering when z=0 with every unit in model space is a pixel on the screen.
 	 *
 	 * If you do not like it use \ref getBaseUniforms to change any of the matrixes to your needs.
+	 * In this case you need to override \ref onWindowResize() and/or \ref alculateViewProjectionMatrix() because the
+	 * latter would over-write the view and projection matrix for any window size change.
 	 */
 	OevGLES::RenderStandardUniforms baseUniforms;
 

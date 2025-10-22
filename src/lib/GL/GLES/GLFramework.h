@@ -64,7 +64,7 @@ public:
 	SDLRenderSurfaceWeakPtr createRenderSurface (GLint width, GLint height,
 			char const* windowName);
 
-	/** \Return a render surface pointer for an SDL window ID
+	/** \return a render surface pointer for an SDL window ID
 	 * 
 	 * The render surface and underlying SDL window must have been created by
 	 * \ref createRenderSurface before.

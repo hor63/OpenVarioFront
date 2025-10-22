@@ -231,7 +231,7 @@ public:
 	 because it forces a re-caculation of
 	 \ref MVPMatrixPtr contents when you access them.
 	 
-	 \see \ref projMatrixPtr
+	 \see \ref projectionMatrixPtr
 	 \see \ref getProjMatrixC() read-only access
 	*/
 	Mat4 & getProjMatrix ();
@@ -286,7 +286,7 @@ public:
 
 	/** \brief Read-only access to the projection matrix.
 	 
-	 \see \ref projMatrixPtr
+	 \see \ref projectionMatrixPtr
 	 \see \ref getProjMatrix() read/write access
 	*/
 	Mat4 const & getProjMatrixC () const {
@@ -312,7 +312,7 @@ public:
 	/** \brief Read-only access to the model-view-projection matrix.
 	 
 	 \ref MVPMatrixPtr is automatically re-calculated when \ref modelMatrixPtr
-	 and/or \ref viewMatrixPtr and/or \ref projMatrixPtr have been modified by
+	 and/or \ref viewMatrixPtr and/or \ref projectionMatrixPtr have been modified by
 	 calls to \ref getModelMatrix() or \ref getViewMatrix() or
 	 \ref getProjMatrix().
 	 
