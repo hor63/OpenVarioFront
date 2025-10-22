@@ -3,18 +3,38 @@
  *
  *  Created on: Jul 2, 2025
  *      Author: hor
+ *
+ *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
+ *   Copyright (C) 2018  Kai Horstmann
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License along
+ *   with this program; if not, write to the Free Software Foundation, Inc.,
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
-#include <utility>
+#include "Renderers/RendererBase.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
+
 #include "OVFCommon.h"
 
 #include "ExceptionBase.h"
 #include "fmt/base.h"
 #include "fmt/format.h"
 
-#include "lib/Controls/ControlBase.h"
+#include "ControlBase.h"
+#include "ControlsContainer.h"
 
 namespace OevControls {
 
@@ -32,7 +52,12 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 			"Error in ControlBase::ControlBase: parent must be a valid pointer"
 			"to an existing ControlsContainer");
 	}
-	
+
+	renderUniforms = parentPtr->getRenderUniforms();
+	// You always have your own model matrix, alone to set your position.
+	renderUniforms.resetModelMatrixPtr();
+	renderUniforms.getModelMatrix() = OevGLES::Mat4::Identity();
+
 	// The distincive property of the root control is that its parent points to itself.
 	if (reinterpret_cast<void const*>(parentPtr.get())
 		== reinterpret_cast<void const*>(this)) {
@@ -51,6 +76,13 @@ void ControlBase::setPosition (PosPixel const& position) {
 	if (this->position.xPixel != position.xPixel ||
 		this->position.yPixel != position.yPixel) {
 		this->position = position;
+		
+		locControlModelMatrix(0,3) = position.xPixel;
+		locControlModelMatrix(1,3) = position.yPixel;
+		
+		renderUniforms.getModelMatrix() =
+			parentModelMatrixPtr->matrix4 * locControlModelMatrix;
+
 		onPositionChanged();
 	}
 }
@@ -72,6 +104,12 @@ void ControlBase::setSize (SizePixel const& size) {
 		
 		topRight.xPixel = position.xPixel + size.widthPixel;
 		topRight.yPixel = position.yPixel + size.heightPixel;
+
+		locControlModelMatrix(0,0) = size.widthPixel;
+		locControlModelMatrix(1,1) = size.heightPixel;
+
+		renderUniforms.getModelMatrix() =
+			parentModelMatrixPtr->matrix4 * locControlModelMatrix;
 		
 		onSizeChanged();
 	}
@@ -96,6 +134,12 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 		size.widthPixel  = topRight.xPixel - position.xPixel ;
 		size.heightPixel = topRight.yPixel - position.yPixel;
 		
+		locControlModelMatrix(0,0) = size.widthPixel;
+		locControlModelMatrix(1,1) = size.heightPixel;
+
+		renderUniforms.getModelMatrix() =
+			parentModelMatrixPtr->matrix4 * locControlModelMatrix;
+
 		onSizeChanged();
 	}
 }
@@ -136,7 +180,8 @@ void ControlBase::setDefaultControl (bool isDefaultControl) {
 	this->isDefaultControl_ = isDefaultControl;
 }
 
-void ControlBase::setTabSequence(int tabSequence) {
+void ControlBase::setTabSequence(int tabSequence) {#include "ControlsContainer.h"
+
 	this->tabSequence = tabSequence;
 }
 
@@ -157,18 +202,13 @@ void ControlBase::onSizeChanged() {
 }
 
 void ControlBase::onPositionChanged() {
-	locTranslationMatrix(0,3) = position.xPixel;
-	locTranslationMatrix(1,3) = position.yPixel;
-	
-	renderUniforms.getModelMatrix() =
-		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
 	
 }
 
 void ControlBase::onParentPositionChanged() {
 
 	renderUniforms.getModelMatrix() =
-		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
+		parentModelMatrixPtr->matrix4 * locControlModelMatrix;
 }
 
 void ControlBase::onResetParentRenderUniforms(
@@ -182,7 +222,7 @@ void ControlBase::onResetParentRenderUniforms(
 	renderUniforms.setModelMatrixPtr(saveModelMatrixPtr);
 
 	renderUniforms.getModelMatrix() =
-		parentModelMatrixPtr->matrix4 * locTranslationMatrix;
+		parentModelMatrixPtr->matrix4 * locControlModelMatrix;
 
 }
 

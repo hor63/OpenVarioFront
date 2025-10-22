@@ -3,6 +3,24 @@
  *
  *  Created on: Jul 2, 2025
  *      Author: hor
+ *
+ *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
+ *   Copyright (C) 2018  Kai Horstmann
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License along
+ *   with this program; if not, write to the Free Software Foundation, Inc.,
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
 
 #ifndef LIB_CONTROLS_CONTROLBASE_H_
@@ -239,6 +257,10 @@ public:
 	 */
 	virtual void onParentPositionChanged();
 
+	OevGLES::RenderStandardUniforms const& getRenderUniforms() {
+		return renderUniforms;
+	}
+
 	/**
 	 * One or more shared pointers of the parent uniforms have changed. Take over
 	 * the shared ones from the parent, or re-calculate your own ones from the parent.
@@ -285,8 +307,12 @@ protected:
 	/**
 	 * Used to quickly recalculate the local model matrix from the parent's
 	 * model matrix. 
+	 * 
+	 * It contains the translation by the control's position. \n
+	 * It also contains the scaling by the control's size. This way I can re-use a shared vertex buffer with 4 vertexes
+	 * with 4 vertexes at 0x0, 0x1, 1,1, 1,0 which form a rectangle by scaling you stretch it to the control's dimensions.
 	 */
-	OevGLES::Mat4 locTranslationMatrix = OevGLES::Mat4::Identity();
+	OevGLES::Mat4 locControlModelMatrix = OevGLES::Mat4::Identity();
 	
 	/** \brief Remember the parent's model matrix.
 	*/
