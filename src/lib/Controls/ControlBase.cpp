@@ -180,7 +180,7 @@ void ControlBase::setDefaultControl (bool isDefaultControl) {
 	this->isDefaultControl_ = isDefaultControl;
 }
 
-void ControlBase::setTabSequence(int tabSequence) {#include "ControlsContainer.h"
+void ControlBase::setTabSequence(int tabSequence) {
 
 	this->tabSequence = tabSequence;
 }
