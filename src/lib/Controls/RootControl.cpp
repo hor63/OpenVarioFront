@@ -26,7 +26,9 @@ namespace OevControls {
 static OevUtil::Uuid const rootContolUUID ("4c99a482-52f0-44b3-bb3b-a5a4cc506095");
 
 RootControlSharedPtr RootControl::makeRootControl(
-	OevGLES::SDLRenderSurface &renderSurface) {
+	OevGLES::SDLRenderSurface &renderSurface,
+	ControlsContextSharedPtr const& controlsContextPtr
+	) {
 
 RootControlSharedPtr newRootControlPtr;
 
@@ -54,17 +56,18 @@ RootControlSharedPtr newRootControlPtr;
 	newRootControlPtr.reset(rawPtr);
 	
 	RootControlAllocatorTraits::construct(rootCtlAllocator, rawPtr,
-										  newRootControlPtr, rootContolUUID,
+										  newRootControlPtr, controlsContextPtr,rootContolUUID,
 										  renderSurface, "root");
 
 	return newRootControlPtr;
 }
 
 RootControl::RootControl(ControlsContainerWeakPtr  const &parent,
+		ControlsContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
 		OevGLES::SDLRenderSurface &renderSurface,
 		char const* name)
-	:ControlsContainer(parent,uuid,name),
+	:ControlsContainer(parent,controlsContextPtr,uuid,name),
 	 renderSurface{renderSurface}
 {
 	#if defined HAVE_LOG4CXX_H

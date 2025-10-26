@@ -42,6 +42,14 @@ namespace OevControls {
 class ControlBase;
 class ControlsContainer;
 
+/** \brief Stores all kind of useful resources for the appearance of controls and dialogs, and "global" pointers
+
+	\see Find the definition in \ref ControlsContext.h
+ */
+struct ControlsContext;
+using ControlsContextSharedPtr = std::shared_ptr<ControlsContext>;
+
+
 // smart pointer declarations
 using ControlBasePtr     = std::shared_ptr<ControlBase>;
 using ControlBaseWeakPtr = std::weak_ptr<ControlBase>;
@@ -62,8 +70,10 @@ public:
 	using SizePixel = OevGLES::SDLRenderSurface::SizePixel;
 
 	ControlBase(ControlsContainerWeakPtr const &parent,
+		ControlsContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
-		char const* name = "");
+		char const* name = ""
+	);
 
 	virtual ~ControlBase();
 	// Copy constructors and assignment operators are explicitly prohibited. 
@@ -236,6 +246,14 @@ public:
 		return isRootControl_;
 	}
 
+	/** 
+	 * You can modify the content of the shared pointer. You just cannot reset the
+	 * share pointer in \p this.
+	 */
+	ControlsContextSharedPtr const& getControlsContextPtr() const {
+		return controlsContextPtr;
+	}
+
 	// Callbacks upon changes or actions
 
 	/** \brief Request to re-calculate the own model matrix or vertex arrays
@@ -366,6 +384,12 @@ protected:
 	ControlBaseWeakPtr tabPredecessor;
 	ControlBaseWeakPtr tabSuccessor;
 	ControlsContainerWeakPtr tabContainer;
+	
+	/** \brief shared pointer to the context for all controls based on one \ref RootControl
+	 * control for a \ref SDLRenderSurface.
+	 *
+	 */
+	ControlsContextSharedPtr controlsContextPtr;
 };
 
 static constexpr auto s = sizeof(ControlBase);

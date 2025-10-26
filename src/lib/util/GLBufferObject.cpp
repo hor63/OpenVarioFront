@@ -1,11 +1,11 @@
 /*
- * PlainFieldControl.cpp
+ * GLBufferObject.cpp
  *
- *  Created on: Oct 22, 2025
+ *  Created on: Oct 25, 2025
  *      Author: hor
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
- *   Copyright (C) 2018  Kai Horstmann
+ *   Copyright (C) 2025  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,24 +25,43 @@
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-
 #include "OVFCommon.h"
 
-#include "PlainFieldControl.h"
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
 
-namespace OevControls {
+#include "GLBufferObject.h"
 
-PlainFieldControl::PlainFieldControl(ControlsContainerWeakPtr const &parent,
-		ControlsContextSharedPtr const& controlsContextPtr,
-		OevUtil::Uuid const & uuid,
-		char const* name) :
-		ControlBase(parent,controlsContextPtr,uuid,name)
-{
+namespace OevGLES {
+
+GLBufferObject::GLBufferObject() {
+	glGenBuffers(1, &bufferHandle);
+}
+
+GLBufferObject::~GLBufferObject() {
+	if (bufferHandle != 0U) {
+		glDeleteBuffers(1, &bufferHandle);
+		bufferHandle = 0;
+	}
+}
+
+GLBufferObject::GLBufferObject(GLBufferObject &&other) {
+
+	bufferHandle = other.bufferHandle;
+	other.bufferHandle = 0;
 
 }
 
-PlainFieldControl::~PlainFieldControl() {
-	// TODO Auto-generated destructor stub
+GLBufferObject& GLBufferObject::operator=(GLBufferObject &&other) {
+	if (bufferHandle != 0U) {
+		glDeleteBuffers(1, &bufferHandle);
+	}
+
+	bufferHandle = other.bufferHandle;
+	other.bufferHandle = 0;
+
+	return *this;
 }
 
-} /* namespace OevControls */
+} /* namespace OevGLES {*/

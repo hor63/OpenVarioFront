@@ -17,7 +17,8 @@
 
 noinst_LIBRARIES = libOEV_Controls.a
 libOEV_Controls_a_SOURCES = \
-	ControlBase.cpp ControlsContainer.cpp RootControl.cpp
+	ControlBase.cpp ControlsContainer.cpp RootControl.cpp PlainFieldControl.cpp \
+	ControlsContext.cpp
 
 AM_CXXFLAGS=$(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)

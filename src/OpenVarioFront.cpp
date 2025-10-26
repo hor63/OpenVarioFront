@@ -183,8 +183,8 @@ int main(int argint,char** argv) {
 
 		glTextRend.setFontSize(30);
 //		glTextRend.setFonts("Noto Sans");
-//		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Sans Thai, Noto Sans Bengali, Noto Sans CJK SC");
-		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
+		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Sans Thai, Noto Sans Bengali, Noto Sans CJK SC");
+//		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
 		glTextRend.setText(
 				  "0123456789||0ABCDEFGHIJK"
 				"\n一个对此心怀恶意的流氓"

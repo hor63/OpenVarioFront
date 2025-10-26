@@ -33,6 +33,7 @@
 
 #include "GLES/GLFramework.h"
 #include "SDLUtil.h"
+#include "ControlsContext.h"
 
 namespace OevGLES {
 
@@ -134,10 +135,11 @@ void SDLRenderSurface::makeContextCurrent() {
 
 }
 
-OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr() {
+OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr(
+			OevControls::ControlsContextSharedPtr const& controlsContextPtr) {
 	
 	if (!rootControlPtr) {
-		rootControlPtr = OevControls::RootControl::makeRootControl(*this);
+		rootControlPtr = OevControls::RootControl::makeRootControl(*this,controlsContextPtr);
 	}
 	
 	return rootControlPtr;

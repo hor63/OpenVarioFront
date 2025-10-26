@@ -33,6 +33,7 @@ namespace OevControls {
 class PlainFieldControl :public ControlBase {
 public:
 	PlainFieldControl(ControlsContainerWeakPtr const &parent,
+		ControlsContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name = "");
 	virtual ~PlainFieldControl();

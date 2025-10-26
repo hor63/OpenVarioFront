@@ -30,6 +30,7 @@ public:
 	 * \see makeRootControl
 	 */
 	RootControl(ControlsContainerWeakPtr  const &parent,
+		ControlsContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
 		OevGLES::SDLRenderSurface &renderSurface,
 		char const* name = "root");
@@ -62,7 +63,10 @@ private:
 	 * classes do.
 	 */
 	static RootControlSharedPtr
-	makeRootControl(OevGLES::SDLRenderSurface &renderSurface);
+	makeRootControl(
+		OevGLES::SDLRenderSurface &renderSurface,
+		ControlsContextSharedPtr const& controlsContextPtr
+);
 
 };
 

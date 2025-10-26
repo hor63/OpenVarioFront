@@ -50,9 +50,13 @@ class RootControl;
 using RootControlSharedPtr = std::shared_ptr<RootControl>;
 using RootControlWeakPtr = std::weak_ptr<RootControl>;
 
-}
+struct ControlsContext;
+
+} // namespace OevControls
 
 namespace OevGLES {
+
+using ControlsContextSharedPtr = std::shared_ptr<OevControls::ControlsContext>;
 
 class GLFramework;
 
@@ -83,11 +87,19 @@ public:
 		return glFramework;
 	}
 	
-	/* \brief Return the root control associated with the render surface.
+	/** \brief Return the root control associated with the render surface.
 	 * 
 	 * The root control is being created when it did not yet exist.
+	 *
+	 * Please note that \p controlsContextPtr is only being used when you call this method for the first time
+	 * when the \ref OevControls::RootControlWeakPtr object is being created.
+	 * Each subsequent call on this object will just return the shared pointer object again.
+	 *
+	 * \param controlsContextPtr Optional shared pointer to a controls and dialog context.
 	 */
-	OevControls::RootControlWeakPtr getRootControlPtr();
+	OevControls::RootControlWeakPtr getRootControlPtr(
+		ControlsContextSharedPtr const& controlsContextPtr = ControlsContextSharedPtr{}
+	);
 	
 	/** \brief SDL event handler and dispatcher
 	 * 
@@ -168,6 +180,7 @@ protected:
 	 * latter would over-write the view and projection matrix for any window size change.
 	 */
 	OevGLES::RenderStandardUniforms baseUniforms;
+
 
 	/** \brief Calculate the view and the projection matrix according to the window size
 	 *
