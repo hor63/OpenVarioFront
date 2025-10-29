@@ -1,5 +1,5 @@
 /*
- * GLBufferObject.cpp
+ * GLObjectWrappers.cpp
  *
  *  Created on: Oct 25, 2025
  *      Author: hor
@@ -31,7 +31,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
 
-#include "GLBufferObject.h"
+#include "GLObjectWrappers.h"
 
 namespace OevGLES {
 

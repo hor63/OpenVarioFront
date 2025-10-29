@@ -133,8 +133,7 @@ am__v_AR_1 =
 libOEV_util_a_AR = $(AR) $(ARFLAGS)
 libOEV_util_a_LIBADD =
 am_libOEV_util_a_OBJECTS = VecMat.$(OBJEXT) ExceptionBase.$(OBJEXT) \
-	SDLUtil.$(OBJEXT) Uuid.$(OBJEXT) GLBufferObject.$(OBJEXT) \
-	format.$(OBJEXT) os.$(OBJEXT)
+	SDLUtil.$(OBJEXT) Uuid.$(OBJEXT) format.$(OBJEXT) os.$(OBJEXT)
 libOEV_util_a_OBJECTS = $(am_libOEV_util_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -152,9 +151,8 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/ExceptionBase.Po \
-	./$(DEPDIR)/GLBufferObject.Po ./$(DEPDIR)/SDLUtil.Po \
-	./$(DEPDIR)/Uuid.Po ./$(DEPDIR)/VecMat.Po \
-	./$(DEPDIR)/format.Po ./$(DEPDIR)/os.Po
+	./$(DEPDIR)/SDLUtil.Po ./$(DEPDIR)/Uuid.Po \
+	./$(DEPDIR)/VecMat.Po ./$(DEPDIR)/format.Po ./$(DEPDIR)/os.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -430,7 +428,6 @@ libOEV_util_a_SOURCES = VecMat.cpp \
 	ExceptionBase.cpp \
 	SDLUtil.cpp \
 	Uuid.cpp \
-	GLBufferObject.cpp \
 	../../../3rdParty/fmt/src/format.cc \
 	../../../3rdParty/fmt/src/os.cc
 
@@ -491,7 +488,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExceptionBase.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLBufferObject.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDLUtil.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Uuid.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VecMat.Po@am__quote@ # am--include-marker
@@ -705,7 +701,6 @@ clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
 
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/ExceptionBase.Po
-	-rm -f ./$(DEPDIR)/GLBufferObject.Po
 	-rm -f ./$(DEPDIR)/SDLUtil.Po
 	-rm -f ./$(DEPDIR)/Uuid.Po
 	-rm -f ./$(DEPDIR)/VecMat.Po
@@ -757,7 +752,6 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/ExceptionBase.Po
-	-rm -f ./$(DEPDIR)/GLBufferObject.Po
 	-rm -f ./$(DEPDIR)/SDLUtil.Po
 	-rm -f ./$(DEPDIR)/Uuid.Po
 	-rm -f ./$(DEPDIR)/VecMat.Po

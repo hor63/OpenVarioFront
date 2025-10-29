@@ -64,7 +64,8 @@ ControlsContext::ControlsContext (
 				{1,1,0.1},
 				{0,1,0,1}
 			};
-#error write the vertex buffer data!			
+			
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 		}
 
 } // namespace OevControls {

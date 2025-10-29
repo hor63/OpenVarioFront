@@ -19,7 +19,8 @@ noinst_LIBRARIES = libOEV_GLES.a
 libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
 	GLES/SDL/sysSDLWindow.cpp GLES/SDL/SDLRenderSurface.cpp \
 	GLES/GLShader.cpp GLES/GLProgram.cpp \
-	GLES/GLTexture.cpp GLES/TexHelper/TextureData.cpp \
+	GLES/GLTexture.cpp GLES/GLObjectWrappers.cpp \
+	GLES/TexHelper/TextureData.cpp \
 	GLES/TexHelper/ImageReaderBase.cpp \
 	GLES/TexHelper/PngReader.cpp GLES/TexHelper/JpegReader.cpp \
 	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \

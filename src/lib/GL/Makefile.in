@@ -135,8 +135,9 @@ libOEV_GLES_a_LIBADD =
 am_libOEV_GLES_a_OBJECTS = GLFramework.$(OBJEXT) \
 	sysSDLWindow.$(OBJEXT) SDLRenderSurface.$(OBJEXT) \
 	GLShader.$(OBJEXT) GLProgram.$(OBJEXT) GLTexture.$(OBJEXT) \
-	TextureData.$(OBJEXT) ImageReaderBase.$(OBJEXT) \
-	PngReader.$(OBJEXT) JpegReader.$(OBJEXT) GLProgBase.$(OBJEXT) \
+	GLObjectWrappers.$(OBJEXT) TextureData.$(OBJEXT) \
+	ImageReaderBase.$(OBJEXT) PngReader.$(OBJEXT) \
+	JpegReader.$(OBJEXT) GLProgBase.$(OBJEXT) \
 	GLProgDiffuseLight.$(OBJEXT) GLProgDiffLightTexture.$(OBJEXT) \
 	GLProgTextTexture.$(OBJEXT) GLProgDiffLightCircle.$(OBJEXT) \
 	GLProgSimpleFill.$(OBJEXT) RendererBase.$(OBJEXT) \
@@ -167,8 +168,8 @@ am__depfiles_remade = ./$(DEPDIR)/AnalogHandRenderer.Po \
 	./$(DEPDIR)/CircleFilledRenderer.Po \
 	./$(DEPDIR)/CirclePartialArcRenderer.Po \
 	./$(DEPDIR)/CirclePolygonVertexContainer.Po \
-	./$(DEPDIR)/GLFramework.Po ./$(DEPDIR)/GLProgBase.Po \
-	./$(DEPDIR)/GLProgDiffLightCircle.Po \
+	./$(DEPDIR)/GLFramework.Po ./$(DEPDIR)/GLObjectWrappers.Po \
+	./$(DEPDIR)/GLProgBase.Po ./$(DEPDIR)/GLProgDiffLightCircle.Po \
 	./$(DEPDIR)/GLProgDiffLightTexture.Po \
 	./$(DEPDIR)/GLProgDiffuseLight.Po \
 	./$(DEPDIR)/GLProgSimpleFill.Po \
@@ -456,7 +457,8 @@ noinst_LIBRARIES = libOEV_GLES.a
 libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
 	GLES/SDL/sysSDLWindow.cpp GLES/SDL/SDLRenderSurface.cpp \
 	GLES/GLShader.cpp GLES/GLProgram.cpp \
-	GLES/GLTexture.cpp GLES/TexHelper/TextureData.cpp \
+	GLES/GLTexture.cpp GLES/GLObjectWrappers.cpp \
+	GLES/TexHelper/TextureData.cpp \
 	GLES/TexHelper/ImageReaderBase.cpp \
 	GLES/TexHelper/PngReader.cpp GLES/TexHelper/JpegReader.cpp \
 	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \
@@ -532,6 +534,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CirclePartialArcRenderer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CirclePolygonVertexContainer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLFramework.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLObjectWrappers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgBase.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffLightCircle.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffLightTexture.Po@am__quote@ # am--include-marker
@@ -665,6 +668,20 @@ GLTexture.obj: GLES/GLTexture.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLTexture.cpp' object='GLTexture.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLTexture.obj `if test -f 'GLES/GLTexture.cpp'; then $(CYGPATH_W) 'GLES/GLTexture.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLTexture.cpp'; fi`
+
+GLObjectWrappers.o: GLES/GLObjectWrappers.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLObjectWrappers.o -MD -MP -MF $(DEPDIR)/GLObjectWrappers.Tpo -c -o GLObjectWrappers.o `test -f 'GLES/GLObjectWrappers.cpp' || echo '$(srcdir)/'`GLES/GLObjectWrappers.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLObjectWrappers.Tpo $(DEPDIR)/GLObjectWrappers.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLObjectWrappers.cpp' object='GLObjectWrappers.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLObjectWrappers.o `test -f 'GLES/GLObjectWrappers.cpp' || echo '$(srcdir)/'`GLES/GLObjectWrappers.cpp
+
+GLObjectWrappers.obj: GLES/GLObjectWrappers.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLObjectWrappers.obj -MD -MP -MF $(DEPDIR)/GLObjectWrappers.Tpo -c -o GLObjectWrappers.obj `if test -f 'GLES/GLObjectWrappers.cpp'; then $(CYGPATH_W) 'GLES/GLObjectWrappers.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLObjectWrappers.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLObjectWrappers.Tpo $(DEPDIR)/GLObjectWrappers.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLES/GLObjectWrappers.cpp' object='GLObjectWrappers.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLObjectWrappers.obj `if test -f 'GLES/GLObjectWrappers.cpp'; then $(CYGPATH_W) 'GLES/GLObjectWrappers.cpp'; else $(CYGPATH_W) '$(srcdir)/GLES/GLObjectWrappers.cpp'; fi`
 
 TextureData.o: GLES/TexHelper/TextureData.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TextureData.o -MD -MP -MF $(DEPDIR)/TextureData.Tpo -c -o TextureData.o `test -f 'GLES/TexHelper/TextureData.cpp' || echo '$(srcdir)/'`GLES/TexHelper/TextureData.cpp
@@ -1110,6 +1127,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/CirclePartialArcRenderer.Po
 	-rm -f ./$(DEPDIR)/CirclePolygonVertexContainer.Po
 	-rm -f ./$(DEPDIR)/GLFramework.Po
+	-rm -f ./$(DEPDIR)/GLObjectWrappers.Po
 	-rm -f ./$(DEPDIR)/GLProgBase.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightCircle.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightTexture.Po
@@ -1183,6 +1201,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/CirclePartialArcRenderer.Po
 	-rm -f ./$(DEPDIR)/CirclePolygonVertexContainer.Po
 	-rm -f ./$(DEPDIR)/GLFramework.Po
+	-rm -f ./$(DEPDIR)/GLObjectWrappers.Po
 	-rm -f ./$(DEPDIR)/GLProgBase.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightCircle.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightTexture.Po

@@ -30,7 +30,7 @@
 #include <string>
 
 #include "VecMat.h"
-#include "GLBufferObject.h"
+#include "GLES/GLObjectWrappers.h"
 
 namespace OevGLES {
 
@@ -77,7 +77,7 @@ struct ControlsContext {
 	/** \brief vertex buffer handle to a quad vertex buffer with corners at 0,0 and 1,1 (and z at 0)
 	 *
 	 * It serves as a reusable vertex buffer for the myriad of rectangles to be drawn for dialogs.
-	 * You just need to scale it yourself to the desired size with a 
+	 * You just need to scale it yourself to the desired size with a uniform 
 	 */
 	OevGLES::GLBufferObjectSharedPtr quadVertexBufferPtr;
 	
