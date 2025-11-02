@@ -38,64 +38,62 @@ class SDLRenderSurface;
 using SDLRenderSurfaceSharedPtr = std::shared_ptr<SDLRenderSurface>;
 using SDLRenderSurfaceWeakPtr = std::weak_ptr<SDLRenderSurface>;
 
-}
-
-namespace OevControls {
- 
-struct ControlsContext {
+struct RendererContext {
 	
-	OevGLES::Vec4ShPtr foregroundColorPtr;
-	OevGLES::Vec4ShPtr backgroundColorPtr;
+	Vec4ShPtr foregroundColorPtr;
+	Vec4ShPtr backgroundColorPtr;
 
 	/// \brief by default mapped to \ref foregroundColorPtr
-	OevGLES::Vec4ShPtr textForegroundPtr;
+	Vec4ShPtr textForegroundPtr;
 	/// \brief by default mapped to \ref backgroundColorPtr
-	OevGLES::Vec4ShPtr textBackgroundPtr;
+	Vec4ShPtr textBackgroundPtr;
 
 	/// \brief by default mapped to \ref foregroundColorPtr
-	OevGLES::Vec4ShPtr buttonForegroundPtr;
+	Vec4ShPtr buttonForegroundPtr;
 	/// \brief by default mapped to \ref backgroundColorPtr
-	OevGLES::Vec4ShPtr buttonBackgroundPtr;
+	Vec4ShPtr buttonBackgroundPtr;
 
 	/// \brief by default mapped to \ref foregroundColorPtr
-	OevGLES::Vec4ShPtr dialogTitleForegroundPtr;
+	Vec4ShPtr dialogTitleForegroundPtr;
 	/// \brief by default mapped to \ref backgroundColorPtr
-	OevGLES::Vec4ShPtr dialogTitleBackgroundPtr;
+	Vec4ShPtr dialogTitleBackgroundPtr;
 
 	/// \brief by default mapped to \ref foregroundColorPtr
-	OevGLES::Vec4ShPtr scrollBarForegroundPtr;
+	Vec4ShPtr scrollBarForegroundPtr;
 	/// \brief by default mapped to \ref backgroundColorPtr
-	OevGLES::Vec4ShPtr scrollBarBackgroundPtr;
+	Vec4ShPtr scrollBarBackgroundPtr;
 
 	std::string fontNameList = "Noto Sans";
 	double textSizePoints = 11.0;
 	double screenResolutionDpiX = 96.0;
 	double screenResolutionDpiY = 96.0;
 	
-	OevGLES::SDLRenderSurfaceWeakPtr sdlRenderSurfacePtr;
+	SDLRenderSurfaceWeakPtr sdlRenderSurfacePtr;
 
 	/** \brief vertex buffer handle to a quad vertex buffer with corners at 0,0 and 1,1 (and z at 0)
 	 *
 	 * It serves as a reusable vertex buffer for the myriad of rectangles to be drawn for dialogs.
 	 * You just need to scale it yourself to the desired size with a uniform 
 	 */
-	OevGLES::GLBufferObjectSharedPtr quadVertexBufferPtr;
+	GLBufferObjectSharedPtr quadVertexBufferPtr;
 	
-	ControlsContext (
-		OevGLES::SDLRenderSurfaceWeakPtr const& sdlRenderSurfacePtr,
-		OevGLES::Vec4 const &foregroundColor = OevGLES::Vec4{0,0,0,1},
-		OevGLES::Vec4 const &backgroundColor = (OevGLES::Vec4{1,1,1,1})
+	RendererContext (
+		SDLRenderSurfaceWeakPtr const& sdlRenderSurfacePtr,
+		Vec4 const &foregroundColor = Vec4{0,0,0,1},
+		Vec4 const &backgroundColor = (Vec4{1,1,1,1})
 		);
 
 	// The rest is default fare.
-	ControlsContext (ControlsContext const& source) = default;
-	ControlsContext (ControlsContext && source) = default;
-	~ControlsContext() = default;
+	RendererContext (RendererContext const& source) = default;
+	RendererContext (RendererContext && source) = default;
+	~RendererContext() = default;
 	
-	ControlsContext & operator = (ControlsContext const& source) = default;
-	ControlsContext & operator = (ControlsContext && source) = default;
+	RendererContext & operator = (RendererContext const& source) = default;
+	RendererContext & operator = (RendererContext && source) = default;
 };
 
-} // namespace OevControls
+using RendererContextSharedPtr = std::shared_ptr<RendererContext>;
+
+} // namespace OevGLES
 
 #endif /* LIB_CONTROLS_CONTROLSCONTEXT_H_ */

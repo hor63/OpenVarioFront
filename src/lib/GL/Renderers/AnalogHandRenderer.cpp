@@ -22,6 +22,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "Renderers/RendererBase.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -40,8 +41,8 @@
 namespace OevGLES {
 
 
-AnalogHandRenderer::AnalogHandRenderer()
-	:
+AnalogHandRenderer::AnalogHandRenderer(RendererContextSharedPtr &context)
+	:RendererBase(context),
 		// Setup the positions
 	    // The normals are computed in the constructor body
 	  vertexArray {
@@ -134,7 +135,9 @@ AnalogHandRenderer::~AnalogHandRenderer() {
 		vertexBufferHandle = 0U;
 	}
 	if (vertexArrayHandle != 0U) {
-		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()) {
+			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		}
 		vertexArrayHandle = 0U;
 	}
 
@@ -152,19 +155,21 @@ void AnalogHandRenderer::setupVertexBuffers() {
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 
-	if (GLFramework::isVertexArrayUsable() && vertexArrayHandle == 0U) {
-		GLFramework::glGenVertexArraysOES(1,&vertexArrayHandle);
-		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
-		GLfloat* bufferOffset = 0;
-		// setup the vertex coordinates
-		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-		glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
-		// setup the vertex normals
-		bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
-		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
-		glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
-
-		GLFramework::glBindVertexArrayOES(0);
+	if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()) {
+		if (surfacePtr->isVertexArrayUsable() && vertexArrayHandle == 0U) {
+			surfacePtr->glGenVertexArraysOES(1,&vertexArrayHandle);
+			surfacePtr->glBindVertexArrayOES(vertexArrayHandle);
+			GLfloat* bufferOffset = 0;
+			// setup the vertex coordinates
+			glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+			glVertexAttribPointer(glProgram->getVertexPosLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+			// setup the vertex normals
+			bufferOffset += 4; // Advance the offset by 4 floats to the vertex normals.
+			glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+			glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
+	
+			surfacePtr->glBindVertexArrayOES(0);
+		}
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER,0);
@@ -217,8 +222,10 @@ void AnalogHandRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
 	glVertexAttrib4fv(glProgram->getVertexColorLocation(), handColor);
 
-	if (GLFramework::isVertexArrayUsable()) {
-		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
+	auto surfacePtr = context->sdlRenderSurfacePtr.lock();
+
+	if (surfacePtr && surfacePtr->isVertexArrayUsable()) {
+		surfacePtr->glBindVertexArrayOES(vertexArrayHandle);
 	} else {
 		// re-bind the buffer object
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferHandle);
@@ -241,8 +248,8 @@ void AnalogHandRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	glDrawArrays(GL_TRIANGLES, 0, 12);
 
-	if (GLFramework::isVertexArrayUsable()) {
-		GLFramework::glBindVertexArrayOES(0U);
+	if (surfacePtr && surfacePtr->isVertexArrayUsable()) {
+		surfacePtr->glBindVertexArrayOES(0U);
 	} else {
 		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
 		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());

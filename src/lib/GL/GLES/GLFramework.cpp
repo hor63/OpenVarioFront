@@ -20,13 +20,6 @@ namespace OevGLES {
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-PFNGLBINDVERTEXARRAYOESPROC GLFramework::glBindVertexArrayOES = nullptr;
-PFNGLDELETEVERTEXARRAYSOESPROC GLFramework::glDeleteVertexArraysOES = nullptr;
-PFNGLGENVERTEXARRAYSOESPROC GLFramework::glGenVertexArraysOES = nullptr;
-PFNGLISVERTEXARRAYOESPROC GLFramework::glIsVertexArrayOES = nullptr;
-bool GLFramework::vertexArrayUsable = false;
-
-
 GLFrameworkSharedPtr GLFramework::createFramework() {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -73,6 +66,8 @@ SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint heig
 			OevUtil::reportSDLError(std::source_location::current(),
 				 "SDL_Init");
 		}
+
+		initDone = true;
 	
 	}
 	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__ << "Create native window, eglSurface and eglContext. Window size = "
@@ -83,42 +78,6 @@ SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint heig
 
 	LOG4CXX_DEBUG(logger, "\t SDL Window ID = " 
 		<< SDL_GetWindowID(sdlSurface->getNativeWindow()));
-
-	if (!initDone) {
-
-		if (glBindVertexArrayOES == nullptr) {
-			glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
-		}
-		if (glDeleteVertexArraysOES == nullptr) {
-			glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
-		}
-		if (glGenVertexArraysOES == nullptr) {
-			glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
-		}
-		if (glIsVertexArrayOES == nullptr) {
-			glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
-		}
-	
-		if (!vertexArrayUsable) {
-			std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
-			auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
-		
-			if (glBindVertexArrayOES != nullptr
-					&& glDeleteVertexArraysOES != nullptr
-					&& glGenVertexArraysOES != nullptr
-					&& glIsVertexArrayOES != nullptr
-					&& foundPos != std::string::npos
-					) {
-				vertexArrayUsable = true;
-			} else {
-				vertexArrayUsable = false;
-			}
-		} // if (!vertexArrayUsable) {
-	
-		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " << vertexArrayUsable);
-		
-		initDone = true;
-	}
 
 	return sdlSurface;
 }

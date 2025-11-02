@@ -33,7 +33,7 @@
 
 #include "GLES/GLFramework.h"
 #include "SDLUtil.h"
-#include "ControlsContext.h"
+#include "Renderers/RendererContext.h"
 
 namespace OevGLES {
 
@@ -122,6 +122,36 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 			<< ", size = " << viewportCoords.width << 'x' << viewportCoords.height
 			);
 
+	if (glBindVertexArrayOES == nullptr) {
+		glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
+	}
+	if (glDeleteVertexArraysOES == nullptr) {
+		glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
+	}
+	if (glGenVertexArraysOES == nullptr) {
+		glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
+	}
+	if (glIsVertexArrayOES == nullptr) {
+		glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
+	}
+
+	std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
+	auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
+
+	if (glBindVertexArrayOES != nullptr
+			&& glDeleteVertexArraysOES != nullptr
+			&& glGenVertexArraysOES != nullptr
+			&& glIsVertexArrayOES != nullptr
+			&& foundPos != std::string::npos
+			) {
+		vertexArrayUsable = true;
+	} else {
+		vertexArrayUsable = false;
+	}
+	
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " << vertexArrayUsable);
+		
+
 	onWindowResize();
 
 }
@@ -136,7 +166,7 @@ void SDLRenderSurface::makeContextCurrent() {
 }
 
 OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr(
-			OevControls::ControlsContextSharedPtr const& controlsContextPtr) {
+			RendererContextSharedPtr const& controlsContextPtr) {
 	
 	if (!rootControlPtr) {
 		rootControlPtr = OevControls::RootControl::makeRootControl(*this,controlsContextPtr);

@@ -54,7 +54,9 @@ namespace OevGLES {
  */
 class CircleFilledRenderer: public CircleBaseRenderer {
 public:
-	CircleFilledRenderer(CirclePolygonVertexContainer& circlePolygonVertexContainer);
+	CircleFilledRenderer(
+		RendererContextSharedPtr &context,
+		CirclePolygonVertexContainer& circlePolygonVertexContainer);
 	virtual ~CircleFilledRenderer();
 
 	virtual void setupVertexBuffers() override;

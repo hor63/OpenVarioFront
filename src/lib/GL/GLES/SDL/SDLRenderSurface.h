@@ -50,13 +50,14 @@ class RootControl;
 using RootControlSharedPtr = std::shared_ptr<RootControl>;
 using RootControlWeakPtr = std::weak_ptr<RootControl>;
 
-struct ControlsContext;
 
 } // namespace OevControls
 
 namespace OevGLES {
 
-using ControlsContextSharedPtr = std::shared_ptr<OevControls::ControlsContext>;
+struct RendererContext;
+
+using RendererContextSharedPtr = std::shared_ptr<RendererContext>;
 
 class GLFramework;
 
@@ -69,6 +70,13 @@ public:
 		int widthPixel = 0;
 		int heightPixel = 0;
 	};
+
+	PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = nullptr;
+	PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = nullptr;
+	PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = nullptr;
+	PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES = nullptr;
+
+
 
 	SDLRenderSurface(GLFramework& framework);
 
@@ -98,7 +106,7 @@ public:
 	 * \param controlsContextPtr Optional shared pointer to a controls and dialog context.
 	 */
 	OevControls::RootControlWeakPtr getRootControlPtr(
-		ControlsContextSharedPtr const& controlsContextPtr = ControlsContextSharedPtr{}
+		RendererContextSharedPtr const& controlsContextPtr = RendererContextSharedPtr{}
 	);
 	
 	/** \brief SDL event handler and dispatcher
@@ -119,6 +127,10 @@ public:
 	/// \see \ref baseUniforms
 	OevGLES::RenderStandardUniforms const& getBaseUniforms() const {
 		return baseUniforms;
+	}
+
+	bool isVertexArrayUsable() const {
+		return vertexArrayUsable;
 	}
 
 	/** \brief Called when a resize message is received or when the window is created.
@@ -149,6 +161,8 @@ protected:
 
     GLint eglMajorVersion = 2;
     GLint eglMinorVersion = 0;
+
+	bool vertexArrayUsable = false;
 
 	/// \brief Each render surface, a.k.a. base window can have one root control.
 	OevControls::RootControlSharedPtr rootControlPtr;

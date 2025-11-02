@@ -17,6 +17,8 @@
 
 #include "VecMat.h"
 
+#include "Renderers/RendererContext.h"
+
 namespace OevGLES {
 
 class GLFramework;
@@ -113,10 +115,14 @@ public:
 		*/
 		GLuint vertexBufferHandle;
 		GLuint vertexArrayHandle;
+		
+		RendererContextSharedPtr context;
 
 		CircleVertexArrayStruct() = delete;
 
-		CircleVertexArrayStruct(std::size_t numSegments);
+		CircleVertexArrayStruct(
+			RendererContextSharedPtr &context,
+			std::size_t numSegments);
 
 		CircleVertexArrayStruct(CircleVertexArrayStruct const& source)
 			:numSegments{source.numSegments},
@@ -227,9 +233,11 @@ private:
 	*/
 	using  CircleVertexArrayMapType = std::map<GLfloat,CircleVertexArrayStruct>;
 	CircleVertexArrayMapType circleVertexArrayMap;
+	
+	RendererContextSharedPtr context;
 
 	/// Only friend \ref GLFramework can create me.
-	CirclePolygonVertexContainer();
+	CirclePolygonVertexContainer(RendererContextSharedPtr &context);
 
 	void createVertexBuffer (CircleVertexArrayStruct& vertArrayStruct);
 

@@ -24,6 +24,7 @@
  */
 
 #include "GLES/TexHelper/ImageReaderBase.h"
+#include "Renderers/RendererBase.h"
 #include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -42,8 +43,9 @@
 
 namespace OevGLES {
 
-SquareTextureRenderer::SquareTextureRenderer()
-	:
+SquareTextureRenderer::SquareTextureRenderer(RendererContextSharedPtr &context)
+	:RendererBase(context),
+	
 	// Setup the positions
 	/* The texture is rendered by 2 triangles in a fan forming a square.
 	 *
@@ -119,7 +121,9 @@ SquareTextureRenderer::~SquareTextureRenderer() {
 		vertexBufferHandle = 0U;
 	}
 	if (vertexArrayHandle != 0U) {
-		GLFramework::glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
+			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		}
 		vertexArrayHandle = 0U;
 	}
 
@@ -196,26 +200,28 @@ void SquareTextureRenderer::setupVertexBuffers() {
 		glTexture.setMagnificationFilter(OevGLES::GLTexture::Linear);
 		glTexture.setMinificationFilter(OevGLES::GLTexture::Linear);
 	
-		if (GLFramework::isVertexArrayUsable() && vertexArrayHandle == 0U) {
-	
-			GLFramework::glGenVertexArraysOES(1,&vertexArrayHandle);
-			GLFramework::glBindVertexArrayOES(vertexArrayHandle);
-	
-			// setup the vertex coordinates
-			glEnableVertexAttribArray(glProgram->getVertexPosLocation());
-			glVertexAttribPointer(glProgram->getVertexPosLocation(),
-				4,GL_FLOAT,GL_FALSE,
-				sizeof (VertexType),
-				reinterpret_cast<void*>(offsetof(VertexType,position)));
-			// setup the texture coordinates
-			glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
-			glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),
-				2,GL_FLOAT,GL_FALSE,
-				sizeof (VertexType),
-				reinterpret_cast<void*>(offsetof(VertexType,textureCoordinate)));
-	
-			GLFramework::glBindVertexArrayOES(0U);
-		}
+		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
+			if (surfacePtr->isVertexArrayUsable() && vertexArrayHandle == 0U) {
+		
+				surfacePtr->glGenVertexArraysOES(1,&vertexArrayHandle);
+				surfacePtr->glBindVertexArrayOES(vertexArrayHandle);
+		
+				// setup the vertex coordinates
+				glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+				glVertexAttribPointer(glProgram->getVertexPosLocation(),
+					4,GL_FLOAT,GL_FALSE,
+					sizeof (VertexType),
+					reinterpret_cast<void*>(offsetof(VertexType,position)));
+				// setup the texture coordinates
+				glEnableVertexAttribArray(glProgram->getVertexTexture0PosLocation());
+				glVertexAttribPointer(glProgram->getVertexTexture0PosLocation(),
+					2,GL_FLOAT,GL_FALSE,
+					sizeof (VertexType),
+					reinterpret_cast<void*>(offsetof(VertexType,textureCoordinate)));
+		
+				surfacePtr->glBindVertexArrayOES(0U);
+			}
+		} // if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
 	
 		glBindBuffer(GL_ARRAY_BUFFER,0);
 		
@@ -271,8 +277,10 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
 	glVertexAttrib4fv(glProgram->getVertexNormalLocation(), textureNormal);
 
-	if (vertexArrayHandle != 0U) {
-		GLFramework::glBindVertexArrayOES(vertexArrayHandle);
+	auto surfacePtr = context->sdlRenderSurfacePtr.lock();
+	
+	if (surfacePtr && vertexArrayHandle != 0U) {
+		surfacePtr->glBindVertexArrayOES(vertexArrayHandle);
 	} else {
 		// re-bind the buffer object
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferHandle);
@@ -302,8 +310,8 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-	if (vertexArrayHandle != 0U) {
-		GLFramework::glBindVertexArrayOES(0U);
+	if (surfacePtr && vertexArrayHandle != 0U) {
+		surfacePtr->glBindVertexArrayOES(0U);
 	} else {
 		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
 		glDisableVertexAttribArray(glProgram->getVertexTexture0PosLocation());

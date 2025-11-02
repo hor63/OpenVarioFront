@@ -36,11 +36,6 @@ public:
 
 	using SDLRenderSurfacePtrMap = std::unordered_map<SDL_WindowID, SDLRenderSurfaceSharedPtr>;
 
-	static PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES;
-	static PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES;
-	static PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES;
-	static PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES;
-
 	static GLFrameworkSharedPtr createFramework();
 
 	~GLFramework();
@@ -86,10 +81,6 @@ public:
 		return circleVertexContainer;
 	}
 
-	static bool isVertexArrayUsable() {
-		return vertexArrayUsable;
-	}
-
 	/** \brief SDL event handler and dispatcher
 	 * 
 	 * Window related events are forwarded to the respective \ref SDLRenderSurface
@@ -101,14 +92,12 @@ private:
 
 	GLTextGlobalsSharedPtr glTextGlob;
 
-	static bool vertexArrayUsable;
-	
 	SDLRenderSurfacePtrMap renderSurfacePtrMap;
 
 	CirclePolygonVertexContainer circleVertexContainer;
 	
 	bool initDone = false;
-
+	
 	GLFramework();
 
 };

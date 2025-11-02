@@ -38,7 +38,10 @@
 
 #include "VecMat.h"
 
+#include "Renderers/RendererContext.h"
+
 namespace OevGLES {
+	
 
 /** \brief Class which sets blending attributes with the constructor, and restores original values in the destructor
  *
@@ -569,7 +572,7 @@ public:
 	/** \brief Constructor
 	 *
 	 */
-	RendererBase();
+	RendererBase(RendererContextSharedPtr &context);
 
 	/** \brief destructor
 	 *
@@ -592,6 +595,8 @@ public:
 	virtual void draw(RenderStandardUniforms const &stdUniformData) = 0;
 
 protected:
+
+	RendererContextSharedPtr context;
 };
 
 } // namespace OevGLES

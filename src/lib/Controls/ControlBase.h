@@ -36,18 +36,25 @@
 #include "Uuid.h"
 #include "GLES/SDL/SDLRenderSurface.h"
 
+
+// Forward declarations
+namespace OevGLES {
+
+/** \brief Stores all kind of useful resources for the appearance of controls and dialogs, and "global" pointers
+
+	\see Find the definition in \ref RendererContext.h
+ */
+struct RendererContext;
+
+} // namespace OevGLES
+
 namespace OevControls {
+
+using RendererContextSharedPtr = std::shared_ptr<OevGLES::RendererContext>;
 
 // forward declarations
 class ControlBase;
 class ControlsContainer;
-
-/** \brief Stores all kind of useful resources for the appearance of controls and dialogs, and "global" pointers
-
-	\see Find the definition in \ref ControlsContext.h
- */
-struct ControlsContext;
-using ControlsContextSharedPtr = std::shared_ptr<ControlsContext>;
 
 
 // smart pointer declarations
@@ -70,7 +77,7 @@ public:
 	using SizePixel = OevGLES::SDLRenderSurface::SizePixel;
 
 	ControlBase(ControlsContainerWeakPtr const &parent,
-		ControlsContextSharedPtr const& controlsContextPtr,
+		RendererContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name = ""
 	);
@@ -250,7 +257,7 @@ public:
 	 * You can modify the content of the shared pointer. You just cannot reset the
 	 * share pointer in \p this.
 	 */
-	ControlsContextSharedPtr const& getControlsContextPtr() const {
+	RendererContextSharedPtr const& getControlsContextPtr() const {
 		return controlsContextPtr;
 	}
 
@@ -389,7 +396,7 @@ protected:
 	 * control for a \ref SDLRenderSurface.
 	 *
 	 */
-	ControlsContextSharedPtr controlsContextPtr;
+	RendererContextSharedPtr controlsContextPtr;
 };
 
 static constexpr auto s = sizeof(ControlBase);

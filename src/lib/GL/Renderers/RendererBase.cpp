@@ -206,10 +206,10 @@ void RenderStandardUniforms::resetMVPMatrix() {
 	MVPMatrixPtr.reset(new Mat4WithChangeCounter(*MVPMatrixPtr));
 }
 
-RendererBase::RendererBase()
-{ }
+RendererBase::RendererBase(RendererContextSharedPtr &context)
+	:context {context}
+ {}
 
-RendererBase::~RendererBase() {
-}
+RendererBase::~RendererBase() {}
 
 } // namespace OevGLES

@@ -44,8 +44,10 @@ static log4cxx::LoggerPtr logger = 0;
 namespace OevGLES {
 
 CircleBaseRenderer::CircleBaseRenderer(
+		RendererContextSharedPtr &context,
 		CirclePolygonVertexContainer& circlePolygonVertexContainer)
-	: circlePolygonVertexContainer {circlePolygonVertexContainer}
+	:RendererBase(context),
+	circlePolygonVertexContainer {circlePolygonVertexContainer}
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -163,7 +165,9 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	// Set up the attributes
 	if (vertexArrayStruct->vertexArrayHandle != 0U) {
-		GLFramework::glBindVertexArrayOES(vertexArrayStruct->vertexArrayHandle);
+		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
+			surfacePtr->glBindVertexArrayOES(vertexArrayStruct->vertexArrayHandle);
+		}
 	} else {
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayStruct->vertexBufferHandle);
@@ -220,7 +224,9 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glDrawArrays(GL_TRIANGLE_STRIP, 2, vertexArrayStruct->numVertexes - 2);
 
 	if (vertexArrayStruct->vertexArrayHandle != 0U) {
-		GLFramework::glBindVertexArrayOES(0U);
+		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
+			surfacePtr->glBindVertexArrayOES(0U);
+		}
 	} else {
 
 		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());

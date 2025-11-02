@@ -29,19 +29,19 @@
 #endif
 #include "OVFCommon.h"
 
-#include "ControlsContext.h"
+#include "RendererContext.h"
 
-namespace OevControls {
+namespace OevGLES {
  
 
-ControlsContext::ControlsContext (
-		OevGLES::SDLRenderSurfaceWeakPtr const& sdlRenderSurfacePtr,
-		OevGLES::Vec4 const &foregroundColor,
-		OevGLES::Vec4 const &backgroundColor
+RendererContext::RendererContext (
+		SDLRenderSurfaceWeakPtr const& sdlRenderSurfacePtr,
+		Vec4 const &foregroundColor,
+		Vec4 const &backgroundColor
 	) :
 		sdlRenderSurfacePtr{sdlRenderSurfacePtr},
-		foregroundColorPtr{std::make_shared<OevGLES::Vec4>(foregroundColor)},
-		backgroundColorPtr{std::make_shared<OevGLES::Vec4>(backgroundColor)},
+		foregroundColorPtr{std::make_shared<Vec4>(foregroundColor)},
+		backgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
 		textForegroundPtr{foregroundColorPtr},
 		textBackgroundPtr{backgroundColorPtr},
 		buttonForegroundPtr{foregroundColorPtr},
@@ -50,7 +50,7 @@ ControlsContext::ControlsContext (
 		dialogTitleBackgroundPtr{backgroundColorPtr},
 		scrollBarForegroundPtr{foregroundColorPtr},
 		scrollBarBackgroundPtr{backgroundColorPtr},
-		quadVertexBufferPtr {std::make_shared<OevGLES::GLBufferObject>()}
+		quadVertexBufferPtr {std::make_shared<GLBufferObject>()}
 		{
 			/* The location of the 4 vertexes for the quad
 			4   3
@@ -68,5 +68,5 @@ ControlsContext::ControlsContext (
 			glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 		}
 
-} // namespace OevControls {
+} // namespace OevGLES
 
