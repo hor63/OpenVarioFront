@@ -93,6 +93,7 @@ struct RendererContext {
 };
 
 using RendererContextSharedPtr = std::shared_ptr<RendererContext>;
+using RendererContextWeakPtr = std::weak_ptr<RendererContext>;
 
 } // namespace OevGLES
 

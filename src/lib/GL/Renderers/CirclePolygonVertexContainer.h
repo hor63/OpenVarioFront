@@ -116,12 +116,11 @@ public:
 		GLuint vertexBufferHandle;
 		GLuint vertexArrayHandle;
 		
-		RendererContextSharedPtr context;
+		RendererContextWeakPtr context;
 
 		CircleVertexArrayStruct() = delete;
 
 		CircleVertexArrayStruct(
-			RendererContextSharedPtr &context,
 			std::size_t numSegments);
 
 		CircleVertexArrayStruct(CircleVertexArrayStruct const& source)
@@ -179,9 +178,9 @@ public:
 	/** \brief Create and cache a vertex buffer for a circular object with a given
 	 * radius.
 	 *
-	 * *Note*: The returned reference is owned by this object, and must not be used
-	 * after this \ref CirclePolygonVertexContainer is deleted.
-	 * This is itself usually owned by the \ref GLFramework object of the program.
+	 * *Note*: The returned reference is owned by \p this, and must not be used
+	 * after \p this is deleted.
+	 * \p this is itself usually owned by the \ref RendererContext object of the rendering context.
 	 *
 	 * The returned structure is cached internally. The returned \ref
 	 * CircleVertexArrayStruct is supposed to be used multiple times.
@@ -196,7 +195,9 @@ public:
 	 * The number of polygon segments returned vertex buffer is always always a
 	 * power of 2 plus one segment to match the first segment to close the circle.
 	 */
-	CircleVertexArrayStruct const &createVertexArrayStruct (GLfloat radius);
+	CircleVertexArrayStruct const &createVertexArrayStruct (
+		RendererContextSharedPtr &context,
+		GLfloat radius);
 
 	typedef std::array<CirclePolygonVertexStruct,maxNumSegments*2 + 4> MaxSegmentVertexArrayType;
 
@@ -234,12 +235,10 @@ private:
 	using  CircleVertexArrayMapType = std::map<GLfloat,CircleVertexArrayStruct>;
 	CircleVertexArrayMapType circleVertexArrayMap;
 	
-	RendererContextSharedPtr context;
-
 	/// Only friend \ref GLFramework can create me.
-	CirclePolygonVertexContainer(RendererContextSharedPtr &context);
+	CirclePolygonVertexContainer();
 
-	void createVertexBuffer (CircleVertexArrayStruct& vertArrayStruct);
+	void createVertexBuffer (RendererContextSharedPtr &context, CircleVertexArrayStruct& vertArrayStruct);
 
 };
 

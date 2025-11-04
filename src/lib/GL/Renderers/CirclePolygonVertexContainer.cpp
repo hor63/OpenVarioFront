@@ -27,14 +27,12 @@ static log4cxx::LoggerPtr logger = 0;
 namespace OevGLES {
 
 CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(
-		RendererContextSharedPtr &context,
 		std::size_t numSegments)
 	:numSegments{numSegments},
 	 numVertexes{static_cast<GLsizei>(numSegments * 2U + 4U)},
 	 vertexStrideInMaxVertexArrayPerSegment{maxNumSegments/numSegments * 2U},
 	 vertexBufferHandle{0U},
-	 vertexArrayHandle{0U},
-	 context{context}
+	 vertexArrayHandle{0U}
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -68,9 +66,11 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::~CircleVertexArrayStruct(
 	}
 	
 	if (vertexArrayHandle != 0U) {
-		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
-		}
+		if (auto contextSharedPointer = context.lock()){
+			if (auto surfacePtr = contextSharedPointer->sdlRenderSurfacePtr.lock()){
+				surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
+			}
+		} // if (auto contextSharedPointer = context.lock())
 		vertexArrayHandle = 0U;
 	}
 }
@@ -80,6 +80,10 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct&
 		CirclePolygonVertexContainer::CircleVertexArrayStruct&& source)
 {
 	numVertexes = source.numVertexes;
+	// Free your own context
+	context = RendererContextWeakPtr{};
+	// ... and exchange it with the one of source.
+	std::swap(context,source.context);
 	vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
 	maxRadius   = source.maxRadius;
 	if (vertexBufferHandle != 0U) {
@@ -88,9 +92,11 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct&
 	vertexBufferHandle = source.vertexBufferHandle;
 	source.vertexBufferHandle = 0;
 	if (vertexArrayHandle != 0U) {
-		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()) {
-			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
-		}
+		if (auto contextSharedPointer = context.lock()){
+			if (auto surfacePtr = contextSharedPointer->sdlRenderSurfacePtr.lock()) {
+				surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
+			}
+		} // if (auto contextSharedPointer = context.lock()){
 	}
 	vertexArrayHandle = source.vertexArrayHandle;
 	source.vertexArrayHandle = 0;
@@ -105,23 +111,24 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct&
 	numVertexes = source.numVertexes;
 	vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
 	maxRadius   = source.maxRadius;
+	context = source.context;
 	if (vertexBufferHandle != 0U) {
 		glDeleteBuffers(1,&vertexBufferHandle);
 		vertexBufferHandle = 0;
 	}
 	if (vertexArrayHandle != 0U) {
-		if (		auto surfacePtr = context->sdlRenderSurfacePtr.lock()) {
-			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
-		}
+		if (auto contextSharedPointer = context.lock()){
+			if (auto surfacePtr = contextSharedPointer->sdlRenderSurfacePtr.lock()) {
+				surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
+			}
+		} // if (auto contextSharedPointer = context.lock()){
 		vertexArrayHandle = 0U;
 	}
 
 	return *this;
 }
 
-CirclePolygonVertexContainer::CirclePolygonVertexContainer(RendererContextSharedPtr &context)
-		:context(context)
-	{
+CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("OpenVarioFront.Renderers.CirclePolygonVertexContainer");
@@ -217,7 +224,7 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer(RendererContextShared
 			<< ": Fill map of vertex buffers for circle sizes");
 
 	for (uint32_t numSegments = 4; numSegments <= maxNumSegments; numSegments*=2) {
-		CircleVertexArrayStruct vertexArryHolder {context,numSegments};
+		CircleVertexArrayStruct vertexArryHolder {numSegments};
 
 		LOG4CXX_DEBUG(logger,"\tInsert vertexArryHolder, numSegments = " << numSegments
 			<< ", vertexArryHolder.numVertexes = " << vertexArryHolder.numVertexes
@@ -235,6 +242,7 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer(RendererContextShared
 CirclePolygonVertexContainer::~CirclePolygonVertexContainer() {}
 
 const CirclePolygonVertexContainer::CircleVertexArrayStruct& CirclePolygonVertexContainer::createVertexArrayStruct(
+		RendererContextSharedPtr &context,
 		GLfloat radius) {
 
 	auto rc = circleVertexArrayMap.lower_bound(radius);
@@ -247,13 +255,14 @@ const CirclePolygonVertexContainer::CircleVertexArrayStruct& CirclePolygonVertex
 	}
 
 	if (rc->second.vertexBufferHandle == 0) {
-		createVertexBuffer (rc->second);
+		createVertexBuffer (context, rc->second);
 	}
 
 	return rc->second;
 }
 
 void CirclePolygonVertexContainer::createVertexBuffer(
+		RendererContextSharedPtr &context,
 		CircleVertexArrayStruct &vertArrayStruct) {
 
 	CirclePolygonVertexStruct* clientBuffer;
@@ -300,6 +309,9 @@ void CirclePolygonVertexContainer::createVertexBuffer(
 
 
 		clientBuffer = &tempBuffer[0];
+
+		// remember the context for use in the destructor
+		vertArrayStruct.context = context;
 
 		glGenBuffers(1, &vertArrayStruct.vertexBufferHandle);
 		glBindBuffer(GL_ARRAY_BUFFER,vertArrayStruct.vertexBufferHandle);

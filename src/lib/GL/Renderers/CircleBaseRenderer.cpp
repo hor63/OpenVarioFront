@@ -96,7 +96,7 @@ void CircleBaseRenderer::setupVertexBuffers() {
 	if (dirty) {
 
 		vertexArrayStruct =
-			&circlePolygonVertexContainer.createVertexArrayStruct(primaryRadius);
+			&circlePolygonVertexContainer.createVertexArrayStruct(context,primaryRadius);
 
 		vecFactorPrimaryVertex [0] = vecFactorPrimaryVertex [1] = primaryRadius;
 		vecFactorSecondVertex [0] = vecFactorSecondVertex [1] = secondaryRadius;
