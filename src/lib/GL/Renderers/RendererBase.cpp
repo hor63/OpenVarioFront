@@ -206,7 +206,7 @@ void RenderStandardUniforms::resetMVPMatrix() {
 	MVPMatrixPtr.reset(new Mat4WithChangeCounter(*MVPMatrixPtr));
 }
 
-RendererBase::RendererBase(RendererContextSharedPtr &context)
+RendererBase::RendererBase(RendererContextSharedPtr const &context)
 	:context {context}
  {}
 

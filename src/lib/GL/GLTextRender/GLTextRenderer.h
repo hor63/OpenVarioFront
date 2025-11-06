@@ -127,8 +127,12 @@ public:
 
 		VertexBufferPerTexture() = delete;
 
-		VertexBufferPerTexture(GLTextFontTexture& fontTexture, size_t vectorReserveSize)
-		: fontTexture{fontTexture},
+		VertexBufferPerTexture(
+			RendererContextSharedPtr &context,
+			GLTextFontTexture& fontTexture,
+			size_t vectorReserveSize)
+		: context{context},
+		  fontTexture{fontTexture},
 		  vertexBufferHandle{0},
 		  vertexArrayHandle{0},
 		  numVertexes{0}
@@ -154,10 +158,16 @@ public:
 		
 		~VertexBufferPerTexture();
 
+	private:
+	
+		RendererContextSharedPtr context;
+	
 	};
 
 
-	GLTextRenderer(GLTextGlobalsWeakPtr glob);
+	GLTextRenderer(
+		RendererContextSharedPtr &context,
+		GLTextGlobalsWeakPtr glob);
 	virtual ~GLTextRenderer();
 
 	void setText (const std::string& str);

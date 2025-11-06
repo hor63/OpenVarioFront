@@ -572,7 +572,7 @@ public:
 	/** \brief Constructor
 	 *
 	 */
-	RendererBase(RendererContextSharedPtr &context);
+	RendererBase(RendererContextSharedPtr const &context);
 
 	/** \brief destructor
 	 *

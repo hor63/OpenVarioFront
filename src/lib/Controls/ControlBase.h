@@ -77,7 +77,7 @@ public:
 	using SizePixel = OevGLES::SDLRenderSurface::SizePixel;
 
 	ControlBase(ControlsContainerWeakPtr const &parent,
-		RendererContextSharedPtr const& controlsContextPtr,
+		RendererContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name = ""
 	);
@@ -258,7 +258,7 @@ public:
 	 * share pointer in \p this.
 	 */
 	RendererContextSharedPtr const& getControlsContextPtr() const {
-		return controlsContextPtr;
+		return renderContextPtr;
 	}
 
 	// Callbacks upon changes or actions
@@ -396,7 +396,7 @@ protected:
 	 * control for a \ref SDLRenderSurface.
 	 *
 	 */
-	RendererContextSharedPtr controlsContextPtr;
+	RendererContextSharedPtr renderContextPtr;
 };
 
 static constexpr auto s = sizeof(ControlBase);
