@@ -71,15 +71,6 @@ public:
 		int heightPixel = 0;
 	};
 
-	PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = nullptr;
-	PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = nullptr;
-	PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = nullptr;
-	PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES = nullptr;
-
-
-
-	SDLRenderSurface(GLFramework& framework);
-
 	virtual ~SDLRenderSurface();
 
 	void createRenderSurface (GLint width, GLint height,
@@ -128,9 +119,9 @@ public:
 	OevGLES::RenderStandardUniforms const& getBaseUniforms() const {
 		return baseUniforms;
 	}
-
-	bool isVertexArrayUsable() const {
-		return vertexArrayUsable;
+	
+	RendererContextSharedPtr const &getRenderContextSharedPointer() const {
+		return renderContextSharedPointer;
 	}
 
 	/** \brief Called when a resize message is received or when the window is created.
@@ -161,8 +152,6 @@ protected:
 
     GLint eglMajorVersion = 2;
     GLint eglMinorVersion = 0;
-
-	bool vertexArrayUsable = false;
 
 	/// \brief Each render surface, a.k.a. base window can have one root control.
 	OevControls::RootControlSharedPtr rootControlPtr;
@@ -195,6 +184,17 @@ protected:
 	 */
 	OevGLES::RenderStandardUniforms baseUniforms;
 
+	/** \brief Shared pointer to the render context associated with \p this.
+	 *
+	 * The ownership of render context is shared with all controls which are based of \this render surface.
+	 * 
+	 * The render context object, and the shared pointer are created and set in 
+	 *
+	 */
+	RendererContextSharedPtr renderContextSharedPointer;
+
+	/// Only the friend \ref GLFramework shall be able to create a render surface.
+	SDLRenderSurface(GLFramework& framework);
 
 	/** \brief Calculate the view and the projection matrix according to the window size
 	 *

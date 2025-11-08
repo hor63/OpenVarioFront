@@ -73,6 +73,9 @@ SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint heig
 	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__ << "Create native window, eglSurface and eglContext. Window size = "
 			<< width << "x" << height);
 	auto sdlSurface = std::make_shared<SDLRenderSurface>(*this);
+	
+	sdlSurface->renderContextSharedPointer = std::make_shared<RendererContext>(sdlSurface);
+	
 	sdlSurface->createRenderSurface(width,height,windowName);
 	renderSurfacePtrMap.insert(std::pair(SDL_GetWindowID(sdlSurface->getNativeWindow()),sdlSurface));
 
