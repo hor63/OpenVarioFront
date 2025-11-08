@@ -40,6 +40,13 @@ using SDLRenderSurfaceWeakPtr = std::weak_ptr<SDLRenderSurface>;
 
 struct RendererContext {
 	
+	
+	PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = nullptr;
+	PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = nullptr;
+	PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = nullptr;
+	PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES = nullptr;
+	bool vertexArrayIsUsable = false;
+
 	Vec4ShPtr foregroundColorPtr;
 	Vec4ShPtr backgroundColorPtr;
 
