@@ -5,6 +5,7 @@
  *      Author: hor
  */
 
+#include "GLES/SDL/SDLRenderSurface.h"
 #include <log4cxx/logger.h>
 #include <memory>
 #ifdef HAVE_CONFIG_H
@@ -72,17 +73,22 @@ SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint heig
 	}
 	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__ << "Create native window, eglSurface and eglContext. Window size = "
 			<< width << "x" << height);
-	auto sdlSurface = std::make_shared<SDLRenderSurface>(*this);
+	auto SDLRenderSurfaceRawPtr = new SDLRenderSurface(*this);
+	SDLRenderSurfaceSharedPtr sdlSurfaceSharedPtr (SDLRenderSurfaceRawPtr);
 	
-	sdlSurface->renderContextSharedPointer = std::make_shared<RendererContext>(sdlSurface);
+	// Use new and reset the shared pointer here instead using make_shared.
+	// The constructor of RenderContext is private, and I am the only friend, but not the STL class
+	// which implements make_shared.
+	auto renderContextPtr = new RendererContext(sdlSurfaceSharedPtr);
+	sdlSurfaceSharedPtr->renderContextSharedPointer.reset(renderContextPtr);
 	
-	sdlSurface->createRenderSurface(width,height,windowName);
-	renderSurfacePtrMap.insert(std::pair(SDL_GetWindowID(sdlSurface->getNativeWindow()),sdlSurface));
+	sdlSurfaceSharedPtr->createRenderSurface(width,height,windowName);
+	renderSurfacePtrMap.insert(std::pair(SDL_GetWindowID(sdlSurfaceSharedPtr->getNativeWindow()),sdlSurfaceSharedPtr));
 
 	LOG4CXX_DEBUG(logger, "\t SDL Window ID = " 
-		<< SDL_GetWindowID(sdlSurface->getNativeWindow()));
+		<< SDL_GetWindowID(sdlSurfaceSharedPtr->getNativeWindow()));
 
-	return sdlSurface;
+	return sdlSurfaceSharedPtr;
 }
 
 SDLRenderSurfaceWeakPtr GLFramework::getRenderSurfacePtr(SDL_WindowID windowID) {

@@ -181,9 +181,7 @@ GLTextRenderer::VertexBufferPerTexture::~VertexBufferPerTexture() {
 		vertexBufferHandle = 0U;
 	}
 	if (vertexArrayHandle != 0U) {
-		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
-		}
+		context->glDeleteVertexArraysOES(1,&vertexArrayHandle);
 		vertexArrayHandle = 0U;
 	}
 }
@@ -284,9 +282,7 @@ GLTextRenderer::~GLTextRenderer() {
 		vertexBufferHandleTextBackground = 0U;
 	}
 	if (vertexArrayHandleTextBackground != 0U) {
-		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandleTextBackground);
-		}
+		context->glDeleteVertexArraysOES(1,&vertexArrayHandleTextBackground);
 		vertexArrayHandleTextBackground = 0U;
 	}
 
@@ -600,10 +596,9 @@ void GLTextRenderer::setupVertexBuffersTextBoxBackground () {
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground );
 	glBufferData(GL_ARRAY_BUFFER,sizeof(textBackgroundRectVertexes),&textBackgroundRectVertexes,GL_STATIC_DRAW);
 	
-	if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-		if (surfacePtr->isVertexArrayUsable() && vertexArrayHandleTextBackground == 0U) {
-			surfacePtr->glGenVertexArraysOES(1,&vertexArrayHandleTextBackground);
-			surfacePtr->glBindVertexArrayOES(vertexArrayHandleTextBackground);
+		if (context->vertexArrayIsUsable && vertexArrayHandleTextBackground == 0U) {
+			context->glGenVertexArraysOES(1,&vertexArrayHandleTextBackground);
+			context->glBindVertexArrayOES(vertexArrayHandleTextBackground);
 	
 			// setup the vertex coordinates
 			glEnableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
@@ -613,9 +608,8 @@ void GLTextRenderer::setupVertexBuffersTextBoxBackground () {
 				vertextPositionArrayLen * sizeof(GLfloat),
 				reinterpret_cast<void const *>(0U));
 
-			surfacePtr->glBindVertexArrayOES(0U);
+			context->glBindVertexArrayOES(0U);
 		} // if (GLFramework::isVertexArrayUsable()) {
-	} // if (auto surfacePtr = context->sdlRenderSurfacePtr.lock())
 	glBindBuffer(GL_ARRAY_BUFFER,0 );
 
 }
@@ -663,10 +657,9 @@ void GLTextRenderer::setupVertexBuffersGlyphs () {
 					&vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[0],
 					GL_STATIC_DRAW);
 
-			if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-				if(surfacePtr->isVertexArrayUsable() && vertexBuffer.vertexArrayHandle == 0){
-					surfacePtr->glGenVertexArraysOES(1,&vertexBuffer.vertexArrayHandle);
-					surfacePtr->glBindVertexArrayOES(vertexBuffer.vertexArrayHandle);
+				if(context->vertexArrayIsUsable && vertexBuffer.vertexArrayHandle == 0){
+					context->glGenVertexArraysOES(1,&vertexBuffer.vertexArrayHandle);
+					context->glBindVertexArrayOES(vertexBuffer.vertexArrayHandle);
 					
 					glEnableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
 					glVertexAttribPointer(glGlyphProgram->getAttVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,
@@ -679,10 +672,9 @@ void GLTextRenderer::setupVertexBuffersGlyphs () {
 							sizeof(GlGlyphCornerVertexStruct),
 							reinterpret_cast<void const*>(offsetof(GlGlyphCornerVertexStruct,texturePosition)));
 					
-					surfacePtr->glBindVertexArrayOES(0U);
+					context->glBindVertexArrayOES(0U);
 	
 				}
-			} // if (auto surfacePtr = context->sdlRenderSurfacePtr.lock())
 			glBindBuffer(GL_ARRAY_BUFFER,0);
 		}
 	}
@@ -748,10 +740,9 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE1, 1, glGlyphProgram->getUnTexture0Location());
 
 			// Now assign the attributes in the vertex buffer
-			auto surfacePtr = context->sdlRenderSurfacePtr.lock();
-			if(vertexBuffer.vertexArrayHandle != 0 && surfacePtr) {
+			if(vertexBuffer.vertexArrayHandle != 0) {
 				
-				surfacePtr->glBindVertexArrayOES(vertexBuffer.vertexArrayHandle);
+				context->glBindVertexArrayOES(vertexBuffer.vertexArrayHandle);
 			} else {
 				// bind the vertex buffer which contains all vertex data: Model and texture coordinates
 				glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer.vertexBufferHandle);
@@ -776,8 +767,8 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 			}
 
 			// Reset bindings and assignment of the attribute buffers.
-			if(vertexBuffer.vertexArrayHandle != 0 && surfacePtr) {
-				surfacePtr->glBindVertexArrayOES(0U);
+			if(vertexBuffer.vertexArrayHandle != 0) {
+				context->glBindVertexArrayOES(0U);
 			} else {
 				glDisableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
 				glDisableVertexAttribArray(glGlyphProgram->getAttTexture0PosLocation());
@@ -817,10 +808,8 @@ void GLTextRenderer::drawTextBoxBackground (
 	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexNormalLocation());
 	glVertexAttrib4fv(glTextBackgroundProgram->getVertexNormalLocation(),textBackgroundRectNormal);
 
-	auto surfacePtr = context->sdlRenderSurfacePtr.lock();
-	
-	if (vertexArrayHandleTextBackground != 0U && surfacePtr) {
-		surfacePtr->glBindVertexArrayOES(vertexArrayHandleTextBackground);
+	if (vertexArrayHandleTextBackground != 0U) {
+		context->glBindVertexArrayOES(vertexArrayHandleTextBackground);
 	} else {
 		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground);
 	
@@ -837,8 +826,8 @@ void GLTextRenderer::drawTextBoxBackground (
 
 	glDrawArrays(GL_TRIANGLES,0,6);
 
-	if (vertexArrayHandleTextBackground != 0U && surfacePtr) {
-		surfacePtr->glBindVertexArrayOES(0U);
+	if (vertexArrayHandleTextBackground != 0U ) {
+		context->glBindVertexArrayOES(0U);
 	} else {
 		glDisableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
 		glBindBuffer(GL_ARRAY_BUFFER,0);

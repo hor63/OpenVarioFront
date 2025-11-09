@@ -165,9 +165,7 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	// Set up the attributes
 	if (vertexArrayStruct->vertexArrayHandle != 0U) {
-		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-			surfacePtr->glBindVertexArrayOES(vertexArrayStruct->vertexArrayHandle);
-		}
+		context->glBindVertexArrayOES(vertexArrayStruct->vertexArrayHandle);
 	} else {
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayStruct->vertexBufferHandle);
@@ -224,9 +222,7 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glDrawArrays(GL_TRIANGLE_STRIP, 2, vertexArrayStruct->numVertexes - 2);
 
 	if (vertexArrayStruct->vertexArrayHandle != 0U) {
-		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-			surfacePtr->glBindVertexArrayOES(0U);
-		}
+		context->glBindVertexArrayOES(0U);
 	} else {
 
 		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());

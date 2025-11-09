@@ -122,34 +122,35 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 			<< ", size = " << viewportCoords.width << 'x' << viewportCoords.height
 			);
 
-	if (glBindVertexArrayOES == nullptr) {
-		glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
+	if (renderContextSharedPointer->glBindVertexArrayOES == nullptr) {
+		renderContextSharedPointer->glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
 	}
-	if (glDeleteVertexArraysOES == nullptr) {
-		glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
+	if (renderContextSharedPointer->glDeleteVertexArraysOES == nullptr) {
+		renderContextSharedPointer->glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
 	}
-	if (glGenVertexArraysOES == nullptr) {
-		glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
+	if (renderContextSharedPointer->glGenVertexArraysOES == nullptr) {
+		renderContextSharedPointer->glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
 	}
-	if (glIsVertexArrayOES == nullptr) {
-		glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
+	if (renderContextSharedPointer->glIsVertexArrayOES == nullptr) {
+		renderContextSharedPointer->glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
 	}
 
 	std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
 	auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
 
-	if (glBindVertexArrayOES != nullptr
-			&& glDeleteVertexArraysOES != nullptr
-			&& glGenVertexArraysOES != nullptr
-			&& glIsVertexArrayOES != nullptr
+	if (renderContextSharedPointer->glBindVertexArrayOES != nullptr
+			&& renderContextSharedPointer->glDeleteVertexArraysOES != nullptr
+			&& renderContextSharedPointer->glGenVertexArraysOES != nullptr
+			&& renderContextSharedPointer->glIsVertexArrayOES != nullptr
 			&& foundPos != std::string::npos
 			) {
-		vertexArrayUsable = true;
+		renderContextSharedPointer->vertexArrayIsUsable = true;
 	} else {
-		vertexArrayUsable = false;
+		renderContextSharedPointer->vertexArrayIsUsable = false;
 	}
 	
-		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " << vertexArrayUsable);
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " 
+			<< renderContextSharedPointer->vertexArrayIsUsable);
 		
 
 	onWindowResize();

@@ -34,12 +34,15 @@
 
 namespace OevGLES {
 
+class GLFramework;
+
 class SDLRenderSurface;
 using SDLRenderSurfaceSharedPtr = std::shared_ptr<SDLRenderSurface>;
 using SDLRenderSurfaceWeakPtr = std::weak_ptr<SDLRenderSurface>;
 
 struct RendererContext {
-	
+	friend class SDLRenderSurface;
+	friend class GLFramework;
 	
 	PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = nullptr;
 	PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = nullptr;
@@ -84,12 +87,6 @@ struct RendererContext {
 	 */
 	GLBufferObjectSharedPtr quadVertexBufferPtr;
 	
-	RendererContext (
-		SDLRenderSurfaceWeakPtr const& sdlRenderSurfacePtr,
-		Vec4 const &foregroundColor = Vec4{0,0,0,1},
-		Vec4 const &backgroundColor = (Vec4{1,1,1,1})
-		);
-
 	// The rest is default fare.
 	RendererContext (RendererContext const& source) = default;
 	RendererContext (RendererContext && source) = default;
@@ -97,6 +94,16 @@ struct RendererContext {
 	
 	RendererContext & operator = (RendererContext const& source) = default;
 	RendererContext & operator = (RendererContext && source) = default;
+	
+private:
+	
+	/// Make the constructor private, except for the friends SDLRenderSurface and GLFramework
+	RendererContext (
+	SDLRenderSurfaceWeakPtr const& sdlRenderSurfacePtr,
+	Vec4 const &foregroundColor = Vec4{0,0,0,1},
+	Vec4 const &backgroundColor = (Vec4{1,1,1,1})
+	);
+
 };
 
 using RendererContextSharedPtr = std::shared_ptr<RendererContext>;

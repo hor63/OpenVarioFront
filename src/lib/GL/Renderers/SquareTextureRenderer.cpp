@@ -121,9 +121,7 @@ SquareTextureRenderer::~SquareTextureRenderer() {
 		vertexBufferHandle = 0U;
 	}
 	if (vertexArrayHandle != 0U) {
-		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
-		}
+		context->glDeleteVertexArraysOES(1,&vertexArrayHandle);
 		vertexArrayHandle = 0U;
 	}
 
@@ -201,10 +199,10 @@ void SquareTextureRenderer::setupVertexBuffers() {
 		glTexture.setMinificationFilter(OevGLES::GLTexture::Linear);
 	
 		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
-			if (surfacePtr->isVertexArrayUsable() && vertexArrayHandle == 0U) {
+			if (context->vertexArrayIsUsable && vertexArrayHandle == 0U) {
 		
-				surfacePtr->glGenVertexArraysOES(1,&vertexArrayHandle);
-				surfacePtr->glBindVertexArrayOES(vertexArrayHandle);
+				context->glGenVertexArraysOES(1,&vertexArrayHandle);
+				context->glBindVertexArrayOES(vertexArrayHandle);
 		
 				// setup the vertex coordinates
 				glEnableVertexAttribArray(glProgram->getVertexPosLocation());
@@ -219,7 +217,7 @@ void SquareTextureRenderer::setupVertexBuffers() {
 					sizeof (VertexType),
 					reinterpret_cast<void*>(offsetof(VertexType,textureCoordinate)));
 		
-				surfacePtr->glBindVertexArrayOES(0U);
+				context->glBindVertexArrayOES(0U);
 			}
 		} // if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()){
 	
@@ -280,7 +278,7 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	auto surfacePtr = context->sdlRenderSurfacePtr.lock();
 	
 	if (surfacePtr && vertexArrayHandle != 0U) {
-		surfacePtr->glBindVertexArrayOES(vertexArrayHandle);
+		context->glBindVertexArrayOES(vertexArrayHandle);
 	} else {
 		// re-bind the buffer object
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferHandle);
@@ -311,7 +309,7 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	if (surfacePtr && vertexArrayHandle != 0U) {
-		surfacePtr->glBindVertexArrayOES(0U);
+		context->glBindVertexArrayOES(0U);
 	} else {
 		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
 		glDisableVertexAttribArray(glProgram->getVertexTexture0PosLocation());

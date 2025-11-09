@@ -135,9 +135,7 @@ AnalogHandRenderer::~AnalogHandRenderer() {
 		vertexBufferHandle = 0U;
 	}
 	if (vertexArrayHandle != 0U) {
-		if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()) {
-			surfacePtr->glDeleteVertexArraysOES(1,&vertexArrayHandle);
-		}
+		context->glDeleteVertexArraysOES(1,&vertexArrayHandle);
 		vertexArrayHandle = 0U;
 	}
 
@@ -155,10 +153,9 @@ void AnalogHandRenderer::setupVertexBuffers() {
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 
-	if (auto surfacePtr = context->sdlRenderSurfacePtr.lock()) {
-		if (surfacePtr->isVertexArrayUsable() && vertexArrayHandle == 0U) {
-			surfacePtr->glGenVertexArraysOES(1,&vertexArrayHandle);
-			surfacePtr->glBindVertexArrayOES(vertexArrayHandle);
+		if (context->vertexArrayIsUsable && vertexArrayHandle == 0U) {
+			context->glGenVertexArraysOES(1,&vertexArrayHandle);
+			context->glBindVertexArrayOES(vertexArrayHandle);
 			GLfloat* bufferOffset = 0;
 			// setup the vertex coordinates
 			glEnableVertexAttribArray(glProgram->getVertexPosLocation());
@@ -168,9 +165,8 @@ void AnalogHandRenderer::setupVertexBuffers() {
 			glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
 			glVertexAttribPointer(glProgram->getVertexNormalLocation(),4,GL_FLOAT,GL_FALSE,8 * sizeof (GLfloat),bufferOffset);
 	
-			surfacePtr->glBindVertexArrayOES(0);
+			context->glBindVertexArrayOES(0);
 		}
-	}
 
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 
@@ -222,10 +218,8 @@ void AnalogHandRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
 	glVertexAttrib4fv(glProgram->getVertexColorLocation(), handColor);
 
-	auto surfacePtr = context->sdlRenderSurfacePtr.lock();
-
-	if (surfacePtr && surfacePtr->isVertexArrayUsable()) {
-		surfacePtr->glBindVertexArrayOES(vertexArrayHandle);
+	if (context->vertexArrayIsUsable) {
+		context->glBindVertexArrayOES(vertexArrayHandle);
 	} else {
 		// re-bind the buffer object
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferHandle);
@@ -248,8 +242,8 @@ void AnalogHandRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	glDrawArrays(GL_TRIANGLES, 0, 12);
 
-	if (surfacePtr && surfacePtr->isVertexArrayUsable()) {
-		surfacePtr->glBindVertexArrayOES(0U);
+	if (context->vertexArrayIsUsable) {
+		context->glBindVertexArrayOES(0U);
 	} else {
 		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
 		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
