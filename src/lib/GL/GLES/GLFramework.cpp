@@ -5,15 +5,16 @@
  *      Author: hor
  */
 
-#include "GLES/SDL/SDLRenderSurface.h"
-#include <log4cxx/logger.h>
 #include <memory>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
+#include "GLES/SDL/SDLRenderSurface.h"
+#include <log4cxx/logger.h>
 
 #include "GLES/GLFramework.h"
 #include "SDLUtil.h"
+#include "GLTextRender/GLTextGlobals.h"
 
 namespace OevGLES {
 
@@ -30,13 +31,11 @@ GLFrameworkSharedPtr GLFramework::createFramework() {
 
 	GLFrameworkSharedPtr ret ( new GLFramework);
 
-	ret->glTextGlob.reset (new GLTextGlobals(ret));
-
 	return ret;
 }
 
 GLFramework::GLFramework()
-	:circleVertexContainer()
+
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -81,6 +80,10 @@ SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint heig
 	// which implements make_shared.
 	auto renderContextPtr = new RenderContext(sdlSurfaceSharedPtr);
 	sdlSurfaceSharedPtr->renderContextSharedPointer.reset(renderContextPtr);
+	
+	renderContextPtr->glTextGlobSharedPtr.reset (new GLTextGlobals);
+
+
 	
 	sdlSurfaceSharedPtr->createRenderSurface(width,height,windowName);
 	renderSurfacePtrMap.insert(std::pair(SDL_GetWindowID(sdlSurfaceSharedPtr->getNativeWindow()),sdlSurfaceSharedPtr));

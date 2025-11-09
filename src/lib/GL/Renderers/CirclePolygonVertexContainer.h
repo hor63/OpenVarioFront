@@ -23,6 +23,10 @@ namespace OevGLES {
 
 class GLFramework;
 
+class RenderContext;
+using RenderContextSharedPtr = std::shared_ptr<RenderContext>;
+using RenderContextWeakPtr = std::weak_ptr<RenderContext>;
+
 /** \brief
  *
  */
@@ -30,7 +34,7 @@ class CirclePolygonVertexContainer final {
 public:
 
 	// Only you can create me.
-	friend class GLFramework;
+	friend class RenderContext;
 
 	struct CirclePolygonVertexStruct {
 		GLfloat position[4];

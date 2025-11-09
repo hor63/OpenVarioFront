@@ -70,13 +70,7 @@ public:
 		return resY;
 	}
 
-	GLFrameworkWeakPtr getGlFramework() {
-		return glFramework;
-	}
-
 private:
-
-	GLFrameworkWeakPtr glFramework;
 
 	CppPangoFontMap fontMap;
 	CppPangoContext pangoContext;
@@ -93,7 +87,7 @@ private:
 	double resY = 72.0;
 
 	/// \brief Instances must only be created as members of \ref GLFramework
-	GLTextGlobals(GLFrameworkWeakPtr framework);
+	GLTextGlobals();
 
 };
 

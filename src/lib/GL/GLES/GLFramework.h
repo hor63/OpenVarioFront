@@ -17,9 +17,6 @@
 #include <unordered_map>
 
 #include "SDL/SDLRenderSurface.h"
-#include "GLTextRender/GLTextGlobals.h"
-#include "GLTextRender/GLTextRenderer.h"
-#include "Renderers/CirclePolygonVertexContainer.h"
 
 #include "GLFrameWorkPtr.h"
 #include "SDL3/SDL_video.h"
@@ -61,25 +58,21 @@ public:
 
 	/** \return a render surface pointer for an SDL window ID
 	 * 
-	 * The render surface and underlying SDL window must have been created by
+	 * The render surfac#include "GLTextRender/GLTextGlobals.h"
+e and underlying SDL window must have been created by
 	 * \ref createRenderSurface before.
 	 * 
 	 * \param windowID ID of an SDL window which is managed by \p this.
 	 * 
-	 * \return Weak pointer to render surface which is associated with the SDL window
+	 * \return Weak pointer to render surface#include "GLTextRender/GLTextGlobals.h"
+#include "GLTextRender/GLTextRenderer.h"
+#include "Renderers/CirclePolygonVertexContainer.h"
+ which is associated with the SDL window
 	 * 	identified by \p windowID. The weak pointer is empty when \p windowID does
 	 * 	not identify an SDL window that is managed by 
 	 * \see \ref createRenderSurface
 	 */
 	SDLRenderSurfaceWeakPtr getRenderSurfacePtr(SDL_WindowID windowID);
-
-	GLTextGlobalsWeakPtr getGlTextGlob () {
-		return glTextGlob;
-	}
-
-	CirclePolygonVertexContainer& getCircleVertexContainer() {
-		return circleVertexContainer;
-	}
 
 	/** \brief SDL event handler and dispatcher
 	 * 
@@ -90,12 +83,8 @@ public:
 
 private:
 
-	GLTextGlobalsSharedPtr glTextGlob;
-
 	SDLRenderSurfacePtrMap renderSurfacePtrMap;
 
-	CirclePolygonVertexContainer circleVertexContainer;
-	
 	bool initDone = false;
 	
 	GLFramework();

@@ -31,6 +31,7 @@
 
 #include "VecMat.h"
 #include "GLES/GLObjectWrappers.h"
+#include "Renderers/CirclePolygonVertexContainer.h"
 
 namespace OevGLES {
 
@@ -39,6 +40,10 @@ class GLFramework;
 class SDLRenderSurface;
 using SDLRenderSurfaceSharedPtr = std::shared_ptr<SDLRenderSurface>;
 using SDLRenderSurfaceWeakPtr = std::weak_ptr<SDLRenderSurface>;
+
+class GLTextGlobals;
+using GLTextGlobalsWeakPtr = std::weak_ptr<GLTextGlobals>;
+using GLTextGlobalsSharedPtr = std::shared_ptr<GLTextGlobals>;
 
 struct RenderContext {
 	friend class SDLRenderSurface;
@@ -79,6 +84,9 @@ struct RenderContext {
 	double screenResolutionDpiY = 96.0;
 	
 	SDLRenderSurfaceWeakPtr sdlRenderSurfacePtr;
+	
+	GLTextGlobalsSharedPtr glTextGlobSharedPtr;
+
 
 	/** \brief vertex buffer handle to a quad vertex buffer with corners at 0,0 and 1,1 (and z at 0)
 	 *
@@ -87,6 +95,11 @@ struct RenderContext {
 	 */
 	GLBufferObjectSharedPtr quadVertexBufferPtr;
 	
+	CirclePolygonVertexContainer& getCircleVertexContainer() {
+		return circleVertexContainer;
+	}
+
+
 	// The rest is default fare.
 	RenderContext (RenderContext const& source) = default;
 	RenderContext (RenderContext && source) = default;
@@ -103,6 +116,8 @@ private:
 	Vec4 const &foregroundColor = Vec4{0,0,0,1},
 	Vec4 const &backgroundColor = (Vec4{1,1,1,1})
 	);
+
+	CirclePolygonVertexContainer circleVertexContainer;
 
 };
 
