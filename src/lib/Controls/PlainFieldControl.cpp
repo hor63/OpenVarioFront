@@ -33,7 +33,7 @@
 namespace OevControls {
 
 PlainFieldControl::PlainFieldControl(ControlsContainerWeakPtr const &parent,
-		RendererContextSharedPtr const& renderContextPtr,
+		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name) :
 		ControlBase(parent,renderContextPtr,uuid,name)

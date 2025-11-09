@@ -38,7 +38,7 @@
 
 #include "VecMat.h"
 
-#include "Renderers/RendererContext.h"
+#include "Renderers/RenderContext.h"
 
 namespace OevGLES {
 	
@@ -572,7 +572,7 @@ public:
 	/** \brief Constructor
 	 *
 	 */
-	RendererBase(RendererContextSharedPtr const &context);
+	RendererBase(RenderContextSharedPtr const &context);
 
 	/** \brief destructor
 	 *
@@ -596,7 +596,7 @@ public:
 
 protected:
 
-	RendererContextSharedPtr context;
+	RenderContextSharedPtr context;
 };
 
 } // namespace OevGLES

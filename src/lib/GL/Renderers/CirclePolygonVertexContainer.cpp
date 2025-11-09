@@ -80,7 +80,7 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct&
 {
 	numVertexes = source.numVertexes;
 	// Free your own context
-	context = RendererContextWeakPtr{};
+	context = RenderContextWeakPtr{};
 	// ... and exchange it with the one of source.
 	std::swap(context,source.context);
 	vertexStrideInMaxVertexArrayPerSegment = source.vertexStrideInMaxVertexArrayPerSegment;
@@ -237,7 +237,7 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 CirclePolygonVertexContainer::~CirclePolygonVertexContainer() {}
 
 const CirclePolygonVertexContainer::CircleVertexArrayStruct& CirclePolygonVertexContainer::createVertexArrayStruct(
-		RendererContextSharedPtr &context,
+		RenderContextSharedPtr &context,
 		GLfloat radius) {
 
 	auto rc = circleVertexArrayMap.lower_bound(radius);
@@ -257,7 +257,7 @@ const CirclePolygonVertexContainer::CircleVertexArrayStruct& CirclePolygonVertex
 }
 
 void CirclePolygonVertexContainer::createVertexBuffer(
-		RendererContextSharedPtr &context,
+		RenderContextSharedPtr &context,
 		CircleVertexArrayStruct &vertArrayStruct) {
 
 	CirclePolygonVertexStruct* clientBuffer;

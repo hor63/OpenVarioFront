@@ -27,7 +27,7 @@ static OevUtil::Uuid const rootContolUUID ("4c99a482-52f0-44b3-bb3b-a5a4cc506095
 
 RootControlSharedPtr RootControl::makeRootControl(
 	OevGLES::SDLRenderSurface &renderSurface,
-	RendererContextSharedPtr const& controlsContextPtr
+	RenderContextSharedPtr const& controlsContextPtr
 	) {
 
 RootControlSharedPtr newRootControlPtr;
@@ -63,7 +63,7 @@ RootControlSharedPtr newRootControlPtr;
 }
 
 RootControl::RootControl(ControlsContainerWeakPtr const &parent,
-		RendererContextSharedPtr const& controlsContextPtr,
+		RenderContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
 		OevGLES::SDLRenderSurface &renderSurface,
 		char const* name)

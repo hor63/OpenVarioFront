@@ -17,7 +17,7 @@
 
 #include "VecMat.h"
 
-#include "Renderers/RendererContext.h"
+#include "Renderers/RenderContext.h"
 
 namespace OevGLES {
 
@@ -116,7 +116,7 @@ public:
 		GLuint vertexBufferHandle;
 		GLuint vertexArrayHandle;
 		
-		RendererContextWeakPtr context;
+		RenderContextWeakPtr context;
 
 		CircleVertexArrayStruct() = delete;
 
@@ -180,7 +180,7 @@ public:
 	 *
 	 * *Note*: The returned reference is owned by \p this, and must not be used
 	 * after \p this is deleted.
-	 * \p this is itself usually owned by the \ref RendererContext object of the rendering context.
+	 * \p this is itself usually owned by the \ref RenderContext object of the rendering context.
 	 *
 	 * The returned structure is cached internally. The returned \ref
 	 * CircleVertexArrayStruct is supposed to be used multiple times.
@@ -196,7 +196,7 @@ public:
 	 * power of 2 plus one segment to match the first segment to close the circle.
 	 */
 	CircleVertexArrayStruct const &createVertexArrayStruct (
-		RendererContextSharedPtr &context,
+		RenderContextSharedPtr &context,
 		GLfloat radius);
 
 	typedef std::array<CirclePolygonVertexStruct,maxNumSegments*2 + 4> MaxSegmentVertexArrayType;
@@ -238,7 +238,7 @@ private:
 	/// Only friend \ref GLFramework can create me.
 	CirclePolygonVertexContainer();
 
-	void createVertexBuffer (RendererContextSharedPtr &context, CircleVertexArrayStruct& vertArrayStruct);
+	void createVertexBuffer (RenderContextSharedPtr &context, CircleVertexArrayStruct& vertArrayStruct);
 
 };
 

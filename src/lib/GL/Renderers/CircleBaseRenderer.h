@@ -62,7 +62,7 @@ public:
 	/// Obtain the circlePolygonVertexContainer reference from your
 	/// \ref GLFramework object.
 	CircleBaseRenderer(
-		RendererContextSharedPtr &context,
+		RenderContextSharedPtr &context,
 		CirclePolygonVertexContainer& circlePolygonVertexContainer);
 	virtual ~CircleBaseRenderer();
 

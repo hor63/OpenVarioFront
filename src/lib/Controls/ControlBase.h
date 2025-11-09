@@ -42,15 +42,15 @@ namespace OevGLES {
 
 /** \brief Stores all kind of useful resources for the appearance of controls and dialogs, and "global" pointers
 
-	\see Find the definition in \ref RendererContext.h
+	\see Find the definition in \ref RenderContext.h
  */
-struct RendererContext;
+struct RenderContext;
 
 } // namespace OevGLES
 
 namespace OevControls {
 
-using RendererContextSharedPtr = std::shared_ptr<OevGLES::RendererContext>;
+using RenderContextSharedPtr = std::shared_ptr<OevGLES::RenderContext>;
 
 // forward declarations
 class ControlBase;
@@ -77,7 +77,7 @@ public:
 	using SizePixel = OevGLES::SDLRenderSurface::SizePixel;
 
 	ControlBase(ControlsContainerWeakPtr const &parent,
-		RendererContextSharedPtr const& renderContextPtr,
+		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name = ""
 	);
@@ -257,7 +257,7 @@ public:
 	 * You can modify the content of the shared pointer. You just cannot reset the
 	 * share pointer in \p this.
 	 */
-	RendererContextSharedPtr const& getControlsContextPtr() const {
+	RenderContextSharedPtr const& getControlsContextPtr() const {
 		return renderContextPtr;
 	}
 
@@ -396,7 +396,7 @@ protected:
 	 * control for a \ref SDLRenderSurface.
 	 *
 	 */
-	RendererContextSharedPtr renderContextPtr;
+	RenderContextSharedPtr renderContextPtr;
 };
 
 static constexpr auto s = sizeof(ControlBase);

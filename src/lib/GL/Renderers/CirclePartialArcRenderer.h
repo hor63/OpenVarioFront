@@ -55,7 +55,7 @@ namespace OevGLES {
 class CirclePartialArcRenderer: public CircleBaseRenderer {
 public:
 	CirclePartialArcRenderer(
-		RendererContextSharedPtr &context,
+		RenderContextSharedPtr &context,
 		CirclePolygonVertexContainer& circlePolygonVertexContainer);
 	virtual ~CirclePartialArcRenderer();
 

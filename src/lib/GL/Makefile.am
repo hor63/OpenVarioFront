@@ -26,7 +26,7 @@ libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
 	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \
 	GLPrograms/GLProgDiffLightTexture.cpp GLPrograms/GLProgTextTexture.cpp \
 	GLPrograms/GLProgDiffLightCircle.cpp GLPrograms/GLProgSimpleFill.cpp \
-	Renderers/RendererContext.cpp \
+	Renderers/RenderContext.cpp \
 	Renderers/RendererBase.cpp Renderers/AnalogHandRenderer.cpp \
 	Renderers/SquareTextureRenderer.cpp Renderers/CirclePolygonVertexContainer.cpp \
 	Renderers/CircleBaseRenderer.cpp Renderers/CircleFilledRenderer.cpp \

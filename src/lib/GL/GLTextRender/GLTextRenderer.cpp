@@ -206,7 +206,7 @@ static GLfloat const textBackgroundRectNormal [GLTextRenderer::vertextPositionAr
 	0.0f,0.0f,1.0f,0.0f};
 
 GLTextRenderer::GLTextRenderer(
-		RendererContextSharedPtr &context,
+		RenderContextSharedPtr &context,
 		GLTextGlobalsWeakPtr glob) :
 		RendererBase{context},
 		globals{glob},

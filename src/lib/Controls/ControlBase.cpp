@@ -35,12 +35,12 @@
 
 #include "ControlBase.h"
 #include "ControlsContainer.h"
-#include "Renderers/RendererContext.h"
+#include "Renderers/RenderContext.h"
 
 namespace OevControls {
 
 ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
-		RendererContextSharedPtr const& renderContextPtr,
+		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name
 	) :

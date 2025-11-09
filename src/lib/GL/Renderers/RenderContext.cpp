@@ -29,12 +29,12 @@
 #endif
 #include "OVFCommon.h"
 
-#include "RendererContext.h"
+#include "RenderContext.h"
 
 namespace OevGLES {
  
 
-RendererContext::RendererContext (
+RenderContext::RenderContext (
 		SDLRenderSurfaceWeakPtr const& sdlRenderSurfacePtr,
 		Vec4 const &foregroundColor,
 		Vec4 const &backgroundColor

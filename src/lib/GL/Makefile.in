@@ -140,7 +140,7 @@ am_libOEV_GLES_a_OBJECTS = GLFramework.$(OBJEXT) \
 	JpegReader.$(OBJEXT) GLProgBase.$(OBJEXT) \
 	GLProgDiffuseLight.$(OBJEXT) GLProgDiffLightTexture.$(OBJEXT) \
 	GLProgTextTexture.$(OBJEXT) GLProgDiffLightCircle.$(OBJEXT) \
-	GLProgSimpleFill.$(OBJEXT) RendererContext.$(OBJEXT) \
+	GLProgSimpleFill.$(OBJEXT) RenderContext.$(OBJEXT) \
 	RendererBase.$(OBJEXT) AnalogHandRenderer.$(OBJEXT) \
 	SquareTextureRenderer.$(OBJEXT) \
 	CirclePolygonVertexContainer.$(OBJEXT) \
@@ -180,8 +180,8 @@ am__depfiles_remade = ./$(DEPDIR)/AnalogHandRenderer.Po \
 	./$(DEPDIR)/GLTextPangoCPPWrappers.Po \
 	./$(DEPDIR)/GLTextRenderer.Po ./$(DEPDIR)/GLTexture.Po \
 	./$(DEPDIR)/ImageReaderBase.Po ./$(DEPDIR)/JpegReader.Po \
-	./$(DEPDIR)/PngReader.Po ./$(DEPDIR)/RendererBase.Po \
-	./$(DEPDIR)/RendererContext.Po ./$(DEPDIR)/SDLRenderSurface.Po \
+	./$(DEPDIR)/PngReader.Po ./$(DEPDIR)/RenderContext.Po \
+	./$(DEPDIR)/RendererBase.Po ./$(DEPDIR)/SDLRenderSurface.Po \
 	./$(DEPDIR)/SquareTextureRenderer.Po \
 	./$(DEPDIR)/TextureData.Po ./$(DEPDIR)/sysSDLWindow.Po
 am__mv = mv -f
@@ -465,7 +465,7 @@ libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
 	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \
 	GLPrograms/GLProgDiffLightTexture.cpp GLPrograms/GLProgTextTexture.cpp \
 	GLPrograms/GLProgDiffLightCircle.cpp GLPrograms/GLProgSimpleFill.cpp \
-	Renderers/RendererContext.cpp \
+	Renderers/RenderContext.cpp \
 	Renderers/RendererBase.cpp Renderers/AnalogHandRenderer.cpp \
 	Renderers/SquareTextureRenderer.cpp Renderers/CirclePolygonVertexContainer.cpp \
 	Renderers/CircleBaseRenderer.cpp Renderers/CircleFilledRenderer.cpp \
@@ -554,8 +554,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ImageReaderBase.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/JpegReader.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PngReader.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RenderContext.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RendererBase.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RendererContext.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDLRenderSurface.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SquareTextureRenderer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextureData.Po@am__quote@ # am--include-marker
@@ -826,19 +826,19 @@ GLProgSimpleFill.obj: GLPrograms/GLProgSimpleFill.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgSimpleFill.obj `if test -f 'GLPrograms/GLProgSimpleFill.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgSimpleFill.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgSimpleFill.cpp'; fi`
 
-RendererContext.o: Renderers/RendererContext.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RendererContext.o -MD -MP -MF $(DEPDIR)/RendererContext.Tpo -c -o RendererContext.o `test -f 'Renderers/RendererContext.cpp' || echo '$(srcdir)/'`Renderers/RendererContext.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RendererContext.Tpo $(DEPDIR)/RendererContext.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/RendererContext.cpp' object='RendererContext.o' libtool=no @AMDEPBACKSLASH@
+RenderContext.o: Renderers/RenderContext.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RenderContext.o -MD -MP -MF $(DEPDIR)/RenderContext.Tpo -c -o RenderContext.o `test -f 'Renderers/RenderContext.cpp' || echo '$(srcdir)/'`Renderers/RenderContext.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RenderContext.Tpo $(DEPDIR)/RenderContext.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/RenderContext.cpp' object='RenderContext.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RendererContext.o `test -f 'Renderers/RendererContext.cpp' || echo '$(srcdir)/'`Renderers/RendererContext.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RenderContext.o `test -f 'Renderers/RenderContext.cpp' || echo '$(srcdir)/'`Renderers/RenderContext.cpp
 
-RendererContext.obj: Renderers/RendererContext.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RendererContext.obj -MD -MP -MF $(DEPDIR)/RendererContext.Tpo -c -o RendererContext.obj `if test -f 'Renderers/RendererContext.cpp'; then $(CYGPATH_W) 'Renderers/RendererContext.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/RendererContext.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RendererContext.Tpo $(DEPDIR)/RendererContext.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/RendererContext.cpp' object='RendererContext.obj' libtool=no @AMDEPBACKSLASH@
+RenderContext.obj: Renderers/RenderContext.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RenderContext.obj -MD -MP -MF $(DEPDIR)/RenderContext.Tpo -c -o RenderContext.obj `if test -f 'Renderers/RenderContext.cpp'; then $(CYGPATH_W) 'Renderers/RenderContext.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/RenderContext.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RenderContext.Tpo $(DEPDIR)/RenderContext.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Renderers/RenderContext.cpp' object='RenderContext.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RendererContext.obj `if test -f 'Renderers/RendererContext.cpp'; then $(CYGPATH_W) 'Renderers/RendererContext.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/RendererContext.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RenderContext.obj `if test -f 'Renderers/RenderContext.cpp'; then $(CYGPATH_W) 'Renderers/RenderContext.cpp'; else $(CYGPATH_W) '$(srcdir)/Renderers/RenderContext.cpp'; fi`
 
 RendererBase.o: Renderers/RendererBase.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RendererBase.o -MD -MP -MF $(DEPDIR)/RendererBase.Tpo -c -o RendererBase.o `test -f 'Renderers/RendererBase.cpp' || echo '$(srcdir)/'`Renderers/RendererBase.cpp
@@ -1162,8 +1162,8 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/ImageReaderBase.Po
 	-rm -f ./$(DEPDIR)/JpegReader.Po
 	-rm -f ./$(DEPDIR)/PngReader.Po
+	-rm -f ./$(DEPDIR)/RenderContext.Po
 	-rm -f ./$(DEPDIR)/RendererBase.Po
-	-rm -f ./$(DEPDIR)/RendererContext.Po
 	-rm -f ./$(DEPDIR)/SDLRenderSurface.Po
 	-rm -f ./$(DEPDIR)/SquareTextureRenderer.Po
 	-rm -f ./$(DEPDIR)/TextureData.Po
@@ -1237,8 +1237,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/ImageReaderBase.Po
 	-rm -f ./$(DEPDIR)/JpegReader.Po
 	-rm -f ./$(DEPDIR)/PngReader.Po
+	-rm -f ./$(DEPDIR)/RenderContext.Po
 	-rm -f ./$(DEPDIR)/RendererBase.Po
-	-rm -f ./$(DEPDIR)/RendererContext.Po
 	-rm -f ./$(DEPDIR)/SDLRenderSurface.Po
 	-rm -f ./$(DEPDIR)/SquareTextureRenderer.Po
 	-rm -f ./$(DEPDIR)/TextureData.Po

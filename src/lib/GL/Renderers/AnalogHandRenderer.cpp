@@ -41,7 +41,7 @@
 namespace OevGLES {
 
 
-AnalogHandRenderer::AnalogHandRenderer(RendererContextSharedPtr &context)
+AnalogHandRenderer::AnalogHandRenderer(RenderContextSharedPtr &context)
 	:RendererBase(context),
 		// Setup the positions
 	    // The normals are computed in the constructor body

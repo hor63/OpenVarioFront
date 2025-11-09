@@ -55,9 +55,9 @@ using RootControlWeakPtr = std::weak_ptr<RootControl>;
 
 namespace OevGLES {
 
-struct RendererContext;
+struct RenderContext;
 
-using RendererContextSharedPtr = std::shared_ptr<RendererContext>;
+using RenderContextSharedPtr = std::shared_ptr<RenderContext>;
 
 class GLFramework;
 
@@ -97,7 +97,7 @@ public:
 	 * \param controlsContextPtr Optional shared pointer to a controls and dialog context.
 	 */
 	OevControls::RootControlWeakPtr getRootControlPtr(
-		RendererContextSharedPtr const& controlsContextPtr = RendererContextSharedPtr{}
+		RenderContextSharedPtr const& controlsContextPtr = RenderContextSharedPtr{}
 	);
 	
 	/** \brief SDL event handler and dispatcher
@@ -120,7 +120,7 @@ public:
 		return baseUniforms;
 	}
 	
-	RendererContextSharedPtr const &getRenderContextSharedPointer() const {
+	RenderContextSharedPtr const &getRenderContextSharedPointer() const {
 		return renderContextSharedPointer;
 	}
 
@@ -191,7 +191,7 @@ protected:
 	 * The render context object, and the shared pointer are created and set in 
 	 *
 	 */
-	RendererContextSharedPtr renderContextSharedPointer;
+	RenderContextSharedPtr renderContextSharedPointer;
 
 	/// Only the friend \ref GLFramework shall be able to create a render surface.
 	SDLRenderSurface(GLFramework& framework);
