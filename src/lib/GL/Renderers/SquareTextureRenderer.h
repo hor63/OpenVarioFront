@@ -53,7 +53,7 @@ public:
 		TextureCoordinate textureCoordinate;
 	};
 
-	SquareTextureRenderer(RenderContextSharedPtr &context);
+	SquareTextureRenderer(RenderContextSharedPtr const &context);
 
 	virtual ~SquareTextureRenderer();
 

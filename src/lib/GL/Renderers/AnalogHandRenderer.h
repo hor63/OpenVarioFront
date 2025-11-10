@@ -33,7 +33,7 @@ namespace OevGLES {
 
 class AnalogHandRenderer : public RendererBase {
 public:
-	AnalogHandRenderer(RenderContextSharedPtr &context);
+	AnalogHandRenderer(RenderContextSharedPtr const &context);
 
 	virtual ~AnalogHandRenderer();
 

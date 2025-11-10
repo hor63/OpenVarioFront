@@ -257,7 +257,7 @@ const CirclePolygonVertexContainer::CircleVertexArrayStruct& CirclePolygonVertex
 }
 
 void CirclePolygonVertexContainer::createVertexBuffer(
-		RenderContextSharedPtr &context,
+		RenderContextSharedPtr const &context,
 		CircleVertexArrayStruct &vertArrayStruct) {
 
 	CirclePolygonVertexStruct* clientBuffer;

@@ -44,10 +44,9 @@ static log4cxx::LoggerPtr logger = 0;
 namespace OevGLES {
 
 CircleBaseRenderer::CircleBaseRenderer(
-		RenderContextSharedPtr &context,
-		CirclePolygonVertexContainer& circlePolygonVertexContainer)
+		RenderContextSharedPtr const &context)
 	:RendererBase(context),
-	circlePolygonVertexContainer {circlePolygonVertexContainer}
+	circlePolygonVertexContainer {this->context->getCircleVertexContainer()}
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {

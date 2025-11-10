@@ -242,7 +242,7 @@ private:
 	/// Only friend \ref GLFramework can create me.
 	CirclePolygonVertexContainer();
 
-	void createVertexBuffer (RenderContextSharedPtr &context, CircleVertexArrayStruct& vertArrayStruct);
+	void createVertexBuffer (RenderContextSharedPtr const &context, CircleVertexArrayStruct& vertArrayStruct);
 
 };
 

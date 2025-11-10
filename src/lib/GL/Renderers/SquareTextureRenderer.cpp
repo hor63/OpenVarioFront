@@ -43,7 +43,7 @@
 
 namespace OevGLES {
 
-SquareTextureRenderer::SquareTextureRenderer(RenderContextSharedPtr &context)
+SquareTextureRenderer::SquareTextureRenderer(RenderContextSharedPtr const &context)
 	:RendererBase(context),
 	
 	// Setup the positions

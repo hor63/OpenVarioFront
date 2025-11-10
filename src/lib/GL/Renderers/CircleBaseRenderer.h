@@ -62,8 +62,7 @@ public:
 	/// Obtain the circlePolygonVertexContainer reference from your
 	/// \ref GLFramework object.
 	CircleBaseRenderer(
-		RenderContextSharedPtr &context,
-		CirclePolygonVertexContainer& circlePolygonVertexContainer);
+		RenderContextSharedPtr const &context);
 	virtual ~CircleBaseRenderer();
 
 	double getPrimaryRadius() const {
