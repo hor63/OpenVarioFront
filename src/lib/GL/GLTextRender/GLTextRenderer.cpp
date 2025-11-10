@@ -206,10 +206,9 @@ static GLfloat const textBackgroundRectNormal [GLTextRenderer::vertextPositionAr
 	0.0f,0.0f,1.0f,0.0f};
 
 GLTextRenderer::GLTextRenderer(
-		RenderContextSharedPtr &context,
-		GLTextGlobalsWeakPtr glob) :
+		RenderContextSharedPtr const &context) :
 		RendererBase{context},
-		globals{glob},
+		globals{this->context->glTextGlobSharedPtr},
 		textBackgroundRectVertexes{textBackgroundRectVertexesTemplate}
 {
 #if defined HAVE_LOG4CXX_H

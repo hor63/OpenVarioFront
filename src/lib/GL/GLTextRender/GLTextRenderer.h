@@ -166,8 +166,7 @@ public:
 
 
 	GLTextRenderer(
-		RenderContextSharedPtr &context,
-		GLTextGlobalsWeakPtr glob);
+		RenderContextSharedPtr const &context);
 	virtual ~GLTextRenderer();
 
 	void setText (const std::string& str);
