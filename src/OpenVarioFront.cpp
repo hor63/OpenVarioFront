@@ -97,10 +97,7 @@ int main(int argint,char** argv) {
 
     try {
     	auto glFramework = OevGLES::GLFramework::createFramework();
-		auto glTextGlob = glFramework->getGlTextGlob();
-		auto glTextGlobPtr = glTextGlob.lock();
 
-		glTextGlobPtr->setResolutionDPI(96, 96);
 
 		auto renderSurfacePtr1 =
 			glFramework->createRenderSurface(1000, 1000, PACKAGE_STRING).lock();
@@ -108,9 +105,11 @@ int main(int argint,char** argv) {
 //		auto renderSurfacePtr2 =
 //			glFramework->createRenderSurface(1024, 1024, "SecondaryWindow").lock();
 
+		renderSurfacePtr1->getRenderContextSharedPointer()->glTextGlobSharedPtr->setResolutionDPI(96, 96);
+
 		renderSurfacePtr1->makeContextCurrent();
 
-		OevGLES::SquareTextureRenderer varioBackground;
+		OevGLES::SquareTextureRenderer varioBackground(renderSurfacePtr1->getRenderContextSharedPointer());
 //		varioBackground.setPNGFileName("../../resources/Vario5m.jpg");
 		varioBackground.setImageMemoryData(Vario5mJPG_data,
 			Vario5mJPG_size, Vario5mJPG_filename);
@@ -131,24 +130,24 @@ int main(int argint,char** argv) {
 // 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,1.0f};
 
-		OevGLES::AnalogHandRenderer hand;
+		OevGLES::AnalogHandRenderer hand (renderSurfacePtr1->getRenderContextSharedPointer());
 		hand.setupVertexBuffers();
 		varioBackground.setupVertexBuffers();
 
-		OevGLES::CircleBaseRenderer ring1 (glFramework->getCircleVertexContainer());
+		OevGLES::CircleBaseRenderer ring1 (renderSurfacePtr1->getRenderContextSharedPointer());
 		ring1.setPrimaryRadius(200);
 		ring1.setSecondaryRadius(160);
 		ring1.setPrimarySecondaryZOffset(20);
 		ring1.setupVertexBuffers();
 		ring1.setBodyColor(whiteTransparent0_8Color);
 
-		OevGLES::CircleFilledRenderer circ1 (glFramework->getCircleVertexContainer());
+		OevGLES::CircleFilledRenderer circ1 (renderSurfacePtr1->getRenderContextSharedPointer());
 		circ1.setPrimaryRadius(160);
 		circ1.setCenterZOffset(50);
 		circ1.setupVertexBuffers();
 		circ1.setBodyColor(whiteTransparent0_8Color);
 
-		OevGLES::CirclePartialArcRenderer arc1 (glFramework->getCircleVertexContainer());
+		OevGLES::CirclePartialArcRenderer arc1 (renderSurfacePtr1->getRenderContextSharedPointer());
 		arc1.setPrimaryRadius(160);
 		arc1.setSecondaryRadius(100);
 		arc1.setPrimarySecondaryZOffset(20);
@@ -179,7 +178,7 @@ int main(int argint,char** argv) {
 //		std::cout << "Pointer to glGenVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glGenVertexArraysOES")) << std::endl;
 //		std::cout << "Pointer to glIsVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glIsVertexArrayOES")) << std::endl;
 
-		OevGLES::GLTextRenderer glTextRend (glTextGlob);
+		OevGLES::GLTextRenderer glTextRend (renderSurfacePtr1->getRenderContextSharedPointer());
 
 		glTextRend.setFontSize(30);
 //		glTextRend.setFonts("Noto Sans");
@@ -212,7 +211,7 @@ int main(int argint,char** argv) {
 				);
 
 		glTextRend.renderLayout();
-		glTextGlobPtr->getFontCache().exportTextureBitmaps();
+		// glTextGlobPtr->getFontCache().exportTextureBitmaps();
 
 		glTextRend.setupVertexBuffers();
 		glTextRend.setTextColor(blackColor);
