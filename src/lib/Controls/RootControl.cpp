@@ -23,7 +23,7 @@ namespace OevControls {
 
 
 
-static OevUtil::Uuid const rootContolUUID ("4c99a482-52f0-44b3-bb3b-a5a4cc506095");
+static OevUtil::Uuid const rootControlUUID ("4c99a482-52f0-44b3-bb3b-a5a4cc506095");
 
 RootControlSharedPtr RootControl::makeRootControl(
 	OevGLES::SDLRenderSurface &renderSurface,
@@ -56,7 +56,7 @@ RootControlSharedPtr newRootControlPtr;
 	newRootControlPtr.reset(rawPtr);
 	
 	RootControlAllocatorTraits::construct(rootCtlAllocator, rawPtr,
-										  newRootControlPtr, controlsContextPtr,rootContolUUID,
+										  newRootControlPtr, controlsContextPtr,rootControlUUID,
 										  renderSurface, "root");
 
 	return newRootControlPtr;
