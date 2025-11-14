@@ -48,7 +48,8 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 		parent {parent},
 		renderContextPtr{renderContextPtr},
 		uuid {uuid},
-		name {name}
+		name {name},
+		parentModelMatrixPtr (std::make_shared<OevGLES::RenderStandardUniforms::Mat4WithChangeCounter>())
 {
 	auto parentPtr = this->parent.lock();
 	
