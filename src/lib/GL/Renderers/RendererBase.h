@@ -184,8 +184,6 @@ public:
 		int32_t changeCounter;
 		
 		Mat4WithChangeCounter(); 
-		Mat4WithChangeCounter(Mat4WithChangeCounter const &s) = default;
-		Mat4WithChangeCounter & operator = (Mat4WithChangeCounter const & s) = default;
 	};
 	using Mat4WithChangeCounterPtr = std::shared_ptr<Mat4WithChangeCounter>;
 
