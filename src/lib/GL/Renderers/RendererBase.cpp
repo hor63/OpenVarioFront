@@ -56,16 +56,11 @@ RenderStandardUniforms::Mat4WithChangeCounter::Mat4WithChangeCounter()
 
 
 RenderStandardUniforms::RenderStandardUniforms() 
-	:modelMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
-		Mat4WithChangeCounter()))
-	,viewMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
-		Mat4WithChangeCounter()))
-	,projectionMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
-		Mat4WithChangeCounter()))
-	,MVMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
-		Mat4WithChangeCounter()))
-	,MVPMatrixPtr (std::make_shared<Mat4WithChangeCounter>(
-		Mat4WithChangeCounter()))
+	:modelMatrixPtr (std::make_shared<Mat4WithChangeCounter>())
+	,viewMatrixPtr (std::make_shared<Mat4WithChangeCounter>())
+	,projectionMatrixPtr (std::make_shared<Mat4WithChangeCounter>())
+	,MVMatrixPtr (std::make_shared<Mat4WithChangeCounter>())
+	,MVPMatrixPtr (std::make_shared<Mat4WithChangeCounter>())
 	,lightDirPtr (std::make_shared<Vec3>(
 		Vec3{0,0,1}))
 	,lightColorPtr (std::make_shared<Vec4>(
