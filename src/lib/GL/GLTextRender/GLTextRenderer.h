@@ -128,10 +128,10 @@ public:
 		VertexBufferPerTexture() = delete;
 
 		VertexBufferPerTexture(
-			RenderContextSharedPtr &context,
+			RenderContextSharedPtr const &contextPtr,
 			GLTextFontTexture& fontTexture,
 			size_t vectorReserveSize)
-		: context{context},
+		: context{contextPtr},
 		  fontTexture{fontTexture},
 		  vertexBufferHandle{0},
 		  vertexArrayHandle{0},
@@ -147,10 +147,12 @@ public:
 		  fontTexture{source.fontTexture},
 		  vertexBufferHandle{source.vertexBufferHandle},
 		  vertexArrayHandle{source.vertexArrayHandle},
-		  numVertexes{source.numVertexes}
+		  numVertexes{source.numVertexes},
+		  context{std::move(source.context)}
 		{
 			source.vertexBufferHandle = 0U;
 			source.vertexArrayHandle = 0U;
+			source.numVertexes = 0;
 		}
 
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture const& source) = delete;
