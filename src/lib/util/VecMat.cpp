@@ -197,7 +197,7 @@ Mat4 viewMatrix (Vec3 const& camPos, Vec3 const &lookAt, Vec3 const & up) {
 	return rc;
 }
 
-Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad fieldOfViewAngle) {
+Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad fieldOfViewAngle) {
 	/*
 	 *
 	 * range = tan(fov/2) ∗ near
@@ -240,5 +240,39 @@ Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad field
 
 }
 
+Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfloat  height) {
+	/*
+	 * P = {
+	 * Sx 0 0 0
+	 * 0 Sy 0 0
+	 * 0 0 Sz Pz
+	 * 0 0 −1 0
+	 * }
+	 *
+	 * See the definition of the factors above in the declarations below.
+	 */
+
+	Mat4 rc;
+	GLfloat Sx = (2.0f * near) / width;
+	GLfloat Sy = (2.0f * near) / height;
+	GLfloat Sz = -(far + near) / (far - near);
+	GLfloat Pz = -(2.0f * far * near) / (far - near);
+
+	initLogger();
+
+	rc <<	Sx,		0.0f,	0.0f,	0.0f,
+			0.0f,	Sy,		0.0f,	0.0f,
+			0.0f,	0.0f,	Sz,		Pz,
+			0.0f,	0.0f,	-1.0f,	0.0f;
+
+	LOG4CXX_DEBUG(logger,"projectionMatrix (near = " << near 
+		<< ", far = " << far
+		<< ", height = " << height
+		<< ", width = " << width
+		<< ")" );
+	LOG4CXX_DEBUG(logger,"projectionMatrix = \n" << rc);
+
+	return rc;
+}
 } /* namespace OevGLES */
 

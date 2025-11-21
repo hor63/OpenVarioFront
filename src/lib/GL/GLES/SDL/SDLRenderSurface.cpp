@@ -230,6 +230,7 @@ void SDLRenderSurface::calculateViewProjectionMatrix() {
 		static_cast<GLfloat>(windowSize.heightPixel) / 2.0f,
 		static_cast<float>(windowSize.heightPixel*2)};
 
+/*
 	// Assume the initial view point is exactly on the z-axis.
 	// My goal is to find the aperture angle at which from this viewpoint
 	// one coordinate unit in x or y direction is exactly one pixel.
@@ -240,13 +241,14 @@ void SDLRenderSurface::calculateViewProjectionMatrix() {
 	OevGLES::AngleRad apertureAngle = 
 		OevGLES::AngleRad::makeAngle(atan((
 			static_cast<double>(windowSize.heightPixel)/2.0)/camPos(2,0)) * 2.0);
+*/
 
 	OevGLES::Vec3 up = {0,1,0};
 	OevGLES::Vec3 lookAtPos = camPos;
 	lookAtPos(2,0) = 0.0f;
 
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": camPos \n" << camPos
-		<< ", aperture angle = " << OevGLES::AngleDeg(apertureAngle).getAngleValue());
+		/*<< ", aperture angle = " << OevGLES::AngleDeg(apertureAngle).getAngleValue()*/);
 
 	baseUniforms.getViewMatrix() =
 		OevGLES::viewMatrix(camPos, lookAtPos, up);
@@ -254,12 +256,11 @@ void SDLRenderSurface::calculateViewProjectionMatrix() {
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << ": viewMatrix \n" << baseUniforms.getViewMatrixC());
 	
 	baseUniforms.getProjMatrix() =
-		OevGLES::projectionMatrix(
+		OevGLES::perspectiveProjectionMatrix(
 			static_cast<GLfloat>(windowSize.heightPixel),
 			static_cast<GLfloat>(windowSize.heightPixel * 3),
-			static_cast<GLfloat>(windowSize.widthPixel) /
-			static_cast<GLfloat>(windowSize.heightPixel),
-			apertureAngle);
+			static_cast<GLfloat>(windowSize.widthPixel),
+			static_cast<GLfloat>(windowSize.heightPixel));
 
 	LOG4CXX_DEBUG(logger, "\t projectionMatrix =\n" << baseUniforms.getProjMatrixC()
 		<< "\n\t ViewMatrix = \n" << baseUniforms.getViewMatrixC()

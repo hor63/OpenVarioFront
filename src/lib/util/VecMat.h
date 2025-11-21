@@ -249,17 +249,29 @@ Mat4 rotationMatrixZ (AngleRad angleAroundZ);
  */
 Mat4 viewMatrix (Vec3 const& camPos, Vec3 const &lookAt, Vec3 const & up);
 
-/** \brief Constructs and returns a projection matrix
+/** \brief Constructs and returns a perspective projection matrix. Here is the form by the aperture angle.
  *
  * \see <a href="http://antongerdelan.net/teaching/3dprog1/maths_cheat_sheet.pdf" >Dr Anton Gerdelan's 3d Math cheat sheet</a>
- *
+ * 
  * @param near Near plane of the viewing frustum
  * @param far  Far plane of the viewing frustum
  * @param aspect Aspect of the image, i.e. width/height
  * @param fieldOfViewAngle Field of view angle in degrees
  * @return Projection Matrix
  */
-Mat4 projectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad fieldOfViewAngle);
+Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, AngleRad fieldOfViewAngle);
+
+/** \brief Constructs and returns a perspective projection matrix. Here is the form by the height and width.
+ *
+ * \see <a href="https://www.songho.ca/opengl/gl_projectionmatrix.html" >songho.ca: OpenGL Projection Matrix</a>
+ * 
+ * @param near Near plane of the viewing frustum
+ * @param far  Far plane of the viewing frustum
+ * @param width Width of the visible window
+ * @param height Height of the visisble window
+ * @return Projection Matrix
+ */
+Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfloat  height);
 
 } // namespace OevGLES {
 

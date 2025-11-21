@@ -157,6 +157,7 @@ int main(int argint,char** argv) {
 		arc1.setupVertexBuffers();
 		arc1.setBodyColor(whiteTransparent0_8Color);
 
+/*
 		// Assume the initial view point is exactly on the z-axis.
 		// My goal is to find the aperture angle at which from this viewpoint
 		// one coordinate unit in x or y direction is exactly one pixel.
@@ -165,6 +166,7 @@ int main(int argint,char** argv) {
 		// (windowHeight/2) / viewerDistance
 		// is half of the aperture angle.
 		static const OevGLES::AngleRad apertureAngle = OevGLES::AngleRad::makeAngle(atan((windowHeight/2.0)/camPos(2,0))) * 2.0f;
+*/
 
 		std::cout << "Extensions are : " << glGetString(GL_EXTENSIONS) << std::endl;
 		void* glGenVertexArraysOESPtr = reinterpret_cast<void*>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
@@ -220,10 +222,9 @@ int main(int argint,char** argv) {
 
 		OevGLES::RenderStandardUniforms handUniforms;
 		handUniforms.getProjMatrix() =
-			OevGLES::projectionMatrix(windowHeight, windowHeight * 3,
-									  static_cast<double>(windowWidth) /
-										  static_cast<double>(windowHeight),
-									  apertureAngle);
+			OevGLES::perspectiveProjectionMatrix(windowHeight, windowHeight * 3,
+									  static_cast<double>(windowWidth),
+										  static_cast<double>(windowHeight));
 
 		handUniforms.getAmbientLightColor() =
 			OevGLES::Vec4{0.5f, 0.5f, 0.5f, 1.0f};
