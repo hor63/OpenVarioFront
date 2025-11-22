@@ -253,8 +253,8 @@ Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfl
 	 */
 
 	Mat4 rc;
-	GLfloat Sx = (2.0f * near) / width;
-	GLfloat Sy = (2.0f * near) / height;
+	GLfloat Sx = (4.0f * near) / width;
+	GLfloat Sy = (4.0f * near) / height;
 	GLfloat Sz = -(far + near) / (far - near);
 	GLfloat Pz = -(2.0f * far * near) / (far - near);
 
