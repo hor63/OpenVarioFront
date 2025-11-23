@@ -228,7 +228,7 @@ Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, Ang
 			0.0f,	0.0f,	Sz,		Pz,
 			0.0f,	0.0f,	-1.0f,	0.0f;
 
-	LOG4CXX_DEBUG(logger,"projectionMatrix (near = " << near 
+	LOG4CXX_DEBUG(logger,"perspectiveProjectionMatrix (near = " << near 
 		<< ", far = " << far
 		<< ", aspect = " << aspect
 		<< ", fieldOfViewAngle = " << fieldOfViewAngle
@@ -240,7 +240,7 @@ Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, Ang
 
 }
 
-Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfloat  height) {
+Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfloat height) {
 	/*
 	 * P = {
 	 * Sx 0 0 0
@@ -265,7 +265,7 @@ Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfl
 			0.0f,	0.0f,	Sz,		Pz,
 			0.0f,	0.0f,	-1.0f,	0.0f;
 
-	LOG4CXX_DEBUG(logger,"projectionMatrix (near = " << near 
+	LOG4CXX_DEBUG(logger,"perspectiveProjectionMatrix (near = " << near 
 		<< ", far = " << far
 		<< ", height = " << height
 		<< ", width = " << width
@@ -274,5 +274,31 @@ Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfl
 
 	return rc;
 }
+
+Mat4 orthographicProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfloat height) {
+
+	Mat4 rc;
+	GLfloat Sx = 2.0f / width;
+	GLfloat Sy = 2.0f / height;
+	GLfloat Sz = -2.0f / (far - near);
+	GLfloat Pz = -(far + near) / (far - near);
+
+	initLogger();
+
+	rc <<	Sx,		0.0f,	0.0f,	0.0f,
+			0.0f,	Sy,		0.0f,	0.0f,
+			0.0f,	0.0f,	Sz,		Pz,
+			0.0f,	0.0f,	-0.0f,	1.0f;
+
+	LOG4CXX_DEBUG(logger,"orthographicProjectionMatrix (near = " << near 
+		<< ", far = " << far
+		<< ", height = " << height
+		<< ", width = " << width
+		<< ")" );
+	LOG4CXX_DEBUG(logger,"projectionMatrix = \n" << rc);
+
+	return rc;
+}
+
 } /* namespace OevGLES */
 

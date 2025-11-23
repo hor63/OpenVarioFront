@@ -222,10 +222,22 @@ int main(int argint,char** argv) {
 
 		OevGLES::RenderStandardUniforms handUniforms;
 		handUniforms.getProjMatrix() =
+			OevGLES::orthographicProjectionMatrix(windowHeight, windowHeight * 3,
+						  static_cast<double>(windowWidth),
+							  static_cast<double>(windowHeight));
+/*
 			OevGLES::perspectiveProjectionMatrix(windowHeight, windowHeight * 3,
 									  static_cast<double>(windowWidth),
 										  static_cast<double>(windowHeight));
+*/
 
+		std::cout << "perspecive matrix = \n" << handUniforms.getProjMatrixC() << std::endl;
+
+		std::cout << "orthographic matrix = \n" << 
+			OevGLES::orthographicProjectionMatrix(windowHeight, windowHeight * 3,
+						  static_cast<double>(windowWidth),
+							  static_cast<double>(windowHeight))
+			<< std::endl;
 		handUniforms.getAmbientLightColor() =
 			OevGLES::Vec4{0.5f, 0.5f, 0.5f, 1.0f};
 

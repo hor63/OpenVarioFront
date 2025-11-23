@@ -271,7 +271,19 @@ Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat aspect, Ang
  * @param height Height of the visisble window
  * @return Projection Matrix
  */
-Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfloat  height);
+Mat4 perspectiveProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfloat height);
+
+/** \brief Constructs and returns a orthographic projection matrix.
+ *
+ * \see <a href="https://www.songho.ca/opengl/gl_projectionmatrix.html" >songho.ca: OpenGL Projection Matrix</a>
+ * 
+ * @param near Near plane of the viewing frustum
+ * @param far  Far plane of the viewing frustum
+ * @param width Width of the visible window
+ * @param height Height of the visisble window
+ * @return Projection Matrix
+ */
+Mat4 orthographicProjectionMatrix (GLfloat near, GLfloat far, GLfloat width, GLfloat height);
 
 } // namespace OevGLES {
 
