@@ -31,7 +31,9 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
 
-#include "GLObjectWrappers.h"
+// includes also "GLObjectWrappers.h
+#include "Renderers/RenderContext.h"
+
 
 namespace OevGLES {
 
@@ -60,6 +62,56 @@ GLBufferObject& GLBufferObject::operator=(GLBufferObject &&other) {
 
 	bufferHandle = other.bufferHandle;
 	other.bufferHandle = 0;
+
+	return *this;
+}
+
+GLVertexArrayObject::GLVertexArrayObject(RenderContext const &context) :
+	vertexArrayHandle {0U},
+	glDeleteVertexArraysOES {context.glDeleteVertexArraysOES},
+	glGenVertexArraysOES {context.glGenVertexArraysOES},
+	vertexArrayIsUsable {context.vertexArrayIsUsable}
+{
+	if (vertexArrayIsUsable && glGenVertexArraysOES != nullptr) {
+		glGenVertexArraysOES(1,&vertexArrayHandle);
+	}
+}
+
+GLVertexArrayObject::~GLVertexArrayObject() {
+	if (vertexArrayHandle != 0U && glDeleteVertexArraysOES != nullptr){
+		glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		vertexArrayHandle = 0U;
+	}
+}
+
+GLVertexArrayObject::GLVertexArrayObject(GLVertexArrayObject &&other) :
+	vertexArrayHandle {other.vertexArrayHandle},
+	glDeleteVertexArraysOES {other.glDeleteVertexArraysOES},
+	glGenVertexArraysOES {other.glGenVertexArraysOES},
+	vertexArrayIsUsable {other.vertexArrayIsUsable}
+{
+	other.vertexArrayHandle = 0U;
+	other.glDeleteVertexArraysOES = nullptr;
+	other.glGenVertexArraysOES = nullptr;
+	other.vertexArrayIsUsable = false;
+	
+}
+
+GLVertexArrayObject& GLVertexArrayObject::operator=(GLVertexArrayObject &&other) {
+	if (vertexArrayHandle != 0U && glDeleteVertexArraysOES != nullptr){
+		glDeleteVertexArraysOES(1,&vertexArrayHandle);
+		vertexArrayHandle = 0U;
+	}
+
+	vertexArrayHandle = other.vertexArrayHandle;
+	glDeleteVertexArraysOES = other.glDeleteVertexArraysOES;
+	glGenVertexArraysOES = other.glGenVertexArraysOES;
+	vertexArrayIsUsable = other.vertexArrayIsUsable;
+
+	other.vertexArrayHandle = 0U;
+	other.glDeleteVertexArraysOES = nullptr;
+	other.glGenVertexArraysOES = nullptr;
+	other.vertexArrayIsUsable = false;
 
 	return *this;
 }

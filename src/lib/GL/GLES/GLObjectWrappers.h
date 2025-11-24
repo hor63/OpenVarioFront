@@ -26,6 +26,8 @@
 #ifndef LIB_UTIL_GLBUFFEROBJECT_H_
 #define LIB_UTIL_GLBUFFEROBJECT_H_
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 #include <memory>
 
 namespace OevGLES {
@@ -41,7 +43,6 @@ namespace OevGLES {
  * If the target had a buffer object that is destroyed.
  * After the source's \ref bufferHandle is 0, i.e. no valid buffer any more.
  */
-
 class GLBufferObject {
 public:
 	/** \brief Constructor creates an OpenGL buffer object.
@@ -72,6 +73,52 @@ private:
 
 using GLBufferObjectSharedPtr = std::shared_ptr<GLBufferObject>;
 using GLBufferObjectWeakPtr = std::weak_ptr<GLBufferObject>;
+struct RenderContext;
+
+/** \brief Thin wrapper around GL vertex array objects
+ *
+ * Manages the lifetime of a GL vertex array by its own lifetime
+ * 
+ * You can move it but you cannot copy it. If you need a new
+ * buffer object create a new GLBufferObject.
+ 
+ * If you move it the source's buffer handle is moved to the target.
+ * If the target had a buffer object that is destroyed.
+ * After the source's \ref bufferHandle is 0, i.e. no valid buffer any more.
+ */
+class GLVertexArrayObject final {
+
+public:
+	/** \brief Constructor creates an OpenGL buffer object.
+	 * 
+	 * Only the buffer object is being created. Nothing else.
+	 * Use it for whatever you want, either a vertex buffer, or an
+	 * index buffer or whatever your GL version allows.
+	 */
+	GLVertexArrayObject(RenderContext const &context);
+	
+	/** \brief Delete the buffer object in \ref bufferHandle when one is managed by \p this.
+	 *
+	 */
+	~GLVertexArrayObject();
+	GLVertexArrayObject(const GLVertexArrayObject &other) = delete;
+	GLVertexArrayObject(GLVertexArrayObject &&other);
+	GLVertexArrayObject& operator=(const GLVertexArrayObject &other) = delete;
+	GLVertexArrayObject& operator=(GLVertexArrayObject &&other);
+	
+	/// \brief Use the object instead of the raw buffer handle
+	unsigned int get() const {return vertexArrayHandle;}
+	operator unsigned int const & () const {return vertexArrayHandle;}
+	operator bool () const {return (vertexArrayHandle != 0);}
+
+private:
+	GLuint vertexArrayHandle = 0;
+	
+	PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = nullptr;
+	PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = nullptr;
+	bool vertexArrayIsUsable = false;
+
+};
 
 } /* namespace OevGLES { */
 
