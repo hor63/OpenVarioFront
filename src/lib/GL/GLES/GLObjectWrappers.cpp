@@ -37,8 +37,10 @@
 
 namespace OevGLES {
 
-GLBufferObject::GLBufferObject() {
-	glGenBuffers(1, &bufferHandle);
+GLBufferObject::GLBufferObject(bool doCreateBuffer) {
+	if (doCreateBuffer) {
+		glGenBuffers(1, &bufferHandle);
+	}
 }
 
 GLBufferObject::~GLBufferObject() {
