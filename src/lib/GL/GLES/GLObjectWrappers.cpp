@@ -70,8 +70,10 @@ GLBufferObject& GLBufferObject::operator=(GLBufferObject &&other) {
 
 GLVertexArrayObject::GLVertexArrayObject(RenderContext const &context) :
 	vertexArrayHandle {0U},
+	glBindVertexArrayOES {context.glBindVertexArrayOES},
 	glDeleteVertexArraysOES {context.glDeleteVertexArraysOES},
 	glGenVertexArraysOES {context.glGenVertexArraysOES},
+	glIsVertexArrayOES {context.glIsVertexArrayOES},
 	vertexArrayIsUsable {context.vertexArrayIsUsable}
 {
 	if (vertexArrayIsUsable && glGenVertexArraysOES != nullptr) {

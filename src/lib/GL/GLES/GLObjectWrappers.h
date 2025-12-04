@@ -84,11 +84,14 @@ private:
 
 };
 
+using GLBufferObjectSharedPtr = std::shared_ptr<GLBufferObject>;
+using GLBufferObjectWeakPtr = std::weak_ptr<GLBufferObject>;
+
 template <GLenum bufferType>
 class GlBindBufferObject final {
 	
 	static_assert(bufferType == GL_ARRAY_BUFFER || bufferType == GL_ELEMENT_ARRAY_BUFFER,
-		"bufferType must be either GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER");
+		"Template parameter bufferType must be either GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER");
 public:
 
 	static constexpr GLenum glGetPname = 
@@ -106,17 +109,76 @@ public:
 		backupBoundBuffer = tmpBoundBuffer;
 		
 		glBindBuffer(bufferType, bufferObject);
+		boundBufferHandle = bufferObject;
+		bufferObjectWasBound = true;
 	}
 
-	private:
-	GLBufferObject const* bufferObject = nullptr;
+	GlBindBufferObject (GlBindBufferObject const& source) = delete;
 	
-	/// \brief used to save an already bound buffer which is restored in the destructor.
-	GLuint backupBoundBuffer = 0U;
-};
+	GlBindBufferObject (GlBindBufferObject && source) :
+		bufferObjectWasBound{source.bufferObjectWasBound},
+		boundBufferHandle{source.boundBufferHandle},
+		backupBoundBuffer{source.backupBoundBuffer}
+	{
+		source.bufferObjectWasBound = false;
+		source.backupBoundBuffer = 0;
+	}
 
-using GLBufferObjectSharedPtr = std::shared_ptr<GLBufferObject>;
-using GLBufferObjectWeakPtr = std::weak_ptr<GLBufferObject>;
+	GlBindBufferObject & operator = (GlBindBufferObject const& source) = delete;
+
+	GlBindBufferObject & operator = (GlBindBufferObject && source) {
+		
+		if (bufferObjectWasBound) [[unlikely]] {
+			if (source.bufferObjectWasBound) {
+				// Mmmh, I am overwriting a bound object with another bound object.
+				// That is not intended.
+				// I will deal with it as good as possible:
+				// Bind the source buffer since this is going to be overwritten.
+				// But I am backing up the currently bound buffer in the system.
+				GLint tmpBoundBuffer = 0;
+				glGetIntegerv (glGetPname,&tmpBoundBuffer);
+				// overwrite the backup buffer in source too.
+				source.backupBoundBuffer = tmpBoundBuffer;
+
+				glBindBuffer(bufferType, source.boundBufferHandle);
+			} else {
+				// I am resetting this to an empty object.
+				// Therefore binding the backup buffer.
+				glBindBuffer(bufferType, backupBoundBuffer);
+			}
+		}
+		
+		// In any case copy all source information to this.
+		bufferObjectWasBound = source.bufferObjectWasBound;
+		boundBufferHandle = source.boundBufferHandle;
+		backupBoundBuffer = source.backupBoundBuffer;
+		
+		// ... and make the source an empty object, thus making the move complete.
+		source.bufferObjectWasBound = false;
+		source.boundBufferHandle = 0U;
+		source.backupBoundBuffer = 0U;
+		
+		return *this;
+	}
+
+	~GlBindBufferObject () {
+		if (bufferObjectWasBound) {
+			glBindBuffer(bufferType, backupBoundBuffer);
+		}
+	}
+	
+private:
+	bool bufferObjectWasBound = false;
+	/// \brief The currently bound buffer when \ref bufferObjectWasBound is \p true.
+	GLuint boundBufferHandle = 0U;
+	
+	/// \brief used to save an already bound buffer which is restored in the destructor
+	/// 	when \ref bufferObjectWasBound is \p true.
+	GLuint backupBoundBuffer = 0U;
+}; // class GlBindBufferObject
+
+using GlBindArrayBufferObject 		 = GlBindBufferObject<GL_ARRAY_BUFFER>;
+using GlBindElementArrayBufferObject = GlBindBufferObject<GL_ELEMENT_ARRAY_BUFFER>;
 
 // forward declaration
 struct RenderContext;
@@ -133,6 +195,8 @@ struct RenderContext;
  * After the source's \ref bufferHandle is 0, i.e. no valid buffer any more.
  */
 class GLVertexArrayObject final {
+
+	friend class GLBindVertexArrayObject;
 
 public:
 
@@ -168,11 +232,109 @@ public:
 private:
 	GLuint vertexArrayHandle = 0;
 	
+	PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = nullptr;
 	PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = nullptr;
 	PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = nullptr;
+	PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES = nullptr;
 	bool vertexArrayIsUsable = false;
 
-};
+}; // GLVertexArrayObject
+
+class GLBindVertexArrayObject final {
+public:
+
+public:
+
+	/** \brief Constructs an un-bound object for deferred binding
+	 */
+	GLBindVertexArrayObject () {}
+
+	GLBindVertexArrayObject (GLVertexArrayObject const& vertexArrayObject) :
+		vertexArrayWasBound {false},
+		boundVertexArrayrHandle {0U},
+		backupVertexArrayBuffer {0U},
+		glBindVertexArrayOES {nullptr}
+	{
+		
+		if (vertexArrayObject.vertexArrayIsUsable &&
+			glBindVertexArrayOES != nullptr) {
+			// Store the currently bound buffer, or no buffer (handle = 0)
+			GLint tmpBoundVertexArray = 0;
+			glGetIntegerv (GL_VERTEX_ARRAY_BINDING_OES,&tmpBoundVertexArray);
+			backupVertexArrayBuffer = tmpBoundVertexArray;
+			
+			glBindVertexArrayOES( vertexArrayObject);
+			boundVertexArrayrHandle = vertexArrayObject;
+			vertexArrayWasBound = true;
+		}
+	}
+
+	GLBindVertexArrayObject (GLBindVertexArrayObject const& source) = delete;
+	
+	GLBindVertexArrayObject (GLBindVertexArrayObject && source) :
+		vertexArrayWasBound{source.vertexArrayWasBound},
+		boundVertexArrayrHandle{source.boundVertexArrayrHandle},
+		backupVertexArrayBuffer{source.backupVertexArrayBuffer}
+	{
+		source.vertexArrayWasBound = false;
+		source.backupVertexArrayBuffer = 0;
+	}
+
+	GLBindVertexArrayObject & operator = (GLBindVertexArrayObject const& source) = delete;
+
+	GLBindVertexArrayObject & operator = (GLBindVertexArrayObject && source) {
+		
+		if (vertexArrayWasBound) [[unlikely]] {
+			if (source.vertexArrayWasBound) {
+				// Mmmh, I am overwriting a bound object with another bound object.
+				// That is not intended.
+				// I will deal with it as good as possible:
+				// Bind the source buffer since this is going to be overwritten.
+				// But I am backing up the currently bound buffer in the system.
+				GLint tmpBoundBuffer = 0;
+				glGetIntegerv (GL_VERTEX_ARRAY_BINDING_OES,&tmpBoundBuffer);
+				// overwrite the backup buffer in source too.
+				source.backupVertexArrayBuffer = tmpBoundBuffer;
+
+				glBindVertexArrayOES( source.boundVertexArrayrHandle);
+			} else {
+				// I am resetting this to an empty object.
+				// Therefore binding the backup buffer.
+				glBindVertexArrayOES( backupVertexArrayBuffer);
+			}
+		}
+		
+		// In any case copy all source information to this.
+		vertexArrayWasBound = source.vertexArrayWasBound;
+		boundVertexArrayrHandle = source.boundVertexArrayrHandle;
+		backupVertexArrayBuffer = source.backupVertexArrayBuffer;
+		
+		// ... and make the source an empty object, thus making the move complete.
+		source.vertexArrayWasBound = false;
+		source.boundVertexArrayrHandle = 0U;
+		source.backupVertexArrayBuffer = 0U;
+		
+		return *this;
+	}
+
+	~GLBindVertexArrayObject () {
+		if (vertexArrayWasBound) {
+			glBindVertexArrayOES( backupVertexArrayBuffer);
+		}
+	}
+	
+private:
+	bool vertexArrayWasBound = false;
+	/// \brief The currently bound buffer when \ref bufferObjectWasBound is \p true.
+	GLuint boundVertexArrayrHandle = 0U;
+	
+	/// \brief used to save an already bound buffer which is restored in the destructor
+	/// 	when \ref bufferObjectWasBound is \p true.
+	GLuint backupVertexArrayBuffer = 0U;
+
+	PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = nullptr;
+	
+}; // class GLBindVertexArrayObject
 
 } /* namespace OevGLES { */
 
