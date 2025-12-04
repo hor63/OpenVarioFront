@@ -14,7 +14,6 @@
 
 #include "GLES/GLFramework.h"
 #include "SDLUtil.h"
-#include "GLTextRender/GLTextGlobals.h"
 
 namespace OevGLES {
 
@@ -78,12 +77,8 @@ SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint heig
 	// Use new and reset the shared pointer here instead using make_shared.
 	// The constructor of RenderContext is private, and I am the only friend, but not the STL class
 	// which implements make_shared.
-	auto renderContextPtr = new RenderContext(sdlSurfaceSharedPtr);
-	sdlSurfaceSharedPtr->renderContextSharedPointer.reset(renderContextPtr);
-	
-	renderContextPtr->glTextGlobSharedPtr.reset (new GLTextGlobals);
-
-
+	auto renderContextRawPtr = new RenderContext(sdlSurfaceSharedPtr);
+	sdlSurfaceSharedPtr->renderContextSharedPointer.reset(renderContextRawPtr);
 	
 	sdlSurfaceSharedPtr->createRenderSurface(width,height,windowName);
 	renderSurfacePtrMap.insert(std::pair(SDL_GetWindowID(sdlSurfaceSharedPtr->getNativeWindow()),sdlSurfaceSharedPtr));

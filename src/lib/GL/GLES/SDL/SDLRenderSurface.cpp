@@ -34,6 +34,8 @@
 #include "GLES/GLFramework.h"
 #include "SDLUtil.h"
 #include "Renderers/RenderContext.h"
+#include "GLTextRender/GLTextGlobals.h"
+
 
 namespace OevGLES {
 
@@ -152,6 +154,11 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " 
 			<< renderContextSharedPointer->vertexArrayIsUsable);
 		
+
+	renderContextSharedPointer->glTextGlobSharedPtr.reset (new GLTextGlobals);
+	*(renderContextSharedPointer->quadVertexBufferPtr) = GLBufferObject(true);
+
+
 
 	onWindowResize();
 
