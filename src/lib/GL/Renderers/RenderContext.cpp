@@ -50,7 +50,7 @@ RenderContext::RenderContext (
 		dialogTitleBackgroundPtr{backgroundColorPtr},
 		scrollBarForegroundPtr{foregroundColorPtr},
 		scrollBarBackgroundPtr{backgroundColorPtr},
-		quadVertexBufferPtr {std::make_shared<GLBufferObject>()}
+		quadVertexBufferPtr {std::make_shared<GLBufferObject>(false)}
 		{
 			/* The location of the 4 vertexes for the quad
 			4   3
