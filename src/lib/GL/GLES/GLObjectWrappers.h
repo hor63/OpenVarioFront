@@ -336,6 +336,103 @@ private:
 	
 }; // class GLBindVertexArrayObject
 
+class VertexAttribArryObject final {
+	
+	public:
+	
+	/// \brief Create an empty object for deferred vertex attribute setting
+	VertexAttribArryObject() {}
+	
+	VertexAttribArryObject(bool enableVertexArray,GLuint vertexIndex)
+	{
+		GLint isVertexArrayEnabled = 0;
+		glGetVertexAttribiv(vertexIndex,GL_VERTEX_ATTRIB_ARRAY_ENABLED,&isVertexArrayEnabled);
+		
+		// Only if the current status is different from the target status
+		// set the status and store the function address to restore the status.
+		// Else just skip over it and leave this with no index reference.
+		if ((isVertexArrayEnabled != 0) != enableVertexArray) {
+			
+			this->vertexIndex = vertexIndex;
+	
+			
+			// Remember how to restore the array attribute status.
+			if (isVertexArrayEnabled == 0) {
+				arrayStatusRestoreFunction = glDisableVertexAttribArray;
+			} else {
+				arrayStatusRestoreFunction = glEnableVertexAttribArray;
+			}
+			
+			if (enableVertexArray) {
+				glEnableVertexAttribArray (vertexIndex);
+			} else {
+				glDisableVertexAttribArray (vertexIndex);
+			}
+		} // if ((isVertexArrayEnabled != 0) != enableVertexArray) {
+		
+	}
+	
+	VertexAttribArryObject (VertexAttribArryObject const& source) = delete;
+	VertexAttribArryObject (VertexAttribArryObject && source) :
+		vertexIndex {source.vertexIndex},
+		arrayStatusRestoreFunction {source.arrayStatusRestoreFunction}
+	{
+		// and now the move part.
+		source.vertexIndex = 0U;
+		source.arrayStatusRestoreFunction = nullptr;
+	}
+
+	~VertexAttribArryObject () {
+		if (arrayStatusRestoreFunction != nullptr) {
+			arrayStatusRestoreFunction(vertexIndex);
+		}
+	}
+
+	VertexAttribArryObject& operator = (VertexAttribArryObject const& source) = delete;
+	VertexAttribArryObject& operator = (VertexAttribArryObject && source) {
+
+		// If this has already a defined status things are getting a bit complex.
+		if (arrayStatusRestoreFunction != nullptr) [[unlikely]] {
+			if (source.vertexIndex != vertexIndex ||
+				source.arrayStatusRestoreFunction == nullptr) {
+				// If the vertex index of this and source are different
+				// restore the status of this and move on with moving
+				// the status of source into this.
+				// Restoring the status of this does not affect source's because
+				// this' and source's vertexIndex are different.
+				// Also if source is empty also restore the status stored in this.
+				arrayStatusRestoreFunction(vertexIndex);
+			} else { // if (source.vertexIndex != vertexIndex)
+				// Set the defined status of source again.
+				// Note that source.arrayStatusRestoreFunction == nullptr is caught above already.
+				if (source.arrayStatusRestoreFunction == glDisableVertexAttribArray) {
+					glEnableVertexAttribArray(vertexIndex);
+				} else {
+					glDisableVertexAttribArray (vertexIndex);
+				}
+			} // if (source.vertexIndex != vertexIndex)
+		}
+
+		vertexIndex = source.vertexIndex;
+		arrayStatusRestoreFunction = source.arrayStatusRestoreFunction;
+		// and now the move part.
+		source.vertexIndex = 0U;
+		source.arrayStatusRestoreFunction = nullptr;
+
+		return *this;
+	}
+	
+	private:
+	
+	GLuint vertexIndex = 0U;
+
+	/** \brief Can point either to \p glEnableVertexAttribArray or \p glDisableVertexAttribArray.
+	 *
+	 * If it is \p nullptr the object is not pointing to a valid vertex index. No action is taken in the destructor.
+	 */
+	void (*arrayStatusRestoreFunction) (GLuint index) = nullptr;
+}; // class VertexAttribArryObject
+
 } /* namespace OevGLES { */
 
 #endif /* LIB_UTIL_GLBUFFEROBJECT_H_ */
