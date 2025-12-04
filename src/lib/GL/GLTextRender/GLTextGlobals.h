@@ -45,7 +45,7 @@ class GLFramework;
  *
  */
 class GLTextGlobals {
-	friend class GLFramework;
+	friend class SDLRenderSurface;
 public:
 	virtual ~GLTextGlobals();
 
