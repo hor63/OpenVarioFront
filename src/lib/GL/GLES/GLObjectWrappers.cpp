@@ -50,9 +50,10 @@ GLBufferObject::~GLBufferObject() {
 	}
 }
 
-GLBufferObject::GLBufferObject(GLBufferObject &&other) {
+GLBufferObject::GLBufferObject(GLBufferObject &&other) :
+	bufferHandle {other.bufferHandle}
+{
 
-	bufferHandle = other.bufferHandle;
 	other.bufferHandle = 0;
 
 }

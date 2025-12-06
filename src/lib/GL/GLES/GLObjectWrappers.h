@@ -30,6 +30,8 @@
 #include <GLES2/gl2ext.h>
 #include <memory>
 
+#include "ExceptionBase.h"
+
 namespace OevGLES {
 
 /** \brief Thin wrapper around GL buffer objects
@@ -59,14 +61,13 @@ public:
 	 */
 	GLBufferObject(bool doCreateBuffer);
 	
-	/** \brief Delete the buffer object in \ref bufferHandle when one is managed by \p this.
-	 *
-	 */
-	~GLBufferObject();
 	GLBufferObject(const GLBufferObject &other) = delete;
 	GLBufferObject(GLBufferObject &&other);
 	GLBufferObject& operator=(const GLBufferObject &other) = delete;
 	GLBufferObject& operator=(GLBufferObject &&other);
+
+	// \brief Delete the buffer object in \ref bufferHandle when one is managed by \p this.
+	~GLBufferObject();
 	
 	/// \brief Use the object instead of the raw buffer handle
 	unsigned int get() const {return bufferHandle;}
@@ -130,19 +131,12 @@ public:
 		
 		if (bufferObjectWasBound) [[unlikely]] {
 			if (source.bufferObjectWasBound) {
-				// Mmmh, I am overwriting a bound object with another bound object.
-				// That is not intended.
-				// I will deal with it as good as possible:
-				// Bind the source buffer since this is going to be overwritten.
-				// But I am backing up the currently bound buffer in the system.
-				GLint tmpBoundBuffer = 0;
-				glGetIntegerv (glGetPname,&tmpBoundBuffer);
-				// overwrite the backup buffer in source too.
-				source.backupBoundBuffer = tmpBoundBuffer;
-
-				glBindBuffer(bufferType, source.boundBufferHandle);
+				// Trying to overwrite a bound buffer with another bound buffer is frowned upon
+				throw GLObjectWrapperException(
+					"You must not move a bound buffer wrapper to another bound buffer wrapper");
 			} else {
 				// I am resetting this to an empty object.
+				// This is allowed. This is equivalent to deleting this ahead of time
 				// Therefore binding the backup buffer.
 				glBindBuffer(bufferType, backupBoundBuffer);
 			}
@@ -208,7 +202,7 @@ public:
 	 * 
 	 * 
 	 */
-	GLVertexArrayObject(RenderContext const &context);
+	GLVertexArrayObject(RenderContextSharedPtr const &context);
 	
 	/** \brief Delete the buffer object in \ref bufferHandle when one is managed by \p this.
 	 *
@@ -288,15 +282,10 @@ public:
 			if (source.vertexArrayWasBound) {
 				// Mmmh, I am overwriting a bound object with another bound object.
 				// That is not intended.
-				// I will deal with it as good as possible:
-				// Bind the source buffer since this is going to be overwritten.
-				// But I am backing up the currently bound buffer in the system.
-				GLint tmpBoundBuffer = 0;
-				glGetIntegerv (GL_VERTEX_ARRAY_BINDING_OES,&tmpBoundBuffer);
-				// overwrite the backup buffer in source too.
-				source.backupVertexArrayBuffer = tmpBoundBuffer;
-
-				glBindVertexArrayOES( source.boundVertexArrayrHandle);
+				// Overwriting an assigned vertex array attribute with another one is frowned upon
+				throw GLObjectWrapperException(
+					"You must not move a defined bound vertex array object "
+						"to another defined vertex array object");
 			} else {
 				// I am resetting this to an empty object.
 				// Therefore binding the backup buffer.
@@ -336,14 +325,14 @@ private:
 	
 }; // class GLBindVertexArrayObject
 
-class VertexAttribArryObject final {
+class VertexArrayAttribObject final {
 	
 	public:
 	
 	/// \brief Create an empty object for deferred vertex attribute setting
-	VertexAttribArryObject() {}
+	VertexArrayAttribObject() {}
 	
-	VertexAttribArryObject(bool enableVertexArray,GLuint vertexIndex)
+	VertexArrayAttribObject(bool enableVertexArray,GLuint vertexIndex)
 	{
 		GLint isVertexArrayEnabled = 0;
 		glGetVertexAttribiv(vertexIndex,GL_VERTEX_ATTRIB_ARRAY_ENABLED,&isVertexArrayEnabled);
@@ -372,8 +361,8 @@ class VertexAttribArryObject final {
 		
 	}
 	
-	VertexAttribArryObject (VertexAttribArryObject const& source) = delete;
-	VertexAttribArryObject (VertexAttribArryObject && source) :
+	VertexArrayAttribObject (VertexArrayAttribObject const& source) = delete;
+	VertexArrayAttribObject (VertexArrayAttribObject && source) :
 		vertexIndex {source.vertexIndex},
 		arrayStatusRestoreFunction {source.arrayStatusRestoreFunction}
 	{
@@ -382,35 +371,25 @@ class VertexAttribArryObject final {
 		source.arrayStatusRestoreFunction = nullptr;
 	}
 
-	~VertexAttribArryObject () {
+	~VertexArrayAttribObject () {
 		if (arrayStatusRestoreFunction != nullptr) {
 			arrayStatusRestoreFunction(vertexIndex);
 		}
 	}
 
-	VertexAttribArryObject& operator = (VertexAttribArryObject const& source) = delete;
-	VertexAttribArryObject& operator = (VertexAttribArryObject && source) {
-
+	VertexArrayAttribObject& operator = (VertexArrayAttribObject const& source) = delete;
+	VertexArrayAttribObject& operator = (VertexArrayAttribObject && source) {
 		// If this has already a defined status things are getting a bit complex.
 		if (arrayStatusRestoreFunction != nullptr) [[unlikely]] {
-			if (source.vertexIndex != vertexIndex ||
-				source.arrayStatusRestoreFunction == nullptr) {
-				// If the vertex index of this and source are different
-				// restore the status of this and move on with moving
-				// the status of source into this.
-				// Restoring the status of this does not affect source's because
-				// this' and source's vertexIndex are different.
-				// Also if source is empty also restore the status stored in this.
+			if (source.arrayStatusRestoreFunction == nullptr) {
+				// If source is empty restore the status stored in this.
 				arrayStatusRestoreFunction(vertexIndex);
-			} else { // if (source.vertexIndex != vertexIndex)
-				// Set the defined status of source again.
-				// Note that source.arrayStatusRestoreFunction == nullptr is caught above already.
-				if (source.arrayStatusRestoreFunction == glDisableVertexAttribArray) {
-					glEnableVertexAttribArray(vertexIndex);
-				} else {
-					glDisableVertexAttribArray (vertexIndex);
-				}
-			} // if (source.vertexIndex != vertexIndex)
+			} else {
+				// Overwriting an assigned vertex array attribute with another one is frowned upon
+				throw GLObjectWrapperException(
+					"You must not move a defined vertex array attribute object "
+						"to another defined vertex array attribute object");
+			} 
 		}
 
 		vertexIndex = source.vertexIndex;
@@ -431,7 +410,7 @@ class VertexAttribArryObject final {
 	 * If it is \p nullptr the object is not pointing to a valid vertex index. No action is taken in the destructor.
 	 */
 	void (*arrayStatusRestoreFunction) (GLuint index) = nullptr;
-}; // class VertexAttribArryObject
+}; // class VertexArryAttribObject
 
 } /* namespace OevGLES { */
 
