@@ -71,7 +71,6 @@ public:
 	
 	/// \brief Use the object instead of the raw buffer handle
 	unsigned int get() const {return bufferHandle;}
-	operator unsigned int const & () const {return bufferHandle;}
 
 	/** \brief Check if the buffer object can be used.
 	 *
@@ -176,6 +175,7 @@ using GlBindElementArrayBufferObject = GlBindBufferObject<GL_ELEMENT_ARRAY_BUFFE
 
 // forward declaration
 struct RenderContext;
+using RenderContextSharedPtr = std::shared_ptr<RenderContext>;
 
 /** \brief Thin wrapper around GL vertex array objects
  *
@@ -202,7 +202,7 @@ public:
 	 * 
 	 * 
 	 */
-	GLVertexArrayObject(RenderContextSharedPtr const &context);
+	GLVertexArrayObject(RenderContextSharedPtr const &contextPtr);
 	
 	/** \brief Delete the buffer object in \ref bufferHandle when one is managed by \p this.
 	 *
@@ -215,7 +215,6 @@ public:
 	
 	/// \brief Use the object instead of the raw buffer handle
 	unsigned int get() const {return vertexArrayHandle;}
-	operator unsigned int const & () const {return vertexArrayHandle;}
 	
 	/** \brief Check if the vertex array can be used.
 	 *

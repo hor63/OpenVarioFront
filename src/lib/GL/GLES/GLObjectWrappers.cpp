@@ -69,13 +69,13 @@ GLBufferObject& GLBufferObject::operator=(GLBufferObject &&other) {
 	return *this;
 }
 
-GLVertexArrayObject::GLVertexArrayObject(RenderContext const &context) :
+GLVertexArrayObject::GLVertexArrayObject(RenderContextSharedPtr const &contextPtr) :
 	vertexArrayHandle {0U},
-	glBindVertexArrayOES {context.glBindVertexArrayOES},
-	glDeleteVertexArraysOES {context.glDeleteVertexArraysOES},
-	glGenVertexArraysOES {context.glGenVertexArraysOES},
-	glIsVertexArrayOES {context.glIsVertexArrayOES},
-	vertexArrayIsUsable {context.vertexArrayIsUsable}
+	glBindVertexArrayOES {contextPtr->glBindVertexArrayOES},
+	glDeleteVertexArraysOES {contextPtr->glDeleteVertexArraysOES},
+	glGenVertexArraysOES {contextPtr->glGenVertexArraysOES},
+	glIsVertexArrayOES {contextPtr->glIsVertexArrayOES},
+	vertexArrayIsUsable {contextPtr->vertexArrayIsUsable}
 {
 	if (vertexArrayIsUsable && glGenVertexArraysOES != nullptr) {
 		glGenVertexArraysOES(1,&vertexArrayHandle);
