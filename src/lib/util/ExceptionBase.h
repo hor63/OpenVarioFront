@@ -123,6 +123,13 @@ public:
 		{}
 };
 
+class GLObjectWrapperException :public OevUtil::ExceptionBase {
+public:
+	GLObjectWrapperException(char const *description)
+		:ExceptionBase {description}
+		{}
+};
+
 } /* namespace OevGLES */
 
 namespace OevControls {
