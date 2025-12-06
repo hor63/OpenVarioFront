@@ -123,37 +123,22 @@ AnalogHandRenderer::AnalogHandRenderer(RenderContextSharedPtr const &context)
 	}
 
 
-AnalogHandRenderer::~AnalogHandRenderer() { 
-	
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
-		<< ": vertexBufferHandle = " << vertexBufferHandle
-		<< ", vertexArrayHandle  = " << vertexArrayHandle
-		);
-
-	if (vertexBufferHandle != 0U) {
-		glDeleteBuffers(1, &vertexBufferHandle);
-		vertexBufferHandle = 0U;
-	}
-	if (vertexArrayHandle != 0U) {
-		context->glDeleteVertexArraysOES(1,&vertexArrayHandle);
-		vertexArrayHandle = 0U;
-	}
-
-}
+AnalogHandRenderer::~AnalogHandRenderer() { }
 
 void AnalogHandRenderer::setupVertexBuffers() {
 
 	// First get the program
 	glProgram = OevGLES::GLProgDiffuseLight::getProgram();
 
-	if (vertexBufferHandle == 0U) {
-		glGenBuffers(1,&vertexBufferHandle);
+	if (vertexBufferHandle.get() == 0U) {
+		vertexBufferHandle = GLBufferObject(true);
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexArray),vertexArray,GL_STATIC_DRAW);
 
-		if (context->vertexArrayIsUsable && vertexArrayHandle == 0U) {
+		if (context->vertexArrayIsUsable && vertexArrayHandle.get() == 0U) {
+			vertexArrayHandle = GLVertexArrayObject(context);
 			context->glGenVertexArraysOES(1,&vertexArrayHandle);
 			context->glBindVertexArrayOES(vertexArrayHandle);
 			GLfloat* bufferOffset = 0;

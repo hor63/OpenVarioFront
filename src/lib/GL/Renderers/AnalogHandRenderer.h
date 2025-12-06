@@ -28,6 +28,7 @@
 
 #include "GLPrograms/GLProgDiffuseLight.h"
 #include "Renderers/RendererBase.h"
+#include "GLES/GLObjectWrappers.h"
 
 namespace OevGLES {
 
@@ -67,8 +68,8 @@ private:
 
 	OevGLES::GLProgDiffuseLight* glProgram = 0;
 
-	GLuint vertexBufferHandle = 0U;
-	GLuint vertexArrayHandle = 0U;
+	GLBufferObject vertexBufferHandle = false;
+	GLVertexArrayObject vertexArrayHandle;
 
 };
 
