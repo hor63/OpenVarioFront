@@ -140,7 +140,7 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	}
 
 	// First activate the program
-	glProgram->useProgram();
+	GlProgUse progUse(*glProgram);
 
 	// Set up the uniforms
 	glUniform4fv(glProgram->getVecFactorPrimaryVertexLocation(), 1,
@@ -229,7 +229,6 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glUseProgram(0);
 	} // if (vertexArrayStruct->vertexArrayHandle != 0U) {
 }
 

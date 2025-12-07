@@ -234,7 +234,7 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	}
 
 	// make my program current
-	glProgram->useProgram();
+	GlProgUse progUse (*glProgram);
 
 	LOG4CXX_TRACE(logger,
 				  "lightDir = " << stdUniformData.getLightDirC().transpose());
@@ -316,7 +316,6 @@ void SquareTextureRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	} // if (vertexArrayHandle != 0U) {
 
-	glUseProgram(0);
 }
 
 } // namespace OevGLES

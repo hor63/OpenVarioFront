@@ -722,7 +722,7 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 
 	GLenum glErr = glGetError();
 
-	glGlyphProgram->useProgram();
+	GlProgUse useGlyphProram(*glGlyphProgram);
 
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
 		VertexBufferPerTexture& vertexBuffer = iter->second;
@@ -775,8 +775,6 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 		}
 	}
 
-	glUseProgram(0);
-
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<-- End");
 }
 
@@ -788,7 +786,7 @@ void GLTextRenderer::drawTextBoxBackground (
 		OevGLES::Vec4 const &ambientLightColor
 		) {
 	// make the text background program current
-	glTextBackgroundProgram->useProgram();
+	GlProgUse useTextBackgroundProgram (*glTextBackgroundProgram);
 
 	// Set the uniforms
 	glUniformMatrix4fv(glTextBackgroundProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
@@ -831,7 +829,6 @@ void GLTextRenderer::drawTextBoxBackground (
 		glDisableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
 		glBindBuffer(GL_ARRAY_BUFFER,0);
 	}
-	glUseProgram(0);
 
 
 }

@@ -271,7 +271,7 @@ void CirclePartialArcRenderer::draw(RenderStandardUniforms const &stdUniformData
 		Mat4 MVPMatrixStartAngle =
 			stdUniformData.getMVPMatrixC() * rotMatrixStartAngle;
 		// First activate the program
-		glProgram->useProgram();
+		GlProgUse progUse (*glProgram);
 
 		// Set up the uniforms
 		glUniform4fv(glProgram->getVecFactorPrimaryVertexLocation(), 1,
@@ -402,7 +402,6 @@ void CirclePartialArcRenderer::draw(RenderStandardUniforms const &stdUniformData
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
 
-		glUseProgram(0);
 	} // else { // if (isFullCircle) {
 }
 
