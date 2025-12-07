@@ -27,6 +27,7 @@
 #define GLPROGBASE_H_
 
 #include "GLES/GLProgram.h"
+#include <GLES2/gl2.h>
 
 namespace OevGLES {
 
@@ -107,6 +108,25 @@ protected:
 	 */
 	GLProgram::ShaderVariableInfo const * retrieveSingleAttributeInfo (char const *attributeName,GLint &attributeLocation) const;
 
+
+};
+
+class GlProgUse final {
+	
+public:
+	GlProgUse (GLProgBase& prog) {
+		GLint tmpBackupHandle = 0;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &tmpBackupHandle);
+		backupProgramHandle = static_cast<GLuint>(tmpBackupHandle);
+		prog.useProgram();
+	}
+	
+	~GlProgUse () {
+		glUseProgram(backupProgramHandle);
+	}
+private:
+
+	GLuint backupProgramHandle = 0U;
 
 };
 
