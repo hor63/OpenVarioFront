@@ -76,7 +76,7 @@ public:
 	 *
 	 *	\return \p true when the buffer object exists and is usable. Else return \p false.
 	 */
-	operator bool () const {return (bufferHandle != 0);}
+	bool valid() const {return (bufferHandle != 0);}
 
 private:
 
@@ -108,8 +108,8 @@ public:
 		glGetIntegerv (glGetPname,&tmpBoundBuffer);
 		backupBoundBuffer = tmpBoundBuffer;
 		
-		glBindBuffer(bufferType, bufferObject);
-		boundBufferHandle = bufferObject;
+		glBindBuffer(bufferType, bufferObject.get());
+		boundBufferHandle = bufferObject.get();
 		bufferObjectWasBound = true;
 	}
 
@@ -159,6 +159,26 @@ public:
 			glBindBuffer(bufferType, backupBoundBuffer);
 		}
 	}
+	
+	/** \brief Re-binds and stores a different buffer in this.
+	 *
+	 *
+	 * The stored buffer handle which is restored by the destructor is *not* changed, when the object
+	 * was valid bore.
+	 *
+	 * If this was empty before this is move-assigned a GlBindBufferObject constructed from \p bufferObject.
+	 */
+	void reset (GLBufferObject const& bufferObject) {
+		if (bufferObjectWasBound) {
+		glBindBuffer(bufferType, bufferObject.get());
+		boundBufferHandle = bufferObject.get();
+		} else {
+			*this = GlBindBufferObject(bufferObject);
+		}
+	}
+
+	bool valid () {return bufferObjectWasBound;}
+
 	
 private:
 	bool bufferObjectWasBound = false;
@@ -220,7 +240,7 @@ public:
 	 *
 	 *	\return \p true when the vertex array exists and is usable. Else return \p false.
 	 */
-	operator bool () const {return (vertexArrayHandle != 0);}
+	bool valid() const {return (vertexArrayHandle != 0);}
 
 private:
 	GLuint vertexArrayHandle = 0;
@@ -244,7 +264,7 @@ public:
 
 	GLBindVertexArrayObject (GLVertexArrayObject const& vertexArrayObject) :
 		vertexArrayWasBound {false},
-		boundVertexArrayrHandle {0U},
+		boundVertexArrayHandle {0U},
 		backupVertexArrayBuffer {0U},
 		glBindVertexArrayOES {nullptr}
 	{
@@ -256,8 +276,8 @@ public:
 			glGetIntegerv (GL_VERTEX_ARRAY_BINDING_OES,&tmpBoundVertexArray);
 			backupVertexArrayBuffer = tmpBoundVertexArray;
 			
-			glBindVertexArrayOES( vertexArrayObject);
-			boundVertexArrayrHandle = vertexArrayObject;
+			glBindVertexArrayOES( vertexArrayObject.get());
+			boundVertexArrayHandle = vertexArrayObject.get();
 			vertexArrayWasBound = true;
 		}
 	}
@@ -266,7 +286,7 @@ public:
 	
 	GLBindVertexArrayObject (GLBindVertexArrayObject && source) :
 		vertexArrayWasBound{source.vertexArrayWasBound},
-		boundVertexArrayrHandle{source.boundVertexArrayrHandle},
+		boundVertexArrayHandle{source.boundVertexArrayHandle},
 		backupVertexArrayBuffer{source.backupVertexArrayBuffer}
 	{
 		source.vertexArrayWasBound = false;
@@ -294,12 +314,12 @@ public:
 		
 		// In any case copy all source information to this.
 		vertexArrayWasBound = source.vertexArrayWasBound;
-		boundVertexArrayrHandle = source.boundVertexArrayrHandle;
+		boundVertexArrayHandle = source.boundVertexArrayHandle;
 		backupVertexArrayBuffer = source.backupVertexArrayBuffer;
 		
 		// ... and make the source an empty object, thus making the move complete.
 		source.vertexArrayWasBound = false;
-		source.boundVertexArrayrHandle = 0U;
+		source.boundVertexArrayHandle = 0U;
 		source.backupVertexArrayBuffer = 0U;
 		
 		return *this;
@@ -310,11 +330,27 @@ public:
 			glBindVertexArrayOES( backupVertexArrayBuffer);
 		}
 	}
+
+	void reset (GLVertexArrayObject const& vertexArrayObject) {
+		
+		if (vertexArrayWasBound) {
+			// Just re-bind the vertex array and store the new handle.
+			glBindVertexArrayOES( vertexArrayObject.get());
+			boundVertexArrayHandle = vertexArrayObject.get();
+			vertexArrayWasBound = true;
+		} else {
+			// Reset the entire object including the backup handle to
+			// restore upon destruction.
+			*this = GLBindVertexArrayObject (vertexArrayObject);
+		}
+	}
+
+	bool valid() {return vertexArrayWasBound;}
 	
 private:
 	bool vertexArrayWasBound = false;
 	/// \brief The currently bound buffer when \ref bufferObjectWasBound is \p true.
-	GLuint boundVertexArrayrHandle = 0U;
+	GLuint boundVertexArrayHandle = 0U;
 	
 	/// \brief used to save an already bound buffer which is restored in the destructor
 	/// 	when \ref bufferObjectWasBound is \p true.
@@ -324,14 +360,14 @@ private:
 	
 }; // class GLBindVertexArrayObject
 
-class VertexArrayAttribObject final {
+class GLVertexArrayAttribObject final {
 	
 	public:
 	
 	/// \brief Create an empty object for deferred vertex attribute setting
-	VertexArrayAttribObject() {}
+	GLVertexArrayAttribObject() {}
 	
-	VertexArrayAttribObject(bool enableVertexArray,GLuint vertexIndex)
+	GLVertexArrayAttribObject(bool enableVertexArray,GLuint vertexIndex)
 	{
 		GLint isVertexArrayEnabled = 0;
 		glGetVertexAttribiv(vertexIndex,GL_VERTEX_ATTRIB_ARRAY_ENABLED,&isVertexArrayEnabled);
@@ -360,8 +396,8 @@ class VertexArrayAttribObject final {
 		
 	}
 	
-	VertexArrayAttribObject (VertexArrayAttribObject const& source) = delete;
-	VertexArrayAttribObject (VertexArrayAttribObject && source) :
+	GLVertexArrayAttribObject (GLVertexArrayAttribObject const& source) = delete;
+	GLVertexArrayAttribObject (GLVertexArrayAttribObject && source) :
 		vertexIndex {source.vertexIndex},
 		arrayStatusRestoreFunction {source.arrayStatusRestoreFunction}
 	{
@@ -370,14 +406,14 @@ class VertexArrayAttribObject final {
 		source.arrayStatusRestoreFunction = nullptr;
 	}
 
-	~VertexArrayAttribObject () {
+	~GLVertexArrayAttribObject () {
 		if (arrayStatusRestoreFunction != nullptr) {
 			arrayStatusRestoreFunction(vertexIndex);
 		}
 	}
 
-	VertexArrayAttribObject& operator = (VertexArrayAttribObject const& source) = delete;
-	VertexArrayAttribObject& operator = (VertexArrayAttribObject && source) {
+	GLVertexArrayAttribObject& operator = (GLVertexArrayAttribObject const& source) = delete;
+	GLVertexArrayAttribObject& operator = (GLVertexArrayAttribObject && source) {
 		// If this has already a defined status things are getting a bit complex.
 		if (arrayStatusRestoreFunction != nullptr) [[unlikely]] {
 			if (source.arrayStatusRestoreFunction == nullptr) {
