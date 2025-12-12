@@ -54,6 +54,7 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(
 			<< ", maxRadius = " << maxRadius);
 }
 
+/*
 CirclePolygonVertexContainer::CircleVertexArrayStruct::~CircleVertexArrayStruct() {
 
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
@@ -122,6 +123,7 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct&
 
 	return *this;
 }
+*/
 
 CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 #if defined HAVE_LOG4CXX_H
@@ -229,7 +231,7 @@ CirclePolygonVertexContainer::CirclePolygonVertexContainer() {
 			);
 
 		circleVertexArrayMap.insert(
-				CircleVertexArrayMapType::value_type(vertexArryHolder.maxRadius,vertexArryHolder));
+				CircleVertexArrayMapType::value_type(vertexArryHolder.maxRadius,std::move(vertexArryHolder));
 	}
 
 }

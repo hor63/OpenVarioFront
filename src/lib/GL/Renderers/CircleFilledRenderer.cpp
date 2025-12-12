@@ -108,9 +108,10 @@ void CircleFilledRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 				 &(stdUniformData.getAmbientLightColorC()(0)));
 
 	// Set up the attributes
-	glBindBuffer(GL_ARRAY_BUFFER, vertexArrayStruct->vertexBufferHandle);
+	GlBindArrayBufferObject bindBufferObject (vertexArrayStruct->vertexBufferHandle);
 
-	glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+	GLVertexArrayAttribObject enableVertexPosLocation(
+		true, glProgram->getVertexPosLocation());
 	glVertexAttribPointer(
 		glProgram->getVertexPosLocation(),
 		sizeof(
@@ -127,7 +128,8 @@ void CircleFilledRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
 					 position)));
 
-	glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+	GLVertexArrayAttribObject enableVertexNormalLocation(
+		true, glProgram->getVertexNormalLocation());
 	glVertexAttribPointer(
 		glProgram->getVertexNormalLocation(),
 		sizeof(
@@ -144,6 +146,8 @@ void CircleFilledRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
 					 normal)));
 
+	GLVertexArrayAttribObject enableIsSecondaryVertexLocation(
+	 	true, glProgram->getIsSecondaryVertexLocation());
 	glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
 	glVertexAttribPointer(
 		glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT, GL_FALSE,
@@ -156,7 +160,8 @@ void CircleFilledRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
 					 isSecondaryCircle)));
 
-	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
+	GLVertexArrayAttribObject disableVertexColorLocation(
+	 	false, glProgram->getVertexColorLocation());
 	glVertexAttrib4fv(glProgram->getVertexColorLocation(), &bodyColor(0));
 
 	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
@@ -172,11 +177,6 @@ void CircleFilledRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	// Thus I am hitting the only the primary circle vertexes.
 	glDrawArrays(GL_TRIANGLE_FAN, 0, (vertexArrayStruct->numVertexes / 2));
 
-	glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-	glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
-	glDisableVertexAttribArray(glProgram->getVertexPosLocation());
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 } /* namespace OevGLES */

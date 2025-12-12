@@ -117,8 +117,8 @@ public:
 		 * vertexes. Therefore I need to perform the complex calculations for
 		 * the vertexes only once.
 		*/
-		GLuint vertexBufferHandle;
-		GLuint vertexArrayHandle;
+		GLBufferObject vertexBufferHandle;
+		GLVertexArrayObject vertexArrayHandle;
 		
 		RenderContextWeakPtr context;
 
@@ -127,34 +127,35 @@ public:
 		CircleVertexArrayStruct(
 			std::size_t numSegments);
 
-		CircleVertexArrayStruct(CircleVertexArrayStruct const& source)
+		CircleVertexArrayStruct(CircleVertexArrayStruct const& source) = delete;
+/*		
 			:numSegments{source.numSegments},
 			 numVertexes{source.numVertexes},
 			 vertexStrideInMaxVertexArrayPerSegment{source.vertexStrideInMaxVertexArrayPerSegment},
 			 angleIncrement{source.angleIncrement},
 			 maxRadius{source.maxRadius},
-			 vertexBufferHandle{0},
-			 vertexArrayHandle{0}
+			 vertexBufferHandle{false},
+			 vertexArrayHandle{}
 		{}
+*/		
 
-		CircleVertexArrayStruct(CircleVertexArrayStruct&& source)
+		CircleVertexArrayStruct(CircleVertexArrayStruct&& source) = default;
+/*
 			:numSegments{source.numSegments},
 			 numVertexes{source.numVertexes},
 			 vertexStrideInMaxVertexArrayPerSegment{source.vertexStrideInMaxVertexArrayPerSegment},
 			 angleIncrement{source.angleIncrement},
 			 maxRadius{source.maxRadius},
-			 vertexBufferHandle{source.vertexBufferHandle},
-			 vertexArrayHandle{source.vertexArrayHandle}
-		{
-			source.vertexBufferHandle = 0;
-			source.vertexArrayHandle = 0;
-		}
+			 vertexBufferHandle{std::move(source.vertexBufferHandle)},
+			 vertexArrayHandle{std::move(source.vertexArrayHandle)}
+		{}
+*/
 
-		~CircleVertexArrayStruct();
+		~CircleVertexArrayStruct() = default;
 
-		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct&& source);
+		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct&& source) = default;
 		
-		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct const& source);
+		CircleVertexArrayStruct& operator = (CircleVertexArrayStruct const& source) = delete;
 	};
 
 	/** \brief Maximum allowed deviation from the ideal circular form
