@@ -160,8 +160,8 @@ protected:
 	 * to 0 to indicate that the vertex buffer must still be created.
 	 *
 	*/
-	GLuint vertexBufferHandleArcEnd = 0U;
-	GLuint vertexArrayHandleArcEnd = 0U;
+	GLBufferObject vertexBufferHandleArcEnd;
+	GLVertexArrayObject vertexArrayHandleArcEnd;
 
 	
 	/** \brief Take \ref startAngle and \ref arcRange and normalize them

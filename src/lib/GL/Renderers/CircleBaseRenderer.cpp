@@ -6,11 +6,11 @@
  *
  *	Base class for all things circular.
  *	It is based on triangle meshes forming different types of circular forms.
- *	Derived classes will render full or partial arcs, with an inner and outer diameter
- *	or tire-like forms
+ *	Derived classes will render full or partial arcs, with an inner and outer
+ *diameter or tire-like forms
  *
- *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
- *   Copyright (C) 2025  Kai Horstmann
+ *   This file is part of OpenVarioFront, an electronic variometer display for
+ *glider planes Copyright (C) 2025  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,13 +29,13 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#include <config.h>
 #endif
 
 #include "OVFCommon.h"
 
-#include "GLES/GLFramework.h"
 #include "CircleBaseRenderer.h"
+#include "GLES/GLFramework.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
@@ -43,22 +43,18 @@ static log4cxx::LoggerPtr logger = 0;
 
 namespace OevGLES {
 
-CircleBaseRenderer::CircleBaseRenderer(
-		RenderContextSharedPtr const &context)
-	:RendererBase(context),
-	circlePolygonVertexContainer {this->context->getCircleVertexContainer()}
-{
+CircleBaseRenderer::CircleBaseRenderer(RenderContextSharedPtr const &context) :
+	RendererBase(context),
+	circlePolygonVertexContainer{this->context->getCircleVertexContainer()} {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("OpenVarioFront.Renderers.CircleBaseRenderer");
+		logger = log4cxx::Logger::getLogger(
+			"OpenVarioFront.Renderers.CircleBaseRenderer");
 	}
 #endif
-
 }
 
-CircleBaseRenderer::~CircleBaseRenderer() {
-	
-}
+CircleBaseRenderer::~CircleBaseRenderer() {}
 
 void CircleBaseRenderer::setPrimaryRadius(double primaryRadius) {
 	if (this->primaryRadius != primaryRadius) {
@@ -69,7 +65,7 @@ void CircleBaseRenderer::setPrimaryRadius(double primaryRadius) {
 }
 
 void CircleBaseRenderer::setPrimarySecondaryZOffset(
-		double primarySecondaryZOffset) {
+	double primarySecondaryZOffset) {
 
 	if (this->primarySecondaryZOffset != primarySecondaryZOffset) {
 		this->primarySecondaryZOffset = primarySecondaryZOffset;
@@ -95,11 +91,12 @@ void CircleBaseRenderer::setupVertexBuffers() {
 	if (dirty) {
 
 		vertexArrayStruct =
-			&circlePolygonVertexContainer.createVertexArrayStruct(context,primaryRadius);
+			&circlePolygonVertexContainer.createVertexArrayStruct(
+				context, primaryRadius);
 
-		vecFactorPrimaryVertex [0] = vecFactorPrimaryVertex [1] = primaryRadius;
-		vecFactorSecondVertex [0] = vecFactorSecondVertex [1] = secondaryRadius;
-		vecFactorSecondVertex [2] = primarySecondaryZOffset;
+		vecFactorPrimaryVertex[0] = vecFactorPrimaryVertex[1] = primaryRadius;
+		vecFactorSecondVertex[0] = vecFactorSecondVertex[1] = secondaryRadius;
+		vecFactorSecondVertex[2] = primarySecondaryZOffset;
 #if defined HAVE_LOG4CXX_H
 		Eigen::Map<Vec4> vecFactorPrimaryVertexMap(vecFactorPrimaryVertex);
 		Eigen::Map<Vec4> vecFactorSecondVertexMap(vecFactorSecondVertex);
@@ -108,28 +105,31 @@ void CircleBaseRenderer::setupVertexBuffers() {
 		// The normal vector as the cross product of vectors {0,1,0}
 		// (dummy to form a plane rotating around the y-axis)
 		// and {x,0,z} degrades to {z,0,-x}
-		vecFactorNormalVector [0] = vecFactorNormalVector [1] = primarySecondaryZOffset;
-		vecFactorNormalVector [2] = primaryRadius - secondaryRadius;
+		vecFactorNormalVector[0] = vecFactorNormalVector[1] =
+			primarySecondaryZOffset;
+		vecFactorNormalVector[2] = primaryRadius - secondaryRadius;
 
-		Eigen::Map<Vec3> vecFactorNormalVectorMap (vecFactorNormalVector);
+		Eigen::Map<Vec3> vecFactorNormalVectorMap(vecFactorNormalVector);
 
 		dirty = false;
 
-		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+		LOG4CXX_DEBUG(
+			logger,
+			__PRETTY_FUNCTION__
 				<< ": primaryRadius = " << primaryRadius
 				<< ", secondaryRadius = " << secondaryRadius
 				<< ", primarySecondaryZOffset = " << primarySecondaryZOffset
 				<< "; use a polygon with " << vertexArrayStruct->numSegments
-				<< " segments, " << vertexArrayStruct->numVertexes << " vertexes"
-				<< "\nvecFactorPrimaryVertexMap = \n" << vecFactorPrimaryVertexMap
-				<< "\nvecFactorSecondVertexMap = \n" << vecFactorSecondVertexMap
-				<< "\nvecFactorNormalVectorMap = \n" << vecFactorNormalVectorMap);
+				<< " segments, " << vertexArrayStruct->numVertexes
+				<< " vertexes" << "\nvecFactorPrimaryVertexMap = \n"
+				<< vecFactorPrimaryVertexMap
+				<< "\nvecFactorSecondVertexMap = \n"
+				<< vecFactorSecondVertexMap << "\nvecFactorNormalVectorMap = \n"
+				<< vecFactorNormalVectorMap);
 
 		vecFactorNormalVectorMap.normalize();
-		LOG4CXX_DEBUG(logger,"\tvecFactorNormalVectorMap normalized = \n"
-				<< vecFactorNormalVectorMap
-				);
-
+		LOG4CXX_DEBUG(logger, "\tvecFactorNormalVectorMap normalized = \n"
+								  << vecFactorNormalVectorMap);
 	}
 }
 
@@ -163,13 +163,23 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 				 &(stdUniformData.getAmbientLightColorC()(0)));
 
 	// Set up the attributes
-	if (vertexArrayStruct->vertexArrayHandle != 0U) {
-		context->glBindVertexArrayOES(vertexArrayStruct->vertexArrayHandle);
+	GLBindVertexArrayObject bindVertexArray;
+	GlBindArrayBufferObject bindBufferObject;
+
+	GLVertexArrayAttribObject enableVertexPosArray;
+	GLVertexArrayAttribObject enableVertexNormalArray;
+	GLVertexArrayAttribObject enableIsSecondaryVertexArray;
+
+	if (vertexArrayStruct->vertexArrayHandle.valid()) {
+		bindVertexArray =
+			GLBindVertexArrayObject(vertexArrayStruct->vertexArrayHandle);
 	} else {
 
-		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayStruct->vertexBufferHandle);
+		bindBufferObject =
+			GlBindArrayBufferObject(vertexArrayStruct->vertexBufferHandle);
 
-		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		enableVertexNormalArray =
+			GLVertexArrayAttribObject(true, glProgram->getVertexPosLocation());
 		glVertexAttribPointer(
 			glProgram->getVertexPosLocation(),
 			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
@@ -182,7 +192,8 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 				CirclePolygonVertexContainer::CirclePolygonVertexStruct,
 				position)));
 
-		glEnableVertexAttribArray(glProgram->getVertexNormalLocation());
+		enableVertexNormalArray = GLVertexArrayAttribObject(
+			true, glProgram->getVertexNormalLocation());
 		glVertexAttribPointer(
 			glProgram->getVertexNormalLocation(),
 			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
@@ -196,6 +207,8 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 				normal)));
 
 		glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+		enableIsSecondaryVertexArray = GLVertexArrayAttribObject(
+			true, glProgram->getIsSecondaryVertexLocation());
 		glVertexAttribPointer(
 			glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT, GL_FALSE,
 			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
@@ -204,7 +217,8 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 				isSecondaryCircle)));
 	} // if (vertexArrayStruct->vertexArrayHandle != 0U) {}
 
-	glDisableVertexAttribArray(glProgram->getVertexColorLocation());
+	GLVertexArrayAttribObject enableVertexColorArray(
+		false, glProgram->getVertexColorLocation());
 	glVertexAttrib4fv(glProgram->getVertexColorLocation(), &bodyColor(0));
 
 	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
@@ -219,17 +233,6 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	// Therefore I am starting at position 2, and the number of vertexes
 	// is 2 less that the number of vertexes in the buffer.
 	glDrawArrays(GL_TRIANGLE_STRIP, 2, vertexArrayStruct->numVertexes - 2);
-
-	if (vertexArrayStruct->vertexArrayHandle != 0U) {
-		context->glBindVertexArrayOES(0U);
-	} else {
-
-		glDisableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-		glDisableVertexAttribArray(glProgram->getVertexNormalLocation());
-		glDisableVertexAttribArray(glProgram->getVertexPosLocation());
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	} // if (vertexArrayStruct->vertexArrayHandle != 0U) {
 }
 
 } /* namespace OevGLES */
