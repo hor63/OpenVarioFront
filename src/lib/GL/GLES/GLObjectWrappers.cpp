@@ -109,13 +109,17 @@ GLVertexArrayObject& GLVertexArrayObject::operator=(GLVertexArrayObject &&other)
 	}
 
 	vertexArrayHandle = other.vertexArrayHandle;
+	glBindVertexArrayOES = other.glBindVertexArrayOES;
 	glDeleteVertexArraysOES = other.glDeleteVertexArraysOES;
 	glGenVertexArraysOES = other.glGenVertexArraysOES;
+	glIsVertexArrayOES = other.glIsVertexArrayOES;
 	vertexArrayIsUsable = other.vertexArrayIsUsable;
 
 	other.vertexArrayHandle = 0U;
+	other.glBindVertexArrayOES = nullptr;
 	other.glDeleteVertexArraysOES = nullptr;
 	other.glGenVertexArraysOES = nullptr;
+	other.glIsVertexArrayOES = nullptr;
 	other.vertexArrayIsUsable = false;
 
 	return *this;

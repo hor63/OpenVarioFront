@@ -266,7 +266,7 @@ public:
 		vertexArrayWasBound {false},
 		boundVertexArrayHandle {0U},
 		backupVertexArrayBuffer {0U},
-		glBindVertexArrayOES {nullptr}
+		glBindVertexArrayOES {vertexArrayObject.glBindVertexArrayOES}
 	{
 		
 		if (vertexArrayObject.vertexArrayIsUsable &&
@@ -287,10 +287,13 @@ public:
 	GLBindVertexArrayObject (GLBindVertexArrayObject && source) :
 		vertexArrayWasBound{source.vertexArrayWasBound},
 		boundVertexArrayHandle{source.boundVertexArrayHandle},
-		backupVertexArrayBuffer{source.backupVertexArrayBuffer}
+		backupVertexArrayBuffer{source.backupVertexArrayBuffer},
+		glBindVertexArrayOES{source.glBindVertexArrayOES}
 	{
 		source.vertexArrayWasBound = false;
+		source.boundVertexArrayHandle = 0U;
 		source.backupVertexArrayBuffer = 0;
+		source.glBindVertexArrayOES = nullptr;
 	}
 
 	GLBindVertexArrayObject & operator = (GLBindVertexArrayObject const& source) = delete;
@@ -311,16 +314,18 @@ public:
 				glBindVertexArrayOES( backupVertexArrayBuffer);
 			}
 		}
-		
+
 		// In any case copy all source information to this.
 		vertexArrayWasBound = source.vertexArrayWasBound;
 		boundVertexArrayHandle = source.boundVertexArrayHandle;
 		backupVertexArrayBuffer = source.backupVertexArrayBuffer;
+		glBindVertexArrayOES = source.glBindVertexArrayOES;
 		
 		// ... and make the source an empty object, thus making the move complete.
 		source.vertexArrayWasBound = false;
 		source.boundVertexArrayHandle = 0U;
 		source.backupVertexArrayBuffer = 0U;
+		source.glBindVertexArrayOES = nullptr;
 		
 		return *this;
 	}
