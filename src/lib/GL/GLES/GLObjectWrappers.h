@@ -365,6 +365,28 @@ private:
 	
 }; // class GLBindVertexArrayObject
 
+/** \brief Wrapper around the GL functions glEnableVertexAttribArray and glDisableVertexAttribArray
+ *
+ * An object stores the previous status if an vertex array buffer was enabled for a vertex attribute index.
+ * 
+ * The default constructor creates an empty object which does neither change the array enable attribute nor
+ * stores and restores the previous attribute status. Such an object is an *empty* *object*.
+ * \ref valid() returns \p false. \n
+ * The non-default constructor sets the enable status. It stores the previous status, and restores it upon destruction.
+ * Such an object is non-empty. \ref valid() returns \p true.
+ 
+  * The move constructor and move assignment operator allow resetting an object with some restrictions:
+ *   - You can always move an empty object into any target object. If the target was not-empty its previous status
+ *     is restored, and after the target is empty.\n
+ *     If the target was emtpy before nothing happens. The target is empty.
+ *   - You can move a non-empty object only into an empty object. When you move a non-empty object into a non-empty
+ *     target you earn a \ref GLObjectWrapperException.
+ *     The move simply moves the content of the source object into the target. The assumption is that any status change
+ *     has happened before during construction of the source object.
+ *
+ * In any case the source object of a move is always empty.
+ * 
+ */
 class GLVertexArrayAttribObject final {
 	
 	public:
@@ -440,6 +462,8 @@ class GLVertexArrayAttribObject final {
 
 		return *this;
 	}
+	
+	bool valid () const {return arrayStatusRestoreFunction == nullptr;}
 	
 	private:
 	
