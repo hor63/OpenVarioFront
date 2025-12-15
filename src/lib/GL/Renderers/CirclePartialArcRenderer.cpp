@@ -292,69 +292,88 @@ void CirclePartialArcRenderer::draw(
 		glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
 					 &(stdUniformData.getAmbientLightColorC()(0)));
 
+		// Use the blend attributes for both draw commands.
+		std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
+
+		// Draw in transparent mode when the Alpha value is not totally
+		// opaque.
+		if (bodyColor(3) < 1.0f) {
+			blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(
+				new BlendAttributeSetRestoreStd);
+		}
+
+		// Set the color constant, not a vertex array for both draw commands.
+		GLVertexArrayAttribObject disableVertexColorArray(
+				false, glProgram->getVertexColorLocation());
+		glVertexAttrib4fv(glProgram->getVertexColorLocation(),
+						&bodyColor(0));
+
+
+		// Setup the vertex buffers for drawing the persistent part of the arc.
+		// If possible use the vertex array object when one has been set up.
 		{
 			// Set up the attributes
-			GlBindArrayBufferObject bindArrayBufferObject(
-				vertexArrayStruct->vertexBufferHandle);
-
-			GLVertexArrayAttribObject enableVertexPosArray(
-				true, glProgram->getVertexPosLocation());
-			glVertexAttribPointer(
-				glProgram->getVertexPosLocation(),
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
-						   position) /
-					sizeof(CirclePolygonVertexContainer::
-							   CirclePolygonVertexStruct::position[0]),
-				GL_FLOAT, GL_FALSE,
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void *>(offsetof(
-					CirclePolygonVertexContainer::CirclePolygonVertexStruct,
-					position)));
-
-			GLVertexArrayAttribObject enableVertexNormalArray(
-				true, glProgram->getVertexNormalLocation());
-			glVertexAttribPointer(
-				glProgram->getVertexNormalLocation(),
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
-						   normal) /
-					sizeof(CirclePolygonVertexContainer::
-							   CirclePolygonVertexStruct::normal[0]),
-				GL_FLOAT, GL_FALSE,
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void *>(offsetof(
-					CirclePolygonVertexContainer::CirclePolygonVertexStruct,
-					normal)));
-
-			GLVertexArrayAttribObject enableIsSecondaryVertexArray(
+			GLBindVertexArrayObject bindVertexArray;
+			GlBindArrayBufferObject bindBufferObject;
+			
+			GLVertexArrayAttribObject enableVertexPosArray;
+			GLVertexArrayAttribObject enableVertexNormalArray;
+			GLVertexArrayAttribObject enableIsSecondaryVertexArray;
+			
+			if (vertexArrayStruct->vertexArrayHandle.valid()) {
+				bindVertexArray =
+					GLBindVertexArrayObject(vertexArrayStruct->vertexArrayHandle);
+			} else {
+			
+				bindBufferObject =
+					GlBindArrayBufferObject(vertexArrayStruct->vertexBufferHandle);
+			
+				enableVertexNormalArray =
+					GLVertexArrayAttribObject(true, glProgram->getVertexPosLocation());
+				glVertexAttribPointer(
+					glProgram->getVertexPosLocation(),
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+							   position) /
+						sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+								   position[0]),
+					GL_FLOAT, GL_FALSE,
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void *>(offsetof(
+						CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						position)));
+			
+				enableVertexNormalArray = GLVertexArrayAttribObject(
+					true, glProgram->getVertexNormalLocation());
+				glVertexAttribPointer(
+					glProgram->getVertexNormalLocation(),
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+							   normal) /
+						sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+								   normal[0]),
+					GL_FLOAT, GL_FALSE,
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void *>(offsetof(
+						CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						normal)));
+			
+				glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
+				enableIsSecondaryVertexArray = GLVertexArrayAttribObject(
 					true, glProgram->getIsSecondaryVertexLocation());
-			glVertexAttribPointer(
-				glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT,
-				GL_FALSE,
-				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
-				reinterpret_cast<void *>(offsetof(
-					CirclePolygonVertexContainer::CirclePolygonVertexStruct,
-					isSecondaryCircle)));
+				glVertexAttribPointer(
+					glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT, GL_FALSE,
+					sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
+					reinterpret_cast<void *>(offsetof(
+						CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						isSecondaryCircle)));
+			} // if (vertexArrayStruct->vertexArrayHandle != 0U) {}
 
-			GLVertexArrayAttribObject disableVertexColorArray(
-					false, glProgram->getVertexColorLocation());
-			glVertexAttrib4fv(glProgram->getVertexColorLocation(),
-							  &bodyColor(0));
-
-			std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
-
-			// Draw in transparent mode when the Alpha value is not totally
-			// opaque.
-			if (bodyColor(3) < 1.0f) {
-				blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(
-					new BlendAttributeSetRestoreStd);
-			}
 
 			// I am omitting the circle center at the start of the vertex array.
 			// Therefore I am starting at position 2, and the number of vertexes
 			// is 2 less that the number of vertexes in the buffer.
 			glDrawArrays(GL_TRIANGLE_STRIP, 2, numVertexesArc);
 		}
-
+		
 		GlBindArrayBufferObject bindArrayBufferObject;
 		GLBindVertexArrayObject bindVertexArray;
 		
@@ -379,6 +398,7 @@ void CirclePartialArcRenderer::draw(
 				GL_FLOAT, GL_FALSE,
 				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct),
 				reinterpret_cast<void *>(offsetof(
+
 					CirclePolygonVertexContainer::CirclePolygonVertexStruct,
 					position)));
 
@@ -406,21 +426,7 @@ void CirclePartialArcRenderer::draw(
 					CirclePolygonVertexContainer::CirclePolygonVertexStruct,
 					isSecondaryCircle)));
 		}
-
-		GLVertexArrayAttribObject disableVertexColorArray(
-				false, glProgram->getVertexColorLocation());
-		glVertexAttrib4fv(glProgram->getVertexColorLocation(),
-						&bodyColor(0));
 		
-		std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
-
-		// Draw in transparent mode when the Alpha value is not totally
-		// opaque.
-		if (bodyColor(3) < 1.0f) {
-			blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(
-				new BlendAttributeSetRestoreStd);
-		}
-
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	} // else { // if (isFullCircle) {
