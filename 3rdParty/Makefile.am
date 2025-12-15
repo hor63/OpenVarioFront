@@ -15,8 +15,6 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
-
 all: SDL-build pango-build
 
 SDL-build:
@@ -24,7 +22,11 @@ SDL-build:
 	$(MAKE) -C SDL install VERBOSE=$(V)
 
 pango-build:
-	cd pango; ninja -v
+	if [ "$(V)" == "1" ]; then \
+		cd pango; ninja -v ; \
+	else \
+		cd pango; ninja; \
+	fi
 	cd pango; ninja install
 
 clean: SDL-clean pango-clean
