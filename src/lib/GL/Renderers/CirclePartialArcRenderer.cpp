@@ -123,12 +123,13 @@ CirclePartialArcRenderer::normalizeAngle(Angle<Numerator, Denominator> angle) {
 
 void CirclePartialArcRenderer::setupVertexBuffers() {
 
-	// Call the base class. It does the heavy lifting
-	CircleBaseRenderer::setupVertexBuffers();
-
 	if (dirtyArcAngles) {
-		normalizeAngles();
 		dirtyArcAngles = false;
+
+		// Call the base class. It does the heavy lifting
+		CircleBaseRenderer::setupVertexBuffers();
+
+		normalizeAngles();
 
 		if (!isFullCircle) {
 
