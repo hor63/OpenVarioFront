@@ -32,13 +32,12 @@ CirclePolygonVertexContainer::CircleVertexArrayStruct::CircleVertexArrayStruct(
 	numSegments{numSegments},
 	numVertexes{static_cast<GLsizei>(numSegments * 2U + 4U)},
 	vertexStrideInMaxVertexArrayPerSegment{maxNumSegments / numSegments * 2U},
-	vertexBufferHandle{0U},
-	vertexArrayHandle{0U} {
+	vertexBufferHandle{false} {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger(
 			"OpenVarioFront.Renderers.CirclePolygonVertexContainer");
-	}
+}
 #endif
 
 	angleIncrement = AngleRad::fullCircle() / static_cast<GLfloat>(numSegments);
@@ -260,7 +259,7 @@ CirclePolygonVertexContainer::createVertexArrayStruct(
 		--rc;
 	}
 
-	if (rc->second.vertexBufferHandle.valid()) {
+	if (!rc->second.vertexBufferHandle.valid()) {
 		createVertexBuffer(context, rc->second);
 	}
 
