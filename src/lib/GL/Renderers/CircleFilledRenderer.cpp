@@ -107,58 +107,68 @@ void CircleFilledRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glUniform4fv(glProgram->getAmbientLightColorLocation(), 1,
 				 &(stdUniformData.getAmbientLightColorC()(0)));
 
-	// Set up the attributes
-	GlBindArrayBufferObject bindBufferObject (vertexArrayStruct->vertexBufferHandle);
+	GlBindArrayBufferObject bindBufferObject;
+	GLBindVertexArrayObject bindVertexArray;
+	GLVertexArrayAttribObject enableVertexPosLocation;
+	GLVertexArrayAttribObject enableVertexNormalLocation;
+	GLVertexArrayAttribObject enableIsSecondaryVertexLocation;
 
-	GLVertexArrayAttribObject enableVertexPosLocation(
-		true, glProgram->getVertexPosLocation());
-	glVertexAttribPointer(
-		glProgram->getVertexPosLocation(),
-		sizeof(
-			CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
-			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
-					   position[0]),
-		GL_FLOAT, GL_FALSE,
-		sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
-			2, // Only every 2 vertexes
-		reinterpret_cast<void *>(
-			sizeof(CirclePolygonVertexContainer::
-					   CirclePolygonVertexStruct) + // The primary element is
-													// the second of the tuple.
-			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
-					 position)));
-
-	GLVertexArrayAttribObject enableVertexNormalLocation(
-		true, glProgram->getVertexNormalLocation());
-	glVertexAttribPointer(
-		glProgram->getVertexNormalLocation(),
-		sizeof(
-			CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
-			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
-					   normal[0]),
-		GL_FLOAT, GL_FALSE,
-		sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
-			2, // Only every 2 vertexes
-		reinterpret_cast<void *>(
-			sizeof(CirclePolygonVertexContainer::
-					   CirclePolygonVertexStruct) + // The primary element is
-													// the second of the tuple.
-			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
-					 normal)));
-
-	GLVertexArrayAttribObject enableIsSecondaryVertexLocation(
-	 	true, glProgram->getIsSecondaryVertexLocation());
-	glEnableVertexAttribArray(glProgram->getIsSecondaryVertexLocation());
-	glVertexAttribPointer(
-		glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT, GL_FALSE,
-		sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
-			2, // Only every 2 vertexes
-		reinterpret_cast<void *>(
-			sizeof(CirclePolygonVertexContainer::
-					   CirclePolygonVertexStruct) + // The primary element is
-													// the second of the tuple.
-			offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
-					 isSecondaryCircle)));
+	if (vertexArrayStruct->vertexArrayFullCircle.valid()){
+		bindVertexArray = GLBindVertexArrayObject (vertexArrayStruct->vertexArrayFullCircle);
+	} else {
+		// Set up the attributes
+		bindBufferObject = GlBindArrayBufferObject(vertexArrayStruct->vertexBufferHandle);
+	
+		enableVertexPosLocation = GLVertexArrayAttribObject(
+			true, glProgram->getVertexPosLocation());
+		glVertexAttribPointer(
+			glProgram->getVertexPosLocation(),
+			sizeof(
+				CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+						   position[0]),
+			GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+				2, // Only every 2 vertexes
+			reinterpret_cast<void *>(
+				sizeof(CirclePolygonVertexContainer::
+						   CirclePolygonVertexStruct) + // The primary element is
+														// the second of the tuple.
+				offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						 position)));
+	
+		enableVertexNormalLocation = GLVertexArrayAttribObject (
+			true, glProgram->getVertexNormalLocation());
+		glVertexAttribPointer(
+			glProgram->getVertexNormalLocation(),
+			sizeof(
+				CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+						   normal[0]),
+			GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+				2, // Only every 2 vertexes
+			reinterpret_cast<void *>(
+				sizeof(CirclePolygonVertexContainer::
+						   CirclePolygonVertexStruct) + // The primary element is
+														// the second of the tuple.
+				offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						 normal)));
+	
+		enableIsSecondaryVertexLocation = GLVertexArrayAttribObject (
+		 	true, glProgram->getIsSecondaryVertexLocation());
+		glVertexAttribPointer(
+			glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+				2, // Only every 2 vertexes
+			reinterpret_cast<void *>(
+				sizeof(CirclePolygonVertexContainer::
+						   CirclePolygonVertexStruct) + // The primary element is
+														// the second of the tuple.
+				offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						 isSecondaryCircle)));
+	
+	} // if (vertexArrayStruct->vertexArrayFullCircle.valid()){
 
 	GLVertexArrayAttribObject disableVertexColorLocation(
 	 	false, glProgram->getVertexColorLocation());

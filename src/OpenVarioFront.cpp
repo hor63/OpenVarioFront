@@ -142,7 +142,7 @@ int main(int argint,char** argv) {
 		ring1.setBodyColor(whiteTransparent0_8Color);
 
 		OevGLES::CircleFilledRenderer circ1 (renderSurfacePtr1->getRenderContextSharedPointer());
-		circ1.setPrimaryRadius(160);
+		circ1.setPrimaryRadius(100);
 		circ1.setCenterZOffset(50);
 		circ1.setupVertexBuffers();
 		circ1.setBodyColor(whiteTransparent0_8Color);
@@ -312,7 +312,7 @@ int main(int argint,char** argv) {
 			arc1.draw(arc1Uniforms);
 
 			ring1.draw(circ1Uniforms);
-			//circ1.draw(circ1Uniforms);
+			circ1.draw(circ1Uniforms);
 
 			// sleep(3);
 
