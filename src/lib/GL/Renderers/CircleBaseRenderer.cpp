@@ -170,9 +170,9 @@ void CircleBaseRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	GLVertexArrayAttribObject enableVertexNormalArray;
 	GLVertexArrayAttribObject enableIsSecondaryVertexArray;
 
-	if (vertexArrayStruct->vertexArrayHandle.valid()) {
+	if (vertexArrayStruct->vertexArrayHandleRing.valid()) {
 		bindVertexArray =
-			GLBindVertexArrayObject(vertexArrayStruct->vertexArrayHandle);
+			GLBindVertexArrayObject(vertexArrayStruct->vertexArrayHandleRing);
 	} else {
 
 		bindBufferObject =

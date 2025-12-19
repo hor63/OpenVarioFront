@@ -326,19 +326,28 @@ void CirclePolygonVertexContainer::createVertexBuffer(
 	if (!vertArrayStruct.vertexBufferHandle.valid()) {
 		vertArrayStruct.vertexBufferHandle = GLBufferObject(true);
 	}
-	GlBindArrayBufferObject bindBufferObject(
-		vertArrayStruct.vertexBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER,
-				 sizeof(CirclePolygonVertexStruct) *
-					 vertArrayStruct.numVertexes,
-				 clientBuffer, GL_STATIC_DRAW);
-	if (context->vertexArrayIsUsable &&
-		!vertArrayStruct.vertexArrayHandle.valid()) {
-		auto glProgram = GLProgDiffLightCircle::getProgram();
+	
+	{
+		GlBindArrayBufferObject bindBufferObject(
+			vertArrayStruct.vertexBufferHandle);
+		glBufferData(GL_ARRAY_BUFFER,
+					 sizeof(CirclePolygonVertexStruct) *
+						 vertArrayStruct.numVertexes,
+					 clientBuffer, GL_STATIC_DRAW);
+	}
 
-		vertArrayStruct.vertexArrayHandle = GLVertexArrayObject(context);
+	// Setup the vertex array object for ring shapes
+	if (context->vertexArrayIsUsable &&
+		!vertArrayStruct.vertexArrayHandleRing.valid()) {
+		auto glProgram = GLProgDiffLightCircle::getProgram();
+		GlProgUse progUse(*glProgram);
+
+		vertArrayStruct.vertexArrayHandleRing = GLVertexArrayObject(context);
 		GLBindVertexArrayObject bindVertexArray(
-			vertArrayStruct.vertexArrayHandle);
+			vertArrayStruct.vertexArrayHandleRing);
+
+		GlBindArrayBufferObject bindBufferObject(
+			vertArrayStruct.vertexBufferHandle);
 
 		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
 		glVertexAttribPointer(
@@ -374,6 +383,69 @@ void CirclePolygonVertexContainer::createVertexBuffer(
 				CirclePolygonVertexContainer::CirclePolygonVertexStruct,
 				isSecondaryCircle)));
 	}
+	
+	// Setup the vertex array object for full circle shapes
+	if (context->vertexArrayIsUsable &&
+		!vertArrayStruct.vertexArrayFullCircle.valid()) {
+		auto glProgram = GLProgDiffLightCircle::getProgram();
+		GlProgUse progUse(*glProgram);
+
+		vertArrayStruct.vertexArrayFullCircle = GLVertexArrayObject(context);
+		GLBindVertexArrayObject bindVertexArray(
+			vertArrayStruct.vertexArrayFullCircle);
+
+		GlBindArrayBufferObject bindBufferObject(
+			vertArrayStruct.vertexBufferHandle);
+
+		glEnableVertexAttribArray(glProgram->getVertexPosLocation());
+		glVertexAttribPointer(
+			glProgram->getVertexPosLocation(),
+			sizeof(
+				CirclePolygonVertexContainer::CirclePolygonVertexStruct::position) /
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+						   position[0]),
+			GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+				2, // Only every 2 vertexes
+			reinterpret_cast<void *>(
+				sizeof(CirclePolygonVertexContainer::
+						   CirclePolygonVertexStruct) + // The primary element is
+														// the second of the tuple.
+				offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						 position)));
+
+		glEnableVertexAttribArray (glProgram->getVertexNormalLocation());
+		glVertexAttribPointer(
+			glProgram->getVertexNormalLocation(),
+			sizeof(
+				CirclePolygonVertexContainer::CirclePolygonVertexStruct::normal) /
+				sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct::
+						   normal[0]),
+			GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+				2, // Only every 2 vertexes
+			reinterpret_cast<void *>(
+				sizeof(CirclePolygonVertexContainer::
+						   CirclePolygonVertexStruct) + // The primary element is
+														// the second of the tuple.
+				offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						 normal)));
+
+		glEnableVertexAttribArray (glProgram->getIsSecondaryVertexLocation());
+		glVertexAttribPointer(
+			glProgram->getIsSecondaryVertexLocation(), 1, GL_FLOAT, GL_FALSE,
+			sizeof(CirclePolygonVertexContainer::CirclePolygonVertexStruct) *
+				2, // Only every 2 vertexes
+			reinterpret_cast<void *>(
+				sizeof(CirclePolygonVertexContainer::
+						   CirclePolygonVertexStruct) + // The primary element is
+														// the second of the tuple.
+				offsetof(CirclePolygonVertexContainer::CirclePolygonVertexStruct,
+						 isSecondaryCircle)));
+
+	}
+
+
 }
 
 } /* namespace OevGLES */

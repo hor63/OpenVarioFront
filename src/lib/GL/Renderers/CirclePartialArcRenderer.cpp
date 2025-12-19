@@ -320,9 +320,9 @@ void CirclePartialArcRenderer::draw(
 			GLVertexArrayAttribObject enableVertexNormalArray;
 			GLVertexArrayAttribObject enableIsSecondaryVertexArray;
 			
-			if (vertexArrayStruct->vertexArrayHandle.valid()) {
+			if (vertexArrayStruct->vertexArrayHandleRing.valid()) {
 				bindVertexArray =
-					GLBindVertexArrayObject(vertexArrayStruct->vertexArrayHandle);
+					GLBindVertexArrayObject(vertexArrayStruct->vertexArrayHandleRing);
 			} else {
 			
 				bindBufferObject =

@@ -118,8 +118,23 @@ public:
 		 * the vertexes only once.
 		*/
 		GLBufferObject vertexBufferHandle;
-		GLVertexArrayObject vertexArrayHandle;
 		
+		/** \brief vertex array for circular shapes forming a ring
+		 *
+		 * Ring like shapes have an outer and an inner radius. All vertexes in the structure are used,
+		 * except the ones with index 0 and 1 which are the center of a circle. That one is not used here but for full circles.
+		 */
+		GLVertexArrayObject vertexArrayHandleRing;
+
+		/** \brief vertex array for circular shapes forming a filled circle.
+		 *
+		 * Full circle shapes only have an outer radius. Only half of the vertexes in the structure are used, forming
+		 * the outer radius. This is accomplished by doubling the stride from vertex to vertex, thus using only every
+		 * second vertex.
+		 * Here also the vertex 0 and 1 are used, as a full circle is drawn as a triangle fan around the center.
+		 */
+		GLVertexArrayObject vertexArrayFullCircle;
+
 		RenderContextWeakPtr context;
 
 		CircleVertexArrayStruct() = delete;
