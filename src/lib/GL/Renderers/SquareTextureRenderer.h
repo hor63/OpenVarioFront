@@ -175,9 +175,9 @@ private:
 
 	bool dirty = true;
 
-	GLuint vertexBufferHandle = 0U;
-	GLuint vertexArrayHandle = 0U;
-	OevGLES::GLTexture glTexture;
+	GLBufferObject vertexBufferHandle;
+	GLVertexArrayObject vertexArrayHandle;
+	GLTexture glTexture;
 	
 	/** \brief Name of an external image file or name of the image from memory
 	 *
