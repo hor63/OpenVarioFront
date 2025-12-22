@@ -64,6 +64,7 @@ GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t size
 GLTextFontTexture::~GLTextFontTexture() {
 }
 
+/*
 GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
 :fontCacheItem {other.fontCacheItem},
  previousGlyphLine {std::move(other.previousGlyphLine)},
@@ -75,6 +76,7 @@ GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
  rowNum {other.rowNum}
 {
 }
+*/
 
 GLTextGlyphBBoxI GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	GLTextGlyphBBoxI ret; // is initially invalid.

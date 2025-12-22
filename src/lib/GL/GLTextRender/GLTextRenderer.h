@@ -34,6 +34,7 @@
 #include <unordered_map>
 
 #include "GLES/GLFramework.h"
+#include "GLES/GLObjectWrappers.h"
 #include "GLTextGlobals.h"
 #include "GLPrograms/GLProgTextTexture.h"
 #include "GLPrograms/GLProgDiffuseLight.h"
@@ -119,8 +120,8 @@ public:
 
 		GLTextFontTexture& fontTexture;
 
-		GLuint vertexBufferHandle;
-		GLuint vertexArrayHandle;
+		GLBufferObject vertexBufferHandle;
+		GLVertexArrayObject vertexArrayHandle;
 
 		/// 3 vertexes per triangle, 6 vertexes per rectangular glyph
 		GLsizei numVertexes;
@@ -133,8 +134,7 @@ public:
 			size_t vectorReserveSize)
 		: context{contextPtr},
 		  fontTexture{fontTexture},
-		  vertexBufferHandle{0},
-		  vertexArrayHandle{0},
+		  vertexBufferHandle{false},
 		  numVertexes{0}
 		{
 			vertexVector.reserve(vectorReserveSize);
@@ -142,7 +142,8 @@ public:
 
 		VertexBufferPerTexture(VertexBufferPerTexture const& source) = delete;
 
-		VertexBufferPerTexture(VertexBufferPerTexture&& source)
+		VertexBufferPerTexture(VertexBufferPerTexture&& source) = default;
+/*		
 		: vertexVector {std::move(source.vertexVector)},
 		  fontTexture{source.fontTexture},
 		  vertexBufferHandle{source.vertexBufferHandle},
@@ -154,6 +155,7 @@ public:
 			source.vertexArrayHandle = 0U;
 			source.numVertexes = 0;
 		}
+*/
 
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture const& source) = delete;
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture&& source) = delete;
@@ -307,8 +309,8 @@ private:
 	GLProgTextTexture* glGlyphProgram = nullptr;
 
 	GLProgDiffuseLight* glTextBackgroundProgram = nullptr;
-	GLuint vertexBufferHandleTextBackground = 0U;
-	GLuint vertexArrayHandleTextBackground = 0U;
+	GLBufferObject vertexBufferHandleTextBackground;
+	GLVertexArrayObject vertexArrayHandleTextBackground;
 
 	/// \brief Size to reserve the vertex vectors
 	///

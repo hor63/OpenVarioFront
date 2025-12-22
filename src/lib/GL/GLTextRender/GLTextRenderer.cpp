@@ -24,6 +24,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "GLES/GLObjectWrappers.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -172,18 +173,9 @@ namespace OevGLES {
 GLTextRenderer::VertexBufferPerTexture::~VertexBufferPerTexture() {
 	
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
-		<< ": vertexBufferHandle = " << vertexBufferHandle
-		<< ", vertexArrayHandle  = " << vertexArrayHandle
+		<< ": vertexBufferHandle = " << vertexBufferHandle.get()
+		<< ", vertexArrayHandle  = " << vertexArrayHandle.get()
 		);
-	
-	if (vertexBufferHandle != 0U) {
-		glDeleteBuffers(1, &vertexBufferHandle);
-		vertexBufferHandle = 0U;
-	}
-	if (vertexArrayHandle != 0U) {
-		context->glDeleteVertexArraysOES(1,&vertexArrayHandle);
-		vertexArrayHandle = 0U;
-	}
 }
 
 
@@ -209,7 +201,8 @@ GLTextRenderer::GLTextRenderer(
 		RenderContextSharedPtr const &context) :
 		RendererBase{context},
 		globals{this->context->glTextGlobSharedPtr},
-		textBackgroundRectVertexes{textBackgroundRectVertexesTemplate}
+		textBackgroundRectVertexes{textBackgroundRectVertexesTemplate},
+		vertexBufferHandleTextBackground{false}
 {
 #if defined HAVE_LOG4CXX_H
 	if (!logger) {
@@ -272,19 +265,9 @@ GLTextRenderer::~GLTextRenderer() {
 	}
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
-		<< ": vertexBufferHandleTextBackground = " << vertexBufferHandleTextBackground
-		<< ", vertexArrayHandleTextBackground  = " << vertexArrayHandleTextBackground
+		<< ": vertexBufferHandleTextBackground = " << vertexBufferHandleTextBackground.get()
+		<< ", vertexArrayHandleTextBackground  = " << vertexArrayHandleTextBackground.get()
 		);
-
-	if (vertexBufferHandleTextBackground != 0U) {
-		glDeleteBuffers(1, &vertexBufferHandleTextBackground);
-		vertexBufferHandleTextBackground = 0U;
-	}
-	if (vertexArrayHandleTextBackground != 0U) {
-		context->glDeleteVertexArraysOES(1,&vertexArrayHandleTextBackground);
-		vertexArrayHandleTextBackground = 0U;
-	}
-
 }
 
 void GLTextRenderer::setText (const std::string& str){
@@ -591,25 +574,25 @@ void GLTextRenderer::setupVertexBuffersTextBoxBackground () {
 	// First get the program
 	glTextBackgroundProgram = OevGLES::GLProgDiffuseLight::getProgram();
 
-	glGenBuffers(1,&vertexBufferHandleTextBackground );
-	glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground );
-	glBufferData(GL_ARRAY_BUFFER,sizeof(textBackgroundRectVertexes),&textBackgroundRectVertexes,GL_STATIC_DRAW);
-	
-		if (context->vertexArrayIsUsable && vertexArrayHandleTextBackground == 0U) {
-			context->glGenVertexArraysOES(1,&vertexArrayHandleTextBackground);
-			context->glBindVertexArrayOES(vertexArrayHandleTextBackground);
-	
-			// setup the vertex coordinates
-			glEnableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
-			glVertexAttribPointer(
-				glTextBackgroundProgram->getVertexPosLocation(),
-				vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
-				vertextPositionArrayLen * sizeof(GLfloat),
-				reinterpret_cast<void const *>(0U));
+	if(!vertexBufferHandleTextBackground.valid()) {
+		vertexBufferHandleTextBackground = GLBufferObject(true);
+	}
+	GlBindArrayBufferObject bindTextBackgroundBuffer(vertexBufferHandleTextBackground);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(textBackgroundRectVertexes),
+				 &textBackgroundRectVertexes, GL_STATIC_DRAW);
 
-			context->glBindVertexArrayOES(0U);
-		} // if (GLFramework::isVertexArrayUsable()) {
-	glBindBuffer(GL_ARRAY_BUFFER,0 );
+	if (context->vertexArrayIsUsable && !vertexArrayHandleTextBackground.valid()) {
+		vertexArrayHandleTextBackground = GLVertexArrayObject (context);
+		GLBindVertexArrayObject bindTextBackgroundVertexArray (vertexArrayHandleTextBackground);
+
+		// setup the vertex coordinates
+		glEnableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
+		glVertexAttribPointer(
+			glTextBackgroundProgram->getVertexPosLocation(),
+			vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
+			vertextPositionArrayLen * sizeof(GLfloat),
+			reinterpret_cast<void const *>(0U));
+	} // if (GLFramework::isVertexArrayUsable()) {
 
 }
 
@@ -638,13 +621,13 @@ void GLTextRenderer::setupVertexBuffersGlyphs () {
 
 		if (vertexBuffer.numVertexes > 0) {
 			vertexBuffer.fontTexture.syncTextureDataWithGPU();
-			if (vertexBuffer.vertexBufferHandle == 0) {
+			if (!vertexBuffer.vertexBufferHandle.valid()) {
 				LOG4CXX_DEBUG(logger,"\tCreate new vertex buffer handle");
-				glGenBuffers(1,&vertexBuffer.vertexBufferHandle);
+				vertexBuffer.vertexBufferHandle = GLBufferObject(true);
 			}
 
-			LOG4CXX_DEBUG(logger,"\tVertex buffer handle = " << vertexBuffer.vertexBufferHandle);
-			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer.vertexBufferHandle);
+			LOG4CXX_DEBUG(logger,"\tVertex buffer handle = " << vertexBuffer.vertexBufferHandle.get());
+			GlBindArrayBufferObject bindVertexBufferObject (vertexBuffer.vertexBufferHandle);
 
 			LOG4CXX_DEBUG(logger,"\tCall glBufferData (target = " << GL_ARRAY_BUFFER
 					<< ", size = " << (vertexBuffer.vertexVector.size()*sizeof(GlGlyphVertexStruct))
@@ -656,25 +639,26 @@ void GLTextRenderer::setupVertexBuffersGlyphs () {
 					&vertexBuffer.vertexVector[0].tri1TopLeft.vertexPosition[0],
 					GL_STATIC_DRAW);
 
-				if(context->vertexArrayIsUsable && vertexBuffer.vertexArrayHandle == 0){
-					context->glGenVertexArraysOES(1,&vertexBuffer.vertexArrayHandle);
-					context->glBindVertexArrayOES(vertexBuffer.vertexArrayHandle);
-					
-					glEnableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
-					glVertexAttribPointer(glGlyphProgram->getAttVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,
-							GL_FALSE,
-							sizeof(GlGlyphCornerVertexStruct),
-							reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,vertexPosition)));
-					glEnableVertexAttribArray(glGlyphProgram->getAttTexture0PosLocation());
-					glVertexAttribPointer(glGlyphProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
-							GL_FALSE,
-							sizeof(GlGlyphCornerVertexStruct),
-							reinterpret_cast<void const*>(offsetof(GlGlyphCornerVertexStruct,texturePosition)));
-					
-					context->glBindVertexArrayOES(0U);
-	
-				}
-			glBindBuffer(GL_ARRAY_BUFFER,0);
+			if(context->vertexArrayIsUsable && !vertexBuffer.vertexArrayHandle.valid()){
+				vertexBuffer.vertexArrayHandle = GLVertexArrayObject(context);
+				GLBindVertexArrayObject bindVertexArray (vertexBuffer.vertexArrayHandle);
+				
+				glEnableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
+				glVertexAttribPointer(
+					glGlyphProgram->getAttVertexPosLocation(),
+					vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
+					sizeof(GlGlyphCornerVertexStruct),
+					reinterpret_cast<void *>(
+						offsetof(GlGlyphCornerVertexStruct, vertexPosition)));
+				glEnableVertexAttribArray(
+					glGlyphProgram->getAttTexture0PosLocation());
+				glVertexAttribPointer(
+					glGlyphProgram->getAttTexture0PosLocation(),
+					texturePositionArrayLen, GL_FLOAT, GL_FALSE,
+					sizeof(GlGlyphCornerVertexStruct),
+					reinterpret_cast<void const *>(
+						offsetof(GlGlyphCornerVertexStruct, texturePosition)));
+			}
 		}
 	}
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<--End");
@@ -734,44 +718,50 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 
 
 			// Set the uniforms
-			glUniformMatrix4fv(glGlyphProgram->getUnMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
-			glUniform4fv(glGlyphProgram->getUnFragColorLocation(),1, &textColor(0));
-			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(GL_TEXTURE1, 1, glGlyphProgram->getUnTexture0Location());
+			glUniformMatrix4fv(glGlyphProgram->getUnMvpMatrixLocation(), 1,
+							   GL_FALSE, &(MVPMatrix(0, 0)));
+			glUniform4fv(glGlyphProgram->getUnFragColorLocation(), 1,
+						 &textColor(0));
+			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(
+				GL_TEXTURE1, 1, glGlyphProgram->getUnTexture0Location());
+
+			GLBindVertexArrayObject bindVertexArrayObject;
+			GlBindArrayBufferObject bindArrayBufferObject;
+			GLVertexArrayAttribObject vertexArrayEnableVertexPos;
+			GLVertexArrayAttribObject vertexArrayEnableTexture0Pos;
 
 			// Now assign the attributes in the vertex buffer
-			if(vertexBuffer.vertexArrayHandle != 0) {
+			if(vertexBuffer.vertexArrayHandle.valid()) {
 				
-				context->glBindVertexArrayOES(vertexBuffer.vertexArrayHandle);
+				bindVertexArrayObject = GLBindVertexArrayObject (vertexBuffer.vertexArrayHandle);
 			} else {
 				// bind the vertex buffer which contains all vertex data: Model and texture coordinates
-				glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer.vertexBufferHandle);
-				glEnableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
-				glVertexAttribPointer(glGlyphProgram->getAttVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,
-						GL_FALSE,
-						sizeof(GlGlyphCornerVertexStruct),
-						reinterpret_cast<void*>(offsetof(GlGlyphCornerVertexStruct,vertexPosition)));
-				glEnableVertexAttribArray(glGlyphProgram->getAttTexture0PosLocation());
-				glVertexAttribPointer(glGlyphProgram->getAttTexture0PosLocation(),texturePositionArrayLen,GL_FLOAT,
-						GL_FALSE,
-						sizeof(GlGlyphCornerVertexStruct),
-						reinterpret_cast<void const*>(offsetof(GlGlyphCornerVertexStruct,texturePosition)));
-				glBindBuffer(GL_ARRAY_BUFFER,0);
-			} // if(vertexBuffer.vertexArrayHandle == 0) 
+				bindArrayBufferObject = GlBindArrayBufferObject (vertexBuffer.vertexBufferHandle);
+
+				vertexArrayEnableVertexPos = GLVertexArrayAttribObject(
+					true, glGlyphProgram->getAttVertexPosLocation());
+				glVertexAttribPointer(
+					glGlyphProgram->getAttVertexPosLocation(),
+					vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
+					sizeof(GlGlyphCornerVertexStruct),
+					reinterpret_cast<void *>(
+						offsetof(GlGlyphCornerVertexStruct, vertexPosition)));
+
+				vertexArrayEnableTexture0Pos = GLVertexArrayAttribObject(
+					true, glGlyphProgram->getAttTexture0PosLocation());
+				glVertexAttribPointer(
+					glGlyphProgram->getAttTexture0PosLocation(),
+					texturePositionArrayLen, GL_FLOAT, GL_FALSE,
+					sizeof(GlGlyphCornerVertexStruct),
+					reinterpret_cast<void const *>(
+						offsetof(GlGlyphCornerVertexStruct, texturePosition)));
+			} // if(vertexBuffer.vertexArrayHandle == 0)
 
 			// Now draw the glyphs as pairs of triangles.
-			{
-				BlendAttributeSetRestore setAndRestoreBlendMode;
+			BlendAttributeSetRestore setAndRestoreBlendMode;
 
-				glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.numVertexes);
-			}
+			glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.numVertexes);
 
-			// Reset bindings and assignment of the attribute buffers.
-			if(vertexBuffer.vertexArrayHandle != 0) {
-				context->glBindVertexArrayOES(0U);
-			} else {
-				glDisableVertexAttribArray(glGlyphProgram->getAttVertexPosLocation());
-				glDisableVertexAttribArray(glGlyphProgram->getAttTexture0PosLocation());
-			}
 		}
 	}
 
@@ -789,13 +779,17 @@ void GLTextRenderer::drawTextBoxBackground (
 	GlProgUse useTextBackgroundProgram (*glTextBackgroundProgram);
 
 	// Set the uniforms
-	glUniformMatrix4fv(glTextBackgroundProgram->getMvpMatrixLocation(),1,GL_FALSE,&(MVPMatrix(0,0)));
-	glUniformMatrix4fv(glTextBackgroundProgram->getMvMatrixLocation(),1,GL_FALSE,&(MVMatrix(0,0)));
+	glUniformMatrix4fv(glTextBackgroundProgram->getMvpMatrixLocation(), 1,
+					   GL_FALSE, &(MVPMatrix(0, 0)));
+	glUniformMatrix4fv(glTextBackgroundProgram->getMvMatrixLocation(), 1,
+					   GL_FALSE, &(MVMatrix(0, 0)));
 
-	glUniform3fv(glTextBackgroundProgram->getLightDirLocation(),1,&(lightDir(0)));
-	glUniform4fv(glTextBackgroundProgram->getLightColorLocation(),1,&(lightColor(0)));
-	glUniform4fv(glTextBackgroundProgram->getAmbientLightColorLocation(),1,&(ambientLightColor(0)));
-
+	glUniform3fv(glTextBackgroundProgram->getLightDirLocation(), 1,
+				 &(lightDir(0)));
+	glUniform4fv(glTextBackgroundProgram->getLightColorLocation(), 1,
+				 &(lightColor(0)));
+	glUniform4fv(glTextBackgroundProgram->getAmbientLightColorLocation(), 1,
+				 &(ambientLightColor(0)));
 
 	// set the color attribute constant
 	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexColorLocation());
@@ -805,14 +799,23 @@ void GLTextRenderer::drawTextBoxBackground (
 	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexNormalLocation());
 	glVertexAttrib4fv(glTextBackgroundProgram->getVertexNormalLocation(),textBackgroundRectNormal);
 
-	if (vertexArrayHandleTextBackground != 0U) {
-		context->glBindVertexArrayOES(vertexArrayHandleTextBackground);
+	GLBindVertexArrayObject bindTextBackgroundVertexArray;
+	GlBindArrayBufferObject bindTextBackgroundBuffer(vertexBufferHandleTextBackground);
+	GLVertexArrayAttribObject enableVertexArrayObject;
+
+	if (vertexArrayHandleTextBackground.valid()) {
+		bindTextBackgroundVertexArray = GLBindVertexArrayObject (vertexArrayHandleTextBackground);
 	} else {
-		glBindBuffer(GL_ARRAY_BUFFER,vertexBufferHandleTextBackground);
+		bindTextBackgroundBuffer = GlBindArrayBufferObject (vertexBufferHandleTextBackground);
 	
 		// setup the vertex coordinates
 		glEnableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
-		glVertexAttribPointer(glTextBackgroundProgram->getVertexPosLocation(),vertextPositionArrayLen,GL_FLOAT,GL_FALSE,vertextPositionArrayLen * sizeof (GLfloat),reinterpret_cast<void const *>(0U));
+		enableVertexArrayObject = GLVertexArrayAttribObject(
+			true, glTextBackgroundProgram->getVertexPosLocation());
+		glVertexAttribPointer(glTextBackgroundProgram->getVertexPosLocation(),
+							  vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
+							  vertextPositionArrayLen * sizeof(GLfloat),
+							  reinterpret_cast<void const *>(0U));
 	}
 
 	// Draw in transparent mode when the Alpha value is not totally opaque.
@@ -822,14 +825,6 @@ void GLTextRenderer::drawTextBoxBackground (
 	}
 
 	glDrawArrays(GL_TRIANGLES,0,6);
-
-	if (vertexArrayHandleTextBackground != 0U ) {
-		context->glBindVertexArrayOES(0U);
-	} else {
-		glDisableVertexAttribArray(glTextBackgroundProgram->getVertexPosLocation());
-		glBindBuffer(GL_ARRAY_BUFFER,0);
-	}
-
 
 }
 } /* namespace OevGLES */

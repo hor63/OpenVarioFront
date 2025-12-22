@@ -64,7 +64,7 @@ public:
 	 * \param sizeXY: Size of the texture in x and y direction
 	 */
 	GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t sizeXY);
-	GLTextFontTexture(const GLTextFontTexture &other) = delete;
+	GLTextFontTexture(GLTextFontTexture const &other) = delete;
 
 	/** \brief Move constructor
 	 *
@@ -72,9 +72,9 @@ public:
 	 *
 	 * \param other Source object. Contents are moved to the new object here
 	 */
-	GLTextFontTexture(GLTextFontTexture &&other);
+	GLTextFontTexture(GLTextFontTexture &&other) = default;
 	virtual ~GLTextFontTexture();
-	GLTextFontTexture& operator=(const GLTextFontTexture &other) = delete;
+	GLTextFontTexture& operator=(GLTextFontTexture const &other) = delete;
 	GLTextFontTexture& operator=(GLTextFontTexture &&other) = delete;
 
 	/** \brief Adds the image of a glyph to the texture when there is enough space.
