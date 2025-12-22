@@ -64,20 +64,6 @@ GLTextFontTexture::GLTextFontTexture(GLTextFontCacheItem& cacheItem,int32_t size
 GLTextFontTexture::~GLTextFontTexture() {
 }
 
-/*
-GLTextFontTexture::GLTextFontTexture(GLTextFontTexture &&other)
-:fontCacheItem {other.fontCacheItem},
- previousGlyphLine {std::move(other.previousGlyphLine)},
- currentGlyphLine {std::move(other.currentGlyphLine)},
- texture {std::move(other.texture)},
- textureData {std::move(other.textureData)},
- full {other.full},
- dirty {other.dirty},
- rowNum {other.rowNum}
-{
-}
-*/
-
 GLTextGlyphBBoxI GLTextFontTexture::addGlyphToTexture(FT_GlyphSlot glyphSlot) {
 	GLTextGlyphBBoxI ret; // is initially invalid.
 	FT_Bitmap &glyphBitmap = glyphSlot->bitmap;
@@ -429,4 +415,4 @@ void GLTextFontTexture::syncTextureDataWithGPU() {
 	}
 }
 
-} /* namespace OevGLES */
+} // namespace OevGLES

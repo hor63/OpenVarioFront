@@ -256,6 +256,6 @@ private:
 
 
 
-} /* namespace OevGLES */
+} // namespace OevGLES
 
 #endif /* GLTEXTRENDER_GLTEXTFONTTEXTURE_H_ */

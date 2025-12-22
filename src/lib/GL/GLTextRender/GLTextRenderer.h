@@ -143,19 +143,6 @@ public:
 		VertexBufferPerTexture(VertexBufferPerTexture const& source) = delete;
 
 		VertexBufferPerTexture(VertexBufferPerTexture&& source) = default;
-/*		
-		: vertexVector {std::move(source.vertexVector)},
-		  fontTexture{source.fontTexture},
-		  vertexBufferHandle{source.vertexBufferHandle},
-		  vertexArrayHandle{source.vertexArrayHandle},
-		  numVertexes{source.numVertexes},
-		  context{std::move(source.context)}
-		{
-			source.vertexBufferHandle = 0U;
-			source.vertexArrayHandle = 0U;
-			source.numVertexes = 0;
-		}
-*/
 
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture const& source) = delete;
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture&& source) = delete;
