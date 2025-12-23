@@ -293,6 +293,16 @@ public:
 	virtual void onResetParentRenderUniforms(
 		OevGLES::RenderStandardUniforms &parentUniforms);
 
+	/** \brief Recalculate the modelMatrix \ref renderUniforms when \ref posOrSizeDirty is true.
+	 
+	 When you override this method make sure to call the base class method here.
+	 
+	 \ref Here renderUniforms.modelMatrix is being re-calculated.
+	 
+	 \ref posOrSizeDirty is being reset.
+	 */
+	virtual void recalcSizePositionMatrix();
+
 protected:
 	
 	/// \brief The name can be used for anything the control wishes to do with it

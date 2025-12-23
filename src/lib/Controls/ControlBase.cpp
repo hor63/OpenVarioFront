@@ -85,10 +85,7 @@ void ControlBase::setPosition (PosPixel const& position) {
 		
 		locControlModelMatrix(0,3) = position.xPixel;
 		locControlModelMatrix(1,3) = position.yPixel;
-		
-		renderUniforms.getModelMatrix() =
-			parentModelMatrixPtr->matrix4 * locControlModelMatrix;
-
+	
 		onPositionChanged();
 	}
 }
@@ -114,9 +111,6 @@ void ControlBase::setSize (SizePixel const& size) {
 		locControlModelMatrix(0,0) = size.widthPixel;
 		locControlModelMatrix(1,1) = size.heightPixel;
 
-		renderUniforms.getModelMatrix() =
-			parentModelMatrixPtr->matrix4 * locControlModelMatrix;
-		
 		onSizeChanged();
 	}
 }
@@ -143,8 +137,8 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 		locControlModelMatrix(0,0) = size.widthPixel;
 		locControlModelMatrix(1,1) = size.heightPixel;
 
-		renderUniforms.getModelMatrix() =
-			parentModelMatrixPtr->matrix4 * locControlModelMatrix;
+		//renderUniforms.getModelMatrix() =
+		//	parentModelMatrixPtr->matrix4 * locControlModelMatrix;
 
 		onSizeChanged();
 	}
@@ -176,6 +170,7 @@ void ControlBase::setVisible (bool visible) {
 
 void ControlBase::setActive (bool active) {
 	this->active = active;
+
 }
 
 void ControlBase::setCanTakeFocus (bool takesFocus) {
@@ -204,17 +199,13 @@ void ControlBase::setTabContainer (ControlsContainerWeakPtr const& tabContainer)
 }
 
 void ControlBase::onSizeChanged() {
-	// Nothing to the here for me.
 }
 
 void ControlBase::onPositionChanged() {
-	
 }
 
 void ControlBase::onParentPositionChanged() {
-
-	renderUniforms.getModelMatrix() =
-		parentModelMatrixPtr->matrix4 * locControlModelMatrix;
+	posOrSizeDirty = true;
 }
 
 void ControlBase::onResetParentRenderUniforms(
@@ -227,9 +218,10 @@ void ControlBase::onResetParentRenderUniforms(
 
 	renderUniforms.setModelMatrixPtr(saveModelMatrixPtr);
 
-	renderUniforms.getModelMatrix() =
-		parentModelMatrixPtr->matrix4 * locControlModelMatrix;
+	posOrSizeDirty = true;
 
+	// Probaly parent position changed too.
+	onParentPositionChanged();
 }
 
 

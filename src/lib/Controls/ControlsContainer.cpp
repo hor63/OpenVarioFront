@@ -81,9 +81,10 @@ void ControlsContainer::onParentPositionChanged() {
 }
 
 void ControlsContainer::onResetParentRenderUniforms(OevGLES::RenderStandardUniforms &parentUniforms) {
+	// setup your own renderUniforms based on the new parentUniforms 
 	ControlBase::onResetParentRenderUniforms(parentUniforms);
 	
-	// Forward the own renderUniforms as parentUniforms to the children
+	// ... and forward the new own renderUniforms as parentUniforms to the children
 	for (auto & control : controlsMap) {
 		control.second->onResetParentRenderUniforms(renderUniforms);
 	}
