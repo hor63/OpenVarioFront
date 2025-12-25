@@ -179,14 +179,14 @@ protected:
 	 * This setup allows direct 2-D rendering when z=0 with every unit in model space is a pixel on the screen.
 	 *
 	 * If you do not like it use \ref getBaseUniforms to change any of the matrixes to your needs.
-	 * In this case you need to override \ref onWindowResize() and/or \ref alculateViewProjectionMatrix() because the
+	 * In this case you need to override \ref onWindowResize() and/or \ref calculateViewProjectionMatrix() because the
 	 * latter would over-write the view and projection matrix for any window size change.
 	 */
 	OevGLES::RenderStandardUniforms baseUniforms;
 
 	/** \brief Shared pointer to the render context associated with \p this.
 	 *
-	 * The ownership of render context is shared with all controls which are based of \this render surface.
+	 * The ownership of render context is shared with all controls which are based of \p this render surface.
 	 * 
 	 * The render context object, and the shared pointer are created and set in 
 	 * \ref GLFramework::createRenderSurface ().

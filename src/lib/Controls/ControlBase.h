@@ -189,7 +189,7 @@ public:
 	auto hasFocus() const {
 		return hasFocus_;
 	}
-	/// \see \ref hasFocus_t.CHAR_COL_DECL_LENGTH
+	/// \see \ref hasFocus_
 	void setHasFocus(bool hasFocus = true);
 	
 	/// \see \ref visible
@@ -218,7 +218,7 @@ public:
 	auto isDefaultControl() {
 		return isDefaultControl_;
 	}
-	/// \see \ref isDefaultControl__
+	/// \see \ref isDefaultControl_
 	void setDefaultControl (bool isDefaultControl = false);
 
 	/// \see \ref tabSequence
@@ -297,7 +297,7 @@ public:
 	 
 	 When you override this method make sure to call the base class method here.
 	 
-	 \ref Here renderUniforms.modelMatrix is being re-calculated.
+	 Here modelMatrix of \ref renderUniforms is being re-calculated.
 	 
 	 \ref posOrSizeDirty is being reset.
 	 */
@@ -403,7 +403,7 @@ protected:
 	ControlsContainerWeakPtr tabContainer;
 	
 	/** \brief shared pointer to the context for all controls based on one \ref RootControl
-	 * control for a \ref SDLRenderSurface.
+	 * control for a \ref OevGLES::SDLRenderSurface.
 	 *
 	 */
 	RenderContextSharedPtr renderContextPtr;

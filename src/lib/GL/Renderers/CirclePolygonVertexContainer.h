@@ -208,6 +208,8 @@ public:
 	 * is not created before a vertex buffer with the requested number of segments
 	 * is being requested.
 	 *
+	 * \param context Used to call \ref createVertexBuffer.
+	 * 		Is finally stored in the \ref CircleVertexArrayStruct object
 	 * \param radius Intended radius of the circular object to draw.
 	 * 		It is assumed that the outer radius of the object is passed.
 	 * \return Reference to a \ref CircleVertexArrayStruct structure with a

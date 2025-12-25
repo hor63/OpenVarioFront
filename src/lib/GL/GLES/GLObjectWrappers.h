@@ -206,7 +206,7 @@ using RenderContextSharedPtr = std::shared_ptr<RenderContext>;
  
  * If you move it the source's buffer handle is moved to the target.
  * If the target had a buffer object that is destroyed.
- * After the source's \ref bufferHandle is 0, i.e. no valid buffer any more.
+ * After the source's \ref vertexArrayHandle is 0, i.e. no valid buffer any more.
  */
 class GLVertexArrayObject final {
 
@@ -224,7 +224,7 @@ public:
 	 */
 	GLVertexArrayObject(RenderContextSharedPtr const &contextPtr);
 	
-	/** \brief Delete the buffer object in \ref bufferHandle when one is managed by \p this.
+	/** \brief Delete the buffer object in \ref vertexArrayHandle when one is managed by \p this.
 	 *
 	 */
 	~GLVertexArrayObject();
@@ -354,11 +354,11 @@ public:
 	
 private:
 	bool vertexArrayWasBound = false;
-	/// \brief The currently bound buffer when \ref bufferObjectWasBound is \p true.
+	/// \brief The currently bound buffer when \ref vertexArrayWasBound is \p true.
 	GLuint boundVertexArrayHandle = 0U;
 	
 	/// \brief used to save an already bound buffer which is restored in the destructor
-	/// 	when \ref bufferObjectWasBound is \p true.
+	/// when \ref vertexArrayWasBound is \p true.
 	GLuint backupVertexArrayBuffer = 0U;
 
 	PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = nullptr;
