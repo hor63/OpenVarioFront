@@ -124,18 +124,10 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 			<< ", size = " << viewportCoords.width << 'x' << viewportCoords.height
 			);
 
-	if (renderContextSharedPointer->glBindVertexArrayOES == nullptr) {
-		renderContextSharedPointer->glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
-	}
-	if (renderContextSharedPointer->glDeleteVertexArraysOES == nullptr) {
-		renderContextSharedPointer->glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
-	}
-	if (renderContextSharedPointer->glGenVertexArraysOES == nullptr) {
-		renderContextSharedPointer->glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
-	}
-	if (renderContextSharedPointer->glIsVertexArrayOES == nullptr) {
-		renderContextSharedPointer->glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
-	}
+	renderContextSharedPointer->glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
+	renderContextSharedPointer->glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
+	renderContextSharedPointer->glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
+	renderContextSharedPointer->glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
 
 	std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
 	auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
