@@ -35,7 +35,7 @@ namespace OevGLES {
  
 
 RenderContext::RenderContext (
-		SDLRenderSurfaceWeakPtr const& sdlRenderSurfacePtr,
+		SDLRenderSurfaceWeakPtr const sdlRenderSurfacePtr,
 		Vec4 const &foregroundColor,
 		Vec4 const &backgroundColor
 	) :
