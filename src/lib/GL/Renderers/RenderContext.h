@@ -101,11 +101,11 @@ struct RenderContext {
 
 
 	// The rest is default fare.
-	RenderContext (RenderContext const& source) = default;
+	RenderContext (RenderContext const& source) = delete;
 	RenderContext (RenderContext && source) = default;
 	~RenderContext() = default;
 	
-	RenderContext & operator = (RenderContext const& source) = default;
+	RenderContext & operator = (RenderContext const& source) = delete;
 	RenderContext & operator = (RenderContext && source) = default;
 	
 private:
