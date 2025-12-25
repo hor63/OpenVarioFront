@@ -157,20 +157,6 @@ public:
 	/// \see \ref topRight
 	void setTopRight (PosPixel const& topRight);
 
-	/// \see \ref foregroundColor
-	auto const & getForegroundColor () const {
-		return foregroundColor;
-	}
-	/// \see \ref foregroundColor
-	void setForegroundColor (OevGLES::Vec4 const& foregroundColor);
-	
-	/// \see \ref backgroundColor
-	auto const & getBackgroundColor () const {
-		return backgroundColor;
-	}
-	/// \see \ref backgroundColor
-	void setBackgroundColor (OevGLES::Vec4 const& backgroundColor);
-	
 	/// \see \ref posOrSizeDirty
 	auto isPosOrSizeDirty() const {
 		return posOrSizeDirty;
@@ -353,11 +339,6 @@ protected:
 	*/
 	OevGLES::RenderStandardUniforms::Mat4WithChangeCounterPtr parentModelMatrixPtr;
 	
-	/// \brief Default is black on white
-	OevGLES::Vec4 foregroundColor = {0,0,0,1};
-	/// \brief Default is black on white
-	OevGLES::Vec4 backgroundColor = {1,1,1,1};
-	
 	/// \brief Only position or size changed, but not content.
 	bool posOrSizeDirty = true;
 	
@@ -373,7 +354,7 @@ protected:
 	 *
 	 * Inactive controls are visible (governed by \ref visible)
 	 * but cannot get the input focus, do not react to mouse clicks,
-	 * and appear incactive (typically greyish or mute colors)
+	 * and appear inactive (typically greyish or mute colors)
 	 *
 	 */
 	bool active = true;

@@ -146,14 +146,6 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 	}
 }
 
-void ControlBase::setForegroundColor (OevGLES::Vec4 const& foregroundColor) {
-	this->foregroundColor = foregroundColor;
-}
-
-void ControlBase::setBackgroundColor (OevGLES::Vec4 const& backgroundColor) {
-	this->backgroundColor = backgroundColor;
-}
-
 void ControlBase::setPosOrSizeDirty(bool posOrSizeDirty) {
 	this->posOrSizeDirty = posOrSizeDirty;
 }
