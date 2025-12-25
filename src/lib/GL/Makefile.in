@@ -140,9 +140,9 @@ am_libOEV_GLES_a_OBJECTS = GLFramework.$(OBJEXT) \
 	JpegReader.$(OBJEXT) GLProgBase.$(OBJEXT) \
 	GLProgDiffuseLight.$(OBJEXT) GLProgDiffLightTexture.$(OBJEXT) \
 	GLProgTextTexture.$(OBJEXT) GLProgDiffLightCircle.$(OBJEXT) \
-	GLProgSimpleFill.$(OBJEXT) RenderContext.$(OBJEXT) \
-	RendererBase.$(OBJEXT) AnalogHandRenderer.$(OBJEXT) \
-	SquareTextureRenderer.$(OBJEXT) \
+	GLProgSimpleFill.$(OBJEXT) GLProgControlSimpleFill.$(OBJEXT) \
+	RenderContext.$(OBJEXT) RendererBase.$(OBJEXT) \
+	AnalogHandRenderer.$(OBJEXT) SquareTextureRenderer.$(OBJEXT) \
 	CirclePolygonVertexContainer.$(OBJEXT) \
 	CircleBaseRenderer.$(OBJEXT) CircleFilledRenderer.$(OBJEXT) \
 	CirclePartialArcRenderer.$(OBJEXT) GLTextGlobals.$(OBJEXT) \
@@ -170,7 +170,9 @@ am__depfiles_remade = ./$(DEPDIR)/AnalogHandRenderer.Po \
 	./$(DEPDIR)/CirclePartialArcRenderer.Po \
 	./$(DEPDIR)/CirclePolygonVertexContainer.Po \
 	./$(DEPDIR)/GLFramework.Po ./$(DEPDIR)/GLObjectWrappers.Po \
-	./$(DEPDIR)/GLProgBase.Po ./$(DEPDIR)/GLProgDiffLightCircle.Po \
+	./$(DEPDIR)/GLProgBase.Po \
+	./$(DEPDIR)/GLProgControlSimpleFill.Po \
+	./$(DEPDIR)/GLProgDiffLightCircle.Po \
 	./$(DEPDIR)/GLProgDiffLightTexture.Po \
 	./$(DEPDIR)/GLProgDiffuseLight.Po \
 	./$(DEPDIR)/GLProgSimpleFill.Po \
@@ -465,6 +467,7 @@ libOEV_GLES_a_SOURCES = GLES/GLFramework.cpp \
 	GLPrograms/GLProgBase.cpp GLPrograms/GLProgDiffuseLight.cpp \
 	GLPrograms/GLProgDiffLightTexture.cpp GLPrograms/GLProgTextTexture.cpp \
 	GLPrograms/GLProgDiffLightCircle.cpp GLPrograms/GLProgSimpleFill.cpp \
+	GLPrograms/GLProgControlSimpleFill.cpp \
 	Renderers/RenderContext.cpp \
 	Renderers/RendererBase.cpp Renderers/AnalogHandRenderer.cpp \
 	Renderers/SquareTextureRenderer.cpp Renderers/CirclePolygonVertexContainer.cpp \
@@ -538,6 +541,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLFramework.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLObjectWrappers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgBase.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgControlSimpleFill.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffLightCircle.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffLightTexture.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLProgDiffuseLight.Po@am__quote@ # am--include-marker
@@ -825,6 +829,20 @@ GLProgSimpleFill.obj: GLPrograms/GLProgSimpleFill.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgSimpleFill.cpp' object='GLProgSimpleFill.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgSimpleFill.obj `if test -f 'GLPrograms/GLProgSimpleFill.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgSimpleFill.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgSimpleFill.cpp'; fi`
+
+GLProgControlSimpleFill.o: GLPrograms/GLProgControlSimpleFill.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgControlSimpleFill.o -MD -MP -MF $(DEPDIR)/GLProgControlSimpleFill.Tpo -c -o GLProgControlSimpleFill.o `test -f 'GLPrograms/GLProgControlSimpleFill.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgControlSimpleFill.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgControlSimpleFill.Tpo $(DEPDIR)/GLProgControlSimpleFill.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgControlSimpleFill.cpp' object='GLProgControlSimpleFill.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgControlSimpleFill.o `test -f 'GLPrograms/GLProgControlSimpleFill.cpp' || echo '$(srcdir)/'`GLPrograms/GLProgControlSimpleFill.cpp
+
+GLProgControlSimpleFill.obj: GLPrograms/GLProgControlSimpleFill.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GLProgControlSimpleFill.obj -MD -MP -MF $(DEPDIR)/GLProgControlSimpleFill.Tpo -c -o GLProgControlSimpleFill.obj `if test -f 'GLPrograms/GLProgControlSimpleFill.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgControlSimpleFill.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgControlSimpleFill.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GLProgControlSimpleFill.Tpo $(DEPDIR)/GLProgControlSimpleFill.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GLPrograms/GLProgControlSimpleFill.cpp' object='GLProgControlSimpleFill.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GLProgControlSimpleFill.obj `if test -f 'GLPrograms/GLProgControlSimpleFill.cpp'; then $(CYGPATH_W) 'GLPrograms/GLProgControlSimpleFill.cpp'; else $(CYGPATH_W) '$(srcdir)/GLPrograms/GLProgControlSimpleFill.cpp'; fi`
 
 RenderContext.o: Renderers/RenderContext.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RenderContext.o -MD -MP -MF $(DEPDIR)/RenderContext.Tpo -c -o RenderContext.o `test -f 'Renderers/RenderContext.cpp' || echo '$(srcdir)/'`Renderers/RenderContext.cpp
@@ -1146,6 +1164,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/GLFramework.Po
 	-rm -f ./$(DEPDIR)/GLObjectWrappers.Po
 	-rm -f ./$(DEPDIR)/GLProgBase.Po
+	-rm -f ./$(DEPDIR)/GLProgControlSimpleFill.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightCircle.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightTexture.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffuseLight.Po
@@ -1221,6 +1240,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/GLFramework.Po
 	-rm -f ./$(DEPDIR)/GLObjectWrappers.Po
 	-rm -f ./$(DEPDIR)/GLProgBase.Po
+	-rm -f ./$(DEPDIR)/GLProgControlSimpleFill.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightCircle.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffLightTexture.Po
 	-rm -f ./$(DEPDIR)/GLProgDiffuseLight.Po
