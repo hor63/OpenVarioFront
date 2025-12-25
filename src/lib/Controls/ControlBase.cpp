@@ -22,7 +22,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include "Renderers/RendererBase.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -54,7 +53,7 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 	auto parentPtr = this->parent.lock();
 	
 	if (!parentPtr) {
-		throw ControlsException (
+		throw ControlsFatalException (
 			"Error in ControlBase::ControlBase: parent must be a valid pointer"
 			"to an existing ControlsContainer");
 	}
@@ -85,7 +84,9 @@ void ControlBase::setPosition (PosPixel const& position) {
 		
 		locControlModelMatrix(0,3) = position.xPixel;
 		locControlModelMatrix(1,3) = position.yPixel;
-	
+
+		posOrSizeDirty = true;
+
 		onPositionChanged();
 	}
 }
@@ -97,7 +98,7 @@ void ControlBase::setSize (SizePixel const& size) {
 				"Control {0}:{1}: Error in ControlBase::setSize(): width and size must be > 0. "
 				"newSize is {2}x{3}")),
 				uuid.getUuidString(),name,size.widthPixel,size.heightPixel);
-		throw ControlsException(_(
+		throw ControlsFatalException(_(
 			errTxt.c_str()));
 	}
 	
@@ -111,6 +112,8 @@ void ControlBase::setSize (SizePixel const& size) {
 		locControlModelMatrix(0,0) = size.widthPixel;
 		locControlModelMatrix(1,1) = size.heightPixel;
 
+		posOrSizeDirty = true;
+
 		onSizeChanged();
 	}
 }
@@ -123,7 +126,7 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 				"Control {0}:{1}: Error in ControlBase::setTopRight(): . "
 				"newTopRight is {2}x{3}, which is left or below position")),
 				uuid.getUuidString(),name,topRight.xPixel,topRight.yPixel);
-		throw ControlsException(_(
+		throw ControlsFatalException(_(
 			errTxt.c_str()));
 	}
 	
@@ -137,8 +140,7 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 		locControlModelMatrix(0,0) = size.widthPixel;
 		locControlModelMatrix(1,1) = size.heightPixel;
 
-		//renderUniforms.getModelMatrix() =
-		//	parentModelMatrixPtr->matrix4 * locControlModelMatrix;
+		posOrSizeDirty = true;
 
 		onSizeChanged();
 	}
@@ -205,7 +207,6 @@ void ControlBase::onPositionChanged() {
 }
 
 void ControlBase::onParentPositionChanged() {
-	posOrSizeDirty = true;
 }
 
 void ControlBase::onResetParentRenderUniforms(
@@ -220,9 +221,14 @@ void ControlBase::onResetParentRenderUniforms(
 
 	posOrSizeDirty = true;
 
-	// Probaly parent position changed too.
+	// Probably parent position changed too.
 	onParentPositionChanged();
 }
 
+void ControlBase::recalcSizePositionMatrix() {
+	renderUniforms.getModelMatrix() =
+	parentModelMatrixPtr->matrix4 * locControlModelMatrix;
+	posOrSizeDirty = false;
+}
 
 } /* namespace OevControls */
