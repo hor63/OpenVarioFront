@@ -189,6 +189,8 @@ protected:
 	 * The ownership of render context is shared with all controls which are based of \this render surface.
 	 * 
 	 * The render context object, and the shared pointer are created and set in 
+	 * \ref GLFramework::createRenderSurface ().
+	 * Look no further where the shared point is being set \emoji smiley.
 	 *
 	 */
 	RenderContextSharedPtr renderContextSharedPointer;
