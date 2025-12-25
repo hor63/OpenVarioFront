@@ -86,7 +86,7 @@ RootControl::RootControl(ControlsContainerWeakPtr const &parent,
 
 	if (reinterpret_cast<void const*>(this) != 
 		reinterpret_cast<void const*>(parentPtr.get())){
-			throw ControlsException(
+			throw ControlsFatalException(
 				"Programming error: Parent of the root window must point to itself.\n"
 				"Please use OevControls::RootControl::getRootWindowPtr() to obtain a pointer to the one root control."
 			);

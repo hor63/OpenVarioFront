@@ -133,11 +133,25 @@ public:
 } /* namespace OevGLES */
 
 namespace OevControls {
-	
-class ControlsException :public OevUtil::ExceptionBase {
+		
+	class ControlsExceptionBase :public OevUtil::ExceptionBase {
+	public:
+		ControlsExceptionBase(char const *description)
+			:ExceptionBase {description}
+			{}
+	};
+		
+	class ControlsFatalException :public ControlsExceptionBase {
+	public:
+		ControlsFatalException(char const *description)
+			:ControlsExceptionBase {description}
+			{}
+	};
+
+class ControlsAppException :public ControlsExceptionBase {
 public:
-	ControlsException(char const *description)
-		:ExceptionBase {description}
+	ControlsAppException(char const *description)
+		:ControlsExceptionBase {description}
 		{}
 };
 
