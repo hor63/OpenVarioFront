@@ -50,23 +50,8 @@ RenderContext::RenderContext (
 		dialogTitleBackgroundPtr{backgroundColorPtr},
 		scrollBarForegroundPtr{foregroundColorPtr},
 		scrollBarBackgroundPtr{backgroundColorPtr},
-		quadVertexBufferPtr {std::make_shared<GLBufferObject>(false)}
-		{
-			/* The location of the 4 vertexes for the quad
-			4   3
-			|   |
-			|   |
-			0---1
-			*/
-			GLfloat vertexData[4][4] = {
-				{0,0,0,1},
-				{1,0,0,1},
-				{1,1,0.1},
-				{0,1,0,1}
-			};
-			
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-		}
+		quadVertexBuffer {std::make_shared<GLBufferObject>(false)}
+		{ }
 
 } // namespace OevGLES
 
