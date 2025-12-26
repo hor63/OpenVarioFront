@@ -25,6 +25,8 @@
  *
  */
 
+#include "ControlBase.h"
+#include "GLES/SDL/SDLRenderSurface.h"
 #include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -48,6 +50,7 @@
 #include "Renderers/CirclePartialArcRenderer.h"
 #include "GLTextRender/GLTextRenderer.h"
 #include "RootControl.h"
+#include "PlainFieldControl.h"
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
 #if defined Success
@@ -105,11 +108,11 @@ int main(int argint,char** argv) {
 //		auto renderSurfacePtr2 =
 //			glFramework->createRenderSurface(1024, 1024, "SecondaryWindow").lock();
 
-		renderSurfacePtr1->getRenderContextSharedPointer()->glTextGlobSharedPtr->setResolutionDPI(96, 96);
+		renderSurfacePtr1->getRenderContextPtr()->glTextGlobSharedPtr->setResolutionDPI(96, 96);
 
 		renderSurfacePtr1->makeContextCurrent();
 
-		OevGLES::SquareTextureRenderer varioBackground(renderSurfacePtr1->getRenderContextSharedPointer());
+		OevGLES::SquareTextureRenderer varioBackground(renderSurfacePtr1->getRenderContextPtr());
 //		varioBackground.setPNGFileName("../../resources/Vario5m.jpg");
 		varioBackground.setImageMemoryData(Vario5mJPG_data,
 			Vario5mJPG_size, Vario5mJPG_filename);
@@ -130,24 +133,24 @@ int main(int argint,char** argv) {
 // 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,1.0f};
 
-		OevGLES::AnalogHandRenderer hand (renderSurfacePtr1->getRenderContextSharedPointer());
+		OevGLES::AnalogHandRenderer hand (renderSurfacePtr1->getRenderContextPtr());
 		hand.setupVertexBuffers();
 		varioBackground.setupVertexBuffers();
 
-		OevGLES::CircleBaseRenderer ring1 (renderSurfacePtr1->getRenderContextSharedPointer());
+		OevGLES::CircleBaseRenderer ring1 (renderSurfacePtr1->getRenderContextPtr());
 		ring1.setPrimaryRadius(200);
 		ring1.setSecondaryRadius(160);
 		ring1.setPrimarySecondaryZOffset(20);
 		ring1.setupVertexBuffers();
 		ring1.setBodyColor(whiteTransparent0_8Color);
 
-		OevGLES::CircleFilledRenderer circ1 (renderSurfacePtr1->getRenderContextSharedPointer());
+		OevGLES::CircleFilledRenderer circ1 (renderSurfacePtr1->getRenderContextPtr());
 		circ1.setPrimaryRadius(100);
 		circ1.setCenterZOffset(50);
 		circ1.setupVertexBuffers();
 		circ1.setBodyColor(whiteTransparent0_8Color);
 
-		OevGLES::CirclePartialArcRenderer arc1 (renderSurfacePtr1->getRenderContextSharedPointer());
+		OevGLES::CirclePartialArcRenderer arc1 (renderSurfacePtr1->getRenderContextPtr());
 		arc1.setPrimaryRadius(160);
 		arc1.setSecondaryRadius(100);
 		arc1.setPrimarySecondaryZOffset(20);
@@ -180,7 +183,7 @@ int main(int argint,char** argv) {
 //		std::cout << "Pointer to glGenVertexArraysOES = " << reinterpret_cast<void*>(eglGetProcAddress("glGenVertexArraysOES")) << std::endl;
 //		std::cout << "Pointer to glIsVertexArrayOES = " << reinterpret_cast<void*>(eglGetProcAddress("glIsVertexArrayOES")) << std::endl;
 
-		OevGLES::GLTextRenderer glTextRend (renderSurfacePtr1->getRenderContextSharedPointer());
+		OevGLES::GLTextRenderer glTextRend (renderSurfacePtr1->getRenderContextPtr());
 
 		glTextRend.setFontSize(30);
 //		glTextRend.setFonts("Noto Sans");
@@ -263,6 +266,16 @@ int main(int argint,char** argv) {
 		textUniforms.getViewMatrix() =
 			OevGLES::viewMatrix(camPos.block<3, 1>(0, 0), origin, up);
 
+		{
+			OevControls::ControlBasePtr plainFieldCtrlPtr (new OevControls::PlainFieldControl (renderSurfacePtr1->getRootControlPtr(),
+				renderSurfacePtr1->getRenderContextPtr(),
+				OevUtil::Uuid ("93a22a0c-e282-11f0-b16a-9347e013a17a"),
+				"PLainField1"));
+			if(auto rootCtrl = renderSurfacePtr1->getRootControlPtr().lock()) {
+				rootCtrl->addControl(plainFieldCtrlPtr);
+			}
+		}
+			
 		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
