@@ -37,12 +37,14 @@ PlainFieldControl::PlainFieldControl(ControlsContainerWeakPtr const &parent,
 		OevUtil::Uuid const & uuid,
 		char const* name) :
 		ControlBase(parent,renderContextPtr,uuid,name)
-{
+{}
 
+PlainFieldControl::~PlainFieldControl() { }
+
+void PlainFieldControl::setupVertexBuffers () {}
+
+void draw(OevGLES::RenderStandardUniforms const &stdUniformData) {
 }
 
-PlainFieldControl::~PlainFieldControl() {
-	// TODO Auto-generated destructor stub
-}
 
 } /* namespace OevControls */

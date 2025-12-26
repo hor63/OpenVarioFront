@@ -41,6 +41,19 @@ public:
 	PlainFieldControl(PlainFieldControl &&other) = delete;
 	PlainFieldControl& operator=(const PlainFieldControl &other) = delete;
 	PlainFieldControl& operator=(PlainFieldControl &&other) = delete;
+	
+	/** \brief Setup the vertex arrays, calculate normals... and setup VBOs
+	 *
+	 * Nothing to do here.
+	 */
+	virtual void setupVertexBuffers () override;
+
+	/** \brief Draw the rendered object.
+	 *
+	 * \param stdUniformData Reference to the standard uniforms for rendering.
+	 */
+	virtual void draw(OevGLES::RenderStandardUniforms const &stdUniformData) override;
+
 };
 
 } /* namespace OevControls */
