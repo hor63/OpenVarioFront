@@ -22,6 +22,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "GLES/GLObjectWrappers.h"
 #include "Renderers/RendererBase.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -35,7 +36,7 @@
 #include "SDLUtil.h"
 #include "Renderers/RenderContext.h"
 #include "GLTextRender/GLTextGlobals.h"
-
+#include "GLPrograms/GLProgControlSimpleFill.h"
 
 namespace OevGLES {
 
@@ -124,34 +125,63 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 			<< ", size = " << viewportCoords.width << 'x' << viewportCoords.height
 			);
 
-	renderContextSharedPointer->glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
-	renderContextSharedPointer->glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
-	renderContextSharedPointer->glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
-	renderContextSharedPointer->glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
+	contextPtr->glBindVertexArrayOES = reinterpret_cast<PFNGLBINDVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glBindVertexArrayOES"));
+	contextPtr->glDeleteVertexArraysOES = reinterpret_cast<PFNGLDELETEVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glDeleteVertexArraysOES"));
+	contextPtr->glGenVertexArraysOES = reinterpret_cast<PFNGLGENVERTEXARRAYSOESPROC>(SDL_GL_GetProcAddress("glGenVertexArraysOES"));
+	contextPtr->glIsVertexArrayOES = reinterpret_cast<PFNGLISVERTEXARRAYOESPROC>(SDL_GL_GetProcAddress("glIsVertexArrayOES"));
 
 	std::string glExtensions (reinterpret_cast<char const *>(glGetString(GL_EXTENSIONS)));
 	auto foundPos = glExtensions.find("GL_OES_vertex_array_object");
 
-	if (renderContextSharedPointer->glBindVertexArrayOES != nullptr
-			&& renderContextSharedPointer->glDeleteVertexArraysOES != nullptr
-			&& renderContextSharedPointer->glGenVertexArraysOES != nullptr
-			&& renderContextSharedPointer->glIsVertexArrayOES != nullptr
+	if (contextPtr->glBindVertexArrayOES != nullptr
+			&& contextPtr->glDeleteVertexArraysOES != nullptr
+			&& contextPtr->glGenVertexArraysOES != nullptr
+			&& contextPtr->glIsVertexArrayOES != nullptr
 			&& foundPos != std::string::npos
 			) {
-		renderContextSharedPointer->vertexArrayIsUsable = true;
+		contextPtr->vertexArrayIsUsable = true;
 	} else {
-		renderContextSharedPointer->vertexArrayIsUsable = false;
+		contextPtr->vertexArrayIsUsable = false;
 	}
 	
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": vertexArrayUsable = " 
-			<< renderContextSharedPointer->vertexArrayIsUsable);
+			<< contextPtr->vertexArrayIsUsable);
 		
 
-	renderContextSharedPointer->glTextGlobSharedPtr.reset (new GLTextGlobals);
-	*(renderContextSharedPointer->quadVertexBufferPtr) = GLBufferObject(true);
+	contextPtr->glTextGlobSharedPtr.reset (new GLTextGlobals);
 
+	{
+		contextPtr->quadVertexBuffer = GLBufferObject(true);
+		GlBindArrayBufferObject bindQuadVertexBuffer(
+			contextPtr->quadVertexBuffer);
+	
+		/* The location of the 4 vertexes for the quad
+			3   2
+			|   |
+			|   |
+			0---1
+		*/
+		GLfloat vertexData[4][4] = {
+			{0,0,0,1},
+			{1,0,0,1},
+			{1,1,0.1},
+			{0,1,0,1}
+		};
+		GlBindArrayBufferObject bindQuadBufferObject (contextPtr->quadVertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+		
+		if (contextPtr->vertexArrayIsUsable) {
+			contextPtr->quadVertexArray = GLVertexArrayObject(contextPtr);
+			GLBindVertexArrayObject bindVertexArray(contextPtr->quadVertexArray);
+			auto simpleFillProg = GLProgControlSimpleFill::getProgram();
+			// setup the vertex coordinates
+			glEnableVertexAttribArray(simpleFillProg->getVertexPosLocation());
+			glVertexAttribPointer(simpleFillProg->getVertexPosLocation(), 4, GL_FLOAT,
+								  GL_FALSE, 4 * sizeof(GLfloat), 0);
 
-
+		}
+	}
+	
 	onWindowResize();
 
 }
@@ -159,7 +189,8 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 void SDLRenderSurface::makeContextCurrent() {
 
 	if(!SDL_GL_MakeCurrent(nativeWindow,glContext)) {
-		OevUtil::reportSDLError(std::source_location::current(), "SDL_GL_MakeCurrent");
+		OevUtil::reportSDLError(std::source_location::current(),
+								"SDL_GL_MakeCurrent");
 	}
 	LOG4CXX_DEBUG(logger,"renderContext is now current");
 
