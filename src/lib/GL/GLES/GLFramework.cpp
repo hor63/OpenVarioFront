@@ -78,7 +78,7 @@ SDLRenderSurfaceWeakPtr GLFramework::createRenderSurface(GLint width, GLint heig
 	// The constructor of RenderContext is private, and I am the only friend, but not the STL class
 	// which implements make_shared.
 	auto renderContextRawPtr = new RenderContext(sdlSurfaceSharedPtr);
-	sdlSurfaceSharedPtr->renderContextSharedPointer.reset(renderContextRawPtr);
+	sdlSurfaceSharedPtr->contextPtr.reset(renderContextRawPtr);
 	
 	sdlSurfaceSharedPtr->createRenderSurface(width,height,windowName);
 	renderSurfacePtrMap.insert(std::pair(SDL_GetWindowID(sdlSurfaceSharedPtr->getNativeWindow()),sdlSurfaceSharedPtr));
