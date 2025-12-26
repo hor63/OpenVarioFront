@@ -120,8 +120,8 @@ public:
 		return baseUniforms;
 	}
 	
-	RenderContextSharedPtr const &getRenderContextSharedPointer() const {
-		return renderContextSharedPointer;
+	RenderContextSharedPtr const &getRenderContextPtr() const {
+		return contextPtr;
 	}
 
 	/** \brief Called when a resize message is received or when the window is created.
@@ -193,7 +193,7 @@ protected:
 	 * Look no further where the shared point is being set \emoji smiley.
 	 *
 	 */
-	RenderContextSharedPtr renderContextSharedPointer;
+	RenderContextSharedPtr contextPtr;
 
 	/// Only the friend \ref GLFramework shall be able to create a render surface.
 	SDLRenderSurface(GLFramework& framework);
