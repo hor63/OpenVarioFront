@@ -26,6 +26,7 @@
 #ifndef LIB_CONTROLS_CONTROLSCONTEXT_H_
 #define LIB_CONTROLS_CONTROLSCONTEXT_H_
 
+#include <GLES2/gl2.h>
 #include <memory>
 #include <string>
 
@@ -91,16 +92,20 @@ struct RenderContext {
 	/** \brief vertex buffer handle to a quad vertex buffer with corners at 0,0 and 1,1 (and z at 0)
 	 *
 	 * It serves as a reusable vertex buffer for the myriad of rectangles to be drawn for dialogs.
-	 * You just need to scale it yourself to the desired size with a uniform 
+	 * You just need to scale it yourself to the desired size with a uniform
+	 * 
+	 * The buffer is created in \ref SDLRenderSurface::createRenderSurface(). 
 	 */
-	GLBufferObjectSharedPtr quadVertexBufferPtr;
+	GLBufferObject quadVertexBuffer;
+	static constexpr GLuint quadVertexBufferNumVertexes = 4;
+	GLVertexArrayObject quadVertexArray;
 	
 	CirclePolygonVertexContainer& getCircleVertexContainer() {
 		return circleVertexContainer;
 	}
 
 
-	// The rest is default fare.
+	// Copying is not allowed, but moving.
 	RenderContext (RenderContext const& source) = delete;
 	RenderContext (RenderContext && source) = default;
 	~RenderContext() = default;
