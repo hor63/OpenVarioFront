@@ -43,6 +43,8 @@ PlainFieldControl::~PlainFieldControl() { }
 
 void PlainFieldControl::setupVertexBuffers () {}
 
+void PlainFieldControl::draw () {}
+
 void draw(OevGLES::RenderStandardUniforms const &stdUniformData) {
 }
 

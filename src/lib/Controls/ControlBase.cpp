@@ -43,7 +43,6 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 		OevUtil::Uuid const & uuid,
 		char const* name
 	) :
-		OevGLES::RendererBase(renderContextPtr),
 		parent {parent},
 		renderContextPtr{renderContextPtr},
 		uuid {uuid},

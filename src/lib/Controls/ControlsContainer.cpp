@@ -54,12 +54,11 @@ void ControlsContainer::insertControlInTabGroupBefore (ControlsWeakListT::iterat
 	tabGroup.insert (ref,controlWeakPtr);
 }
 
-void ControlsContainer::drawChildren (
-		OevGLES::RenderStandardUniforms const &stdUniformData) {
+void ControlsContainer::drawChildren () {
 			
 	for (auto& child: controlsMap) {
 		if (child.second->isVisible()) {
-			child.second->draw(stdUniformData);
+			child.second->draw();
 		}
 	}
 }

@@ -52,7 +52,7 @@ public:
 	 *
 	 * \param stdUniformData Reference to the standard uniforms for rendering.
 	 */
-	virtual void draw(OevGLES::RenderStandardUniforms const &stdUniformData) override;
+	virtual void draw() override;
 
 };
 

@@ -63,7 +63,7 @@ public:
 	void insertControlInTabGroupBefore (ControlsWeakListT::iterator ref,
 		ControlBaseWeakPtr const &controlWeakPtr);
 	
-	void drawChildren (OevGLES::RenderStandardUniforms const &stdUniformData);
+	void drawChildren ();
 	
 	// overridden callbacks upon changes or actions
 	

@@ -46,7 +46,7 @@ public:
 	}
 
 	virtual void setupVertexBuffers () override;
-	virtual void draw(OevGLES::RenderStandardUniforms const &stdUniformData) override;
+	virtual void draw() override;
 
 	
 private:

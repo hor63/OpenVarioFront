@@ -64,7 +64,7 @@ using ControlBaseWeakPtr = std::weak_ptr<ControlBase>;
 using ControlsContainerPtr     = std::shared_ptr<ControlsContainer>;
 using ControlsContainerWeakPtr = std::weak_ptr<ControlsContainer>;
 
-class ControlBase : public OevGLES::RendererBase {
+class ControlBase /*: public OevGLES::RendererBase*/ {
 public:
 
 	struct PosPixel {
@@ -288,6 +288,21 @@ public:
 	 \ref posOrSizeDirty is being reset.
 	 */
 	virtual void recalcSizePositionMatrix();
+	
+	/** \brief Setup the vertex arrays, calculate normals... and setup VBOs
+	 *
+	 * Pure virtual interface
+	 *
+	 */
+	virtual void setupVertexBuffers () = 0;
+
+	/** \brief Draw the rendered object.
+	 *
+	 * Pure virtual interface
+	 *
+	 */
+	virtual void draw() = 0;
+
 
 protected:
 	

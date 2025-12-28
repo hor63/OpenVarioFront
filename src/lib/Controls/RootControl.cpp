@@ -106,8 +106,8 @@ void RootControl::setupVertexBuffers () {
 	
 }
 
-void RootControl::draw(OevGLES::RenderStandardUniforms const &stdUniformData) {
-	drawChildren(stdUniformData);
+void RootControl::draw() {
+	drawChildren();
 }
 
 
