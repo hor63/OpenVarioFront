@@ -50,7 +50,7 @@ RenderContext::RenderContext (
 		dialogTitleBackgroundPtr{backgroundColorPtr},
 		scrollBarForegroundPtr{foregroundColorPtr},
 		scrollBarBackgroundPtr{backgroundColorPtr},
-		quadVertexBuffer {std::make_shared<GLBufferObject>(false)}
+		quadVertexBuffer {false}
 		{ }
 
 } // namespace OevGLES
