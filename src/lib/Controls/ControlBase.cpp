@@ -47,7 +47,29 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 		renderContextPtr{renderContextPtr},
 		uuid {uuid},
 		name {name},
-		parentModelMatrixPtr (std::make_shared<OevGLES::RenderStandardUniforms::Mat4WithChangeCounter>())
+		renderUniforms ( // Use a lambda here 
+			[&,this,parent]() -> OevGLES::RenderStandardUniforms {
+				auto parentPtr = this->parent.lock();
+	
+				if (!parentPtr) {
+					throw ControlsFatalException (
+						"Error in ControlBase::ControlBase: parent must be a valid pointer"
+						"to an existing ControlsContainer");
+				}
+				// The distincive property of the root control is that its parent points to itself.
+				if (reinterpret_cast<void const*>(parentPtr.get())
+					== reinterpret_cast<void const*>(this)) {
+					// The root control has some quirks, as all other controls inherit renderUniforms from their parent,
+					// but the "parent" of the root control is the root control itself. Thus the root control needs to
+					// pull itself out of the morass by itself. This means a new RenderStandardUniforms object is
+					// created from scratch.
+					return OevGLES::RenderStandardUniforms();
+				} else {
+					return parentPtr->getRenderUniforms();
+				}
+	
+			} ()//here call the lambda to initialize the member renderUniforms!
+		)
 {
 	auto parentPtr = this->parent.lock();
 	
@@ -57,16 +79,22 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 			"to an existing ControlsContainer");
 	}
 
-	renderUniforms = parentPtr->getRenderUniforms();
-	// You always have your own model matrix, alone to set your position.
-	renderUniforms.resetModelMatrixPtr();
-	renderUniforms.getModelMatrix() = OevGLES::Mat4::Identity();
-
 	// The distincive property of the root control is that its parent points to itself.
 	if (reinterpret_cast<void const*>(parentPtr.get())
 		== reinterpret_cast<void const*>(this)) {
+	
+		// Create parentModelMatrixPtr as unity matrix
+		// renderUniforms were created fresh by the lambda in the initializer list.
+		parentModelMatrixPtr = std::make_shared<OevGLES::RenderStandardUniforms::Mat4WithChangeCounter>();
+		
 		isRootControl_ = true;
-	}
+	} else {
+		// Store the parent's model matrix for later.
+		parentModelMatrixPtr = renderUniforms.getModelMatrixPtr();
+		// You always have your own model matrix, alone to set your position.
+		renderUniforms.resetModelMatrixPtr();
+		renderUniforms.getModelMatrix() = OevGLES::Mat4::Identity();
+	} // not root control
 }
 
 ControlBase::~ControlBase() {
