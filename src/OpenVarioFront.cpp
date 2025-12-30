@@ -267,15 +267,20 @@ int main(int argint,char** argv) {
 			OevGLES::viewMatrix(camPos.block<3, 1>(0, 0), origin, up);
 
 		{
-			OevControls::ControlBasePtr plainFieldCtrlPtr (new OevControls::PlainFieldControl (renderSurfacePtr1->getRootControlPtr(),
-				renderSurfacePtr1->getRenderContextPtr(),
-				OevUtil::Uuid ("93a22a0c-e282-11f0-b16a-9347e013a17a"),
-				"PLainField1"));
-			if(auto rootCtrl = renderSurfacePtr1->getRootControlPtr().lock()) {
-				rootCtrl->addControl(plainFieldCtrlPtr);
-			}
-		}
+			auto rootCtrlPtr = renderSurfacePtr1->getRootControlPtr().lock();
+
+			OevControls::ControlBasePtr plainFieldCtrlPtr(
+				new OevControls::PlainFieldControl(
+					rootCtrlPtr,
+					renderSurfacePtr1->getRenderContextPtr(),
+					OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
+					"PLainField1"));
+			rootCtrlPtr->addControl(plainFieldCtrlPtr);
 			
+			plainFieldCtrlPtr->setPosition({400,500});
+			plainFieldCtrlPtr->setSize ({300,200});
+		}
+
 		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {
 			SDL_Event sdlEvent;
 			while (SDL_PollEvent(&sdlEvent)){
@@ -320,6 +325,11 @@ int main(int argint,char** argv) {
 			varioBackground.draw(backgroundImgUniforms);
 
 			glTextRend.draw(textUniforms);
+
+			{
+				auto rootCtrlPtr = renderSurfacePtr1->getRootControlPtr().lock();
+				rootCtrlPtr->draw();
+			}
 
 			arc1.setArcRange(objectRotationAngle / 2.0f - 90.0_deg);
 			arc1.draw(arc1Uniforms);
