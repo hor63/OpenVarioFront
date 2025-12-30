@@ -100,11 +100,11 @@ void main () {
 void OevGLES::GLProgControlSimpleFill::retrieveShaderVariableInfo() {
 
 	// The uniforms
-	mvpMatrixInfo			= *retrieveSingleUniformInfo("mvpMatrix",mvpMatrixLocation);
-	fillColorInfo	= *retrieveSingleUniformInfo("ambientLightColor",fillColorLocation);
+	mvpMatrixInfo	= *retrieveSingleUniformInfo("mvpMatrix",mvpMatrixLocation);
+	fillColorInfo	= *retrieveSingleUniformInfo("fillColor",fillColorLocation);
 
 	// The vertex attributes
-	vertexPosInfo		= *retrieveSingleAttributeInfo("vertexPos",vertexPosLocation);
+	vertexPosInfo	= *retrieveSingleAttributeInfo("vertexPos",vertexPosLocation);
 
 }
 

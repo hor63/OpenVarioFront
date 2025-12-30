@@ -77,7 +77,7 @@ public:
 	GLProgram::ShaderVariableInfo  const &getFillColorInfo() const {
 		return fillColorInfo;
 	}
-	GLint getAmbientLightColorLocation () const {
+	GLint getFillColorLocation () const {
 		return fillColorLocation;
 	}
 
