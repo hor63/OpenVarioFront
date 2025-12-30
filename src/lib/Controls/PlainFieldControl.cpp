@@ -22,9 +22,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include "GLES/GLObjectWrappers.h"
-#include "GLPrograms/GLProgBase.h"
-#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -34,14 +31,27 @@
 #include "PlainFieldControl.h"
 #include "GLPrograms/GLProgControlSimpleFill.h"
 
+#if defined HAVE_LOG4CXX_H
+	static log4cxx::LoggerPtr logger;
+#endif
+
 namespace OevControls {
+
 
 PlainFieldControl::PlainFieldControl(ControlsContainerWeakPtr const &parent,
 		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name) :
 		ControlBase(parent,renderContextPtr,uuid,name)
-{}
+{
+	#if defined HAVE_LOG4CXX_H
+			// Get the logger if necessary
+			if (!logger) {
+				logger = log4cxx::Logger::getLogger("OpenVarioFront.Controls.PlainFieldControl");
+			}
+	#endif
+
+}
 
 PlainFieldControl::~PlainFieldControl() { }
 
@@ -54,13 +64,26 @@ void PlainFieldControl::draw () {
 	}
 	auto simpleFillProg = OevGLES::GLProgControlSimpleFill::getProgram();
 	OevGLES::GlProgUse useSimpleFilleProg(*simpleFillProg);
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+		<< ": MVP Matrix location" << simpleFillProg->getMvpMatrixLocation()
+		<< ", MVP Matrix = \n" << renderUniforms.getMVPMatrixC());
+
+	LOG4CXX_DEBUG(logger, 
+		"\tmodel Matrix = \n" << renderUniforms.getModelMatrixC());
 	
 	// Set the uniforms
 	glUniformMatrix4fv(simpleFillProg->getMvpMatrixLocation(), 1, GL_FALSE,
 					   &(renderUniforms.getMVPMatrixC()(0, 0)));
 
+	auto & foregroundColor = *renderContextPtr->foregroundColorPtr.get();
+
+	LOG4CXX_DEBUG(logger, 
+		"\t Fill color location = " << simpleFillProg->getFillColorLocation()
+		<< ", forgroundColor = " << foregroundColor.transpose());
+
 	glUniform4fv(simpleFillProg->getFillColorLocation(), 1,
-				 &(renderUniforms.getAmbientLightColorC()(0)));
+				 &foregroundColor(0));
 
 	OevGLES::GLBindVertexArrayObject bindVertexArrayObject;
 	OevGLES::GLBindVertexArrayObject bindVertexArray;
