@@ -90,15 +90,8 @@ public:
 	 * 
 	 * The root control is being created when it did not yet exist.
 	 *
-	 * Please note that \p controlsContextPtr is only being used when you call this method for the first time
-	 * when the \ref OevControls::RootControlWeakPtr object is being created.
-	 * Each subsequent call on this object will just return the shared pointer object again.
-	 *
-	 * \param controlsContextPtr Optional shared pointer to a controls and dialog context.
 	 */
-	OevControls::RootControlWeakPtr getRootControlPtr(
-		RenderContextSharedPtr const& controlsContextPtr = RenderContextSharedPtr{}
-	);
+	OevControls::RootControlWeakPtr getRootControlPtr();
 	
 	/** \brief SDL event handler and dispatcher
 	 * 

@@ -196,11 +196,10 @@ void SDLRenderSurface::makeContextCurrent() {
 
 }
 
-OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr(
-			RenderContextSharedPtr const& controlsContextPtr) {
+OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr() {
 	
 	if (!rootControlPtr) {
-		rootControlPtr = OevControls::RootControl::makeRootControl(*this,controlsContextPtr);
+		rootControlPtr = OevControls::RootControl::makeRootControl(*this,contextPtr);
 	}
 	
 	return rootControlPtr;
