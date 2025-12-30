@@ -161,7 +161,7 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 			|   |
 			0---1
 		*/
-		GLfloat vertexData[4][4] = {
+		GLfloat vertexData[RenderContext::quadVertexBufferNumVertexes][4] = {
 			{0,0,0,1},
 			{1,0,0,1},
 			{1,1,0.1},
@@ -200,6 +200,8 @@ OevControls::RootControlWeakPtr SDLRenderSurface::getRootControlPtr() {
 	
 	if (!rootControlPtr) {
 		rootControlPtr = OevControls::RootControl::makeRootControl(*this,contextPtr);
+		rootControlPtr->onResetParentRenderUniforms(baseUniforms);
+		rootControlPtr->setSize(windowSize);
 	}
 	
 	return rootControlPtr;
