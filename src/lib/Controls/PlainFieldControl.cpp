@@ -22,6 +22,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "GLES/GLObjectWrappers.h"
+#include "GLPrograms/GLProgBase.h"
+#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -29,6 +32,7 @@
 #include "OVFCommon.h"
 
 #include "PlainFieldControl.h"
+#include "GLPrograms/GLProgControlSimpleFill.h"
 
 namespace OevControls {
 
@@ -43,10 +47,38 @@ PlainFieldControl::~PlainFieldControl() { }
 
 void PlainFieldControl::setupVertexBuffers () {}
 
-void PlainFieldControl::draw () {}
+void PlainFieldControl::draw () {
 
-void draw(OevGLES::RenderStandardUniforms const &stdUniformData) {
+	if (posOrSizeDirty) {
+		recalcSizePositionMatrix();
+	}
+	auto simpleFillProg = OevGLES::GLProgControlSimpleFill::getProgram();
+	OevGLES::GlProgUse useSimpleFilleProg(*simpleFillProg);
+	
+	// Set the uniforms
+	glUniformMatrix4fv(simpleFillProg->getMvpMatrixLocation(), 1, GL_FALSE,
+					   &(renderUniforms.getMVPMatrixC()(0, 0)));
+
+	glUniform4fv(simpleFillProg->getFillColorLocation(), 1,
+				 &(renderUniforms.getAmbientLightColorC()(0)));
+
+	OevGLES::GLBindVertexArrayObject bindVertexArrayObject;
+	OevGLES::GLBindVertexArrayObject bindVertexArray;
+
+	if (renderContextPtr->quadVertexArray.valid()) {
+		bindVertexArrayObject =
+			OevGLES::GLBindVertexArrayObject(renderContextPtr->quadVertexArray);
+	} else {
+		bindVertexArray = OevGLES::GLBindVertexArrayObject (renderContextPtr->quadVertexArray);
+		// setup the vertex coordinates
+		OevGLES::GLVertexArrayAttribObject enableVertexPosAttr(
+			true, simpleFillProg->getVertexPosLocation());
+		glVertexAttribPointer(simpleFillProg->getVertexPosLocation(), 4,
+							  GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+	}
+	
+	glDrawArrays(GL_TRIANGLE_FAN, 0, OevGLES::RenderContext::quadVertexBufferNumVertexes);
+
 }
-
 
 } /* namespace OevControls */
