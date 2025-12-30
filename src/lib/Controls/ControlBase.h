@@ -341,14 +341,12 @@ protected:
 	OevGLES::RenderStandardUniforms renderUniforms;
 	
 	/**
-	 * Used to quickly recalculate the local model matrix from the parent's
-	 * model matrix. 
+	 * Used to quickly recalculate the position of the local model matrix from the parent's
+	 * model matrix' positon. 
 	 * 
-	 * It contains the translation by the control's position. \n
-	 * It also contains the scaling by the control's size. This way I can re-use a shared vertex buffer with 4 vertexes
-	 * with 4 vertexes at 0x0, 0x1, 1,1, 1,0 which form a rectangle by scaling you stretch it to the control's dimensions.
+	 * It contains the translation by the control's position.
 	 */
-	OevGLES::Mat4 locControlModelMatrix = OevGLES::Mat4::Identity();
+	OevGLES::Vec3 locControlPosition = OevGLES::Vec3::Zero();
 	
 	/** \brief Remember the parent's model matrix.
 	*/

@@ -109,8 +109,8 @@ void ControlBase::setPosition (PosPixel const& position) {
 		this->position.yPixel != position.yPixel) {
 		this->position = position;
 		
-		locControlModelMatrix(0,3) = position.xPixel;
-		locControlModelMatrix(1,3) = position.yPixel;
+		locControlPosition(0) = position.xPixel;
+		locControlPosition(1) = position.yPixel;
 
 		posOrSizeDirty = true;
 
@@ -136,10 +136,9 @@ void ControlBase::setSize (SizePixel const& size) {
 		topRight.xPixel = position.xPixel + size.widthPixel;
 		topRight.yPixel = position.yPixel + size.heightPixel;
 
-		locControlModelMatrix(0,0) = size.widthPixel;
-		locControlModelMatrix(1,1) = size.heightPixel;
-
-		posOrSizeDirty = true;
+		auto & modelMatrix = renderUniforms.getModelMatrix();
+		modelMatrix(0,0) = size.widthPixel;
+		modelMatrix(1,1) = size.heightPixel;
 
 		onSizeChanged();
 	}
@@ -164,10 +163,9 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 		size.widthPixel  = topRight.xPixel - position.xPixel ;
 		size.heightPixel = topRight.yPixel - position.yPixel;
 		
-		locControlModelMatrix(0,0) = size.widthPixel;
-		locControlModelMatrix(1,1) = size.heightPixel;
-
-		posOrSizeDirty = true;
+		auto & modelMatrix = renderUniforms.getModelMatrix();
+		modelMatrix(0,0) = size.widthPixel;
+		modelMatrix(1,1) = size.heightPixel;
 
 		onSizeChanged();
 	}
@@ -245,8 +243,16 @@ void ControlBase::onResetParentRenderUniforms(
 }
 
 void ControlBase::recalcSizePositionMatrix() {
-	renderUniforms.getModelMatrix() =
-	parentModelMatrixPtr->matrix4 * locControlModelMatrix;
+	auto &modelMatrix = renderUniforms.getModelMatrix();
+	auto &parentModelMatrix = parentModelMatrixPtr->matrix4;
+	
+	// By default I am only inheriting the parent position on top of my own position.
+	// Sizes are absolute. These are dialog controls, not a universal Model hierarchy.
+	// The local scale factor serves to scale a 1x1 quad in the RenderCodext up to the desired size
+	// of my control.
+	for (int i = 0; i<3; ++i){
+		modelMatrix(i,3) = parentModelMatrix(i,3) + locControlPosition(i);
+	}
 	posOrSizeDirty = false;
 }
 
