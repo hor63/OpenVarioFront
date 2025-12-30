@@ -164,7 +164,7 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 		GLfloat vertexData[RenderContext::quadVertexBufferNumVertexes][4] = {
 			{0,0,0,1},
 			{1,0,0,1},
-			{1,1,0.1},
+			{1,1,0,1},
 			{0,1,0,1}
 		};
 		GlBindArrayBufferObject bindQuadBufferObject (contextPtr->quadVertexBuffer);
