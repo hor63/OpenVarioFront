@@ -118,8 +118,8 @@ private:
 	/// Make the constructor private, except for the friends SDLRenderSurface and GLFramework
 	RenderContext (
 	SDLRenderSurfaceWeakPtr const sdlRenderSurfacePtr,
-	Vec4 const &foregroundColor = Vec4{0,0,0,1},
-	Vec4 const &backgroundColor = (Vec4{1,1,1,1})
+	Vec4 const &foregroundColor = Vec4{0,0,0.2,1},
+	Vec4 const &backgroundColor = Vec4{1,1,1,1}
 	);
 
 	CirclePolygonVertexContainer circleVertexContainer;
