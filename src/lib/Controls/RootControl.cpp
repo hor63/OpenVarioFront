@@ -6,6 +6,7 @@
  */
 #include "ControlBase.h"
 #include "ExceptionBase.h"
+#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -107,7 +108,24 @@ void RootControl::setupVertexBuffers () {
 }
 
 void RootControl::draw() {
+	
+	GLboolean saveDepthTest = glIsEnabled(GL_DEPTH_TEST);
+	GLboolean saveDepthMask = GL_TRUE;
+	glGetBooleanv(GL_DEPTH_WRITEMASK,&saveDepthMask);
+	
+	// Write to the depth buffer, but disable the depth check, i.e. draw the controls in any case.
+	glDepthMask(GL_TRUE);
+	glDisable(GL_DEPTH_TEST);
+
 	drawChildren();
+	
+	// Restore the depth buffer stuff
+	glDepthMask(saveDepthMask);
+	if (saveDepthTest == GL_TRUE) {
+		glEnable(GL_DEPTH_TEST);
+	} else {
+		glDisable(GL_DEPTH_TEST);
+	}
 }
 
 
