@@ -277,7 +277,7 @@ public:
 	 * the shared ones from the parent, or re-calculate your own ones from the parent.
 	 */
 	virtual void onResetParentRenderUniforms(
-		OevGLES::RenderStandardUniforms &parentUniforms);
+		OevGLES::RenderStandardUniforms const &parentUniforms);
 
 	/** \brief Recalculate the modelMatrix \ref renderUniforms when \ref posOrSizeDirty is true.
 	 

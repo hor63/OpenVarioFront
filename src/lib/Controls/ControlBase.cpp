@@ -229,7 +229,7 @@ void ControlBase::onParentPositionChanged() {
 }
 
 void ControlBase::onResetParentRenderUniforms(
-	OevGLES::RenderStandardUniforms &parentUniforms) {
+	OevGLES::RenderStandardUniforms const &parentUniforms) {
 
 	auto saveModelMatrixPtr = renderUniforms.getModelMatrixPtr();
 	

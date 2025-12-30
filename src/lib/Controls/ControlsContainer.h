@@ -84,7 +84,7 @@ public:
 	 * the shared ones from the parent, or re-calculate your own ones from the parent.
 	 */
 	virtual void onResetParentRenderUniforms(
-		OevGLES::RenderStandardUniforms &parentUniforms) override;
+		OevGLES::RenderStandardUniforms const &parentUniforms) override;
 
 protected:
 
