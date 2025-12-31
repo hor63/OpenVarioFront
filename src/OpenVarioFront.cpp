@@ -187,7 +187,7 @@ int main(int argint,char** argv) {
 
 		glTextRend.setFontSize(12);
 //		glTextRend.setFonts("Noto Sans");
-		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Sans Thai, Noto Sans Bengali, Noto Sans CJK SC");
+		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Serif Thai, Noto Sans Bengali, Noto Sans CJK SC");
 //		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
 		glTextRend.setText(
 				  "0123456789||0ABCDEFGHIJK"
@@ -225,14 +225,14 @@ int main(int argint,char** argv) {
 
 		OevGLES::RenderStandardUniforms handUniforms;
 		handUniforms.getProjMatrix() =
+		/*
 			OevGLES::orthographicProjectionMatrix(windowHeight, windowHeight * 3,
 						  static_cast<double>(windowWidth),
 							  static_cast<double>(windowHeight));
-/*
+							  */
 			OevGLES::perspectiveProjectionMatrix(windowHeight, windowHeight * 3,
 									  static_cast<double>(windowWidth),
 										  static_cast<double>(windowHeight));
-*/
 
 		std::cout << "perspecive matrix = \n" << handUniforms.getProjMatrixC() << std::endl;
 

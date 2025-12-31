@@ -134,7 +134,7 @@ libOEV_Controls_a_AR = $(AR) $(ARFLAGS)
 libOEV_Controls_a_LIBADD =
 am_libOEV_Controls_a_OBJECTS = ControlBase.$(OBJEXT) \
 	ControlsContainer.$(OBJEXT) RootControl.$(OBJEXT) \
-	PlainFieldControl.$(OBJEXT)
+	PlainFieldControl.$(OBJEXT) TextFieldControl.$(OBJEXT)
 libOEV_Controls_a_OBJECTS = $(am_libOEV_Controls_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -153,7 +153,8 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/ControlBase.Po \
 	./$(DEPDIR)/ControlsContainer.Po \
-	./$(DEPDIR)/PlainFieldControl.Po ./$(DEPDIR)/RootControl.Po
+	./$(DEPDIR)/PlainFieldControl.Po ./$(DEPDIR)/RootControl.Po \
+	./$(DEPDIR)/TextFieldControl.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -426,7 +427,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libOEV_Controls.a
 libOEV_Controls_a_SOURCES = \
-	ControlBase.cpp ControlsContainer.cpp RootControl.cpp PlainFieldControl.cpp 
+	ControlBase.cpp ControlsContainer.cpp RootControl.cpp PlainFieldControl.cpp \
+	TextFieldControl.cpp
 
 AM_CXXFLAGS = $(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)
@@ -488,6 +490,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ControlsContainer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlainFieldControl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RootControl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextFieldControl.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -650,6 +653,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/ControlsContainer.Po
 	-rm -f ./$(DEPDIR)/PlainFieldControl.Po
 	-rm -f ./$(DEPDIR)/RootControl.Po
+	-rm -f ./$(DEPDIR)/TextFieldControl.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -699,6 +703,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/ControlsContainer.Po
 	-rm -f ./$(DEPDIR)/PlainFieldControl.Po
 	-rm -f ./$(DEPDIR)/RootControl.Po
+	-rm -f ./$(DEPDIR)/TextFieldControl.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
