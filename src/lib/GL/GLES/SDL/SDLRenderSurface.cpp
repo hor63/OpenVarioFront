@@ -160,12 +160,16 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 			|   |
 			|   |
 			0---1
+		
+			There is one more vertex in the array because the 5th vertex is identical to the 1st to close a loop
+			when I draw a closed loop of lines
 		*/
-		GLfloat vertexData[RenderContext::quadVertexBufferNumVertexes][4] = {
+		GLfloat vertexData[RenderContext::quadVertexBufferNumVertexes + 1][4] = {
 			{0,0,0,1},
 			{1,0,0,1},
 			{1,1,0,1},
-			{0,1,0,1}
+			{0,1,0,1},
+			{0,0,0,1}
 		};
 		GlBindArrayBufferObject bindQuadBufferObject (contextPtr->quadVertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);

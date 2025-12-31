@@ -56,7 +56,7 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 						"Error in ControlBase::ControlBase: parent must be a valid pointer"
 						"to an existing ControlsContainer");
 				}
-				// The distincive property of the root control is that its parent points to itself.
+				// The distinctive property of the root control is that its parent points to itself.
 				if (reinterpret_cast<void const*>(parentPtr.get())
 					== reinterpret_cast<void const*>(this)) {
 					// The root control has some quirks, as all other controls inherit renderUniforms from their parent,
@@ -69,7 +69,8 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 				}
 	
 			} ()//here call the lambda to initialize the member renderUniforms!
-		)
+		),
+		renderFrameUniforms {renderUniforms}
 {
 	auto parentPtr = this->parent.lock();
 	
@@ -86,7 +87,7 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 		// Create parentModelMatrixPtr as unity matrix
 		// renderUniforms were created fresh by the lambda in the initializer list.
 		parentModelMatrixPtr = std::make_shared<OevGLES::RenderStandardUniforms::Mat4WithChangeCounter>();
-		
+
 		isRootControl_ = true;
 	} else {
 		// Store the parent's model matrix for later.
@@ -94,7 +95,14 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 		// You always have your own model matrix, alone to set your position.
 		renderUniforms.resetModelMatrixPtr();
 		renderUniforms.getModelMatrix() = OevGLES::Mat4::Identity();
+		renderFrameUniforms.setModelMatrixPtr(
+		renderUniforms.getModelMatrixPtr());
+
 	} // not root control
+	
+	renderFrameUniforms.resetModelMatrixPtr();
+	renderFrameUniforms.getModelMatrix() = renderUniforms.getModelMatrixC();
+
 }
 
 ControlBase::~ControlBase() {
@@ -139,6 +147,20 @@ void ControlBase::setSize (SizePixel const& size) {
 		auto & modelMatrix = renderUniforms.getModelMatrix();
 		modelMatrix(0,0) = size.widthPixel;
 		modelMatrix(1,1) = size.heightPixel;
+		
+		auto & frameModelMatrix = renderFrameUniforms.getModelMatrix();
+		if (size.widthPixel >= 4 && size.heightPixel >= 4) {
+			frameModelMatrix(0,0) = size.widthPixel - 4;
+			frameModelMatrix(1,1) = size.heightPixel - 4;
+			doDrawFrame = hasFrame_;
+		} else {
+			// too small to fit a frame inside
+			frameModelMatrix(0,0) = size.widthPixel;
+			frameModelMatrix(1,1) = size.heightPixel;
+			doDrawFrame = false;
+		}
+
+		posOrSizeDirty = true;
 
 		onSizeChanged();
 	}
@@ -166,6 +188,20 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 		auto & modelMatrix = renderUniforms.getModelMatrix();
 		modelMatrix(0,0) = size.widthPixel;
 		modelMatrix(1,1) = size.heightPixel;
+
+		auto & frameModelMatrix = renderFrameUniforms.getModelMatrix();
+		if (size.widthPixel >= 4 && size.heightPixel >= 4) {
+			frameModelMatrix(0,0) = size.widthPixel - 4;
+			frameModelMatrix(1,1) = size.heightPixel - 4;
+			doDrawFrame = hasFrame_;
+		} else {
+			// too small to fit a frame inside
+			frameModelMatrix(0,0) = size.widthPixel;
+			frameModelMatrix(1,1) = size.heightPixel;
+			doDrawFrame = false;
+		}
+
+		posOrSizeDirty = true;
 
 		onSizeChanged();
 	}
@@ -253,7 +289,27 @@ void ControlBase::recalcSizePositionMatrix() {
 	for (int i = 0; i<3; ++i){
 		modelMatrix(i,3) = parentModelMatrix(i,3) + locControlPosition(i);
 	}
+	
+
+	auto & frameModelMatrix = renderFrameUniforms.getModelMatrix();
+	if (size.widthPixel >= 6 && size.heightPixel >= 6) {
+		frameModelMatrix(0,3) = modelMatrix(0,3) + 2;
+		frameModelMatrix(1,3) = modelMatrix(1,3) + 2;
+		doDrawFrame = hasFrame_;
+	} else {
+		// too small to fit a frame inside
+		frameModelMatrix(0,3) = modelMatrix(0,3);
+		frameModelMatrix(1,3) = modelMatrix(1,3);
+		doDrawFrame = false;
+	}
+
 	posOrSizeDirty = false;
+}
+
+void ControlBase::setHasFrame(bool hasFrame) {
+	hasFrame_ = hasFrame;
+	
+	doDrawFrame = hasFrame_ && (size.widthPixel >= 4 && size.heightPixel >= 4);
 }
 
 } /* namespace OevControls */

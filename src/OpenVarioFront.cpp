@@ -185,7 +185,7 @@ int main(int argint,char** argv) {
 
 		OevGLES::GLTextRenderer glTextRend (renderSurfacePtr1->getRenderContextPtr());
 
-		glTextRend.setFontSize(30);
+		glTextRend.setFontSize(12);
 //		glTextRend.setFonts("Noto Sans");
 		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Sans Thai, Noto Sans Bengali, Noto Sans CJK SC");
 //		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
@@ -278,7 +278,8 @@ int main(int argint,char** argv) {
 			rootCtrlPtr->addControl(plainFieldCtrlPtr);
 			
 			plainFieldCtrlPtr->setPosition({400,500});
-			plainFieldCtrlPtr->setSize ({300,200});
+			plainFieldCtrlPtr->setSize ({100,40});
+			plainFieldCtrlPtr->setHasFrame(true);
 		}
 
 		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {

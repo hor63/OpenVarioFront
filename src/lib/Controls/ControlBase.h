@@ -235,6 +235,9 @@ public:
 	/// \see \ref tabContainer
 	void setTabContainer (ControlsContainerWeakPtr const& tabContainer);
 
+	bool hasFrame() const {return hasFrame_;}
+	void setHasFrame(bool hasFrame);
+
 	bool isRootControl() {
 		return isRootControl_;
 	}
@@ -348,6 +351,11 @@ protected:
 	 */
 	OevGLES::Vec3 locControlPosition = OevGLES::Vec3::Zero();
 	
+	/**
+	 * Copy of \ref renderUniforms. The Model matrix is reduced on every side.
+	 */
+	OevGLES::RenderStandardUniforms renderFrameUniforms;
+	
 	/** \brief Remember the parent's model matrix.
 	*/
 	OevGLES::RenderStandardUniforms::Mat4WithChangeCounterPtr parentModelMatrixPtr;
@@ -382,6 +390,14 @@ protected:
 	/// \brief This control receives the equivalent of a click when you hit enter in a dialog.
 	bool isDefaultControl_ = false;
 
+	/** \brief Control has a 1-pixel wire-frame in the opposite fill color.
+	 *
+	 * Between wire frame and edge is one pixel, between frame and inner useful space is another pixel.
+	 */
+	bool hasFrame_ = false;
+	
+	/// \brief \p true when \ref hasFrame_ is true and when the control is large enough to fit a frame.
+	bool doDrawFrame = false;
 
 	/// \brief is this control the root control?
 	bool isRootControl_ = false;

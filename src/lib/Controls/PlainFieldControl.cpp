@@ -22,6 +22,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -76,14 +77,9 @@ void PlainFieldControl::draw () {
 	glUniformMatrix4fv(simpleFillProg->getMvpMatrixLocation(), 1, GL_FALSE,
 					   &(renderUniforms.getMVPMatrixC()(0, 0)));
 
-	auto & foregroundColor = *renderContextPtr->foregroundColorPtr.get();
-
-	LOG4CXX_DEBUG(logger, 
-		"\t Fill color location = " << simpleFillProg->getFillColorLocation()
-		<< ", forgroundColor = " << foregroundColor.transpose());
-
+	auto & backgroundColor = *renderContextPtr->backgroundColorPtr.get();
 	glUniform4fv(simpleFillProg->getFillColorLocation(), 1,
-				 &foregroundColor(0));
+				 &backgroundColor(0));
 
 	OevGLES::GLBindVertexArrayObject bindVertexArrayObject;
 	OevGLES::GLBindVertexArrayObject bindVertexArray;
@@ -100,7 +96,22 @@ void PlainFieldControl::draw () {
 							  GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
 	}
 	
-	glDrawArrays(GL_TRIANGLE_FAN, 0, OevGLES::RenderContext::quadVertexBufferNumVertexes);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	
+	if (doDrawFrame) {
+		// Use the position and size of the frame
+		glUniformMatrix4fv(simpleFillProg->getMvpMatrixLocation(), 1, GL_FALSE,
+						   &(renderFrameUniforms.getMVPMatrixC()(0, 0)));
+
+		// Draw in the opposite color.
+		auto & foregroundColor = *renderContextPtr->foregroundColorPtr.get();
+
+		glUniform4fv(simpleFillProg->getFillColorLocation(), 1,
+					 &foregroundColor(0));
+
+		glDrawArrays(GL_LINE_STRIP, 0, 5);
+	}
+
 
 }
 
