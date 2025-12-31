@@ -114,6 +114,13 @@ public:
 		GLfloat tri2TopRight [vertextPositionArrayLen];
 	};
 
+	struct GlRectSizeStruct {
+		GLfloat right = 1;
+		GLfloat top =1;
+		GLfloat width = 1;
+		GLfloat height =1;
+	};
+	
 	class VertexBufferPerTexture {
 	public:
 		std::vector<GlGlyphVertexStruct> vertexVector;
@@ -253,6 +260,8 @@ public:
 	/// \see RendererBase::draw()
 	virtual void draw(RenderStandardUniforms const &stdUniformData) override;
 	
+	GlRectSizeStruct getTextBoxSize () {return textBoxSize;}
+	
 	bool isDrawBackground() const {
 		return drawBackground;
 	}
@@ -312,6 +321,7 @@ private:
 	PangoRectangle textBoxRect = {-1,-1,-1,-1};
 	/// \brief The vertexes of two triangles which form the background rectangle
 	GlRectVertextStruct textBackgroundRectVertexes;
+	GlRectSizeStruct textBoxSize;
 
 	std::unordered_map<GLuint,VertexBufferPerTexture> vertextBufferPerTextureMap;
 

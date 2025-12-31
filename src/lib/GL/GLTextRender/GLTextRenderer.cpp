@@ -383,6 +383,12 @@ void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
 			textBackgroundRectVertexes.tri2BottomRight[1] =
 					-textBoxRect.y - textBoxRect.height;
 
+	textBoxSize = {
+		static_cast<GLfloat>(textBoxRect.x),
+		static_cast<GLfloat>(-textBoxRect.y),
+		static_cast<GLfloat>(textBoxRect.width),
+		static_cast<GLfloat>(textBoxRect.height)
+	};
 
 	LOG4CXX_DEBUG (logger, "\tNumber of Unicode characters = " << pango_layout_get_character_count(pangoLayout));
 
