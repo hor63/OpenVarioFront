@@ -63,8 +63,9 @@ public:
 	void insertControlInTabGroupBefore (ControlsWeakListT::iterator ref,
 		ControlBaseWeakPtr const &controlWeakPtr);
 	
-	void drawChildren ();
-	
+	virtual void setupVertexBuffers () override;
+	virtual void draw() override;
+
 	// overridden callbacks upon changes or actions
 	
 	/** \brief Request to re-calculate the own model matrix when the own position

@@ -54,7 +54,13 @@ void ControlsContainer::insertControlInTabGroupBefore (ControlsWeakListT::iterat
 	tabGroup.insert (ref,controlWeakPtr);
 }
 
-void ControlsContainer::drawChildren () {
+void ControlsContainer::setupVertexBuffers () {
+	for (auto& child: controlsMap) {
+		child.second->setupVertexBuffers();
+	}
+}
+
+void ControlsContainer::draw () {
 			
 	for (auto& child: controlsMap) {
 		if (child.second->isVisible()) {
