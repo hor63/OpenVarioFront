@@ -280,6 +280,8 @@ int main(int argint,char** argv) {
 			plainFieldCtrlPtr->setPosition({400,500});
 			plainFieldCtrlPtr->setSize ({100,40});
 			plainFieldCtrlPtr->setHasFrame(true);
+			
+			rootCtrlPtr->setupVertexBuffers();
 		}
 
 		for (OevGLES::AngleDeg rotationAngle = 0.0_deg; /*rotationAngle<360.0_deg*/;rotationAngle = rotationAngle + 0.01_deg) {

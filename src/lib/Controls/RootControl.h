@@ -45,7 +45,6 @@ public:
 		return renderSurface;
 	}
 
-	virtual void setupVertexBuffers () override;
 	virtual void draw() override;
 
 	

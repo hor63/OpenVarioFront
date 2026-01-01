@@ -103,10 +103,6 @@ RootControl::~RootControl() {
 
 }
 
-void RootControl::setupVertexBuffers () {
-	
-}
-
 void RootControl::draw() {
 	
 	GLboolean saveDepthTest = glIsEnabled(GL_DEPTH_TEST);
@@ -117,7 +113,7 @@ void RootControl::draw() {
 	glDepthMask(GL_TRUE);
 	glDisable(GL_DEPTH_TEST);
 
-	drawChildren();
+	ControlsContainer::draw();
 	
 	// Restore the depth buffer stuff
 	glDepthMask(saveDepthMask);
