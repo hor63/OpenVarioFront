@@ -42,14 +42,14 @@ RenderContext::RenderContext (
 		sdlRenderSurfacePtr{sdlRenderSurfacePtr},
 		foregroundColorPtr{std::make_shared<Vec4>(foregroundColor)},
 		backgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
-		textForegroundPtr{foregroundColorPtr},
-		textBackgroundPtr{backgroundColorPtr},
-		buttonForegroundPtr{foregroundColorPtr},
-		buttonBackgroundPtr{backgroundColorPtr},
-		dialogTitleForegroundPtr{foregroundColorPtr},
-		dialogTitleBackgroundPtr{backgroundColorPtr},
-		scrollBarForegroundPtr{foregroundColorPtr},
-		scrollBarBackgroundPtr{backgroundColorPtr},
+		textForegroundColorPtr{foregroundColorPtr},
+		textBackgroundColorPtr{backgroundColorPtr},
+		buttonForegroundColorPtr{foregroundColorPtr},
+		buttonBackgroundColorPtr{backgroundColorPtr},
+		dialogTitleForegroundColorPtr{foregroundColorPtr},
+		dialogTitleBackgroundColorPtr{backgroundColorPtr},
+		scrollBarForegroundColorPtr{foregroundColorPtr},
+		scrollBarBackgroundColorPtr{backgroundColorPtr},
 		quadVertexBuffer {false}
 		{ }
 
