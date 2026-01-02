@@ -42,7 +42,8 @@ PlainFieldControl::PlainFieldControl(ControlsContainerWeakPtr const &parent,
 		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name) :
-		ControlBase(parent,renderContextPtr,uuid,name)
+		ControlBase(parent,renderContextPtr,uuid,name),
+		fillColorPtr{renderContextPtr->backgroundColorPtr}
 {
 	#if defined HAVE_LOG4CXX_H
 			// Get the logger if necessary
@@ -76,7 +77,7 @@ void PlainFieldControl::draw () {
 	glUniformMatrix4fv(simpleFillProg->getMvpMatrixLocation(), 1, GL_FALSE,
 					   &(renderUniforms.getMVPMatrixC()(0, 0)));
 
-	auto & backgroundColor = *renderContextPtr->backgroundColorPtr.get();
+	auto & backgroundColor = *fillColorPtr.get();
 	glUniform4fv(simpleFillProg->getFillColorLocation(), 1,
 				 &backgroundColor(0));
 

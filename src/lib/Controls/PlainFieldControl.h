@@ -49,10 +49,19 @@ public:
 	virtual void setupVertexBuffers () override;
 
 	/** \brief Draw the rendered object.
-	 *
-	 * \param stdUniformData Reference to the standard uniforms for rendering.
 	 */
 	virtual void draw() override;
+	
+protected:
+
+	/** 
+	 * The fill color points by default to renderContextPtr->backgroundColorPtr.
+	 * The pointer can be overwritten, e.g. with the \ref OevGLES::RenderContext::textBackgroundColorPtr
+	 * or any other color shared pointer.
+	 *
+	 * \see OevGLES::RenderContext::backgroundColorPtr
+	 */
+	OevGLES::Vec4ShPtr fillColorPtr;
 
 };
 
