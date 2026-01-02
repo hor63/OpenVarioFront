@@ -41,7 +41,11 @@ TextFieldControl::TextFieldControl(	ControlsContainerWeakPtr const &parent,
 	: PlainFieldControl(parent,renderContextPtr,uuid,name),
 	textRenderer(renderContextPtr)
 {
-	
+	// I am drawing the background myself by using the base class PlainFieldControl::draw() call.
+	textRenderer.setDrawBackground(false);
+	textRenderer.setTextColor(*renderContextPtr->textForegroundColorPtr);
+	// set the background color to the textbackground color.
+	fillColorPtr = renderContextPtr->textBackgroundColorPtr;
 }
 
 TextFieldControl::~TextFieldControl() {
