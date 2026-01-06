@@ -57,8 +57,7 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 						"to an existing ControlsContainer");
 				}
 				// The distinctive property of the root control is that its parent points to itself.
-				if (reinterpret_cast<void const*>(parentPtr.get())
-					== reinterpret_cast<void const*>(this)) {
+				if (parentPtr.get() == this) {
 					// The root control has some quirks, as all other controls inherit renderUniforms from their parent,
 					// but the "parent" of the root control is the root control itself. Thus the root control needs to
 					// pull itself out of the morass by itself. This means a new RenderStandardUniforms object is
@@ -76,13 +75,18 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 	
 	if (!parentPtr) {
 		throw ControlsFatalException (
-			"Error in ControlBase::ControlBase: parent must be a valid pointer"
-			"to an existing ControlsContainer");
+			"Fatal error in ControlBase::ControlBase: parent must be a valid pointer"
+			"to an existing ControlsContainer!");
+	}
+
+	if (!renderContextPtr) {
+		throw ControlsFatalException (
+			"Fatal error in ControlBase::ControlBase: renderContextPtr must be a valid pointer"
+			"to an existing RenderContext!");
 	}
 
 	// The distincive property of the root control is that its parent points to itself.
-	if (reinterpret_cast<void const*>(parentPtr.get())
-		== reinterpret_cast<void const*>(this)) {
+	if (parentPtr.get() == this) {
 	
 		// Create parentModelMatrixPtr as unity matrix
 		// renderUniforms were created fresh by the lambda in the initializer list.
