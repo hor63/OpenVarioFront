@@ -81,15 +81,15 @@ public:
 	 * Default is \p textForegroundColorPtr in \ref renderContextPtr.
 	 * 
 	 * You can reset the text color back to the default from \ref renderContextPtr
-	 * by passing \p nullptr.
+	 * by passing an empty shared pointer.
 	 * 
 	 * \see OevGLES::RenderContext::textForegroundColorPtr
 	 */
-	void setTextColor(OevGLES::Vec4 const *textColor) {
-		if (textColor != nullptr) {
-			textColorPtr = std::make_shared<OevGLES::Vec4>(*textColor);
-			textFieldAttribsDirty = true;
+	void setTextColor(OevGLES::Vec4ShPtr const textColor) {
+		if (textColor) {
+			textColorPtr = textColor;
 		} else {
+			// revert to the context color.
 			textColorPtr = renderContextPtr->textForegroundColorPtr;
 		}
 
@@ -134,12 +134,14 @@ protected:
 
 	/** 
 	 * The text foreground color points by default to renderContextPtr->textForegroundColorPtr.
-	 * The pointer can be overwritten, e.g. with the \ref OevGLES::RenderContext::buttonForegroundColorPtr
-	 * or any other color shared pointer.
+	 * The pointer can be overwritten by \ref setTextColor ().
 	 *
 	 * \see OevGLES::RenderContext::textForegroundColorPtr
 	 */
 	OevGLES::Vec4ShPtr textColorPtr;
+	
+	double locTextSizePoints = 0.0;
+	double *textSizePointsPtr = &locTextSizePoints;
 
 	
 private:

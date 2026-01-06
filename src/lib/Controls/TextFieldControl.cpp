@@ -46,6 +46,7 @@ TextFieldControl::TextFieldControl(	ControlsContainerWeakPtr const &parent,
 	textRenderer.setTextColor(*renderContextPtr->textForegroundColorPtr);
 	// set the background color to the textbackground color.
 	fillColorPtr = renderContextPtr->textBackgroundColorPtr;
+	textSizePointsPtr = &renderContextPtr->textSizePoints;
 }
 
 TextFieldControl::~TextFieldControl() {
