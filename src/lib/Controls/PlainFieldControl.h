@@ -41,7 +41,47 @@ public:
 	PlainFieldControl(PlainFieldControl &&other) = delete;
 	PlainFieldControl& operator=(const PlainFieldControl &other) = delete;
 	PlainFieldControl& operator=(PlainFieldControl &&other) = delete;
-	
+
+	/** \brief Overwrite the default background fill color
+	 *
+	 * By default the fill color is defined as backgroundColorPtr in \ref renderContextPtr.
+	 * Here you can overwrite the default.
+	 *
+	 * You can reset the fill color to the \ref renderContext default by calling
+	 * with an empty shared pointer.
+	 *
+	 * \see OevGLES::RenderContext::backgroundColorPtr
+	 */
+	void setFillColor (OevGLES::Vec4ShPtr const &fillColorPtr) {
+		if (fillColorPtr) {
+			this->fillColorPtr = fillColorPtr;
+		} else {
+			this->fillColorPtr = renderContextPtr->backgroundColorPtr;
+		}
+	}
+
+	/** \brief Overwrite the default frame color
+	 *
+	 * By default the frame color is defined as foregroundColorPtr in \ref renderContextPtr.
+	 * Here you can overwrite the default.
+	 *
+	 * You can reset the frame color to the \ref renderContext default by calling
+	 * with an empty shared pointer.
+	 *
+	 * \see OevGLES::RenderContext::backgroundColorPtr
+	 */
+	void setFrameColor (OevGLES::Vec4ShPtr const &frameColorPtr) {
+		if (frameColorPtr) {
+			this->frameColorPtr = frameColorPtr;
+		} else {
+			this->frameColorPtr = renderContextPtr->foregroundColorPtr;
+		}
+	}
+
+	OevGLES::Vec4ShPtr const &getFrameColor() const {
+		return frameColorPtr;
+	}
+
 	/** \brief Setup the vertex arrays, calculate normals... and setup VBOs
 	 *
 	 * Nothing to do here.
@@ -62,6 +102,15 @@ protected:
 	 * \see OevGLES::RenderContext::backgroundColorPtr
 	 */
 	OevGLES::Vec4ShPtr fillColorPtr;
+	
+	/** 
+	 * The frame color points by default to renderContextPtr->foregroundColorPtr.
+	 * The pointer can be overwritten, e.g. with the \ref OevGLES::RenderContext::textForegroundColorPtr
+	 * or any other color shared pointer.
+	 *
+	 * \see OevGLES::RenderContext::textForegroundColorPtr
+	 */
+	OevGLES::Vec4ShPtr frameColorPtr;
 
 };
 

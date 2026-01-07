@@ -43,7 +43,8 @@ PlainFieldControl::PlainFieldControl(ControlsContainerWeakPtr const &parent,
 		OevUtil::Uuid const & uuid,
 		char const* name) :
 		ControlBase(parent,renderContextPtr,uuid,name),
-		fillColorPtr{renderContextPtr->backgroundColorPtr}
+		fillColorPtr{renderContextPtr->backgroundColorPtr},
+		frameColorPtr{renderContextPtr->foregroundColorPtr}
 {
 	#if defined HAVE_LOG4CXX_H
 			// Get the logger if necessary
@@ -104,10 +105,10 @@ void PlainFieldControl::draw () {
 						   &(renderFrameUniforms.getMVPMatrixC()(0, 0)));
 
 		// Draw in the opposite color.
-		auto & foregroundColor = *renderContextPtr->foregroundColorPtr.get();
+		auto & frameColor = *frameColorPtr.get();
 
 		glUniform4fv(simpleFillProg->getFillColorLocation(), 1,
-					 &foregroundColor(0));
+					 &frameColor(0));
 
 		glDrawArrays(GL_LINE_STRIP, 0, 5);
 	}

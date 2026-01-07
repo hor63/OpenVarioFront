@@ -269,17 +269,18 @@ int main(int argint,char** argv) {
 		{
 			auto rootCtrlPtr = renderSurfacePtr1->getRootControlPtr().lock();
 
-			OevControls::ControlBasePtr plainFieldCtrlPtr(
-				new OevControls::PlainFieldControl(
-					rootCtrlPtr,
-					renderSurfacePtr1->getRenderContextPtr(),
-					OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
-					"PLainField1"));
+			auto plainFieldControl = new OevControls::PlainFieldControl(
+								rootCtrlPtr,
+								renderSurfacePtr1->getRenderContextPtr(),
+								OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
+								"PLainField1");
+			OevControls::ControlBasePtr plainFieldCtrlPtr(plainFieldControl);
 			rootCtrlPtr->addControl(plainFieldCtrlPtr);
 			
 			plainFieldCtrlPtr->setPosition({400,500});
 			plainFieldCtrlPtr->setSize ({100,40});
 			plainFieldCtrlPtr->setHasFrame(true);
+			plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(1,0,0,1));
 			
 			rootCtrlPtr->setupVertexBuffers();
 		}
