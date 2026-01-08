@@ -39,7 +39,10 @@ TextFieldControl::TextFieldControl(	ControlsContainerWeakPtr const &parent,
 			OevUtil::Uuid const & uuid,
 			char const* name)
 	: PlainFieldControl(parent,renderContextPtr,uuid,name),
-	textRenderer(renderContextPtr)
+	// the base class ControlBase asserts that renderContextPtr is not empty.
+	textRenderer(renderContextPtr),
+	textSizePointsPtr{&this->renderContextPtr->textSizePoints},
+	fontListPtr{&this->renderContextPtr->fontNameList}
 {
 	// I am drawing the background myself by using the base class PlainFieldControl::draw() call.
 	textRenderer.setDrawBackground(false);
@@ -49,8 +52,40 @@ TextFieldControl::TextFieldControl(	ControlsContainerWeakPtr const &parent,
 	textSizePointsPtr = &renderContextPtr->textSizePoints;
 }
 
-TextFieldControl::~TextFieldControl() {
-	// TODO Auto-generated destructor stub
+TextFieldControl::~TextFieldControl() {}
+
+void TextFieldControl::setupVertexBuffers () {
+	PlainFieldControl::setupVertexBuffers();
+	
+	if (textFieldAttribsChanged) {
+		textRenderer.setFontSize(*textSizePointsPtr);
+		textRenderer.setFonts(*fontListPtr);
+		textRenderer.setTextColor(*textColorPtr.get());
+		textFieldAttribsChanged = false;
+	}
+
+	if (textChanged) {
+		textRenderer.setText(text);
+	}
+
+	if (textChanged || textFieldAttribsChanged) {
+		textRenderer.renderLayout();
+		textRenderer.setupVertexBuffers();
+		textChanged = false;
+		textFieldAttribsChanged = false;
+	}
+
 }
+
+
+void TextFieldControl::draw() {
+	if (textChanged || textFieldAttribsChanged) {
+		setupVertexBuffers();
+	}
+	PlainFieldControl::draw();
+	
+	textRenderer.draw(renderUniforms);
+}
+
 
 } /* namespace OevControls */

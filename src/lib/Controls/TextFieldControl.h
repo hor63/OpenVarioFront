@@ -45,8 +45,8 @@ public:
 	
 
 	void setText (const std::string& str) {
-		textRenderer.setText(str);
-		textFieldAttribsDirty = true;
+		text = str;
+		textChanged = true;
 	}
 	const std::string& getText() const {
 		return textRenderer.getText();
@@ -64,13 +64,16 @@ public:
 	 *
 	 */
 	void setFontSize (double sizePoints){
+		
 		if (sizePoints > 0.0) {
+			locTextSizePoints = sizePoints;
+			textSizePointsPtr = &locTextSizePoints;
 			textRenderer.setFontSize(sizePoints);
 		} else {
-			textRenderer.setFontSize(renderContextPtr->textSizePoints);
+			textSizePointsPtr = &renderContextPtr->textSizePoints;
 		}
 		
-		textFieldAttribsDirty = true;
+		textFieldAttribsChanged = true;
 	}
 	double getFontSize() {
 		return textRenderer.getFontSize();
@@ -85,15 +88,15 @@ public:
 	 * 
 	 * \see OevGLES::RenderContext::textForegroundColorPtr
 	 */
-	void setTextColor(OevGLES::Vec4ShPtr const textColor) {
-		if (textColor) {
-			textColorPtr = textColor;
+	void setTextColor(OevGLES::Vec4ShPtr const &textColorPtr) {
+		if (textColorPtr) {
+			this->textColorPtr = textColorPtr;
 		} else {
 			// revert to the context color.
-			textColorPtr = renderContextPtr->textForegroundColorPtr;
+			this->textColorPtr = renderContextPtr->textForegroundColorPtr;
 		}
 
-		textFieldAttribsDirty = true;
+		textFieldAttribsChanged = true;
 	}
 	const OevGLES::Vec4& getTextColor() const {
 		return *textColorPtr.get();
@@ -108,9 +111,9 @@ public:
 	 * \see [Pango.FontDescription.set_family](https://docs.gtk.org/Pango/method.FontDescription.set_family.html)
 	 * \see OevGLES::RenderContext::fontNameList
 	 */
-	void setFonts(std::string fontNames) {
+	void setFontNames(std::string fontNames) {
 		textRenderer.setFonts(fontNames);
-		textFieldAttribsDirty = true;
+		textFieldAttribsChanged = true;
 	}
 	const std::string& getFonts() {
 		return textRenderer.getFonts();
@@ -132,6 +135,23 @@ protected:
 
 	OevGLES::GLTextRenderer textRenderer;
 
+	
+private:
+
+	/** \brief Set \p true when any text attribute is changed.
+	 *
+	 * When it is true \ref setupVertexBuffers () is being called to layout the text again by
+	 * \ref draw ().
+	 *
+	 * It is not changed when the text is being changed. That uses \ref textChanged
+	 *
+	 */
+	bool textFieldAttribsChanged = true;
+	
+	/** \brief Set when */
+	bool textChanged = true;
+	
+
 	/** 
 	 * The text foreground color points by default to renderContextPtr->textForegroundColorPtr.
 	 * The pointer can be overwritten by \ref setTextColor ().
@@ -139,19 +159,14 @@ protected:
 	 * \see OevGLES::RenderContext::textForegroundColorPtr
 	 */
 	OevGLES::Vec4ShPtr textColorPtr;
-	
+
 	double locTextSizePoints = 0.0;
-	double *textSizePointsPtr = &locTextSizePoints;
-
+	double *textSizePointsPtr;
 	
-private:
-
-	/** \brief Set \p true when any text attribute or the text itself is changed.
-	 *
-	 * When it is true \ref setupVertexBuffers () is being called to layout the text again when
-	 * \ref draw () is being called.
-	 */
-	bool textFieldAttribsDirty = true;
+	std::string locFontList;
+	std::string *fontListPtr;
+	
+	std::string text;
 };
 
 } /* namespace OevControls */

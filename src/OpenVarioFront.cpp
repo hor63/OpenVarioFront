@@ -51,6 +51,7 @@
 #include "GLTextRender/GLTextRenderer.h"
 #include "RootControl.h"
 #include "PlainFieldControl.h"
+#include "TextFieldControl.h"
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.
 #if defined Success
@@ -280,7 +281,21 @@ int main(int argint,char** argv) {
 			plainFieldCtrlPtr->setPosition({400,500});
 			plainFieldCtrlPtr->setSize ({100,40});
 			plainFieldCtrlPtr->setHasFrame(true);
-			plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(1,0,0,1));
+			plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(0,0,0.5f,1));
+			
+			auto textFieldControl = new OevControls::TextFieldControl			(
+											rootCtrlPtr,
+											renderSurfacePtr1->getRenderContextPtr(),
+											OevUtil::Uuid("04f0f49a-ec8d-11f0-a4bc-5bdf9f28664a"),
+											"PLainField1");
+			OevControls::ControlBasePtr textFieldCtrlPtr(textFieldControl);
+
+			rootCtrlPtr->addControl(textFieldCtrlPtr);
+			textFieldControl->setPosition({400,400});
+			textFieldControl->setSize ({1,1});
+			textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(1,1,0.5,1));
+			textFieldControl->setFontSize(30);
+			textFieldControl->setText("This is a test\nThis is the second line.");
 			
 			rootCtrlPtr->setupVertexBuffers();
 		}
