@@ -26,6 +26,7 @@
 #ifndef LIB_CONTROLS_TEXTFIELDCONTROL_H_
 #define LIB_CONTROLS_TEXTFIELDCONTROL_H_
 
+#include "Renderers/RendererBase.h"
 #include "lib/Controls/PlainFieldControl.h"
 #include "GLTextRender/GLTextRenderer.h"
 
@@ -131,6 +132,11 @@ public:
 	/// \see RendererBase::draw()
 	virtual void draw() override;
 
+	/** \brief Request to re-calculate the own model matrix when the own position
+	 * changed.
+	 */
+	virtual void onPositionChanged() override;
+
 protected:
 
 	OevGLES::GLTextRenderer textRenderer;
@@ -167,6 +173,8 @@ private:
 	std::string *fontListPtr;
 	
 	std::string text;
+	
+	OevGLES::RenderStandardUniforms textRenderUniforms;
 };
 
 } /* namespace OevControls */

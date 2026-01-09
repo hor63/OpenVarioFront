@@ -292,9 +292,9 @@ int main(int argint,char** argv) {
 
 			rootCtrlPtr->addControl(textFieldCtrlPtr);
 			textFieldControl->setPosition({400,400});
-			textFieldControl->setSize ({1,1});
-			textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(1,1,0.5,1));
-			textFieldControl->setFontSize(30);
+			textFieldControl->setSize ({100,40});
+			textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
+			textFieldControl->setFontSize(12);
 			textFieldControl->setText("This is a test\nThis is the second line.");
 			
 			rootCtrlPtr->setupVertexBuffers();
