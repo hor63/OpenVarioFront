@@ -307,6 +307,7 @@ void ControlBase::recalcSizePositionMatrix() {
 		doDrawFrame = false;
 	}
 
+	onPositionChanged();
 	posOrSizeDirty = false;
 }
 
