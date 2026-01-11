@@ -90,12 +90,18 @@ void TextFieldControl::setupVertexBuffers () {
 	}
 
 	if (textChanged || textFieldAttribsChanged) {
-		textRenderer.renderLayout();
+		textRenderer.renderLayout(2,0);
 		textRenderer.setupVertexBuffers();
 		textChanged = false;
 		textFieldAttribsChanged = false;
+		
+		auto boxSize = textRenderer.getTextBoxSize();
+		setSize({static_cast<int>(boxSize.width + 0.5f)+4,
+				 static_cast<int>(boxSize.height + 0.5f)});
+		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+			<< ": Size of text box = " << boxSize.width << 'x' << boxSize.height
+			<< " at " << boxSize.right << ',' << boxSize.top);
 	}
-
 }
 
 void TextFieldControl::draw() {
@@ -107,13 +113,6 @@ void TextFieldControl::draw() {
 	textRenderer.draw(textRenderUniforms);
 	//textRenderer.draw(renderUniforms);
 	
-#if defined HAVE_LOG4CXX_H
-	auto const &controlModelMatrix = renderUniforms.getModelMatrix();
-	auto &textModelMatrix = textRenderUniforms.getModelMatrix();
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-		<< ": controlModelMatrix = \n " << controlModelMatrix
-		<< ", textModelMatrix = \n" << textModelMatrix);
-#endif
 }
 
 void TextFieldControl::onPositionChanged() {
