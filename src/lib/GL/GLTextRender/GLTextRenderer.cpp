@@ -568,6 +568,10 @@ double GLTextRenderer::getFontSize() {
 	return ret;
 }
 
+void GLTextRenderer::setWidthSubpixel(int width) {
+	pango_layout_set_width(pangoLayout, width);
+}
+
 void GLTextRenderer::setupVertexBuffers () {
 	setupVertexBuffersGlyphs ();
 

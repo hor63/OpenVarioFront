@@ -39,6 +39,7 @@
 #include "GLPrograms/GLProgTextTexture.h"
 #include "GLPrograms/GLProgDiffuseLight.h"
 #include "Renderers/RendererBase.h"
+#include "pango/pango-types.h"
 
 
 
@@ -190,6 +191,12 @@ public:
 	const std::string& getFonts() {
 		return fonts;
 	}
+
+	void setWidth (int width) {
+		setWidthSubpixel(width * PANGO_SCALE);
+	}
+	
+	void setWidthSubpixel(int width);
 
 	PangoLayout* getPangoLayout() {
 		return pangoLayout;
