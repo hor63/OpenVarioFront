@@ -90,13 +90,27 @@ void TextFieldControl::setupVertexBuffers () {
 	}
 
 	if (textChanged || textFieldAttribsChanged) {
-		textRenderer.renderLayout(2,0);
+		// Leave a bit space to the left of the background box.
+		int leftOffset;
+		if (hasFrame_) {
+			leftOffset = 4;
+		} else {
+			leftOffset = 2;
+		}
+		textRenderer.renderLayout(leftOffset,0);
 		textRenderer.setupVertexBuffers();
 		textChanged = false;
 		textFieldAttribsChanged = false;
 		
 		auto boxSize = textRenderer.getTextBoxSize();
-		setSize({static_cast<int>(boxSize.width + 0.5f)+4,
+		// ... +4: Leave a bit space to the right of the background box, incl. the space on the left.
+		int rightOffset;
+		if (hasFrame_) {
+			rightOffset = 8;
+		} else {
+			rightOffset = 4;
+		}
+		setSize({static_cast<int>(boxSize.width + 0.5f)+rightOffset,
 				 static_cast<int>(boxSize.height + 0.5f)});
 		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 			<< ": Size of text box = " << boxSize.width << 'x' << boxSize.height

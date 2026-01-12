@@ -295,7 +295,8 @@ int main(int argint,char** argv) {
 			textFieldControl->setSize ({100,40});
 			textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 			textFieldControl->setFontSize(12);
-			textFieldControl->setText("This is a test\nThis is the second line.");
+			textFieldControl->setText("This 流氓 is gq|J a test\nThis 流氓 is |Jgq the second line.");
+			//textFieldControl->setHasFrame(true);
 			
 			rootCtrlPtr->setupVertexBuffers();
 		}
