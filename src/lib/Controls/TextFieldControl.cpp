@@ -82,7 +82,7 @@ void TextFieldControl::setupVertexBuffers () {
 		textRenderer.setFontSize(*textSizePointsPtr);
 		textRenderer.setFonts(*fontListPtr);
 		textRenderer.setTextColor(*textColorPtr.get());
-		textFieldAttribsChanged = false;
+		pango_layout_set_line_spacing (textRenderer.getPangoLayout(),1.0f);
 	}
 
 	if (textChanged) {
@@ -91,30 +91,37 @@ void TextFieldControl::setupVertexBuffers () {
 
 	if (textChanged || textFieldAttribsChanged) {
 		// Leave a bit space to the left of the background box.
-		int leftOffset;
+		int leftOffset, topOffset;
 		if (hasFrame_) {
 			leftOffset = 4;
+			topOffset = 2;
 		} else {
 			leftOffset = 2;
+			topOffset = 0;
 		}
-		textRenderer.renderLayout(leftOffset,0);
+		textRenderer.renderLayout(leftOffset,topOffset);
 		textRenderer.setupVertexBuffers();
 		textChanged = false;
 		textFieldAttribsChanged = false;
 		
 		auto boxSize = textRenderer.getTextBoxSize();
 		// ... +4: Leave a bit space to the right of the background box, incl. the space on the left.
-		int rightOffset;
+		int rightOffset,bottomOffset;
 		if (hasFrame_) {
 			rightOffset = 8;
+			bottomOffset = 6;
 		} else {
 			rightOffset = 4;
+			bottomOffset = 2;
 		}
 		setSize({static_cast<int>(boxSize.width + 0.5f)+rightOffset,
-				 static_cast<int>(boxSize.height + 0.5f)});
+				 static_cast<int>(boxSize.height + 0.5f)+bottomOffset});
 		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 			<< ": Size of text box = " << boxSize.width << 'x' << boxSize.height
-			<< " at " << boxSize.right << ',' << boxSize.top);
+			<< " at " << boxSize.right << ',' << boxSize.top
+			<< ", text spacing = " << pango_layout_get_spacing(textRenderer.getPangoLayout()) / 1024.0
+			<< ", line spacing factor = " << pango_layout_get_line_spacing(textRenderer.getPangoLayout())
+			);
 	}
 }
 

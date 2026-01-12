@@ -282,22 +282,38 @@ int main(int argint,char** argv) {
 			plainFieldCtrlPtr->setSize ({100,40});
 			plainFieldCtrlPtr->setHasFrame(true);
 			plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(0,0,0.5f,1));
-			
-			auto textFieldControl = new OevControls::TextFieldControl			(
-											rootCtrlPtr,
-											renderSurfacePtr1->getRenderContextPtr(),
-											OevUtil::Uuid("04f0f49a-ec8d-11f0-a4bc-5bdf9f28664a"),
-											"PLainField1");
-			OevControls::ControlBasePtr textFieldCtrlPtr(textFieldControl);
 
-			rootCtrlPtr->addControl(textFieldCtrlPtr);
-			textFieldControl->setPosition({400,400});
-			textFieldControl->setSize ({100,40});
-			textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
-			textFieldControl->setFontSize(12);
-			textFieldControl->setText("This 流氓 is gq|J a test\nThis 流氓 is |Jgq the second line.");
-			//textFieldControl->setHasFrame(true);
-			
+			{
+				auto textFieldControl = new OevControls::TextFieldControl			(
+												rootCtrlPtr,
+												renderSurfacePtr1->getRenderContextPtr(),
+												OevUtil::Uuid("04f0f49a-ec8d-11f0-a4bc-5bdf9f28664a"),
+												"PLainField1");
+				OevControls::ControlBasePtr textFieldCtrlPtr(textFieldControl);
+	
+				rootCtrlPtr->addControl(textFieldCtrlPtr);
+				textFieldControl->setPosition({402,402});
+				textFieldControl->setSize ({100,40});
+				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
+				textFieldControl->setFontSize(20);
+				textFieldControl->setText("This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|Jgq|J the second line.");
+				textFieldControl->setHasFrame(true);
+			}
+			{
+				auto textFieldControl = new OevControls::TextFieldControl			(
+												rootCtrlPtr,
+												renderSurfacePtr1->getRenderContextPtr(),
+												OevUtil::Uuid("2cd9507e-eff8-11f0-91d0-db75aaf51cb6"),
+												"PLainField2");
+				OevControls::ControlBasePtr textFieldCtrlPtr(textFieldControl);
+
+				rootCtrlPtr->addControl(textFieldCtrlPtr);
+				textFieldControl->setPosition({502,602});
+				textFieldControl->setSize ({100,40});
+				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
+				textFieldControl->setFontSize(20);
+				textFieldControl->setText("This 流氓ชั่วq is gq|J|Jgq a test\nThis 流氓ชั่วที่ is gq|Jgq|J the second line.");
+			}
 			rootCtrlPtr->setupVertexBuffers();
 		}
 
@@ -346,16 +362,16 @@ int main(int argint,char** argv) {
 
 			glTextRend.draw(textUniforms);
 
-			{
-				auto rootCtrlPtr = renderSurfacePtr1->getRootControlPtr().lock();
-				rootCtrlPtr->draw();
-			}
-
 			arc1.setArcRange(objectRotationAngle / 2.0f - 90.0_deg);
 			arc1.draw(arc1Uniforms);
 
 			ring1.draw(circ1Uniforms);
 			circ1.draw(circ1Uniforms);
+
+			{
+				auto rootCtrlPtr = renderSurfacePtr1->getRootControlPtr().lock();
+				rootCtrlPtr->draw();
+			}
 
 			// sleep(3);
 
