@@ -103,6 +103,20 @@ public:
 		return *textColorPtr.get();
 	}
 
+	/// \see widthIsFixed_
+	bool widthIsFixed() {return widthIsFixed_;}
+	/// \see widthIsFixed_
+	void setWidthIsFixed(bool fixedWidth = true) {
+		widthIsFixed_ = fixedWidth;
+	}
+	
+	/// \see heightIsFixed_
+	bool heightIsFixed() {return heightIsFixed_;}
+	void setHeightIsFixed(bool fixedHeight = true) {
+		heightIsFixed_ = fixedHeight;
+	}
+
+
 	/** \brief Set the font name or list of font names to choose from
 	 *
 	 * The default is being set from the \p fontNameList in \ref renderContextPtr.
@@ -154,9 +168,28 @@ private:
 	 */
 	bool textFieldAttribsChanged = true;
 	
-	/** \brief Set when */
 	bool textChanged = true;
+
+	/** \brief The text control's width is set externally and fixed
+	 *
+	 * If \p true the width of the control is being set by \ref setSize() becomes fixed.
+	 * The text will be squeezed within this width, creating line breaks when necessary.
+	 *
+	 * If \p false the size setting is being ignored. Instead the width is set by the size required to
+	 * render the text as being set. When calling \ref setupVertexBuffers() the control is automatically re-sized.
+	 */
+	bool widthIsFixed_ = false;
 	
+	/** \brief The text control's height is set externally and fixed
+	 *
+	 * If \p true the height of the control is being set by \ref setSize() becomes fixed.
+	 * When the text does not fit within the height the text is truncated and ellipsized.
+	 *
+	 * If \p false the size setting is being ignored. Instead the height is set by the size required to
+	 * render the text. When calling \ref setupVertexBuffers() the control is automatically re-sized.
+	 * If \ref widthIsFixed_ is true the text will extend further downward.
+	 */
+	bool heightIsFixed_ = false;
 
 	/** 
 	 * The text foreground color points by default to renderContextPtr->textForegroundColorPtr.

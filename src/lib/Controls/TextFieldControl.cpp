@@ -105,7 +105,6 @@ void TextFieldControl::setupVertexBuffers () {
 		textFieldAttribsChanged = false;
 		
 		auto boxSize = textRenderer.getTextBoxSize();
-		// ... +4: Leave a bit space to the right of the background box, incl. the space on the left.
 		int rightOffset,bottomOffset;
 		if (hasFrame_) {
 			rightOffset = 8;
