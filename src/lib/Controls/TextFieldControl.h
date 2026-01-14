@@ -108,12 +108,14 @@ public:
 	/// \see widthIsFixed_
 	void setWidthIsFixed(bool fixedWidth = true) {
 		widthIsFixed_ = fixedWidth;
+		textFieldAttribsChanged = true;
 	}
 	
 	/// \see heightIsFixed_
 	bool heightIsFixed() {return heightIsFixed_;}
 	void setHeightIsFixed(bool fixedHeight = true) {
 		heightIsFixed_ = fixedHeight;
+		textFieldAttribsChanged = true;
 	}
 
 
