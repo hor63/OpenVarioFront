@@ -195,8 +195,14 @@ public:
 	void setWidth (int width) {
 		setWidthSubpixel(width * PANGO_SCALE);
 	}
-	
+
 	void setWidthSubpixel(int width);
+
+	void setHeight (int height) {
+		setHeightSubpixel(height * PANGO_SCALE);
+	}
+
+	void setHeightSubpixel(int height);
 
 	PangoLayout* getPangoLayout() {
 		return pangoLayout;

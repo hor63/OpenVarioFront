@@ -572,6 +572,10 @@ void GLTextRenderer::setWidthSubpixel(int width) {
 	pango_layout_set_width(pangoLayout, width);
 }
 
+void GLTextRenderer::setHeightSubpixel(int height) {
+	pango_layout_set_height(pangoLayout, height);
+}
+
 void GLTextRenderer::setupVertexBuffers () {
 	setupVertexBuffersGlyphs ();
 
