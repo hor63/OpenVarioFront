@@ -27,6 +27,7 @@
 
 #include "ControlBase.h"
 #include "GLES/SDL/SDLRenderSurface.h"
+#include "SDL3/SDL_stdinc.h"
 #include <GLES2/gl2.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -279,7 +280,7 @@ int main(int argint,char** argv) {
 			rootCtrlPtr->addControl(plainFieldCtrlPtr);
 			
 			plainFieldCtrlPtr->setPosition({400,500});
-			plainFieldCtrlPtr->setSize ({100,40});
+			plainFieldCtrlPtr->setSize ({300,40});
 			plainFieldCtrlPtr->setHasFrame(true);
 			plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(0,0,0.5f,1));
 
@@ -293,11 +294,12 @@ int main(int argint,char** argv) {
 	
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
 				textFieldControl->setPosition({402,402});
-				textFieldControl->setSize ({100,40});
+				textFieldControl->setSize ({250,40});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				textFieldControl->setFontSize(20);
 				textFieldControl->setText("This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|Jgq|J the second line.");
-				textFieldControl->setHasFrame(true);
+				textFieldControl->setWidthIsFixed();
+				// textFieldControl->setHasFrame(true);
 			}
 			{
 				auto textFieldControl = new OevControls::TextFieldControl			(
@@ -309,10 +311,13 @@ int main(int argint,char** argv) {
 
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
 				textFieldControl->setPosition({502,602});
-				textFieldControl->setSize ({100,40});
+				textFieldControl->setSize ({200,90});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
-				textFieldControl->setFontSize(20);
+				textFieldControl->setFontSize(15);
 				textFieldControl->setText("This 流氓ชั่วq is gq|J|Jgq a test\nThis 流氓ชั่วที่ is gq|Jgq|J the second line.");
+				textFieldControl->setWidthIsFixed();
+				textFieldControl->setHeightIsFixed();
+				// textFieldControl->setHasFrame(true);
 			}
 			rootCtrlPtr->setupVertexBuffers();
 		}

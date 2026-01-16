@@ -5,7 +5,7 @@
  *      Author: hor
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
- *   Copyright (C) 2018  Kai Horstmann
+ *   Copyright (C) 2026  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include <log4cxx/logger.h>
 #ifdef HAVE_CONFIG_H
  #  include <config.h>
  #endif
@@ -83,6 +82,20 @@ void TextFieldControl::setupVertexBuffers () {
 		textRenderer.setFonts(*fontListPtr);
 		textRenderer.setTextColor(*textColorPtr.get());
 		pango_layout_set_line_spacing (textRenderer.getPangoLayout(),1.0f);
+
+		if (widthIsFixed_) {
+			textRenderer.setWidth(getWidth());
+		} else {
+			textRenderer.setWidthSubpixel(-1);
+		}
+
+		if (heightIsFixed_) {
+			textRenderer.setHeight(getHeight());
+			pango_layout_set_ellipsize (textRenderer.getPangoLayout(),PANGO_ELLIPSIZE_END);
+		} else {
+			textRenderer.setHeightSubpixel(-1);
+		}
+		
 	}
 
 	if (textChanged) {
@@ -113,6 +126,20 @@ void TextFieldControl::setupVertexBuffers () {
 			rightOffset = 4;
 			bottomOffset = 2;
 		}
+
+		// Set the height and/or width to the manually set sizes when the text box is smaller.
+		// When the text box is larger leave that size in order to provide a background for the entire text.
+		// Particularly when you set the height small, Pango will always render at least one line. The height of
+		// that rendered text will surely be higher than the previously set height.		
+		if (widthIsFixed_ &&
+			(boxSize.width + rightOffset < getWidth())) {
+				boxSize.width = getWidth() - rightOffset;
+		}
+		if (heightIsFixed_ &&
+			(boxSize.height + bottomOffset < getHeight())) {
+				boxSize.height = getHeight() - rightOffset;
+		}
+		
 		setSize({static_cast<int>(boxSize.width + 0.5f)+rightOffset,
 				 static_cast<int>(boxSize.height + 0.5f)+bottomOffset});
 		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__

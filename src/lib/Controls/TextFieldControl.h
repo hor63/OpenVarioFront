@@ -5,7 +5,7 @@
  *      Author: hor
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
- *   Copyright (C) 2018  Kai Horstmann
+ *   Copyright (C) 2026  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
