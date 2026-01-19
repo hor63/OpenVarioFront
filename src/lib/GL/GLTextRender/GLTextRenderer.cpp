@@ -116,7 +116,7 @@ static void pango_gl_text_renderer_draw_trapezoid (PangoRenderer    *renderer,
 					       double            x12,
 					       double            x22){
 
-	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": part = " << static_cast<int>(part)
+	LOG4CXX_INFO(logger,__FUNCTION__ << ": part = " << static_cast<int>(part)
 			<< ", y1  = " << y1
 			<< ", x11 = " << x11
 			<< ", x21 = " << x21

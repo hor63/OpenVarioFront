@@ -29,6 +29,7 @@
 #include "GLES/SDL/SDLRenderSurface.h"
 #include "SDL3/SDL_stdinc.h"
 #include <GLES2/gl2.h>
+#include <string>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -191,18 +192,18 @@ int main(int argint,char** argv) {
 //		glTextRend.setFonts("Noto Sans");
 		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Serif Thai, Noto Sans Bengali, Noto Sans CJK SC");
 //		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
-		glTextRend.setText(
-				  "0123456789||0ABCDEFGHIJK"
-				"\n一个对此心怀恶意的流氓"
-				"\nคนชั่วที่คิดชั่วกับเรื่องนี้"
-				"\nএকজন দুর্বৃত্ত যে এটাকে"
-				"\n খারাপ মনে করে"
-				"\nمحتال يعتقد الشر في هذا"
-				"\nLMNOPQRSTUVWXAYaZabcdefg"
-				"\nhijklmnopqrstuvwxzy!@#"
-				"\n$%^&*()_+<>[]{};'.\\\\//.\\:\"|"
-				"\n,./?€üöäÜÖÄ"
-				"\níéóúêîôû^'´`îêôû°ß-="
+
+		std::string const str {"0123456789||0ABCDEFGHIJK"
+"\n一个对此心怀恶意的流氓"
+"\nคนชั่วที่คิดชั่วกับเรื่องนี้"
+"\nএকজন দুর্বৃত্ত যে এটাকে"
+"\n খারাপ মনে করে"
+"\nمحتال يعتقد الشر في هذا"
+"\nLMNOPQRSTUVWXAYaZabcdefg e<sup>x</sup>"
+"\nhijk<i>lmnopq</i>rstuvwxzy!@#"
+"\n$%^*()_+&lt;&gt;[]{}&amp;'.\\\\//.\\:\"|"
+"\n,./?€üöäÜÖÄ"
+"\níéóúêîôû^'´`îêôû°ß-="};
 
 /*
 				"\nLMNOPQRSTUV"
@@ -215,7 +216,28 @@ int main(int argint,char** argv) {
 				"\níéóúêîôû^'´`"
 				"îêôû°ß-="
 */
-				);
+
+        PangoAttrList* attrList = nullptr;
+		char* parsedString = nullptr;
+		gunichar accel_char = 0;
+		GError* parseError = nullptr;
+
+		gboolean parseRc =
+			pango_parse_markup(str.c_str(), -1, '^',
+							   &attrList, &parsedString,
+							   &accel_char, &parseError);
+
+		if (!parseRc) {
+			std::cerr << "pango_parse_markup returned false. "
+			<< " Error is " << parseError->code << ": " << parseError->message
+			<< "\nFini" << std::endl;
+			return 1; 
+		}
+		
+		std::string strParsedString {parsedString};
+		free(parsedString);
+		glTextRend.setText(strParsedString);
+		pango_layout_set_attributes( glTextRend.getPangoLayout(),attrList);
 
 		glTextRend.renderLayout();
 		// glTextGlobPtr->getFontCache().exportTextureBitmaps();
