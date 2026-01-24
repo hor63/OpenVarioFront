@@ -25,6 +25,7 @@
  *
  */
 #include "GLES/GLObjectWrappers.h"
+#include "pango/pango-attributes.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -57,7 +58,6 @@ G_BEGIN_DECLS
 
 typedef struct _PangoGLTextRendererClass PangoGLTextRendererClass;
 
-
 typedef struct _PangoGLTextRendererPrivate PangoGLTextRendererPrivate;
 
 struct _PangoGLTextRenderer
@@ -70,6 +70,9 @@ struct _PangoGLTextRenderer
 struct _PangoGLTextRendererClass
 {
   PangoRendererClass parent_class;
+
+  void (*draw_glyph_item_parent)(PangoRenderer *renderer, const char *text,
+								 PangoGlyphItem *glyph_item, int x, int y);
 };
 
 static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* rendererObj);
@@ -89,6 +92,48 @@ struct _PangoGLTextRendererPrivate {
 G_DEFINE_TYPE_WITH_PRIVATE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_TYPE_RENDERER)
 
 #define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
+
+static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
+							 PangoGlyphItem *glyphItem, int x, int y) {
+	auto rendererClass = PANGO_GL_TEXT_RENDERER_GET_CLASS(renderer);
+
+	LOG4CXX_INFO (logger, __PRETTY_FUNCTION__
+		<< ": numGlyphs = " << glyphItem->glyphs->num_glyphs
+		<< ", length = " << glyphItem->item->length
+		<< ", numChars = " << glyphItem->item->num_chars
+		<< ", offset = " << glyphItem->item->offset
+	);
+	for (auto attrListItem = glyphItem->item->analysis.extra_attrs; attrListItem != nullptr;attrListItem = attrListItem->next) {
+		PangoAttribute *attr = reinterpret_cast<PangoAttribute *>(attrListItem->data);
+		
+		
+		LOG4CXX_INFO (logger,
+			"\t attribute type = " << attr->klass->type
+			<< ", start index = " << attr->start_index
+			<< ", end index = " << attr->end_index
+		);
+
+		switch (attr->klass->type) {
+			case PANGO_ATTR_FOREGROUND:
+			{
+				PangoAttrColor *color = reinterpret_cast<PangoAttrColor *>(attr);
+				LOG4CXX_INFO (logger,
+					   "\tForground color = " 
+					<< color->color.red << ','
+					<< color->color.green << ','
+					<< color->color.blue
+				);
+			}
+				break;
+			default:
+				break;
+		}
+
+	}
+
+	rendererClass->draw_glyph_item_parent (renderer, text,
+								glyphItem, x, y);
+}
 
 static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
 					       PangoFont        *font,
@@ -150,8 +195,12 @@ pango_gl_text_renderer_class_init (PangoGLTextRendererClass *klass) {
 
 	PangoRendererClass *renderer_class = PANGO_RENDERER_CLASS (klass);
 
+	klass->draw_glyph_item_parent = renderer_class->draw_glyph_item;
+	
 	renderer_class->draw_glyph = pango_gl_text_renderer_draw_glyph;
 	renderer_class->draw_trapezoid = pango_gl_text_renderer_draw_trapezoid;
+	renderer_class->draw_glyph_item = pango_gl_draw_glyph_item;
+	
 
 }
 

@@ -200,7 +200,7 @@ int main(int argint,char** argv) {
 "\n খারাপ মনে করে"
 "\nمحتال يعتقد الشر في هذا"
 "\nLMNOPQRSTUVWXAYaZabcdefg e<sup>x</sup>"
-"\nhijk<i>lmnopq</i>rstuvwxzy!@#"
+"\nhijk<i>lmn<span foreground=\"blue\">opq</span></i>rstuvwxzy!@#"
 "\n$%^*()_+&lt;&gt;[]{}&amp;'.\\\\//.\\:\"|"
 "\n,./?€üöäÜÖÄ"
 "\níéóúêîôû^'´`îêôû°ß-="};
