@@ -144,7 +144,7 @@ static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
 	if (PANGO_IS_GL_TEXT_RENDERER(renderer)) {
 		PangoGLTextRenderer* pangoGLTextRenderer = PANGO_GL_TEXT_RENDERER(renderer);
 
-		pangoGLTextRenderer->priv->glTextRender->draw_glyph(
+		pangoGLTextRenderer->priv->glTextRender->drawGlyph(
 				font,
 				glyph,
 				x,y);
@@ -170,6 +170,12 @@ static void pango_gl_text_renderer_draw_trapezoid (PangoRenderer    *renderer,
 			<< ", x22 = " << x22
 			);
 
+	if (PANGO_IS_GL_TEXT_RENDERER(renderer)) {
+		PangoGLTextRenderer* pangoGLTextRenderer = PANGO_GL_TEXT_RENDERER(renderer);
+
+		pangoGLTextRenderer->priv->glTextRender->drawTrapzoid(
+			part, y1, x11, x21, y2, x12, x22);
+	}
 }
 
 
@@ -443,7 +449,7 @@ void GLTextRenderer::renderLayoutSubpixel(int x, int y, RenderMode renderMode) {
 
 }
 
-void GLTextRenderer::draw_glyph (
+void GLTextRenderer::drawGlyph (
 			PangoFont        *font,
 			PangoGlyph        glyph,
 			double            x,
@@ -464,7 +470,7 @@ void GLTextRenderer::draw_glyph (
 		auto glyphInfo = previousFontCacheItem->getGlyphInfo(glyph);
 		if (glyphInfo.renderGlyph) {
 			LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-					<< "Texture position of glyph " << glyph << " = "
+					<< ": Texture position of glyph " << glyph << " = "
 					<< glyphInfo.texturePosition.xLeft << 'x'
 					<< glyphInfo.texturePosition.yBottom << ' '
 					<< glyphInfo.texturePosition.xRight << 'x'
@@ -584,7 +590,10 @@ void GLTextRenderer::draw_glyph (
 						<< textureIter->second.vertexVector.capacity()
 						<< ", number elements = "
 						<< textureIter->second.vertexVector.size());
+			} else { // if (renderMode == RENDER_GLYPHS)
+				LOG4CXX_DEBUG(logger, "\tNo visible output intended. Just glyph caching");
 			}
+						
 
 		} else { // if (glyphInfo.renderGlyph)
 			LOG4CXX_DEBUG(logger, "\tGlyph " << glyph << " is invisible.");
@@ -595,6 +604,90 @@ void GLTextRenderer::draw_glyph (
 	}
 
 }
+
+void GLTextRenderer::drawTrapzoid(
+			PangoRenderPart   part,
+			double            y1,
+			double            x11,
+			double            x21,
+			double            y2,
+			double            x12,
+			double            x22
+		) {
+			
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+			<< "part = " << part
+			<< "y1   = " << y1 
+			<< "x11  = " << x11 
+			<< "x21  = " << x21 
+			<< "y1   = " << y1 
+			<< "x12  = " << x12 
+			<< "x22  = " << x22 
+			);
+
+	if (renderMode == RENDER_GLYPHS) {
+
+        // The coordinates are as follows:
+		// y1    x11-----x12
+		//  ^      /    /
+		//  |     /    /
+        // y2 x21/----/x22
+		textureIter->second.vertexVector.push_back(GlGlyphVertexStruct {
+			.tri1TopLeft = GlGlyphCornerVertexStruct {
+					.vertexPosition = {left,top,0.0f,1.0f},
+					.texturePosition = {
+						glyphInfo.texturePositionNormalized.xLeft,
+						glyphInfo.texturePositionNormalized.yTop
+					}
+			},
+			.tri1BottomLeft = GlGlyphCornerVertexStruct {
+				.vertexPosition = {left,bottom,0.0f,1.0f},
+				.texturePosition = {
+					glyphInfo.texturePositionNormalized.xLeft,
+					glyphInfo.texturePositionNormalized.yBottom
+				}
+			},
+			.tri1BottomRight = GlGlyphCornerVertexStruct {
+				.vertexPosition = {right,bottom,0.0f,1.0f},
+				.texturePosition = {
+					glyphInfo.texturePositionNormalized.xRight,
+					glyphInfo.texturePositionNormalized.yBottom
+				}
+			},
+			.tri2TopLeft = GlGlyphCornerVertexStruct {
+				.vertexPosition = {left,top,0.0f,1.0f},
+				.texturePosition = {
+					glyphInfo.texturePositionNormalized.xLeft,
+					glyphInfo.texturePositionNormalized.yTop
+				}
+			},
+			.tri2BottomRight = GlGlyphCornerVertexStruct {
+				.vertexPosition = {right,bottom,0.0f,1.0f},
+				.texturePosition = {
+					glyphInfo.texturePositionNormalized.xRight,
+					glyphInfo.texturePositionNormalized.yBottom
+				}
+			},
+			.tri2TopRight = GlGlyphCornerVertexStruct {
+				.vertexPosition = {right,top,0.0f,1.0f},
+				.texturePosition = {
+					glyphInfo.texturePositionNormalized.xRight,
+					glyphInfo.texturePositionNormalized.yTop
+				}
+			}
+		});
+		textureIter->second.numVertexes += 6;
+
+		LOG4CXX_DEBUG(logger,"vertexVector capacity = "
+				<< textureIter->second.vertexVector.capacity()
+				<< ", number elements = "
+				<< textureIter->second.vertexVector.size());
+	} else { // if (renderMode == RENDER_GLYPHS)
+		LOG4CXX_DEBUG(logger, "\tNo visible output intended. Just glyph caching");
+	}
+}
+
 
 void GLTextRenderer::setFontSize(double sizePoints) {
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": sizePoints = " << sizePoints);

@@ -77,10 +77,12 @@ public:
 	static constexpr size_t vertextPositionArrayLen = 4;
 	static constexpr size_t texturePositionArrayLen = 2;
 
+	using SingleVertexArr = GLfloat[vertextPositionArrayLen];
+	
 	/// \brief vertex buffer structure of one vertex of a glyph box
 	struct GlGlyphCornerVertexStruct {
-		GLfloat vertexPosition [vertextPositionArrayLen];
-		GLfloat texturePosition [texturePositionArrayLen];
+		SingleVertexArr vertexPosition;
+		SingleVertexArr texturePosition;
 	};
 
 	/** \brief vertex buffer structure of a glyph box with two triangles
@@ -97,22 +99,22 @@ public:
 	 *
 	 * 	This forms two triangles with vertexes in counter-clock oder.
 	 */
-	struct GlGlyphVertexStruct {
-		GlGlyphCornerVertexStruct tri1TopLeft;
-		GlGlyphCornerVertexStruct tri1BottomLeft;
-		GlGlyphCornerVertexStruct tri1BottomRight;
-		GlGlyphCornerVertexStruct tri2TopLeft;
-		GlGlyphCornerVertexStruct tri2BottomRight;
-		GlGlyphCornerVertexStruct tri2TopRight;
-	};
+	 struct GlGlyphVertexStruct {
+	 	GlGlyphCornerVertexStruct tri1TopLeft;
+	 	GlGlyphCornerVertexStruct tri1BottomLeft;
+	 	GlGlyphCornerVertexStruct tri1BottomRight;
+	 	GlGlyphCornerVertexStruct tri2TopLeft;
+	 	GlGlyphCornerVertexStruct tri2BottomRight;
+	 	GlGlyphCornerVertexStruct tri2TopRight;
+	 };
 
 	struct GlRectVertextStruct {
-		GLfloat tri1TopLeft [vertextPositionArrayLen];
-		GLfloat tri1BottomLeft [vertextPositionArrayLen];
-		GLfloat tri1BottomRight [vertextPositionArrayLen];
-		GLfloat tri2TopLeft [vertextPositionArrayLen];
-		GLfloat tri2BottomRight [vertextPositionArrayLen];
-		GLfloat tri2TopRight [vertextPositionArrayLen];
+		SingleVertexArr tri1TopLeft;
+		SingleVertexArr tri1BottomLeft;
+		SingleVertexArr tri1BottomRight;
+		SingleVertexArr tri2TopLeft;
+		SingleVertexArr tri2BottomRight;
+		SingleVertexArr tri2TopRight;
 	};
 
 	struct GlRectSizeStruct {
@@ -163,6 +165,43 @@ public:
 	
 	};
 
+
+	class VertexBufferForTrapezoids {
+	public:
+		std::vector<GlRectVertextStruct> vertexVector;
+
+		GLBufferObject vertexBufferHandle;
+		GLVertexArrayObject vertexArrayHandle;
+
+		/// 3 vertexes per triangle, 6 vertexes per trapezoid
+		GLsizei numVertexes;
+
+		VertexBufferForTrapezoids() = delete;
+
+		VertexBufferForTrapezoids(
+			RenderContextSharedPtr const &contextPtr,
+			size_t vectorReserveSize)
+		: context{contextPtr},
+		  vertexBufferHandle{false},
+		  numVertexes{0}
+		{
+			vertexVector.reserve(vectorReserveSize);
+		}
+
+		VertexBufferForTrapezoids(VertexBufferForTrapezoids const& source) = delete;
+
+		VertexBufferForTrapezoids(VertexBufferForTrapezoids&& source) = default;
+
+		VertexBufferForTrapezoids& operator = (VertexBufferForTrapezoids const& source) = delete;
+		VertexBufferForTrapezoids& operator = (VertexBufferForTrapezoids&& source) = delete;
+		
+		~VertexBufferForTrapezoids();
+
+	private:
+
+		RenderContextSharedPtr context;
+
+	};
 
 	GLTextRenderer(
 		RenderContextSharedPtr const &context);
@@ -261,11 +300,10 @@ public:
 	 *
 	 *  \see [Pango.Renderer.draw_glyph](https://docs.gtk.org/Pango/vfunc.Renderer.draw_glyph.html)
 	 */
-	void draw_glyph (
-			PangoFont           *font,
-			PangoGlyph          glyph,
-			double              x,
-			double              y);
+	void drawGlyph(PangoFont *font, PangoGlyph glyph, double x, double y);
+
+	void drawTrapzoid(PangoRenderPart part, double y1, double x11, double x21,
+					  double y2, double x12, double x22);
 
 	/// \see RendererBase::setupVertexBuffers()
 	virtual void setupVertexBuffers () override;
@@ -336,7 +374,11 @@ private:
 	GlRectVertextStruct textBackgroundRectVertexes;
 	GlRectSizeStruct textBoxSize;
 
+	/// \brief Map of vertex buffers, one per glyph texture
 	std::unordered_map<GLuint,VertexBufferPerTexture> vertextBufferPerTextureMap;
+	
+	/// \brief Map of vertex buffers, one per \p PangoRenderPart
+	std::unordered_map<PangoRenderPart,VertexBufferForTrapezoids> vertexBufferTrapezoidsPerPart;  
 
 	void drawGlyphs (OevGLES::Mat4 const &MVPMatrix);
 	void drawTextBoxBackground (
