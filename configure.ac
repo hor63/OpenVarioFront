@@ -237,7 +237,9 @@ then
 	    -DCMAKE_INSTALL_LIBDIR="$pkg_config_libdir" \
 	    -DCMAKE_INSTALL_PREFIX="$pkg_config_prefix" \
 	    -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-	    -DCMAKE_LD_FLAGS="$LDFLAGS" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS"
+	    -DCMAKE_LD_FLAGS="$LDFLAGS" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" \
+	    -DCMAKE_C_FLAGS="$CFLAGS -O2 -g3" -DCMAKE_CXX_FLAGS="$CXXFLAGS -O2 -g3" \
+	    -DCMAKE_LD_FLAGS="$LDFLAGS -O2 -g3" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS -O2 -g3"
 	    
 	make -j4 -C ./3rdParty/SDL
 	make -j4 -C ./3rdParty/SDL install
@@ -261,8 +263,8 @@ then
 	CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
 	   -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
 	   -Ddefault_library=shared \
-	   -Doptimization=g -Ddebug=true \
-	   -Dharfbuzz:default_library=both \
+	   -Doptimization=2 -Ddebug=true \
+	   -Dharfbuzz:default_library=shared \
 	   -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
 	   -Dbuild-testsuite=false -Dbuild-examples=false \
 	   -Dprefix="$pkg_config_prefix" \
@@ -337,7 +339,7 @@ CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdPart
    -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
    -Ddefault_library=shared \
    -Doptimization=2 -Ddebug=true \
-   -Dharfbuzz:default_library=both \
+   -Dharfbuzz:default_library=shared \
    -Dharfbuzz:cairo=disabled -Dharfbuzz:freetype=enabled \
    -Dbuild-testsuite=false -Dbuild-examples=false \
    -Dprefix="$pkg_config_prefix" \
