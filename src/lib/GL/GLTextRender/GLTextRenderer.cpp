@@ -45,7 +45,25 @@
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
+std::size_t std::hash<OevGLES::VertexBufferKey>::operator()(
+	const OevGLES::VertexBufferKey &k) const noexcept {
 
+	if (k.hashValue == AllOnesSizeT){
+	
+		k.hashValue = k.textureHandle << 8;
+		if (k.sharedDefaultColor) {
+			k.hashValue ^= reinterpret_cast<std::size_t>(k.sharedDefaultColor.get());
+		} else {
+			k.hashValue ^= 
+			static_cast<std::size_t>(k.staticColor(0) * 255.0f) ^
+			(static_cast<std::size_t>(k.staticColor(1) * 255.0f) << 4) ^
+			(static_cast<std::size_t>(k.staticColor(2) * 255.0f) << 8) ^
+			(static_cast<std::size_t>(k.staticColor(3) * 255.0f) << 12);
+		}
+	}
+		
+	return k.hashValue;
+}
 
 namespace OevGLES {
 
@@ -877,7 +895,7 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 			glUniformMatrix4fv(glGlyphProgram->getUnMvpMatrixLocation(), 1,
 							   GL_FALSE, &(MVPMatrix(0, 0)));
 			glUniform4fv(glGlyphProgram->getUnFragColorLocation(), 1,
-						 &textColor(0));
+						 &textColorPtr(0));
 			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(
 				GL_TEXTURE1, 1, glGlyphProgram->getUnTexture0Location());
 
@@ -949,7 +967,7 @@ void GLTextRenderer::drawTextBoxBackground (
 
 	// set the color attribute constant
 	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexColorLocation());
-	glVertexAttrib4fv(glTextBackgroundProgram->getVertexColorLocation(),&backgroundColor(0));
+	glVertexAttrib4fv(glTextBackgroundProgram->getVertexColorLocation(),&backgroundColorPtr(0));
 
 	// The normal is the same value for all vertexes
 	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexNormalLocation());
@@ -976,7 +994,7 @@ void GLTextRenderer::drawTextBoxBackground (
 
 	// Draw in transparent mode when the Alpha value is not totally opaque.
 	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
-	if (backgroundColor(3) < 1.0f) {
+	if (backgroundColorPtr(3) < 1.0f) {
 		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
 	}
 

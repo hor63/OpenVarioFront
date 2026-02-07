@@ -29,7 +29,9 @@
 #define GLTEXTRENDER_GLTEXTRENDERER_H_
 
 #include <GLES2/gl2.h>
+#include <cstddef>
 #include <string>
+#include <utility>
 #include <vector>
 #include <unordered_map>
 
@@ -38,6 +40,7 @@
 #include "GLTextGlobals.h"
 #include "GLPrograms/GLProgTextTexture.h"
 #include "GLPrograms/GLProgDiffuseLight.h"
+#include "Renderers/RenderContext.h"
 #include "Renderers/RendererBase.h"
 #include "pango/pango-types.h"
 
@@ -48,8 +51,59 @@ extern "C" {
 typedef struct _PangoGLTextRenderer PangoGLTextRenderer;
 }
 
-namespace OevGLES {
+/// \brief Used for sensible shift values to calculate hashes
+static constexpr int NumBitsSizeT = sizeof(size_t) * 8;
+static constexpr std::size_t AllOnesSizeT = ~static_cast<size_t>(0U);
 
+namespace OevGLES {
+	
+struct VertexBufferKey {
+
+	/** \brief Color explicitly set, e.g. by attributed text with markups 
+	 *
+	 * The \p staticColor is used when \ref sharedDefaultColor is empty. 
+	 */
+	Vec4 staticColor = {1.0f,1.0f,1.0f,1.0f};
+
+	/**
+	 * A shared color from the \ref RenderContext.
+	 * When it is not empty it takes precedence over \ref staticColor  
+	 */		
+	Vec4ShPtr sharedDefaultColor;
+	
+	/**
+	 * \brief The raw GL handle of the texture holding the glyph images  
+	 */
+	 GLuint textureHandle = 0U;
+
+	 /** \brief The hash value of this key
+	  *
+	  * The hash value is cached because it not trivial to compute.
+	  * A value with all bits set should(tm) never be result of the hash calculation
+	  */		 
+	 mutable std::size_t hashValue = AllOnesSizeT;
+	 
+	 bool operator == (VertexBufferKey const & comp) const noexcept {
+		if (!sharedDefaultColor) {
+			return textureHandle == comp.textureHandle &&
+				staticColor == comp.staticColor; 
+		}
+		
+		return textureHandle == comp.textureHandle && 
+			sharedDefaultColor.get() == comp.sharedDefaultColor.get();
+		
+	 }
+}; // struct VertexBufferKey
+
+} // namespace OevGLES
+
+template <>
+struct std::hash<OevGLES::VertexBufferKey>{
+	std::size_t operator()(const OevGLES::VertexBufferKey& k) const noexcept;
+};
+
+namespace OevGLES {
+	
 class GLTextRenderer: public RendererBase  {
 public:
 	enum RenderMode {
@@ -74,8 +128,8 @@ public:
 								 */
 	};
 
-	static constexpr size_t vertextPositionArrayLen = 4;
-	static constexpr size_t texturePositionArrayLen = 2;
+	static constexpr std::size_t vertextPositionArrayLen = 4;
+	static constexpr std::size_t texturePositionArrayLen = 2;
 
 	using SingleVertexArr = GLfloat[vertextPositionArrayLen];
 	
@@ -141,7 +195,7 @@ public:
 		VertexBufferPerTexture(
 			RenderContextSharedPtr const &contextPtr,
 			GLTextFontTexture& fontTexture,
-			size_t vectorReserveSize)
+			std::size_t vectorReserveSize)
 		: context{contextPtr},
 		  fontTexture{fontTexture},
 		  vertexBufferHandle{false},
@@ -158,13 +212,11 @@ public:
 		VertexBufferPerTexture& operator = (VertexBufferPerTexture&& source) = delete;
 		
 		~VertexBufferPerTexture();
-
 	private:
 	
 		RenderContextSharedPtr context;
 	
-	};
-
+	}; // class VertexBufferPerTexture
 
 	class VertexBufferForTrapezoids {
 	public:
@@ -180,7 +232,7 @@ public:
 
 		VertexBufferForTrapezoids(
 			RenderContextSharedPtr const &contextPtr,
-			size_t vectorReserveSize)
+			std::size_t vectorReserveSize)
 		: context{contextPtr},
 		  vertexBufferHandle{false},
 		  numVertexes{0}
@@ -201,8 +253,8 @@ public:
 
 		RenderContextSharedPtr context;
 
-	};
-
+	}; // class VertexBufferForTrapezoids
+	
 	GLTextRenderer(
 		RenderContextSharedPtr const &context);
 	virtual ~GLTextRenderer();
@@ -231,16 +283,20 @@ public:
 		return fonts;
 	}
 
+	/// \brief Set the text box width in screen pixels
 	void setWidth (int width) {
 		setWidthSubpixel(width * PANGO_SCALE);
 	}
 
+	/// \brief Set the text width in Pango scale (1/1024 pixel)
 	void setWidthSubpixel(int width);
 
+	/// \brief Set the text box height in screen pixels
 	void setHeight (int height) {
 		setHeightSubpixel(height * PANGO_SCALE);
 	}
 
+	/// \brief Set the text width in Pango scale (1/1024 pixel)
 	void setHeightSubpixel(int height);
 
 	PangoLayout* getPangoLayout() {
@@ -321,20 +377,20 @@ public:
 		this->drawBackground = drawBackground;
 	}
 
-	const OevGLES::Vec4& getTextColor() const {
-		return textColor;
+	const Vec4ShPtr& getTextColor() const {
+		return textColorPtr;
 	}
 
-	void setTextColor(OevGLES::Vec4 const &textColor) {
-		this->textColor = textColor;
+	void setTextColor(Vec4ShPtr const &textColor) {
+		this->textColorPtr = textColor;
 	}
 
-	const OevGLES::Vec4& getBackgroundColor() const {
-		return backgroundColor;
+	const Vec4ShPtr& getBackgroundColor() const {
+		return backgroundColorPtr;
 	}
 
-	void setBackgroundColor(OevGLES::Vec4 const &backgroundColor) {
-		this->backgroundColor = backgroundColor;
+	void setBackgroundColor(Vec4ShPtr const &backgroundColor) {
+		this->backgroundColorPtr = backgroundColor;
 	}
 
 private:
@@ -363,9 +419,9 @@ private:
 	///
 	/// Is being set each time in \ref renderLayoutSubpixel()
 	gint vertexVectorReserveSize = 1;
-
-	OevGLES::Vec4 textColor = {1.0f,1.0f,1.0f,1.0f};
-	OevGLES::Vec4 backgroundColor = {0.0f,0.0f,0.0f,1.0f};
+	
+	Vec4ShPtr textColorPtr = std::make_shared<Vec4>(Vec4{1.0f,1.0f,1.0f,1.0f});
+	Vec4ShPtr backgroundColorPtr = std::make_shared<Vec4>(Vec4{0.0f,0.0f,0.0f,1.0f});
 	bool drawBackground = true;
 
 	/// \brief The rectangle which encloses the text box as drawn.
@@ -374,19 +430,30 @@ private:
 	GlRectVertextStruct textBackgroundRectVertexes;
 	GlRectSizeStruct textBoxSize;
 
-	/// \brief Map of vertex buffers, one per glyph texture
-	std::unordered_map<GLuint,VertexBufferPerTexture> vertextBufferPerTextureMap;
-	
-	/// \brief Map of vertex buffers, one per \p PangoRenderPart
-	std::unordered_map<PangoRenderPart,VertexBufferForTrapezoids> vertexBufferTrapezoidsPerPart;  
+	VertexBufferKey vertexBufferPerTextureColorKey;
 
-	void drawGlyphs (OevGLES::Mat4 const &MVPMatrix);
+	/** \brief Map of vertex buffers, one per glyph texture
+	 *
+	 * Key is the glyph texture handle which contains the image of a glyph plus the color
+	 * in which the glyphs are to be rendered.
+	 */
+	std::unordered_map<VertexBufferKey,VertexBufferPerTexture> vertextBufferPerTextureMap;
+
+	VertexBufferKey vertexBufferForTrapezoidBackgroundColorKey;
+	VertexBufferKey vertexBufferForTrapezoidUnderlineColorKey;
+	VertexBufferKey vertexBufferForTrapezoidStrikethroughColorKey;
+	VertexBufferKey vertexBufferForTrapezoidOverlineColorKey;
+	
+	/// \brief Map of vertex buffers, one per color value. The texture handle remains 0.
+	std::unordered_map<VertexBufferKey,VertexBufferForTrapezoids> vertexBufferTrapezoidsPerPart;  
+
+	void drawGlyphs (Mat4 const &MVPMatrix);
 	void drawTextBoxBackground (
-			OevGLES::Mat4 const &MVMatrix,
-			OevGLES::Mat4 const &MVPMatrix,
-			OevGLES::Vec3 const &lightDir,
-			OevGLES::Vec4 const &lightColor,
-			OevGLES::Vec4 const &ambientLightColor
+			Mat4 const &MVMatrix,
+			Mat4 const &MVPMatrix,
+			Vec3 const &lightDir,
+			Vec4 const &lightColor,
+			Vec4 const &ambientLightColor
 			);
 
 	/// \see RendererBase::setupVertexBuffers()
