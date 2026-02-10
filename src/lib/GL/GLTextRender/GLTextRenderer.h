@@ -57,7 +57,65 @@ static constexpr std::size_t AllOnesSizeT = ~static_cast<size_t>(0U);
 
 namespace OevGLES {
 	
-struct VertexBufferKey {
+class VertexBufferKey {
+public:
+
+	VertexBufferKey(Vec4 const& staticColor,GLuint textureHandle = 0U) :
+		staticColor{staticColor},
+		textureHandle{textureHandle},
+		staticColorUsed {true} 
+	{}
+
+	VertexBufferKey(Vec4ShPtr const &sharedDefaultColor,GLuint textureHandle = 0U) :
+		sharedDefaultColor{sharedDefaultColor},
+		textureHandle{textureHandle},
+		staticColorUsed {!sharedDefaultColor} 
+	{}
+
+	bool operator == (VertexBufferKey const & comp) const noexcept {
+		if (!sharedDefaultColor) {
+			return textureHandle == comp.textureHandle &&
+				staticColor == comp.staticColor; 
+		}
+
+		return textureHandle == comp.textureHandle && 
+			sharedDefaultColor.get() == comp.sharedDefaultColor.get();
+
+	}
+
+	void setStaticColor (Vec4 const& newStaticColor) {
+		staticColor = newStaticColor;
+		staticColorUsed = true;
+		hashValueDirty = true;
+	}
+	
+	bool setSharedColorPtr (Vec4ShPtr const& newSharedColorPtr) {
+		sharedDefaultColor = newSharedColorPtr;
+		staticColorUsed = !sharedDefaultColor;
+		hashValueDirty = true;
+		
+		return !staticColorUsed;
+	}
+	
+	Vec4 const getColor () const noexcept {
+		if (staticColorUsed) {
+			return staticColor;
+		} else {
+			return *sharedDefaultColor;
+		}
+	}
+	
+	GLuint getTextureHandle() const noexcept {return textureHandle;}
+	void setTextureHandle(GLuint textureHandle) {
+		this->textureHandle = textureHandle;
+		hashValueDirty = true;
+	}
+	
+	bool isStaticColorUsed () {return staticColorUsed;}
+	
+	size_t hash() const noexcept;
+	
+private:
 
 	/** \brief Color explicitly set, e.g. by attributed text with markups 
 	 *
@@ -71,28 +129,20 @@ struct VertexBufferKey {
 	 */		
 	Vec4ShPtr sharedDefaultColor;
 	
+	bool staticColorUsed = true;
+	
 	/**
 	 * \brief The raw GL handle of the texture holding the glyph images  
 	 */
-	 GLuint textureHandle = 0U;
+	GLuint textureHandle = 0U;
 
-	 /** \brief The hash value of this key
-	  *
-	  * The hash value is cached because it not trivial to compute.
-	  * A value with all bits set should(tm) never be result of the hash calculation
-	  */		 
-	 mutable std::size_t hashValue = AllOnesSizeT;
-	 
-	 bool operator == (VertexBufferKey const & comp) const noexcept {
-		if (!sharedDefaultColor) {
-			return textureHandle == comp.textureHandle &&
-				staticColor == comp.staticColor; 
-		}
-		
-		return textureHandle == comp.textureHandle && 
-			sharedDefaultColor.get() == comp.sharedDefaultColor.get();
-		
-	 }
+	/** \brief The hash value of this key
+	 *
+	 * The hash value is cached because it not trivial to compute.
+	 * A value with all bits set should(tm) never be result of the hash calculation
+	 */
+	mutable std::size_t hashValue = AllOnesSizeT;
+	mutable bool hashValueDirty = true;
 }; // struct VertexBufferKey
 
 } // namespace OevGLES
