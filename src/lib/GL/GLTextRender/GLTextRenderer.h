@@ -29,11 +29,6 @@
 #define GLTEXTRENDER_GLTEXTRENDERER_H_
 
 #include <GLES2/gl2.h>
-#include <cstddef>
-#include <string>
-#include <utility>
-#include <vector>
-#include <unordered_map>
 
 #include "GLES/GLFramework.h"
 #include "GLES/GLObjectWrappers.h"
@@ -56,16 +51,31 @@ static constexpr int NumBitsSizeT = sizeof(size_t) * 8;
 static constexpr std::size_t AllOnesSizeT = ~static_cast<size_t>(0U);
 
 namespace OevGLES {
-	
+
+/** \brief Class to be the key for \ref GLTextRenderer::vertextBufferPerTextureMap and
+ * \ref GLTextRenderer::vertexBufferTrapezoidsPerPart;  
+ *
+ * In addition objects also carry the current color for the stuff to render with GL. 
+ */
 class VertexBufferKey {
 public:
 
+	/** \brief Constructor for a static color object
+	 *
+	 * \param sharedDefaultColor Usually comes from \ref RenderContext.
+	 * \param textureHandle Only used when being the key for \ref GLTextRenderer::vertextBufferPerTextureMap
+	 */  
 	VertexBufferKey(Vec4 const& staticColor,GLuint textureHandle = 0U) :
 		staticColor{staticColor},
 		textureHandle{textureHandle},
 		staticColorUsed {true} 
 	{}
 
+	/** \brief Constructor for a shared color pointer object
+	 *
+	 * \param sharedDefaultColor Usually comes from \ref RenderContext.  
+	 * \param textureHandle Only used when being the key for \ref GLTextRenderer::vertextBufferPerTextureMap
+	 */
 	VertexBufferKey(Vec4ShPtr const &sharedDefaultColor,GLuint textureHandle = 0U) :
 		sharedDefaultColor{sharedDefaultColor},
 		textureHandle{textureHandle},
@@ -73,22 +83,52 @@ public:
 	{}
 
 	bool operator == (VertexBufferKey const & comp) const noexcept {
-		if (!sharedDefaultColor) {
+		if (staticColorUsed) {
 			return textureHandle == comp.textureHandle &&
 				staticColor == comp.staticColor; 
+		} else {
+			return textureHandle == comp.textureHandle && 
+				sharedDefaultColor.get() == comp.sharedDefaultColor.get();
 		}
-
-		return textureHandle == comp.textureHandle && 
-			sharedDefaultColor.get() == comp.sharedDefaultColor.get();
-
 	}
 
+	/** \brief Set a static and absolute color.
+	 *
+	 * The shared color pointer is preserved but simply not used now.
+	 * When you want to use a static color only temporarily you can switch back
+	 * to the shared color pointer calling \ref useSharedColorPtr().
+	 */
 	void setStaticColor (Vec4 const& newStaticColor) {
 		staticColor = newStaticColor;
 		staticColorUsed = true;
 		hashValueDirty = true;
 	}
+
+	/** \brief Restore use of the shared color pointer after temporarily switching to static color.
+	 *
+	 * When an object is switched temporarily to static color using \ref setStaticColor you can switch back
+	 * to the shared color pointer which is retained.
+	 *
+	 * \return \p true when \ref sharedDefaultColor is valid;
+	 *	\p false when \ref sharedDefaultColor is empty. In this case the object will keep using the static color. 
+	 */
+	bool useSharedColorPtr() {
+		if (sharedDefaultColor) {
+			staticColorUsed = false;
+			hashValueDirty = true;
+			return true;
+		}
+		
+		return false;
+	}
 	
+	/** \brief Set and use the shared color pointer.
+	 *
+	 * When \p newSharedColorPtr is empty the object will use the static color, whatever its value is.
+	 *
+	 * \return \p true when \p newSharedColorPtr is valid; \p false when \p newSharedColorPtr is empty.
+	 * In this case the value in \ref staticColor is being used.
+	 */
 	bool setSharedColorPtr (Vec4ShPtr const& newSharedColorPtr) {
 		sharedDefaultColor = newSharedColorPtr;
 		staticColorUsed = !sharedDefaultColor;
@@ -97,7 +137,11 @@ public:
 		return !staticColorUsed;
 	}
 	
-	Vec4 const getColor () const noexcept {
+	/** \brief Return the active color value. 
+	 *
+	 * \return The currently active color value. Either \ref staticColor or *\ref sharedDefaultColor
+	 */
+	Vec4 const &getColor () const noexcept {
 		if (staticColorUsed) {
 			return staticColor;
 		} else {
@@ -106,13 +150,23 @@ public:
 	}
 	
 	GLuint getTextureHandle() const noexcept {return textureHandle;}
+	
 	void setTextureHandle(GLuint textureHandle) {
 		this->textureHandle = textureHandle;
 		hashValueDirty = true;
 	}
 	
+	/** \brief Whether static or shared color pointer is used for \ref getColor().
+	 *
+	 * \return When static color is explicitly set or when an empty color shared pointer was set.
+	 *
+	 * \see \ref setStaticColor()
+	 * \see \ref setSharedColorPtr()
+	 */
 	bool isStaticColorUsed () {return staticColorUsed;}
 	
+	/** \brief Return the hash value of the object from the active color and texture handle value.
+	 */
 	size_t hash() const noexcept;
 	
 private:
@@ -149,7 +203,9 @@ private:
 
 template <>
 struct std::hash<OevGLES::VertexBufferKey>{
-	std::size_t operator()(const OevGLES::VertexBufferKey& k) const noexcept;
+	std::size_t operator()(const OevGLES::VertexBufferKey& k) const noexcept {
+		return k.hash();
+	}
 };
 
 namespace OevGLES {

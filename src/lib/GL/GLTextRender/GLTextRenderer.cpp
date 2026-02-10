@@ -45,27 +45,27 @@
 static log4cxx::LoggerPtr logger = 0;
 #endif
 
-std::size_t std::hash<OevGLES::VertexBufferKey>::operator()(
-	const OevGLES::VertexBufferKey &k) const noexcept {
+namespace OevGLES {
 
-	if (k.hashValue == AllOnesSizeT){
+size_t VertexBufferKey::hash() const noexcept {
+
+	if (hashValueDirty){
 	
-		k.hashValue = k.textureHandle << 8;
-		if (k.sharedDefaultColor) {
-			k.hashValue ^= reinterpret_cast<std::size_t>(k.sharedDefaultColor.get());
+		hashValue = textureHandle << 8;
+		if (staticColorUsed) {
+			hashValue ^= 
+			static_cast<std::size_t>(staticColor(0) * 255.0f) ^
+			(static_cast<std::size_t>(staticColor(1) * 255.0f) << 4) ^
+			(static_cast<std::size_t>(staticColor(2) * 255.0f) << 8) ^
+			(static_cast<std::size_t>(staticColor(3) * 255.0f) << 12);
 		} else {
-			k.hashValue ^= 
-			static_cast<std::size_t>(k.staticColor(0) * 255.0f) ^
-			(static_cast<std::size_t>(k.staticColor(1) * 255.0f) << 4) ^
-			(static_cast<std::size_t>(k.staticColor(2) * 255.0f) << 8) ^
-			(static_cast<std::size_t>(k.staticColor(3) * 255.0f) << 12);
+			hashValue ^= reinterpret_cast<std::size_t>(sharedDefaultColor.get());
 		}
+		hashValueDirty = false;
 	}
 		
-	return k.hashValue;
+	return hashValue;
 }
-
-namespace OevGLES {
 
 class GLTextRenderer;
 
