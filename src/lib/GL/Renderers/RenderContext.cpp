@@ -32,26 +32,25 @@
 #include "RenderContext.h"
 
 namespace OevGLES {
- 
 
-RenderContext::RenderContext (
-		SDLRenderSurfaceWeakPtr const sdlRenderSurfacePtr,
-		Vec4 const &foregroundColor,
-		Vec4 const &backgroundColor
-	) :
-		sdlRenderSurfacePtr{sdlRenderSurfacePtr},
-		foregroundColorPtr{std::make_shared<Vec4>(foregroundColor)},
-		backgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
-		textForegroundColorPtr{foregroundColorPtr},
-		textBackgroundColorPtr{backgroundColorPtr},
-		buttonForegroundColorPtr{foregroundColorPtr},
-		buttonBackgroundColorPtr{backgroundColorPtr},
-		dialogTitleForegroundColorPtr{foregroundColorPtr},
-		dialogTitleBackgroundColorPtr{backgroundColorPtr},
-		scrollBarForegroundColorPtr{foregroundColorPtr},
-		scrollBarBackgroundColorPtr{backgroundColorPtr},
-		quadVertexBuffer {false}
-		{ }
+RenderContext::RenderContext(SDLRenderSurfaceWeakPtr const sdlRenderSurfacePtr,
+							 Vec4 const &foregroundColor,
+							 Vec4 const &backgroundColor) :
+	sdlRenderSurfacePtr{sdlRenderSurfacePtr},
+	foregroundColorPtr{std::make_shared<Vec4>(foregroundColor)},
+	backgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
+	inactiveForegroundColorPtr{
+		std::make_shared<Vec4>(Vec4{0.5f, 0.5f, 0.5f, 1.0f})},
+	inactiveBackgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
+	textForegroundColorPtr{std::make_shared<Vec4>(foregroundColor)},
+	textBackgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
+	buttonForegroundColorPtr{std::make_shared<Vec4>(foregroundColor)},
+	buttonBackgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
+	dialogTitleForegroundColorPtr{std::make_shared<Vec4>(foregroundColor)},
+	dialogTitleBackgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
+	scrollBarForegroundColorPtr{std::make_shared<Vec4>(foregroundColor)},
+	scrollBarBackgroundColorPtr{std::make_shared<Vec4>(backgroundColor)},
+	quadVertexBuffer{false} {}
 
 } // namespace OevGLES
 

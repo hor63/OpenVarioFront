@@ -59,24 +59,19 @@ struct RenderContext {
 	Vec4ShPtr foregroundColorPtr;
 	Vec4ShPtr backgroundColorPtr;
 
-	/// \brief by default mapped to \ref foregroundColorPtr
+	Vec4ShPtr inactiveForegroundColorPtr;
+	Vec4ShPtr inactiveBackgroundColorPtr;
+
 	Vec4ShPtr textForegroundColorPtr;
-	/// \brief by default mapped to \ref backgroundColorPtr
 	Vec4ShPtr textBackgroundColorPtr;
 
-	/// \brief by default mapped to \ref foregroundColorPtr
 	Vec4ShPtr buttonForegroundColorPtr;
-	/// \brief by default mapped to \ref backgroundColorPtr
 	Vec4ShPtr buttonBackgroundColorPtr;
 
-	/// \brief by default mapped to \ref foregroundColorPtr
 	Vec4ShPtr dialogTitleForegroundColorPtr;
-	/// \brief by default mapped to \ref backgroundColorPtr
 	Vec4ShPtr dialogTitleBackgroundColorPtr;
 
-	/// \brief by default mapped to \ref foregroundColorPtr
 	Vec4ShPtr scrollBarForegroundColorPtr;
-	/// \brief by default mapped to \ref backgroundColorPtr
 	Vec4ShPtr scrollBarBackgroundColorPtr;
 
 	std::string fontNameList = "Noto Sans";
