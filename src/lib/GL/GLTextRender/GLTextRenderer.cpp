@@ -26,6 +26,7 @@
  */
 #include "GLES/GLObjectWrappers.h"
 #include "pango/pango-attributes.h"
+#include "pango/pango-renderer.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -324,6 +325,14 @@ GLTextRenderer::GLTextRenderer(
 	} else { // if (globalsPtr) {
 		LOG4CXX_WARN(logger, __PRETTY_FUNCTION__ << ": Member globals is gone.");
 	}
+	
+	for (auto & colorKey :vertexBufferForTrapezoidColorKeys) {
+		// set the color to the shared foreground pointer
+		colorKey.setSharedColorPtr(context->foregroundColorPtr);
+	}
+	// .. except of course the background color
+	vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_BACKGROUND]
+		.setSharedColorPtr(context->backgroundColorPtr);
 }
 
 GLTextRenderer::~GLTextRenderer() {
@@ -540,12 +549,14 @@ void GLTextRenderer::drawGlyph (
 						<< 'x' << glyphInfo.texturePositionNormalized.yBottom
 						);
 
+				vertexBufferPerTextureColorKey.setTextureHandle(
+					glyphInfo.texture.getTexture().getTextureHandle());
 				auto textureIter = vertextBufferPerTextureMap.find(
-						glyphInfo.texture.getTexture().getTextureHandle());
+					vertexBufferPerTextureColorKey);
 				if (textureIter == vertextBufferPerTextureMap.end()) {
 					auto newEntry =
 						vertextBufferPerTextureMap.emplace(std::make_pair(
-							glyphInfo.texture.getTexture().getTextureHandle(),
+							vertexBufferPerTextureColorKey,
 							VertexBufferPerTexture{
 								context, glyphInfo.texture,
 								static_cast<size_t>(vertexVectorReserveSize)}));
@@ -633,7 +644,6 @@ void GLTextRenderer::drawTrapzoid(
 			double            x22
 		) {
 			
-
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 			<< "part = " << part
 			<< "y1   = " << y1 
@@ -646,61 +656,62 @@ void GLTextRenderer::drawTrapzoid(
 
 	if (renderMode == RENDER_GLYPHS) {
 
+		if (static_cast<int>(part) > PANGO_RENDER_PART_OVERLINE) {
+			part = PANGO_RENDER_PART_FOREGROUND;
+		}
+		
+		auto &colorKey = vertexBufferForTrapezoidColorKeys[part];
+		
+		auto vertexBufferIter = vertexBufferTrapezoidsPerPart.find(colorKey);
+		if(vertexBufferIter == vertexBufferTrapezoidsPerPart.end()) {
+			auto newEntry =
+				vertexBufferTrapezoidsPerPart.emplace(std::make_pair(
+					colorKey,
+					VertexBufferForTrapezoids{context,1}));
+					
+			vertexBufferIter = newEntry.first;
+			
+		} 
+		
+		GLfloat yTop = -y1;
+		GLfloat yBottom = -y2;
+		
+		GLfloat xTopLeft = x11;
+		GLfloat xTopRight = x12;
+		GLfloat xBottomLeft = x21;
+		GLfloat xBottomRight = x22;
+		
         // The coordinates are as follows:
 		// y1    x11-----x12
 		//  ^      /    /
 		//  |     /    /
         // y2 x21/----/x22
-		textureIter->second.vertexVector.push_back(GlGlyphVertexStruct {
-			.tri1TopLeft = GlGlyphCornerVertexStruct {
-					.vertexPosition = {left,top,0.0f,1.0f},
-					.texturePosition = {
-						glyphInfo.texturePositionNormalized.xLeft,
-						glyphInfo.texturePositionNormalized.yTop
-					}
+		vertexBufferIter->second.vertexVector.push_back(GlRectVertextStruct {
+			.tri1TopLeft = {
+				xTopLeft,yTop,0.0f,1.0f
 			},
-			.tri1BottomLeft = GlGlyphCornerVertexStruct {
-				.vertexPosition = {left,bottom,0.0f,1.0f},
-				.texturePosition = {
-					glyphInfo.texturePositionNormalized.xLeft,
-					glyphInfo.texturePositionNormalized.yBottom
-				}
+			.tri1BottomLeft = { 
+				xBottomLeft,yBottom,0.0f,1.0f
 			},
-			.tri1BottomRight = GlGlyphCornerVertexStruct {
-				.vertexPosition = {right,bottom,0.0f,1.0f},
-				.texturePosition = {
-					glyphInfo.texturePositionNormalized.xRight,
-					glyphInfo.texturePositionNormalized.yBottom
-				}
+			.tri1BottomRight				= { 
+				xBottomRight,yBottom,0.0f,1.0f
 			},
-			.tri2TopLeft = GlGlyphCornerVertexStruct {
-				.vertexPosition = {left,top,0.0f,1.0f},
-				.texturePosition = {
-					glyphInfo.texturePositionNormalized.xLeft,
-					glyphInfo.texturePositionNormalized.yTop
-				}
+			.tri2TopLeft = { 
+				xTopLeft,yTop,0.0f,1.0f
 			},
-			.tri2BottomRight = GlGlyphCornerVertexStruct {
-				.vertexPosition = {right,bottom,0.0f,1.0f},
-				.texturePosition = {
-					glyphInfo.texturePositionNormalized.xRight,
-					glyphInfo.texturePositionNormalized.yBottom
-				}
+			.tri2BottomRight = { 
+				xBottomRight,yBottom,0.0f,1.0f
 			},
-			.tri2TopRight = GlGlyphCornerVertexStruct {
-				.vertexPosition = {right,top,0.0f,1.0f},
-				.texturePosition = {
-					glyphInfo.texturePositionNormalized.xRight,
-					glyphInfo.texturePositionNormalized.yTop
-				}
+			.tri2TopRight = { 
+				xTopRight,yTop,0.0f,1.0f
 			}
 		});
-		textureIter->second.numVertexes += 6;
+		vertexBufferIter->second.numVertexes += 6;
 
 		LOG4CXX_DEBUG(logger,"vertexVector capacity = "
-				<< textureIter->second.vertexVector.capacity()
+				<< vertexBufferIter->second.vertexVector.capacity()
 				<< ", number elements = "
-				<< textureIter->second.vertexVector.size());
+				<< vertexBufferIter->second.vertexVector.size());
 	} else { // if (renderMode == RENDER_GLYPHS)
 		LOG4CXX_DEBUG(logger, "\tNo visible output intended. Just glyph caching");
 	}

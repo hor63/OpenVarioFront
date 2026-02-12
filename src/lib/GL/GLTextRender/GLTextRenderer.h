@@ -28,6 +28,8 @@
 #ifndef GLTEXTRENDER_GLTEXTRENDERER_H_
 #define GLTEXTRENDER_GLTEXTRENDERER_H_
 
+#include <array>
+
 #include <GLES2/gl2.h>
 
 #include "GLES/GLFramework.h"
@@ -59,6 +61,13 @@ namespace OevGLES {
  */
 class VertexBufferKey {
 public:
+
+	/** \brief Default constructor; initializes static color white.
+	 *  
+	 * Initializes the static color to white, texture handle = 0,
+	 * shared color pointer is empty.
+	 */
+	VertexBufferKey() {}
 
 	/** \brief Constructor for a static color object
 	 *
@@ -152,8 +161,10 @@ public:
 	GLuint getTextureHandle() const noexcept {return textureHandle;}
 	
 	void setTextureHandle(GLuint textureHandle) {
-		this->textureHandle = textureHandle;
-		hashValueDirty = true;
+		if (this->textureHandle != textureHandle) {
+			this->textureHandle = textureHandle;
+			hashValueDirty = true;
+		}
 	}
 	
 	/** \brief Whether static or shared color pointer is used for \ref getColor().
@@ -197,7 +208,7 @@ private:
 	 */
 	mutable std::size_t hashValue = AllOnesSizeT;
 	mutable bool hashValueDirty = true;
-}; // struct VertexBufferKey
+}; // class VertexBufferKey
 
 } // namespace OevGLES
 
@@ -545,10 +556,8 @@ private:
 	 */
 	std::unordered_map<VertexBufferKey,VertexBufferPerTexture> vertextBufferPerTextureMap;
 
-	VertexBufferKey vertexBufferForTrapezoidBackgroundColorKey;
-	VertexBufferKey vertexBufferForTrapezoidUnderlineColorKey;
-	VertexBufferKey vertexBufferForTrapezoidStrikethroughColorKey;
-	VertexBufferKey vertexBufferForTrapezoidOverlineColorKey;
+	/// \brief Color keys for the different \p PangoRenderPart indexes
+	std::array<VertexBufferKey,PANGO_RENDER_PART_OVERLINE + 1> vertexBufferForTrapezoidColorKeys;
 	
 	/// \brief Map of vertex buffers, one per color value. The texture handle remains 0.
 	std::unordered_map<VertexBufferKey,VertexBufferForTrapezoids> vertexBufferTrapezoidsPerPart;  
