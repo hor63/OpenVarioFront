@@ -158,6 +158,10 @@ public:
 		}
 	}
 	
+	Vec4ShPtr const &getSharedColorPtr() const noexcept {
+		return sharedDefaultColor;
+	}
+	
 	GLuint getTextureHandle() const noexcept {return textureHandle;}
 	
 	void setTextureHandle(GLuint textureHandle) {
@@ -295,7 +299,7 @@ public:
 		GLfloat height =1;
 	};
 	
-	class VertexBufferPerTexture {
+	class VertexBufferPerTexture final {
 	public:
 		std::vector<GlGlyphVertexStruct> vertexVector;
 
@@ -335,7 +339,7 @@ public:
 	
 	}; // class VertexBufferPerTexture
 
-	class VertexBufferForTrapezoids {
+	class VertexBufferForTrapezoids final {
 	public:
 		std::vector<GlRectVertextStruct> vertexVector;
 
@@ -495,11 +499,11 @@ public:
 	}
 
 	const Vec4ShPtr& getTextColor() const {
-		return textColorPtr;
+		return vertexBufferPerTextureColorKey.getSharedColorPtr();
 	}
 
-	void setTextColor(Vec4ShPtr const &textColor) {
-		this->textColorPtr = textColor;
+	void setTextColor(Vec4ShPtr const &textColorPtr) {
+		vertexBufferPerTextureColorKey.setSharedColorPtr(textColorPtr);
 	}
 
 	const Vec4ShPtr& getBackgroundColor() const {
@@ -537,7 +541,7 @@ private:
 	/// Is being set each time in \ref renderLayoutSubpixel()
 	gint vertexVectorReserveSize = 1;
 	
-	Vec4ShPtr textColorPtr = std::make_shared<Vec4>(Vec4{1.0f,1.0f,1.0f,1.0f});
+//	Vec4ShPtr textColorPtr = std::make_shared<Vec4>(Vec4{1.0f,1.0f,1.0f,1.0f});
 	Vec4ShPtr backgroundColorPtr = std::make_shared<Vec4>(Vec4{0.0f,0.0f,0.0f,1.0f});
 	bool drawBackground = true;
 

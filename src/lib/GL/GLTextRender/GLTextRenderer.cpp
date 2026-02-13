@@ -252,6 +252,7 @@ GLTextRenderer::VertexBufferPerTexture::~VertexBufferPerTexture() {
 		);
 }
 
+GLTextRenderer::VertexBufferForTrapezoids::~VertexBufferForTrapezoids() {}
 
 /// \brief Copy template for the vertices data of the background rectangle.
 ///
@@ -894,7 +895,8 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 	GlProgUse useGlyphProram(*glGlyphProgram);
 
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
-		VertexBufferPerTexture& vertexBuffer = iter->second;
+		auto& vertexBuffer = iter->second;
+		auto& vertexColorKey = iter->first;
 
 		LOG4CXX_DEBUG(logger,"\tNumber vertexes per texture = " << vertexBuffer.numVertexes);
 
@@ -906,7 +908,7 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 			glUniformMatrix4fv(glGlyphProgram->getUnMvpMatrixLocation(), 1,
 							   GL_FALSE, &(MVPMatrix(0, 0)));
 			glUniform4fv(glGlyphProgram->getUnFragColorLocation(), 1,
-						 &textColorPtr(0));
+						 &(vertexColorKey.getColor()(0)));
 			vertexBuffer.fontTexture.getTexture().bindToUniformLocation(
 				GL_TEXTURE1, 1, glGlyphProgram->getUnTexture0Location());
 
@@ -978,7 +980,7 @@ void GLTextRenderer::drawTextBoxBackground (
 
 	// set the color attribute constant
 	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexColorLocation());
-	glVertexAttrib4fv(glTextBackgroundProgram->getVertexColorLocation(),&backgroundColorPtr(0));
+	glVertexAttrib4fv(glTextBackgroundProgram->getVertexColorLocation(),&(*backgroundColorPtr)(0));
 
 	// The normal is the same value for all vertexes
 	glDisableVertexAttribArray(glTextBackgroundProgram->getVertexNormalLocation());
@@ -1005,7 +1007,7 @@ void GLTextRenderer::drawTextBoxBackground (
 
 	// Draw in transparent mode when the Alpha value is not totally opaque.
 	std::unique_ptr<BlendAttributeSetRestoreStd> blendAttrs;
-	if (backgroundColorPtr(3) < 1.0f) {
+	if ((*backgroundColorPtr)(3) < 1.0f) {
 		blendAttrs = std::unique_ptr<BlendAttributeSetRestoreStd>(new BlendAttributeSetRestoreStd);
 	}
 
