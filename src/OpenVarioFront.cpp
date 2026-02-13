@@ -243,8 +243,8 @@ int main(int argint,char** argv) {
 		// glTextGlobPtr->getFontCache().exportTextureBitmaps();
 
 		glTextRend.setupVertexBuffers();
-		glTextRend.setTextColor(blackColor);
-		glTextRend.setBackgroundColor(whiteTransparent0_5Color);
+		glTextRend.setTextColor(std::make_shared<Vec4>(blackColor));
+		glTextRend.setBackgroundColor(std::make_shared<Vec4>(whiteTransparent0_5Color));
 		glTextRend.setDrawBackground(true);
 
 		OevGLES::RenderStandardUniforms handUniforms;

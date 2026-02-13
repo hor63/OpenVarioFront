@@ -56,7 +56,7 @@ TextFieldControl::TextFieldControl(	ControlsContainerWeakPtr const &parent,
 
 	// I am drawing the background myself by using the base class PlainFieldControl::draw() call.
 	textRenderer.setDrawBackground(false);
-	textRenderer.setTextColor(*renderContextPtr->textForegroundColorPtr);
+	textRenderer.setTextColor(renderContextPtr->textForegroundColorPtr);
 	// set the background color to the textbackground color.
 	fillColorPtr = renderContextPtr->textBackgroundColorPtr;
 	textSizePointsPtr = &renderContextPtr->textSizePoints;
@@ -80,7 +80,7 @@ void TextFieldControl::setupVertexBuffers () {
 	if (textFieldAttribsChanged) {
 		textRenderer.setFontSize(*textSizePointsPtr);
 		textRenderer.setFonts(*fontListPtr);
-		textRenderer.setTextColor(*textColorPtr.get());
+		textRenderer.setTextColor(textColorPtr);
 		pango_layout_set_line_spacing (textRenderer.getPangoLayout(),1.0f);
 
 		if (widthIsFixed_) {
