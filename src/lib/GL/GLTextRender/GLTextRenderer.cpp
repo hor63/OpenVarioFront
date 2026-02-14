@@ -244,6 +244,10 @@ static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* 
 
 namespace OevGLES {
 
+	#if defined HAVE_LOG4CXX_H
+	static log4cxx::LoggerPtr logger = 0;
+	#endif
+
 GLTextRenderer::VertexBufferPerTexture::~VertexBufferPerTexture() {
 	
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
@@ -402,6 +406,22 @@ void GLTextRenderer::setText (const std::string& str){
 	}
 #endif // #if defined HAVE_LOG4CXX_H
 
+}
+
+void GLTextRenderer::setTextColor(Vec4ShPtr const &textColorPtr) {
+	vertexBufferPerTextureColorKey.setSharedColorPtr(textColorPtr);
+	
+	for (int i = 0;i<vertexBufferForTrapezoidColorKeys.size();i++){
+		if (i != PANGO_RENDER_PART_BACKGROUND) {
+			vertexBufferForTrapezoidColorKeys[i].setSharedColorPtr(textColorPtr);
+		}
+	}
+}
+
+void GLTextRenderer::setBackgroundColor(Vec4ShPtr const &backgroundColorPtr) {
+	this->backgroundColorPtr = backgroundColorPtr;
+	vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_BACKGROUND]
+		.setSharedColorPtr(backgroundColorPtr);
 }
 
 void GLTextRenderer::renderLayout(int x, int y, RenderMode renderMode) {
@@ -565,9 +585,21 @@ void GLTextRenderer::drawGlyph (
 					LOG4CXX_DEBUG (logger,
 							"\tEmplace entry for vertex vector per texture list for texture "
 							<< glyphInfo.texture.getTexture().getTextureHandle()
+							<< ", hash value = " << vertexBufferPerTextureColorKey.hash() << " and "
+							<< (newEntry.first->first.getSharedColorPtr()? "dynamic" : "static")
+							<< " color "
+							<< newEntry.first->first.getColor().transpose()
 							<< ". Added a new entry = " << (newEntry.second?"Yes":"No"));
 
 					textureIter = newEntry.first;
+				} else {
+					LOG4CXX_DEBUG (logger,
+							"\tFound vertex vector per texture list for texture "
+							<< glyphInfo.texture.getTexture().getTextureHandle()
+							<< ", hash value = " << vertexBufferPerTextureColorKey.hash()
+							<< " and " << (textureIter->first.getSharedColorPtr()? "dynamic" : "static")
+							<< " color " << textureIter->first.getColor().transpose()
+						);
 				}
 
 				textureIter->second.vertexVector.push_back(GlGlyphVertexStruct {
@@ -663,16 +695,31 @@ void GLTextRenderer::drawTrapzoid(
 		
 		auto &colorKey = vertexBufferForTrapezoidColorKeys[part];
 		
-		auto vertexBufferIter = vertexBufferTrapezoidsPerPart.find(colorKey);
-		if(vertexBufferIter == vertexBufferTrapezoidsPerPart.end()) {
+		auto vertexBufferIter = vertexBufferTrapezoidsPerColor.find(colorKey);
+		if(vertexBufferIter == vertexBufferTrapezoidsPerColor.end()) {
 			auto newEntry =
-				vertexBufferTrapezoidsPerPart.emplace(std::make_pair(
+				vertexBufferTrapezoidsPerColor.emplace(std::make_pair(
 					colorKey,
 					VertexBufferForTrapezoids{context,1}));
 					
 			vertexBufferIter = newEntry.first;
-			
-		} 
+
+			LOG4CXX_DEBUG (logger,
+					"\tEmplace entry for vertex vector for "
+					<< (newEntry.first->first.getSharedColorPtr()? "dynamic" : "static")
+					<< " color "
+					<< newEntry.first->first.getColor().transpose()
+					<< ", hash value = " << vertexBufferPerTextureColorKey.hash()
+					<< ". Added a new entry = " << (newEntry.second?"Yes":"No"));
+
+		} else {
+			LOG4CXX_DEBUG (logger,
+					"\tFound vertex vector per color list for hash value = "
+					<< vertexBufferPerTextureColorKey.hash()
+					<< " and " << (vertexBufferIter->first.getSharedColorPtr()? "dynamic" : "static")
+					<< " color " << vertexBufferIter->first.getColor().transpose()
+				);
+		}
 		
 		GLfloat yTop = -y1;
 		GLfloat yBottom = -y2;
@@ -751,6 +798,8 @@ void GLTextRenderer::setHeightSubpixel(int height) {
 void GLTextRenderer::setupVertexBuffers () {
 	setupVertexBuffersGlyphs ();
 
+	setupVertexBuffersTrapezoids();
+	
 	if (drawBackground) {
 		setupVertexBuffersTextBoxBackground ();
 	}
@@ -851,6 +900,61 @@ void GLTextRenderer::setupVertexBuffersGlyphs () {
 
 }
 
+void GLTextRenderer::setupVertexBuffersTrapezoids() {
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
+
+	GLenum glErr = glGetError();
+
+	// Flush the error chain
+	while (glErr != GL_NO_ERROR) {
+		glErr = glGetError();
+	}
+
+	glSimpleFillProg = GLProgControlSimpleFill::getProgram();
+
+	// Prepare all trapezoid vertex buffers
+	for (auto iter = vertexBufferTrapezoidsPerColor.begin();iter != vertexBufferTrapezoidsPerColor.end();++iter) {
+
+		auto& vertexBuffer = iter->second;
+
+		LOG4CXX_DEBUG(logger,"\tNumber vertexes per color = " << vertexBuffer.numVertexes);
+
+		if (vertexBuffer.numVertexes > 0) {
+			if (!vertexBuffer.vertexBufferHandle.valid()) {
+				LOG4CXX_DEBUG(logger,"\tCreate new vertex buffer handle");
+				vertexBuffer.vertexBufferHandle = GLBufferObject(true);
+			}
+
+			LOG4CXX_DEBUG(logger,"\tVertex buffer handle = " << vertexBuffer.vertexBufferHandle.get());
+			GlBindArrayBufferObject bindVertexBufferObject (vertexBuffer.vertexBufferHandle);
+
+			LOG4CXX_DEBUG(logger,"\tCall glBufferData (target = " << GL_ARRAY_BUFFER
+					<< ", size = " << (vertexBuffer.vertexVector.size()*sizeof(GlRectVertextStruct))
+					<< ", data = " << reinterpret_cast<void*>(&vertexBuffer.vertexVector[0].tri1TopLeft[0])
+					<< ", usage = " << GL_STATIC_DRAW
+					<< ")");
+
+			glBufferData(GL_ARRAY_BUFFER,vertexBuffer.vertexVector.size()*sizeof(GlRectVertextStruct),
+					&vertexBuffer.vertexVector[0].tri1TopLeft[0],
+					GL_STATIC_DRAW);
+
+			if(context->vertexArrayIsUsable && !vertexBuffer.vertexArrayHandle.valid()){
+				vertexBuffer.vertexArrayHandle = GLVertexArrayObject(context);
+				GLBindVertexArrayObject bindVertexArray (vertexBuffer.vertexArrayHandle);
+				
+				glEnableVertexAttribArray(glSimpleFillProg->getVertexPosLocation());
+				glVertexAttribPointer(
+					glSimpleFillProg->getVertexPosLocation(),
+					vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
+					sizeof(GlRectVertextStruct),
+					reinterpret_cast<void *>(0));
+			}
+		}
+	}
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<--End");
+
+}
+
 void GLTextRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 
 	if (drawBackground) {
@@ -867,7 +971,7 @@ void GLTextRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	}
 
 	// Glyph boxes partially overlap intentionally.
-	// This may be for kerning like AV, or for kalligraphic scripts like
+	// This may be for kerning like "AV", or for kalligraphic scripts like
 	// Arabic, or Hindi or Bangali. The glyphs are rendered in transparent mode
 	// anyway. To avoid that the overlapping part a later glyph is not rendered
 	// due to the depth test from an earlier glyph in the same plane the depth
@@ -877,6 +981,7 @@ void GLTextRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	glGetIntegerv(GL_DEPTH_FUNC,&depthFuncBackup);
 	glDepthFunc(GL_LEQUAL);
 
+	drawTrapezoids (stdUniformData.getMVPMatrixC());
 	drawGlyphs(stdUniformData.getMVPMatrixC());
 
 	glDepthFunc(depthFuncBackup);
@@ -892,7 +997,7 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 
 	GLenum glErr = glGetError();
 
-	GlProgUse useGlyphProram(*glGlyphProgram);
+	GlProgUse useGlyphProgram(*glGlyphProgram);
 
 	for (auto iter = vertextBufferPerTextureMap.begin();iter != vertextBufferPerTextureMap.end();++iter) {
 		auto& vertexBuffer = iter->second;
@@ -942,6 +1047,61 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 					sizeof(GlGlyphCornerVertexStruct),
 					reinterpret_cast<void const *>(
 						offsetof(GlGlyphCornerVertexStruct, texturePosition)));
+			} // if(vertexBuffer.vertexArrayHandle == 0)
+
+			// Now draw the glyphs as pairs of triangles.
+			BlendAttributeSetRestore setAndRestoreBlendMode;
+
+			glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.numVertexes);
+
+		}
+	}
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "<-- End");
+}
+
+void GLTextRenderer::drawTrapezoids (OevGLES::Mat4 const &MVPMatrix){
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
+
+	GLenum glErr = glGetError();
+
+	GlProgUse useSimpleFillProgram(*glSimpleFillProg);
+
+	for (auto iter = vertexBufferTrapezoidsPerColor.begin();iter != vertexBufferTrapezoidsPerColor.end();++iter) {
+		auto& vertexBuffer = iter->second;
+		auto& vertexColorKey = iter->first;
+
+		LOG4CXX_DEBUG(logger,"\tNumber vertexes per texture = " << vertexBuffer.numVertexes);
+
+		if (vertexBuffer.numVertexes > 0) {
+
+			// Set the uniforms
+			glUniformMatrix4fv(glSimpleFillProg->getMvpMatrixLocation(), 1,
+							   GL_FALSE, &(MVPMatrix(0, 0)));
+			glUniform4fv(glSimpleFillProg->getFillColorLocation(), 1,
+						 &(vertexColorKey.getColor()(0)));
+
+			GLBindVertexArrayObject bindVertexArrayObject;
+			GlBindArrayBufferObject bindArrayBufferObject;
+			GLVertexArrayAttribObject vertexArrayEnableVertexPos;
+			GLVertexArrayAttribObject vertexArrayEnableTexture0Pos;
+
+			// Now assign the attributes in the vertex buffer
+			if(vertexBuffer.vertexArrayHandle.valid()) {
+				
+				bindVertexArrayObject = GLBindVertexArrayObject (vertexBuffer.vertexArrayHandle);
+			} else {
+				// bind the vertex buffer which contains all vertex data: Model and texture coordinates
+				bindArrayBufferObject = GlBindArrayBufferObject (vertexBuffer.vertexBufferHandle);
+
+				vertexArrayEnableVertexPos = GLVertexArrayAttribObject(
+					true, glSimpleFillProg->getVertexPosLocation());
+				glVertexAttribPointer(
+					glSimpleFillProg->getVertexPosLocation(),
+					vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
+					sizeof(GlRectVertextStruct),
+					reinterpret_cast<void *>(0));
+
 			} // if(vertexBuffer.vertexArrayHandle == 0)
 
 			// Now draw the glyphs as pairs of triangles.

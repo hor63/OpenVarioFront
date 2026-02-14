@@ -37,6 +37,7 @@
 #include "GLTextGlobals.h"
 #include "GLPrograms/GLProgTextTexture.h"
 #include "GLPrograms/GLProgDiffuseLight.h"
+#include "GLPrograms/GLProgControlSimpleFill.h"
 #include "Renderers/RenderContext.h"
 #include "Renderers/RendererBase.h"
 #include "pango/pango-types.h"
@@ -479,6 +480,16 @@ public:
 	 */
 	void drawGlyph(PangoFont *font, PangoGlyph glyph, double x, double y);
 
+	/** \brief Callback from a Pango.Layout rendering text
+	 * 
+	 * \param part
+	 * \param y1 y position of the upper horizontal line
+	 * \param x11 Upper left x position
+	 * \param x21 Upper right x position
+	 * \param y2 y position of the lower horizontal line
+	 * \param x12 Lower left x position
+	 * \param x22 Lower right x position
+	 */
 	void drawTrapzoid(PangoRenderPart part, double y1, double x11, double x21,
 					  double y2, double x12, double x22);
 
@@ -502,17 +513,13 @@ public:
 		return vertexBufferPerTextureColorKey.getSharedColorPtr();
 	}
 
-	void setTextColor(Vec4ShPtr const &textColorPtr) {
-		vertexBufferPerTextureColorKey.setSharedColorPtr(textColorPtr);
-	}
+	void setTextColor(Vec4ShPtr const &textColorPtr);
 
 	const Vec4ShPtr& getBackgroundColor() const {
 		return backgroundColorPtr;
 	}
 
-	void setBackgroundColor(Vec4ShPtr const &backgroundColor) {
-		this->backgroundColorPtr = backgroundColor;
-	}
+	void setBackgroundColor(Vec4ShPtr const &backgroundColor);
 
 private:
 
@@ -531,6 +538,10 @@ private:
 	GLTextGlobalsWeakPtr globals;
 
 	GLProgTextTexture* glGlyphProgram = nullptr;
+	
+	GLProgControlSimpleFill* glSimpleFillProg = nullptr;
+//	GLBufferObject vertexBufferHandleSimpleFills;
+//	GLVertexArrayObject vertexArrayHandleSimpleFills;
 
 	GLProgDiffuseLight* glTextBackgroundProgram = nullptr;
 	GLBufferObject vertexBufferHandleTextBackground;
@@ -564,9 +575,10 @@ private:
 	std::array<VertexBufferKey,PANGO_RENDER_PART_OVERLINE + 1> vertexBufferForTrapezoidColorKeys;
 	
 	/// \brief Map of vertex buffers, one per color value. The texture handle remains 0.
-	std::unordered_map<VertexBufferKey,VertexBufferForTrapezoids> vertexBufferTrapezoidsPerPart;  
+	std::unordered_map<VertexBufferKey,VertexBufferForTrapezoids> vertexBufferTrapezoidsPerColor;  
 
 	void drawGlyphs (Mat4 const &MVPMatrix);
+	void drawTrapezoids (Mat4 const &MVPMatrix);
 	void drawTextBoxBackground (
 			Mat4 const &MVMatrix,
 			Mat4 const &MVPMatrix,
@@ -579,6 +591,8 @@ private:
 	void setupVertexBuffersGlyphs ();
 	/// \see RendererBase::setupVertexBuffers()
 	void setupVertexBuffersTextBoxBackground ();
+	/// \see RendererBase::setupVertexBuffers()
+	void setupVertexBuffersTrapezoids();
 
 
 }; // class GLTextRenderer
