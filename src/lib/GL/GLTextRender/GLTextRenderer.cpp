@@ -941,7 +941,16 @@ void GLTextRenderer::setupVertexBuffersTrapezoids() {
 			if(context->vertexArrayIsUsable && !vertexBuffer.vertexArrayHandle.valid()){
 				vertexBuffer.vertexArrayHandle = GLVertexArrayObject(context);
 				GLBindVertexArrayObject bindVertexArray (vertexBuffer.vertexArrayHandle);
+				GLint boundArrayBuffer = 0;
+
+				glGetIntegerv (GL_ARRAY_BUFFER_BINDING,&boundArrayBuffer);
 				
+				LOG4CXX_DEBUG(logger,
+					"\tCreate new Vertex array object = " << vertexBuffer.vertexArrayHandle.get()
+					<< ", boundArrayBuffer = " << boundArrayBuffer
+					);
+
+								
 				glEnableVertexAttribArray(glSimpleFillProg->getVertexPosLocation());
 				glVertexAttribPointer(
 					glSimpleFillProg->getVertexPosLocation(),
@@ -1071,8 +1080,11 @@ void GLTextRenderer::drawTrapezoids (OevGLES::Mat4 const &MVPMatrix){
 		auto& vertexBuffer = iter->second;
 		auto& vertexColorKey = iter->first;
 
-		LOG4CXX_DEBUG(logger,"\tNumber vertexes per texture = " << vertexBuffer.numVertexes);
+		LOG4CXX_DEBUG(logger,"\tNumber vertexes per trapezoid color = " << vertexBuffer.numVertexes);
 
+		LOG4CXX_DEBUG(logger,"\tVertex color = " << vertexColorKey.getColor().transpose());
+
+		
 		if (vertexBuffer.numVertexes > 0) {
 
 			// Set the uniforms
@@ -1103,9 +1115,6 @@ void GLTextRenderer::drawTrapezoids (OevGLES::Mat4 const &MVPMatrix){
 					reinterpret_cast<void *>(0));
 
 			} // if(vertexBuffer.vertexArrayHandle == 0)
-
-			// Now draw the glyphs as pairs of triangles.
-			BlendAttributeSetRestore setAndRestoreBlendMode;
 
 			glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.numVertexes);
 
