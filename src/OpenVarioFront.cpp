@@ -199,11 +199,11 @@ int main(int argint,char** argv) {
 "\nএকজন দুর্বৃত্ত যে এটাকে"
 "\n খারাপ মনে করে"
 "\nمحتال يعتقد الشر في هذا"
-"\nLMNOPQRSTUVWXAYaZabcdefg e<sup>x</sup>"
+"\nLMN^OPQRSTUVWXAYaZabcdefg e<sup>x</sup>"
 "\nhijk<i>lmn<span foreground=\"blue\">opq</span></i>rstuvwxzy!@#"
-"\n$%^*()_+&lt;&gt;[]{}&amp;'.\\\\//.\\:\"|"
+"\n$%*()_+&lt;&gt;[]{}&amp;'.\\\\//.\\:\"|"
 "\n,./?€üöäÜÖÄ"
-"\níéóúêîôû^'´`îêôû°ß-="};
+"\níéóúêîôû'´`îêôû°ß-="};
 
 /*
 				"\nLMNOPQRSTUV"
@@ -232,6 +232,9 @@ int main(int argint,char** argv) {
 			<< " Error is " << parseError->code << ": " << parseError->message
 			<< "\nFini" << std::endl;
 			return 1; 
+		} else {
+			std::cout << "Accel char = " << accel_char << " = " << static_cast<char>(accel_char)
+			<< std::endl;
 		}
 		
 		std::string strParsedString {parsedString};
