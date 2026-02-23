@@ -725,9 +725,20 @@ void GLTextRenderer::drawTrapzoid(
 		GLfloat yBottom = -y2;
 		
 		GLfloat xTopLeft = x11;
-		GLfloat xTopRight = x12;
-		GLfloat xBottomLeft = x21;
+		GLfloat xTopRight = x21;
+		GLfloat xBottomLeft = x12;
 		GLfloat xBottomRight = x22;
+		
+		LOG4CXX_DEBUG(logger, '\t'
+			<< ", yTop = " << yTop
+			<< ", yBottom = " << yBottom
+
+			<< ", xTopLeft = " << xTopLeft
+			<< ", xTopRight = " << xTopRight
+			<< ", xBottomLeft = " << xBottomLeft
+			<< ", xBottomRight = " << xBottomRight
+				);
+
 		
         // The coordinates are as follows:
 		// y1    x11-----x12
@@ -741,7 +752,7 @@ void GLTextRenderer::drawTrapzoid(
 			.tri1BottomLeft = { 
 				xBottomLeft,yBottom,0.0f,1.0f
 			},
-			.tri1BottomRight				= { 
+			.tri1BottomRight = { 
 				xBottomRight,yBottom,0.0f,1.0f
 			},
 			.tri2TopLeft = { 
@@ -921,8 +932,9 @@ void GLTextRenderer::setupVertexBuffersTrapezoids() {
 
 		if (vertexBuffer.numVertexes > 0) {
 			if (!vertexBuffer.vertexBufferHandle.valid()) {
-				LOG4CXX_DEBUG(logger,"\tCreate new vertex buffer handle");
 				vertexBuffer.vertexBufferHandle = GLBufferObject(true);
+				LOG4CXX_DEBUG(logger,"\tCreate new vertex buffer handle = "
+					<< vertexBuffer.vertexBufferHandle.get());
 			}
 
 			LOG4CXX_DEBUG(logger,"\tVertex buffer handle = " << vertexBuffer.vertexBufferHandle.get());
@@ -946,8 +958,7 @@ void GLTextRenderer::setupVertexBuffersTrapezoids() {
 				glGetIntegerv (GL_ARRAY_BUFFER_BINDING,&boundArrayBuffer);
 				
 				LOG4CXX_DEBUG(logger,
-					"\tCreate new Vertex array object = " << vertexBuffer.vertexArrayHandle.get()
-					<< ", boundArrayBuffer = " << boundArrayBuffer
+					"\tBoundArrayBuffer = " << boundArrayBuffer
 					);
 
 								
@@ -955,7 +966,7 @@ void GLTextRenderer::setupVertexBuffersTrapezoids() {
 				glVertexAttribPointer(
 					glSimpleFillProg->getVertexPosLocation(),
 					vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
-					sizeof(GlRectVertextStruct),
+					sizeof(SingleVertexArr),
 					reinterpret_cast<void *>(0));
 			}
 		}
@@ -1084,19 +1095,18 @@ void GLTextRenderer::drawTrapezoids (OevGLES::Mat4 const &MVPMatrix){
 
 		LOG4CXX_DEBUG(logger,"\tVertex color = " << vertexColorKey.getColor().transpose());
 
-		
 		if (vertexBuffer.numVertexes > 0) {
 
 			// Set the uniforms
 			glUniformMatrix4fv(glSimpleFillProg->getMvpMatrixLocation(), 1,
 							   GL_FALSE, &(MVPMatrix(0, 0)));
-			glUniform4fv(glSimpleFillProg->getFillColorLocation(), 1,
-						 &(vertexColorKey.getColor()(0)));
+
+						glUniform4fv(glSimpleFillProg->getFillColorLocation(), 1,
+									 &(vertexColorKey.getColor()(0)));
 
 			GLBindVertexArrayObject bindVertexArrayObject;
 			GlBindArrayBufferObject bindArrayBufferObject;
 			GLVertexArrayAttribObject vertexArrayEnableVertexPos;
-			GLVertexArrayAttribObject vertexArrayEnableTexture0Pos;
 
 			// Now assign the attributes in the vertex buffer
 			if(vertexBuffer.vertexArrayHandle.valid()) {
@@ -1111,8 +1121,8 @@ void GLTextRenderer::drawTrapezoids (OevGLES::Mat4 const &MVPMatrix){
 				glVertexAttribPointer(
 					glSimpleFillProg->getVertexPosLocation(),
 					vertextPositionArrayLen, GL_FLOAT, GL_FALSE,
-					sizeof(GlRectVertextStruct),
-					reinterpret_cast<void *>(0));
+					sizeof(SingleVertexArr),
+					reinterpret_cast<void const*>(0));
 
 			} // if(vertexBuffer.vertexArrayHandle == 0)
 
