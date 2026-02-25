@@ -135,6 +135,7 @@ int main(int argint,char** argv) {
 		OevGLES::Vec4 whiteTransparent0_8Color {1.0f,1.0f,1.0f,0.8f};
 // 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,1.0f};
+		OevGLES::Vec4 orangeColor {1.0f,0.5f,0.0f,1.0f};
 
 		OevGLES::AnalogHandRenderer hand (renderSurfacePtr1->getRenderContextPtr());
 		hand.setupVertexBuffers();
@@ -242,13 +243,15 @@ int main(int argint,char** argv) {
 		glTextRend.setText(strParsedString);
 		pango_layout_set_attributes( glTextRend.getPangoLayout(),attrList);
 
+		// glTextRend.setTextColor(std::make_shared<Vec4>(blackColor));
+		glTextRend.setTextColor(std::make_shared<Vec4>(blackColor));
+		glTextRend.setBackgroundColor(std::make_shared<Vec4>(whiteTransparent0_8Color));
+		glTextRend.setDrawBackground(true);
+
 		glTextRend.renderLayout();
 		// glTextGlobPtr->getFontCache().exportTextureBitmaps();
 
 		glTextRend.setupVertexBuffers();
-		glTextRend.setTextColor(std::make_shared<Vec4>(blackColor));
-		glTextRend.setBackgroundColor(std::make_shared<Vec4>(whiteTransparent0_5Color));
-		glTextRend.setDrawBackground(true);
 
 		OevGLES::RenderStandardUniforms handUniforms;
 		handUniforms.getProjMatrix() =
