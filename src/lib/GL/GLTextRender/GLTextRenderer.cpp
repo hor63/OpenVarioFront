@@ -70,6 +70,43 @@ size_t VertexBufferKey::hash() const noexcept {
 
 class GLTextRenderer;
 
+static constexpr guint16 AllOnesGuint16 = ~static_cast<guint16>(0U);
+static constexpr Vec4::Scalar AllOnesGuint16F = static_cast<Vec4::Scalar>(AllOnesGuint16);
+
+/** \brief Store a reference to a \ref VertexBufferKey whose color has been set to a static color
+ * 
+ * Sole purpose is to reset the color of the referenced \ref VertexBufferKey back to using the shared color pointer
+ * in the destructor.
+ * This way I can store all locally modified color keys in a container.
+ * When the container is being destroyed all stored color attributes are automatically reset to the shared default color.
+ * The charm is that this reset by destructor works under all circumstances, even when an exception flies by   
+ */
+class VertexBufferKeyLocColorSet final {
+	
+	VertexBufferKeyLocColorSet(VertexBufferKey& vertBufKey,PangoAttrColor const & staticColor) :
+	vertexBufferKeyWithStatColor{vertBufKey}
+	{
+		Vec4 newStaticColor = {
+			static_cast<Vec4::Scalar>(staticColor.color.red) / AllOnesGuint16F,
+			static_cast<Vec4::Scalar>(staticColor.color.green) / AllOnesGuint16F,
+			static_cast<Vec4::Scalar>(staticColor.color.blue) / AllOnesGuint16F,
+			1.0f
+		};
+		vertexBufferKeyWithStatColor.setStaticColor(newStaticColor);
+	}
+	
+	VertexBufferKeyLocColorSet(VertexBufferKeyLocColorSet const & source) = delete;
+	VertexBufferKeyLocColorSet(VertexBufferKeyLocColorSet && source) = delete;
+	VertexBufferKeyLocColorSet& operator = (VertexBufferKeyLocColorSet const & source) = delete;
+	VertexBufferKeyLocColorSet& operator = (VertexBufferKeyLocColorSet && source) = delete;
+	
+	~VertexBufferKeyLocColorSet() {
+		vertexBufferKeyWithStatColor.useSharedColorPtr();
+	}
+	private:
+
+	VertexBufferKey & vertexBufferKeyWithStatColor; 
+}; // VertexBufferKeyLocColorSet
 } // namespace OevGLES
 
 G_BEGIN_DECLS
@@ -133,7 +170,18 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 		);
 
 		switch (attr->klass->type) {
+/*
+  PANGO_ATTR_FOREGROUND,        /+ PangoAttrColor +/
+  PANGO_ATTR_BACKGROUND,        /+ PangoAttrColor +/
+  PANGO_ATTR_UNDERLINE_COLOR,   /+ PangoAttrColor +/
+  PANGO_ATTR_STRIKETHROUGH_COLOR,/+ PangoAttrColor +/
+  PANGO_ATTR_OVERLINE_COLOR,    /+ PangoAttrColor +/
+*/			
 			case PANGO_ATTR_FOREGROUND:
+			case PANGO_ATTR_BACKGROUND:
+			case PANGO_ATTR_UNDERLINE_COLOR:
+			case PANGO_ATTR_STRIKETHROUGH_COLOR:
+			case PANGO_ATTR_OVERLINE_COLOR:
 			{
 				PangoAttrColor *color = reinterpret_cast<PangoAttrColor *>(attr);
 				LOG4CXX_INFO (logger,
@@ -142,11 +190,11 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 					<< color->color.green << ','
 					<< color->color.blue
 				);
-			}
+			}			
 				break;
 			default:
 				break;
-		}
+		} // switch (attr->klass->type)
 
 	}
 
