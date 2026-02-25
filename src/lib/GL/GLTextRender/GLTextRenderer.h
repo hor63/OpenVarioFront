@@ -490,7 +490,7 @@ public:
 	 * \param x12 Lower left x position
 	 * \param x22 Lower right x position
 	 */
-	void drawTrapzoid(PangoRenderPart part, double y1, double x11, double x21,
+	void drawTrapezoid(PangoRenderPart part, double y1, double x11, double x21,
 					  double y2, double x12, double x22);
 
 	/// \see RendererBase::setupVertexBuffers()

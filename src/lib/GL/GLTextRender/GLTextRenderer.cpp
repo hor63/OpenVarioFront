@@ -192,7 +192,7 @@ static void pango_gl_text_renderer_draw_trapezoid (PangoRenderer    *renderer,
 	if (PANGO_IS_GL_TEXT_RENDERER(renderer)) {
 		PangoGLTextRenderer* pangoGLTextRenderer = PANGO_GL_TEXT_RENDERER(renderer);
 
-		pangoGLTextRenderer->priv->glTextRender->drawTrapzoid(
+		pangoGLTextRenderer->priv->glTextRender->drawTrapezoid(
 			part, y1, x11, x21, y2, x12, x22);
 	}
 }
@@ -409,6 +409,10 @@ void GLTextRenderer::setText (const std::string& str){
 }
 
 void GLTextRenderer::setTextColor(Vec4ShPtr const &textColorPtr) {
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << " this = " << this
+		<< ": Color ptr = " << textColorPtr.get()
+		<< ", Color = " << (*textColorPtr.get()).transpose()
+	);
 	vertexBufferPerTextureColorKey.setSharedColorPtr(textColorPtr);
 	
 	for (int i = 0;i<vertexBufferForTrapezoidColorKeys.size();i++){
@@ -517,7 +521,7 @@ void GLTextRenderer::drawGlyph (
 
 		auto glyphInfo = previousFontCacheItem->getGlyphInfo(glyph);
 		if (glyphInfo.renderGlyph) {
-			LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+			LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << " this = " << this
 					<< ": Texture position of glyph " << glyph << " = "
 					<< glyphInfo.texturePosition.xLeft << 'x'
 					<< glyphInfo.texturePosition.yBottom << ' '
@@ -667,7 +671,7 @@ void GLTextRenderer::drawGlyph (
 
 }
 
-void GLTextRenderer::drawTrapzoid(
+void GLTextRenderer::drawTrapezoid(
 			PangoRenderPart   part,
 			double            y1,
 			double            x11,
@@ -677,7 +681,7 @@ void GLTextRenderer::drawTrapzoid(
 			double            x22
 		) {
 			
-	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__ << " this = " << this
 			<< "part = " << part
 			<< "y1   = " << y1 
 			<< "x11  = " << x11 
@@ -694,6 +698,12 @@ void GLTextRenderer::drawTrapzoid(
 		}
 		
 		auto &colorKey = vertexBufferForTrapezoidColorKeys[part];
+		LOG4CXX_DEBUG(logger,
+			   "\tColor ptr [" << static_cast<int>(part) << "] = "
+			   << vertexBufferForTrapezoidColorKeys[part].getSharedColorPtr()
+			<< ", Color = " << vertexBufferForTrapezoidColorKeys[part].getColor().transpose()
+		);
+
 		
 		auto vertexBufferIter = vertexBufferTrapezoidsPerColor.find(colorKey);
 		if(vertexBufferIter == vertexBufferTrapezoidsPerColor.end()) {
@@ -912,7 +922,7 @@ void GLTextRenderer::setupVertexBuffersGlyphs () {
 }
 
 void GLTextRenderer::setupVertexBuffersTrapezoids() {
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << " this = " << this << "-->Start");
 
 	GLenum glErr = glGetError();
 
@@ -1081,7 +1091,7 @@ void GLTextRenderer::drawGlyphs (OevGLES::Mat4 const &MVPMatrix){
 }
 
 void GLTextRenderer::drawTrapezoids (OevGLES::Mat4 const &MVPMatrix){
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "-->Start");
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << " this = " << this << "-->Start");
 
 	GLenum glErr = glGetError();
 
