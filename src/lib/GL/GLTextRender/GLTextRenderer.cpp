@@ -153,7 +153,7 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 							 PangoGlyphItem *glyphItem, int x, int y) {
 	auto rendererClass = PANGO_GL_TEXT_RENDERER_GET_CLASS(renderer);
 
-	LOG4CXX_INFO (logger, __PRETTY_FUNCTION__
+	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__
 		<< ": numGlyphs = " << glyphItem->glyphs->num_glyphs
 		<< ", length = " << glyphItem->item->length
 		<< ", numChars = " << glyphItem->item->num_chars
@@ -163,7 +163,7 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 		PangoAttribute *attr = reinterpret_cast<PangoAttribute *>(attrListItem->data);
 		
 		
-		LOG4CXX_INFO (logger,
+		LOG4CXX_DEBUG (logger,
 			"\t attribute type = " << attr->klass->type
 			<< ", start index = " << attr->start_index
 			<< ", end index = " << attr->end_index
@@ -184,7 +184,7 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 			case PANGO_ATTR_OVERLINE_COLOR:
 			{
 				PangoAttrColor *color = reinterpret_cast<PangoAttrColor *>(attr);
-				LOG4CXX_INFO (logger,
+				LOG4CXX_DEBUG (logger,
 					   "\tForground color = " 
 					<< color->color.red << ','
 					<< color->color.green << ','
@@ -228,7 +228,7 @@ static void pango_gl_text_renderer_draw_trapezoid (PangoRenderer    *renderer,
 					       double            x12,
 					       double            x22){
 
-	LOG4CXX_INFO(logger,__FUNCTION__ << ": part = " << static_cast<int>(part)
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": part = " << static_cast<int>(part)
 			<< ", y1  = " << y1
 			<< ", x11 = " << x11
 			<< ", x21 = " << x21
