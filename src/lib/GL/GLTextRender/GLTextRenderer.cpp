@@ -24,9 +24,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include "GLES/GLObjectWrappers.h"
-#include "pango/pango-attributes.h"
 #include "pango/pango-renderer.h"
+#include <log4cxx/logger.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -34,7 +33,7 @@
 #include "GLES/GLFramework.h"
 #include <GLES2/gl2.h>
 #include <cmath>
-
+#include <forward_list>
 #include "OVFCommon.h"
 
 #include "GLTextRenderer.h"
@@ -152,6 +151,20 @@ G_DEFINE_TYPE_WITH_PRIVATE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_T
 static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 							 PangoGlyphItem *glyphItem, int x, int y) {
 	auto rendererClass = PANGO_GL_TEXT_RENDERER_GET_CLASS(renderer);
+	auto glRenderer = PANGO_GL_TEXT_RENDERER(renderer);
+	
+	if (glRenderer == nullptr || rendererClass == nullptr) {
+		LOG4CXX_WARN (logger, __PRETTY_FUNCTION__
+			<< ": Renderer " << renderer << " is not a PangoGLTextRenderer!"
+			);
+		return;
+	}
+
+	// Store references to all color keys which are set to static color temporarily
+	// Upon destruction of this container all referenced keys are reset to the default
+	// shared color pointer.
+	std::forward_list<OevGLES::VertexBufferKeyLocColorSet> tempStaticColorList;
+
 
 	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__
 		<< ": numGlyphs = " << glyphItem->glyphs->num_glyphs
@@ -160,7 +173,7 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 		<< ", offset = " << glyphItem->item->offset
 	);
 	for (auto attrListItem = glyphItem->item->analysis.extra_attrs; attrListItem != nullptr;attrListItem = attrListItem->next) {
-		PangoAttribute *attr = reinterpret_cast<PangoAttribute *>(attrListItem->data);
+		auto attr = reinterpret_cast<PangoAttribute const *>(attrListItem->data);
 		
 		
 		LOG4CXX_DEBUG (logger,
@@ -169,30 +182,68 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 			<< ", end index = " << attr->end_index
 		);
 
+
 		switch (attr->klass->type) {
-/*
-  PANGO_ATTR_FOREGROUND,        /+ PangoAttrColor +/
-  PANGO_ATTR_BACKGROUND,        /+ PangoAttrColor +/
-  PANGO_ATTR_UNDERLINE_COLOR,   /+ PangoAttrColor +/
-  PANGO_ATTR_STRIKETHROUGH_COLOR,/+ PangoAttrColor +/
-  PANGO_ATTR_OVERLINE_COLOR,    /+ PangoAttrColor +/
-*/			
 			case PANGO_ATTR_FOREGROUND:
+			{
+				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
+				tempStaticColorList.emplace_front(
+					glRenderer->priv->glTextRender
+						->vertexBufferPerTextureColorKey,
+					*colorAttr);
+				tempStaticColorList.emplace_front(
+					glRenderer->priv->glTextRender
+						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_FOREGROUND],
+					*colorAttr);
+
+				break;
+			}
 			case PANGO_ATTR_BACKGROUND:
+			{
+				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
+				tempStaticColorList.emplace_front(
+					glRenderer->priv->glTextRender
+						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_BACKGROUND],
+					*colorAttr);
+				
+
+				break;
+			}
 			case PANGO_ATTR_UNDERLINE_COLOR:
+			{
+				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
+				tempStaticColorList.emplace_front(
+					glRenderer->priv->glTextRender
+						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_UNDERLINE],
+					*colorAttr);
+				
+
+				break;
+			}
 			case PANGO_ATTR_STRIKETHROUGH_COLOR:
+			{
+				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
+				tempStaticColorList.emplace_front(
+					glRenderer->priv->glTextRender
+						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_STRIKETHROUGH],
+					*colorAttr);
+				
+
+				break;
+			}
 			case PANGO_ATTR_OVERLINE_COLOR:
 			{
-				PangoAttrColor *color = reinterpret_cast<PangoAttrColor *>(attr);
-				LOG4CXX_DEBUG (logger,
-					   "\tForground color = " 
-					<< color->color.red << ','
-					<< color->color.green << ','
-					<< color->color.blue
-				);
-			}			
+				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
+				tempStaticColorList.emplace_front(
+					glRenderer->priv->glTextRender
+						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_OVERLINE],
+					*colorAttr);
+				
+
 				break;
+			}
 			default:
+				// A non-color attribute is handled by the Pango core itself.
 				break;
 		} // switch (attr->klass->type)
 
@@ -281,7 +332,8 @@ G_END_DECLS
 
 
 static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* rendererObj) {
-	PangoGLTextRenderer* ret = reinterpret_cast<PangoGLTextRenderer*>(g_object_new (PANGO_TYPE_GL_TEXT_RENDERER, NULL));
+	PangoGLTextRenderer *ret = reinterpret_cast<PangoGLTextRenderer *>(
+		g_object_new(PANGO_TYPE_GL_TEXT_RENDERER, NULL));
 
 	ret->priv->glTextRender = rendererObj;
 

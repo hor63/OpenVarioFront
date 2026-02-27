@@ -224,9 +224,17 @@ struct std::hash<OevGLES::VertexBufferKey>{
 	}
 };
 
+// Static function within GLTextRenderer.cpp. Here declared for friend declaration in class GLTextRenderer.
+static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
+							 PangoGlyphItem *glyphItem, int x, int y);
+
 namespace OevGLES {
 	
 class GLTextRenderer: public RendererBase  {
+	
+	friend void ::pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
+								 PangoGlyphItem *glyphItem, int x, int y);
+	
 public:
 	enum RenderMode {
 		RENDER_GLYPHS, /**< \brief Render glyphs to the screen. If needed add missing glyphs to the font bitmaps.
