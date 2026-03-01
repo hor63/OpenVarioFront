@@ -189,7 +189,7 @@ int main(int argint,char** argv) {
 
 		OevGLES::GLTextRenderer glTextRend (renderSurfacePtr1->getRenderContextPtr());
 
-		glTextRend.setFontSize(12);
+		glTextRend.setFontSize(20);
 //		glTextRend.setFonts("Noto Sans");
 		glTextRend.setFonts("Noto Sans, Noto Naskh Arabic, Noto Serif Thai, Noto Sans Bengali, Noto Sans CJK SC");
 //		glTextRend.setFonts("Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC");
@@ -200,7 +200,7 @@ int main(int argint,char** argv) {
 "\nএকজন দুর্বৃত্ত যে এটাকে"
 "\n খারাপ মনে করে"
 "\nمحتال يعتقد الشر في هذا"
-"\nLMN^OPQRSTUVWXAYaZabcdefg e<sup>x</sup>"
+"\n<span foreground=\"red\">LMN^OPQRSTUVW</span><span background=\"red\" foreground=\"green\">XA</span>BB<span foreground=\"green\">Ya</span>Z e<sup>x</sup>abcdefg"
 "\nhijk<i>lmn<span foreground=\"blue\">opq</span></i>rstuvwxzy!@#"
 "\n$%*()_+&lt;&gt;[]{}&amp;'.\\\\//.\\:\"|"
 "\n,./?€üöäÜÖÄ"
@@ -291,7 +291,7 @@ int main(int argint,char** argv) {
 
 		OevGLES::RenderStandardUniforms textUniforms (handUniforms);
 		textUniforms.resetModelMatrixPtr();
-		textUniforms.getModelMatrix() = OevGLES::translationMatrix(-300,220,0);
+		textUniforms.getModelMatrix() = OevGLES::translationMatrix(-450,20,0);
 		textUniforms.resetViewMatrixPtr();
 		textUniforms.getViewMatrix() =
 			OevGLES::viewMatrix(camPos.block<3, 1>(0, 0), origin, up);

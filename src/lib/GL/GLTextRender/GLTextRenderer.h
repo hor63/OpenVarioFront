@@ -40,6 +40,7 @@
 #include "GLPrograms/GLProgControlSimpleFill.h"
 #include "Renderers/RenderContext.h"
 #include "Renderers/RendererBase.h"
+#include "glibconfig.h"
 #include "pango/pango-types.h"
 
 
@@ -224,9 +225,11 @@ struct std::hash<OevGLES::VertexBufferKey>{
 	}
 };
 
+G_BEGIN_DECLS
 // Static function within GLTextRenderer.cpp. Here declared for friend declaration in class GLTextRenderer.
 static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 							 PangoGlyphItem *glyphItem, int x, int y);
+G_END_DECLS
 
 namespace OevGLES {
 	

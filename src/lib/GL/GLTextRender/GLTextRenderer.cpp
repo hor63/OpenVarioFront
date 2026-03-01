@@ -81,6 +81,7 @@ static constexpr Vec4::Scalar AllOnesGuint16F = static_cast<Vec4::Scalar>(AllOne
  * The charm is that this reset by destructor works under all circumstances, even when an exception flies by   
  */
 class VertexBufferKeyLocColorSet final {
+	public:
 	
 	VertexBufferKeyLocColorSet(VertexBufferKey& vertBufKey,PangoAttrColor const & staticColor) :
 	vertexBufferKeyWithStatColor{vertBufKey}
