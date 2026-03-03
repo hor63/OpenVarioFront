@@ -125,10 +125,11 @@ struct _PangoGLTextRenderer
 
 struct _PangoGLTextRendererClass
 {
-  PangoRendererClass parent_class;
+	PangoRendererClass parent_class;
 
-  void (*draw_glyph_item_parent)(PangoRenderer *renderer, const char *text,
-								 PangoGlyphItem *glyph_item, int x, int y);
+	void (*end_parent)(PangoRenderer *renderer);
+
+	void (*prepare_run_parent)(PangoRenderer *renderer, PangoLayoutRun *run);
 };
 
 static PangoGLTextRenderer* pango_gl_text_renderer_new(OevGLES::GLTextRenderer* rendererObj);
@@ -149,8 +150,36 @@ G_DEFINE_TYPE_WITH_PRIVATE (PangoGLTextRenderer, pango_gl_text_renderer, PANGO_T
 
 #define PANGO_TYPE_GL_TEXT_RENDERER            (pango_gl_text_renderer_get_type())
 
-static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
-							 PangoGlyphItem *glyphItem, int x, int y) {
+/// \brief At the end of the rendering reset all colors to the shared default color.
+static void pango_gl_text_renderer_end (PangoRenderer *renderer) {
+	auto rendererClass = PANGO_GL_TEXT_RENDERER_GET_CLASS(renderer);
+	auto glRenderer = PANGO_GL_TEXT_RENDERER(renderer);
+
+	if (glRenderer == nullptr || rendererClass == nullptr) {
+		LOG4CXX_WARN (logger, __PRETTY_FUNCTION__
+			<< ": Renderer " << renderer << " is not a PangoGLTextRenderer!"
+			);
+		return;
+	}
+
+	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__);
+
+	// First reset all previously statically set colors back to default shared color.
+	glRenderer->priv->glTextRender->vertexBufferPerTextureColorKey
+		.useSharedColorPtr();
+	for (auto &colorKey :
+		 glRenderer->priv->glTextRender->vertexBufferForTrapezoidColorKeys) {
+		colorKey.useSharedColorPtr();
+	}
+
+	// Call the superclass member.
+	if (rendererClass->end_parent != nullptr) {
+		rendererClass->end_parent(renderer);
+	}
+}
+
+/// \brief Extract the color attributes for the run and set the colors. Then call the base class method.
+static void pango_gl_text_renderer_prepare_run(PangoRenderer *renderer, PangoLayoutRun *glyphItem) {
 	auto rendererClass = PANGO_GL_TEXT_RENDERER_GET_CLASS(renderer);
 	auto glRenderer = PANGO_GL_TEXT_RENDERER(renderer);
 	
@@ -161,86 +190,122 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 		return;
 	}
 
-	// Store references to all color keys which are set to static color temporarily
-	// Upon destruction of this container all referenced keys are reset to the default
-	// shared color pointer.
-	std::forward_list<OevGLES::VertexBufferKeyLocColorSet> tempStaticColorList;
-
-
+	
 	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__
+		<< "===================================>\n"
 		<< ": numGlyphs = " << glyphItem->glyphs->num_glyphs
 		<< ", length = " << glyphItem->item->length
 		<< ", numChars = " << glyphItem->item->num_chars
 		<< ", offset = " << glyphItem->item->offset
 	);
-	for (auto attrListItem = glyphItem->item->analysis.extra_attrs; attrListItem != nullptr;attrListItem = attrListItem->next) {
-		auto attr = reinterpret_cast<PangoAttribute const *>(attrListItem->data);
-		
-		
+
+	// First reset all previously statically set colors back to default shared color.
+	glRenderer->priv->glTextRender->vertexBufferPerTextureColorKey
+		.useSharedColorPtr();
+	for (auto &colorKey :
+		 glRenderer->priv->glTextRender->vertexBufferForTrapezoidColorKeys) {
+		colorKey.useSharedColorPtr();
+	}
+
+	// Now walk through the attributes for this run and set static colors according to the attributes.
+	for (auto attrListItem = glyphItem->item->analysis.extra_attrs;
+		 attrListItem != nullptr; attrListItem = attrListItem->next) {
+
+		auto attr =
+			reinterpret_cast<PangoAttribute const *>(attrListItem->data);
+
 		LOG4CXX_DEBUG (logger,
 			"\t attribute type = " << attr->klass->type
 			<< ", start index = " << attr->start_index
 			<< ", end index = " << attr->end_index
 		);
 
-
 		switch (attr->klass->type) {
 			case PANGO_ATTR_FOREGROUND:
 			{
 				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
-				tempStaticColorList.emplace_front(
-					glRenderer->priv->glTextRender
-						->vertexBufferPerTextureColorKey,
-					*colorAttr);
-				tempStaticColorList.emplace_front(
-					glRenderer->priv->glTextRender
-						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_FOREGROUND],
-					*colorAttr);
-
+				OevGLES::Vec4 newStaticColor = {
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.red) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.green) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.blue) / OevGLES::AllOnesGuint16F,
+					1.0f
+				};
+				glRenderer->priv->glTextRender->vertexBufferPerTextureColorKey
+					.setStaticColor(newStaticColor);
+				glRenderer->priv->glTextRender
+					->vertexBufferForTrapezoidColorKeys
+						[PANGO_RENDER_PART_FOREGROUND]
+					.setStaticColor(newStaticColor);
+				
+				LOG4CXX_DEBUG(logger, "\tSet foreground color to " << newStaticColor.transpose());
 				break;
 			}
 			case PANGO_ATTR_BACKGROUND:
 			{
 				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
-				tempStaticColorList.emplace_front(
-					glRenderer->priv->glTextRender
-						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_BACKGROUND],
-					*colorAttr);
-				
+				OevGLES::Vec4 newStaticColor = {
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.red) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.green) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.blue) / OevGLES::AllOnesGuint16F,
+					1.0f
+				};
+				glRenderer->priv->glTextRender
+					->vertexBufferForTrapezoidColorKeys
+						[PANGO_RENDER_PART_BACKGROUND]
+					.setStaticColor(newStaticColor);
 
+					LOG4CXX_DEBUG(logger, "\tSet background color to " << newStaticColor.transpose());
 				break;
 			}
 			case PANGO_ATTR_UNDERLINE_COLOR:
 			{
 				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
-				tempStaticColorList.emplace_front(
-					glRenderer->priv->glTextRender
-						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_UNDERLINE],
-					*colorAttr);
-				
+				OevGLES::Vec4 newStaticColor = {
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.red) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.green) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.blue) / OevGLES::AllOnesGuint16F,
+					1.0f
+				};
+				glRenderer->priv->glTextRender
+					->vertexBufferForTrapezoidColorKeys
+						[PANGO_RENDER_PART_UNDERLINE]
+					.setStaticColor(newStaticColor);
 
+					LOG4CXX_DEBUG(logger, "\tSet underline color to " << newStaticColor.transpose());
 				break;
 			}
 			case PANGO_ATTR_STRIKETHROUGH_COLOR:
 			{
 				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
-				tempStaticColorList.emplace_front(
-					glRenderer->priv->glTextRender
-						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_STRIKETHROUGH],
-					*colorAttr);
-				
+				OevGLES::Vec4 newStaticColor = {
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.red) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.green) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.blue) / OevGLES::AllOnesGuint16F,
+					1.0f
+				};
+				glRenderer->priv->glTextRender
+					->vertexBufferForTrapezoidColorKeys
+						[PANGO_RENDER_PART_STRIKETHROUGH]
+					.setStaticColor(newStaticColor);
 
+					LOG4CXX_DEBUG(logger, "\tSet strikethrough color to " << newStaticColor.transpose());
 				break;
 			}
 			case PANGO_ATTR_OVERLINE_COLOR:
 			{
 				auto colorAttr = reinterpret_cast<PangoAttrColor const *>(attr);
-				tempStaticColorList.emplace_front(
-					glRenderer->priv->glTextRender
-						->vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_OVERLINE],
-					*colorAttr);
-				
+				OevGLES::Vec4 newStaticColor = {
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.red) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.green) / OevGLES::AllOnesGuint16F,
+					static_cast<OevGLES::Vec4::Scalar>(colorAttr->color.blue) / OevGLES::AllOnesGuint16F,
+					1.0f
+				};
+				glRenderer->priv->glTextRender
+					->vertexBufferForTrapezoidColorKeys
+						[PANGO_RENDER_PART_OVERLINE]
+					.setStaticColor(newStaticColor);
 
+					LOG4CXX_DEBUG(logger, "\tSet overline color to " << newStaticColor.transpose());
 				break;
 			}
 			default:
@@ -250,8 +315,12 @@ static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
 
 	}
 
-	rendererClass->draw_glyph_item_parent (renderer, text,
-								glyphItem, x, y);
+	if (rendererClass->prepare_run_parent != nullptr) {
+		rendererClass->prepare_run_parent(renderer, glyphItem);
+	}
+
+	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__
+		<< "<<<===================================");
 }
 
 static void pango_gl_text_renderer_draw_glyph     (PangoRenderer    *renderer,
@@ -320,11 +389,13 @@ pango_gl_text_renderer_class_init (PangoGLTextRendererClass *klass) {
 
 	PangoRendererClass *renderer_class = PANGO_RENDERER_CLASS (klass);
 
-	klass->draw_glyph_item_parent = renderer_class->draw_glyph_item;
+	klass->end_parent = renderer_class->end;
+	klass->prepare_run_parent = renderer_class->prepare_run;
 	
 	renderer_class->draw_glyph = pango_gl_text_renderer_draw_glyph;
 	renderer_class->draw_trapezoid = pango_gl_text_renderer_draw_trapezoid;
-	renderer_class->draw_glyph_item = pango_gl_draw_glyph_item;
+	renderer_class->prepare_run = pango_gl_text_renderer_prepare_run;
+	renderer_class->end = pango_gl_text_renderer_end;
 	
 
 }
@@ -432,6 +503,9 @@ GLTextRenderer::GLTextRenderer(
 		LOG4CXX_WARN(logger, __PRETTY_FUNCTION__ << ": Member globals is gone.");
 	}
 	
+	
+	// Set the default colors.
+	vertexBufferPerTextureColorKey.setSharedColorPtr(context->foregroundColorPtr);
 	for (auto & colorKey :vertexBufferForTrapezoidColorKeys) {
 		// set the color to the shared foreground pointer
 		colorKey.setSharedColorPtr(context->foregroundColorPtr);
@@ -515,12 +589,19 @@ void GLTextRenderer::setTextColor(Vec4ShPtr const &textColorPtr) {
 		<< ", Color = " << (*textColorPtr.get()).transpose()
 	);
 	vertexBufferPerTextureColorKey.setSharedColorPtr(textColorPtr);
-	
-	for (int i = 0;i<vertexBufferForTrapezoidColorKeys.size();i++){
-		if (i != PANGO_RENDER_PART_BACKGROUND) {
-			vertexBufferForTrapezoidColorKeys[i].setSharedColorPtr(textColorPtr);
-		}
+	// Remember the background color
+	auto backgroundColorBackup =
+		vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_BACKGROUND]
+			.getSharedColorPtr();
+			
+	// write all colors
+	for (auto& colorKey :vertexBufferForTrapezoidColorKeys) {
+			colorKey.setSharedColorPtr(textColorPtr);
 	}
+	
+	// and restore the background color.
+	vertexBufferForTrapezoidColorKeys[PANGO_RENDER_PART_BACKGROUND]
+		.setSharedColorPtr(backgroundColorBackup);
 }
 
 void GLTextRenderer::setBackgroundColor(Vec4ShPtr const &backgroundColorPtr) {
@@ -1212,8 +1293,8 @@ void GLTextRenderer::drawTrapezoids (OevGLES::Mat4 const &MVPMatrix){
 			glUniformMatrix4fv(glSimpleFillProg->getMvpMatrixLocation(), 1,
 							   GL_FALSE, &(MVPMatrix(0, 0)));
 
-						glUniform4fv(glSimpleFillProg->getFillColorLocation(), 1,
-									 &(vertexColorKey.getColor()(0)));
+			glUniform4fv(glSimpleFillProg->getFillColorLocation(), 1,
+						 &(vertexColorKey.getColor()(0)));
 
 			GLBindVertexArrayObject bindVertexArrayObject;
 			GlBindArrayBufferObject bindArrayBufferObject;

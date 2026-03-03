@@ -226,17 +226,18 @@ struct std::hash<OevGLES::VertexBufferKey>{
 };
 
 G_BEGIN_DECLS
-// Static function within GLTextRenderer.cpp. Here declared for friend declaration in class GLTextRenderer.
-static void pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
-							 PangoGlyphItem *glyphItem, int x, int y);
+// Static functions within GLTextRenderer.cpp. Here declared for friend declaration in class GLTextRenderer.
+static void pango_gl_text_renderer_prepare_run(PangoRenderer *renderer, PangoLayoutRun *glyphItem);
+static void pango_gl_text_renderer_end (PangoRenderer *renderer);
+
 G_END_DECLS
 
 namespace OevGLES {
 	
 class GLTextRenderer: public RendererBase  {
 	
-	friend void ::pango_gl_draw_glyph_item(PangoRenderer *renderer, const char *text,
-								 PangoGlyphItem *glyphItem, int x, int y);
+	friend void ::pango_gl_text_renderer_prepare_run(PangoRenderer *renderer, PangoLayoutRun *glyphItem);
+	friend void ::pango_gl_text_renderer_end (PangoRenderer *renderer);
 	
 public:
 	enum RenderMode {

@@ -131,6 +131,7 @@ int main(int argint,char** argv) {
 		OevGLES::Vec3 up = {0,1,0};
 		OevGLES::Vec3 origin = {0,0,0};
 		OevGLES::Vec4 lightDir4;
+		OevGLES::Vec4 whiteColor {1.0f,1.0f,1.0f,1.0f};
 		OevGLES::Vec4 whiteTransparent0_5Color {1.0f,1.0f,1.0f,0.5f};
 		OevGLES::Vec4 whiteTransparent0_8Color {1.0f,1.0f,1.0f,0.8f};
 // 		OevGLES::Vec4 blackColor {0.0f,0.0f,0.0f,0.5f};
@@ -200,7 +201,7 @@ int main(int argint,char** argv) {
 "\nএকজন দুর্বৃত্ত যে এটাকে"
 "\n খারাপ মনে করে"
 "\nمحتال يعتقد الشر في هذا"
-"\n<span foreground=\"red\">LMN^OPQRSTUVW</span><span background=\"red\" foreground=\"green\">XA</span>BB<span foreground=\"green\">Ya</span>Z e<sup>x</sup>abcdefg"
+"\n<span foreground=\"red\" underline_color=\"yellow\">LMN^OPQRSTUVW</span><span background=\"purple\" foreground=\"yellow\">XA</span>BB<span foreground=\"green\">Ya</span>Z e<sup>x</sup>abcdefg"
 "\nhijk<i>lmn<span foreground=\"blue\">opq</span></i>rstuvwxzy!@#"
 "\n$%*()_+&lt;&gt;[]{}&amp;'.\\\\//.\\:\"|"
 "\n,./?€üöäÜÖÄ"
@@ -244,8 +245,8 @@ int main(int argint,char** argv) {
 		pango_layout_set_attributes( glTextRend.getPangoLayout(),attrList);
 
 		// glTextRend.setTextColor(std::make_shared<Vec4>(blackColor));
-		glTextRend.setTextColor(std::make_shared<Vec4>(blackColor));
-		glTextRend.setBackgroundColor(std::make_shared<Vec4>(whiteTransparent0_8Color));
+		glTextRend.setTextColor(std::make_shared<Vec4>(whiteColor));
+		glTextRend.setBackgroundColor(std::make_shared<Vec4>(whiteTransparent0_5Color));
 		glTextRend.setDrawBackground(true);
 
 		glTextRend.renderLayout();
@@ -325,9 +326,9 @@ int main(int argint,char** argv) {
 				textFieldControl->setSize ({250,40});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				textFieldControl->setFontSize(20);
-				textFieldControl->setText("This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|Jgq|J the second line.");
+				textFieldControl->setText("This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|IIJgq|J the second line.");
 				textFieldControl->setWidthIsFixed();
-				// textFieldControl->setHasFrame(true);
+				textFieldControl->setHasFrame(true);
 			}
 			{
 				auto textFieldControl = new OevControls::TextFieldControl			(
