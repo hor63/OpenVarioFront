@@ -22,15 +22,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
 #include "OVFCommon.h"
 
 #include "ExceptionBase.h"
-#include "fmt/base.h"
-#include "fmt/format.h"
 
 #include "ControlBase.h"
 #include "ControlsContainer.h"

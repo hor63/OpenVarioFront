@@ -26,10 +26,6 @@
 #ifndef LIB_UTIL_GLBUFFEROBJECT_H_
 #define LIB_UTIL_GLBUFFEROBJECT_H_
 
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <memory>
-
 #include "ExceptionBase.h"
 
 namespace OevGLES {

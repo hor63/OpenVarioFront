@@ -24,18 +24,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include "pango/pango-renderer.h"
-#include <log4cxx/logger.h>
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include "GLES/GLFramework.h"
-#include <GLES2/gl2.h>
-#include <cmath>
-#include <forward_list>
 #include "OVFCommon.h"
 
+#include "pango/pango-renderer.h"
+
+#include "GLES/GLFramework.h"
 #include "GLTextRenderer.h"
 
 // ===== Start private PangoGLTextRendererClass glib based stuff ===========================

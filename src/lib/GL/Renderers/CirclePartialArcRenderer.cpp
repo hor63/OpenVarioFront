@@ -4,19 +4,10 @@
  *  Created on: Jun 4, 2025
  *      Author: hor
  */
-#include "GLES/GLObjectWrappers.h"
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <GLES2/gl2.h>
-#include <cmath>
-
 #include "OVFCommon.h"
 
 #include "CircleBaseRenderer.h"
 #include "CirclePartialArcRenderer.h"
-#include "VecMat.h"
 #include <GLES/GLFramework.h>
 
 #if defined HAVE_LOG4CXX_H

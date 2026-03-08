@@ -26,9 +26,6 @@
 #ifndef GLTEXTRENDER_GLTEXTFONTTEXTURE_H_
 #define GLTEXTRENDER_GLTEXTFONTTEXTURE_H_
 
-#include <cstdint>
-#include <list>
-
 #include "GLTextGlyphBBox.h"
 #include "GLES/GLTexture.h"
 #include "freetype/freetype.h"

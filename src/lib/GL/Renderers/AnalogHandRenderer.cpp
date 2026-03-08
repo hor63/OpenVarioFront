@@ -22,19 +22,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "OVFCommon.h"
+
 #include "GLES/GLObjectWrappers.h"
 #include "GLES/GLProgram.h"
 #include "Renderers/RendererBase.h"
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include "GLES/GLFramework.h"
-#include <GLES2/gl2.h>
-
 #include "Renderers/AnalogHandRenderer.h"
-
-#include "OVFCommon.h"
 
 #if defined HAVE_LOG4CXX_H
 	static log4cxx::LoggerPtr logger;

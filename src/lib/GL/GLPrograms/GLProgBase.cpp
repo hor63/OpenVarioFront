@@ -22,20 +22,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include <typeinfo>
-#include <sstream>
-
 #include "OVFCommon.h"
 
 #include "GLPrograms/GLProgBase.h"
-
-#include "fmt/format.h"
-
 
 namespace OevGLES {
 

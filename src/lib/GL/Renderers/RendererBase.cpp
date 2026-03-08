@@ -22,15 +22,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
-#include <memory>
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include "OVFCommon.h"
 
 #include "Renderers/RendererBase.h"
-
-#include "OVFCommon.h"
 
 #if defined HAVE_LOG4CXX_H
 	static log4cxx::LoggerPtr loggerRenderStandardUniforms;

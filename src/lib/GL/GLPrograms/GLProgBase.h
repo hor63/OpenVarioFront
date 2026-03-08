@@ -27,7 +27,6 @@
 #define GLPROGBASE_H_
 
 #include "GLES/GLProgram.h"
-#include <GLES2/gl2.h>
 
 namespace OevGLES {
 

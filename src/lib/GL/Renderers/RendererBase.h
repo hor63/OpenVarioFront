@@ -26,10 +26,6 @@
 #ifndef RENDERERBASE_H_
 #define RENDERERBASE_H_
 
-#include <algorithm>
-#include <cassert>
-#include <cstdint>
-#include <memory>
 #include "GLPrograms/GLProgBase.h"
 
 #if defined Success

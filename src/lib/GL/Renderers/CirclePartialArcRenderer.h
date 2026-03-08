@@ -29,9 +29,6 @@
 #define RENDERERS_CIRCLEPARTIALARCRENDERER_H_
 
 #include "CircleBaseRenderer.h"
-#include "VecMat.h"
-#include <cmath>
-#include <cstdint>
 
 namespace OevGLES {
 

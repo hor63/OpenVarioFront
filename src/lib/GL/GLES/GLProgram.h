@@ -29,9 +29,6 @@
 #ifndef GLES_GLPROGRAM_H_
 #define GLES_GLPROGRAM_H_
 
-#include <string>
-#include <map>
-
 #include "GLES/GLShader.h"
 
 namespace OevGLES {

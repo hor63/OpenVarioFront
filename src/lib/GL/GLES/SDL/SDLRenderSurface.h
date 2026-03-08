@@ -26,8 +26,6 @@
 #ifndef GLES_EGLRENDERSURFACE_H_
 #define GLES_EGLRENDERSURFACE_H_
 
-#include <memory>
-
 #include "Renderers/RendererBase.h"
 #include "GLES/sysSDLWindow.h"
 #include "GLES/GLFramework.h"

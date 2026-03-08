@@ -29,8 +29,6 @@
 #ifndef GLES_GLFRAMEWORKPTR_H_
 #define GLES_GLFRAMEWORKPTR_H_
 
-#include <memory>
-
 namespace OevGLES {
 
 

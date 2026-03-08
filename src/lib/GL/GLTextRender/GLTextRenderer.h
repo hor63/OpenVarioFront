@@ -28,10 +28,6 @@
 #ifndef GLTEXTRENDER_GLTEXTRENDERER_H_
 #define GLTEXTRENDER_GLTEXTRENDERER_H_
 
-#include <array>
-
-#include <GLES2/gl2.h>
-
 #include "GLES/GLFramework.h"
 #include "GLES/GLObjectWrappers.h"
 #include "GLTextGlobals.h"
@@ -40,8 +36,6 @@
 #include "GLPrograms/GLProgControlSimpleFill.h"
 #include "Renderers/RenderContext.h"
 #include "Renderers/RendererBase.h"
-#include "glibconfig.h"
-#include "pango/pango-types.h"
 
 
 

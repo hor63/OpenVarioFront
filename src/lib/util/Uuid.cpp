@@ -4,17 +4,10 @@
  *  Created on: Aug 12, 2025
  *      Author: hor
  */
-#include "fmt/base.h"
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include <uuid.h>
-#include <cstring>
-#include "fmt/format.h"
 #include "OVFCommon.h"
 #include "ExceptionBase.h"
 
+#include <uuid.h>
 #include "Uuid.h"
 
 namespace OevUtil {

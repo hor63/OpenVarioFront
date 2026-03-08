@@ -21,21 +21,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include <memory>
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-
 #ifndef VECMAT_H_
 #define VECMAT_H_
 
-#include <cmath>
-
-
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <GLES2/gl2platform.h>
 #if defined HAVE_LOG4CXX_H
 #	include <log4cxx/logger.h>
 #endif

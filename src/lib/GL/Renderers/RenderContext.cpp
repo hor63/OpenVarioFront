@@ -22,11 +22,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include <GLES2/gl2.h>
-#include <memory>
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
 #include "OVFCommon.h"
 
 #include "RenderContext.h"

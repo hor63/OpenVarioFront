@@ -26,9 +26,6 @@
 #ifndef LIB_GL_GLES_TEXHELPER_IMAGEREADERBASE_H_
 #define LIB_GL_GLES_TEXHELPER_IMAGEREADERBASE_H_
 
-
-#include <string>
-
 #include "GLES/TexHelper/TextureData.h"
 
 namespace OevGLES {

@@ -22,22 +22,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include "GLES/TexHelper/ImageReaderBase.h"
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include <csetjmp>
-
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <sstream>
-
 #include "OVFCommon.h"
 
-#include "gettext.h"
-#include "fmt/format.h"
+#include "GLES/TexHelper/ImageReaderBase.h"
 
 #include "GLES/TexHelper/PngReader.h"
 #include "ExceptionBase.h"

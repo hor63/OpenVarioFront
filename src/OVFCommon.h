@@ -2,7 +2,7 @@
  * OVFCommon.h
  *
  *  Created on: Apr 25, 2018
- *      Author: hor
+ *      Author: hor	
  *
  *  Common definitions for building shared libraries
  *  and other helpers
@@ -56,18 +56,57 @@
 #ifndef OVFCOMMON_H_
 #define OVFCOMMON_H_
 
+// C++ headers
+#include <cstdlib>
+#include <cstdint>
+#include <cstdio>
+#include <cassert>
+#include <csetjmp>
+#include <memory>
+#include <utility>
+#include <string>
+#include <string_view>
 #include <ostream>
 #include <sstream>
-#include <string>
+#include <iostream>
 #include <iomanip>
+#include <array>
 #include <unordered_map>
-#include <stdlib.h>
-#include <cstdlib>
+#include <list>
+#include <forward_list>
+#include <typeinfo>
+#include <algorithm>
+#include <source_location>
+
+// Standard Linux headers
+#include "Uuid.h"
+
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+
+// 3rd party includes
+#include "SDL3/SDL.h"
+
+#include "pango/pango-types.h"
+#include <pango/pangoft2.h>
+
+#include "fmt/base.h"
+#include "fmt/format.h"
 
 #ifndef PACKAGE_STRING
 #	if defined HAVE_CONFIG_H
 #		include "config.h"
 #	endif
+#endif
+
+#include "gettext.h"
+
+#include "ExceptionBase.h"
+
+// Success is defined in X headers, but collides with an enum value in lib Eigen.
+#if defined Success
+#	undef Success
 #endif
 
 #if defined HAVE_LOG4CXX_H

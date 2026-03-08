@@ -24,18 +24,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
-#include <log4cxx/logger.h>
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
-#include <sstream>
-
 #include "OVFCommon.h"
+
 
 #include "GLES/sysSDLWindow.h"
 #include "ExceptionBase.h"

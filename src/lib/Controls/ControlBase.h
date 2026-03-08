@@ -26,14 +26,7 @@
 #ifndef LIB_CONTROLS_CONTROLBASE_H_
 #define LIB_CONTROLS_CONTROLBASE_H_
 
-#include <GLES2/gl2.h>
-#include <cstdint>
-#include <string>
-#include <memory>
-
 #include "Renderers/RendererBase.h"
-#include "VecMat.h"
-#include "Uuid.h"
 #include "GLES/SDL/SDLRenderSurface.h"
 
 

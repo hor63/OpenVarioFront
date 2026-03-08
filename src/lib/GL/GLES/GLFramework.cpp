@@ -4,13 +4,9 @@
  *  Created on: Feb 2, 2025
  *      Author: hor
  */
+#include "OVFCommon.h"
 
-#include <memory>
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
 #include "GLES/SDL/SDLRenderSurface.h"
-#include <log4cxx/logger.h>
 
 #include "GLES/GLFramework.h"
 #include "SDLUtil.h"

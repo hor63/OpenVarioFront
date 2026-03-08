@@ -9,8 +9,6 @@
 #define LIB_CONTROLS_ROOTCONTROL_H_
 
 #include "ControlsContainer.h"
-#include <memory>
-
 
 #include "GLES/SDL/SDLRenderSurface.h"
 

@@ -8,18 +8,9 @@
 #ifndef GLES_GLFRAMEWORK_H_
 #define GLES_GLFRAMEWORK_H_
 
-#include "OVFCommon.h"
-
-
-#include <GLES2/gl2platform.h>
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <unordered_map>
-
 #include "SDL/SDLRenderSurface.h"
 
 #include "GLFrameWorkPtr.h"
-#include "SDL3/SDL_video.h"
 
 namespace OevGLES {
 

@@ -25,26 +25,9 @@
  *
  */
 
-#include "ControlBase.h"
-#include "GLES/SDL/SDLRenderSurface.h"
-#include "SDL3/SDL_stdinc.h"
-#include <GLES2/gl2.h>
-#include <string>
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-#include <memory>
-#include <iostream>
-#include <fstream>
-#include "SDL3/SDL_events.h"
-#include "SDL3/SDL_keyboard.h"
-#include "SDL3/SDL_video.h"
-
 #include "OVFCommon.h"
 
 #include "GLES/GLFramework.h"
-#include "GLES/GLShader.h"
-#include "GLES/GLProgram.h"
 #include "Renderers/AnalogHandRenderer.h"
 #include "Renderers/SquareTextureRenderer.h"
 #include "Renderers/CircleBaseRenderer.h"
@@ -54,13 +37,6 @@
 #include "RootControl.h"
 #include "PlainFieldControl.h"
 #include "TextFieldControl.h"
-
-// Success is defined in X headers, but collides with an enum value in lib Eigen.
-#if defined Success
-#	undef Success
-#endif
-
-#include "VecMat.h"
 
 using namespace OevGLES;
 

@@ -4,19 +4,9 @@
  *  Created on: Apr 22, 2025
  *      Author: hor
  */
-#include "GLES/GLFramework.h"
-#include "GLES/GLObjectWrappers.h"
-#include <complex>
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <GLES2/gl2.h>
-
-#include <cmath>
-
 #include "OVFCommon.h"
 
+#include "Renderers/RenderContext.h"
 #include "CirclePolygonVertexContainer.h"
 #include "GLPrograms/GLProgDiffLightCircle.h"
 #include "VecMat.h"

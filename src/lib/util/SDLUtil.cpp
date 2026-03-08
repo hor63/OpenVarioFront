@@ -24,19 +24,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include "SDLUtil.h"
-
-#include <SDL3/SDL_error.h>
-
-#include "fmt/base.h"
-#include "fmt/format.h"
-
 #include "OVFCommon.h"
 
+#include "SDLUtil.h"
 #include "ExceptionBase.h"
 
 namespace OevUtil {

@@ -26,10 +26,6 @@
 #ifndef LIB_CONTROLS_CONTROLSCONTEXT_H_
 #define LIB_CONTROLS_CONTROLSCONTEXT_H_
 
-#include <GLES2/gl2.h>
-#include <memory>
-#include <string>
-
 #include "VecMat.h"
 #include "GLES/GLObjectWrappers.h"
 #include "Renderers/CirclePolygonVertexContainer.h"

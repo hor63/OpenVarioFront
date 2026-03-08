@@ -8,13 +8,6 @@
 #ifndef RENDERERS_CIRCLEPOLYGONVERTEXCONTAINER_H_
 #define RENDERERS_CIRCLEPOLYGONVERTEXCONTAINER_H_
 
-#include <array>
-#include <map>
-
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <GLES2/gl2platform.h>
-
 #include "VecMat.h"
 
 #include "Renderers/RenderContext.h"

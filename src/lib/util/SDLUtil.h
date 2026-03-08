@@ -27,8 +27,6 @@
 #ifndef LIB_UTIL_SDLUTIL_H_
 #define LIB_UTIL_SDLUTIL_H_
 
-#include <source_location>
-
 namespace OevUtil {
 	
 void reportSDLError( std::source_location const& sourceLocation,char const *sdlFunctionName);

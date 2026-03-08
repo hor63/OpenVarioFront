@@ -4,15 +4,9 @@
  *  Created on: Aug 23, 2025
  *      Author: hor
  */
+#include "OVFCommon.h"
 #include "ControlBase.h"
 #include "ExceptionBase.h"
-#include <GLES2/gl2.h>
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-#include "OVFCommon.h"
-
-#include <cstdio>
 
 #include "RootControl.h"
 

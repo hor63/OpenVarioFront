@@ -493,10 +493,15 @@ AM_CXXFLAGS = $(INTERNAL_CFLAGS) \
 AM_LDFLAGS = \
 	$(EXTERN_LIBRARY_LDFLAGS) 
 
+SUFFIXES = .h .gch
+
+# Cheat config.status. Otherwise it would not generate
+# the default dependency tracking code.
+XAM_DEPFILES = am--depfiles
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
+.SUFFIXES: .h .gch .cpp .lo .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -910,6 +915,23 @@ all: $(abs_builddir)/OpenVarioFront.logger.properties
 
 $(abs_builddir)/OpenVarioFront.logger.properties: $(srcdir)/OpenVarioFront.logger.properties
 	cp $(srcdir)/OpenVarioFront.logger.properties $(abs_builddir)/OpenVarioFront.logger.properties
+
+.h.gch:
+	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -o $@ $<
+	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	$(AM_V_at)cp -pv $@ $(srcdir)/$*.h.gch
+
+./$(DEPDIR)/OVFCommon.Po:
+	@$(MKDIR_P) $(@D)
+	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
+
+$(XAM_DEPFILES): ./$(DEPDIR)/OVFCommon.Po
+
+include ./$(DEPDIR)/OVFCommon.Po # am--include-marker
+
+$(XAM_DEPFILES): OVFCommon.gch
+
+OVFCommon.gch: $(srcdir)/OVFCommon.h 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

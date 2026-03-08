@@ -22,18 +22,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include <csetjmp>
-#include <cstdint>
-#include <cstdio>
-
 #include "OVFCommon.h"
-
-#include "gettext.h"
-#include "fmt/format.h"
 
 #include "GLES/TexHelper/JpegReader.h"
 #include "ExceptionBase.h"

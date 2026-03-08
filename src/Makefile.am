@@ -16,7 +16,6 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 SUBDIRS=../resources lib/util lib/GL lib/Controls
-	
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
@@ -58,3 +57,27 @@ all: $(abs_builddir)/OpenVarioFront.logger.properties
 
 $(abs_builddir)/OpenVarioFront.logger.properties: $(srcdir)/OpenVarioFront.logger.properties
 	cp $(srcdir)/OpenVarioFront.logger.properties $(abs_builddir)/OpenVarioFront.logger.properties
+	
+	
+SUFFIXES= .h .gch
+
+.h.gch:
+	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -o $@ $<
+	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	$(AM_V_at)cp -pv $@ $(srcdir)/$*.h.gch
+
+./$(DEPDIR)/OVFCommon.Po:
+	@$(MKDIR_P) $(@D)
+	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
+
+# Cheat config.status. Otherwise it would not generate
+# the default dependency tracking code.
+XAM_DEPFILES = am--depfiles
+
+$(XAM_DEPFILES): ./$(DEPDIR)/OVFCommon.Po
+
+include ./$(DEPDIR)/OVFCommon.Po # am--include-marker
+
+$(XAM_DEPFILES): OVFCommon.gch
+
+OVFCommon.gch: $(srcdir)/OVFCommon.h 
