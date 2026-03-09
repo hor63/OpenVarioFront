@@ -33,3 +33,13 @@ AM_CXXFLAGS=$(INTERNAL_CFLAGS) \
 
 AM_LDFLAGS= $(LOG4CXX_LDFLAGS)
 
+
+# Re-compile the precompiled header
+PRECOMP_HEADER_DIR = $(abs_top_builddir)/src
+PRECOMP_HEADER = OVFCommon.gch
+-include $(PRECOMP_HEADER_DIR)/.deps/OVFCommon.Po # am--include-marker
+
+$(libOEV_util_a_OBJECTS): $(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER)
+
+$(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER):
+	$(MAKE) -C $(PRECOMP_HEADER_DIR) $(PRECOMP_HEADER)

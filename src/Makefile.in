@@ -494,10 +494,6 @@ AM_LDFLAGS = \
 	$(EXTERN_LIBRARY_LDFLAGS) 
 
 SUFFIXES = .h .gch
-
-# Cheat config.status. Otherwise it would not generate
-# the default dependency tracking code.
-XAM_DEPFILES = am--depfiles
 all: all-recursive
 
 .SUFFIXES:
@@ -822,8 +818,6 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
-
 distclean: distclean-recursive
 		-rm -f ./$(DEPDIR)/OpenVarioFront.Po
 	-rm -f Makefile
@@ -925,13 +919,17 @@ $(abs_builddir)/OpenVarioFront.logger.properties: $(srcdir)/OpenVarioFront.logge
 	@$(MKDIR_P) $(@D)
 	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
-$(XAM_DEPFILES): ./$(DEPDIR)/OVFCommon.Po
-
 include ./$(DEPDIR)/OVFCommon.Po # am--include-marker
 
-$(XAM_DEPFILES): OVFCommon.gch
-
 OVFCommon.gch: $(srcdir)/OVFCommon.h 
+
+$(OpenVarioFront_OBJECTS): OVFCommon.gch
+
+clean-am: clean-precomp-header
+
+clean-precomp-header:
+	-echo "Remove precompiled header"
+	-rm -f OVFCommon.gch $(srcdir)/OVFCommon.h.gch
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

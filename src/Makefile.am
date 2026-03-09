@@ -70,14 +70,14 @@ SUFFIXES= .h .gch
 	@$(MKDIR_P) $(@D)
 	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
-# Cheat config.status. Otherwise it would not generate
-# the default dependency tracking code.
-XAM_DEPFILES = am--depfiles
-
-$(XAM_DEPFILES): ./$(DEPDIR)/OVFCommon.Po
-
 include ./$(DEPDIR)/OVFCommon.Po # am--include-marker
 
-$(XAM_DEPFILES): OVFCommon.gch
-
 OVFCommon.gch: $(srcdir)/OVFCommon.h 
+
+$(OpenVarioFront_OBJECTS): OVFCommon.gch
+
+clean-am: clean-precomp-header
+
+clean-precomp-header:
+	-echo "Remove precompiled header"
+	-rm -f OVFCommon.gch $(srcdir)/OVFCommon.h.gch

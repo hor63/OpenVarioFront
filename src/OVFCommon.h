@@ -102,6 +102,7 @@
 
 #include "gettext.h"
 
+#include "VecMat.h"
 #include "ExceptionBase.h"
 
 // Success is defined in X headers, but collides with an enum value in lib Eigen.

@@ -439,6 +439,10 @@ AM_CXXFLAGS = $(INTERNAL_CFLAGS) \
 #	$(LIBPNG_CFLAGS) $(LIBJPEG_CFLAGS) \
 #	$(SDL3_CFLAGS) $(GLES2_CFLAGS) $(PTHREAD_CFLAGS)
 AM_LDFLAGS = $(LOG4CXX_LDFLAGS)
+
+# Re-compile the precompiled header
+PRECOMP_HEADER_DIR = $(abs_top_builddir)/src
+PRECOMP_HEADER = OVFCommon.gch
 all: all-am
 
 .SUFFIXES:
@@ -793,6 +797,12 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+-include $(PRECOMP_HEADER_DIR)/.deps/OVFCommon.Po # am--include-marker
+
+$(libOEV_util_a_OBJECTS): $(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER)
+
+$(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER):
+	$(MAKE) -C $(PRECOMP_HEADER_DIR) $(PRECOMP_HEADER)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
