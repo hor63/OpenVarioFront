@@ -301,12 +301,15 @@ AC_SUBST([EXTERN_LIBRARY_LIBS])
 EXTERN_LIBRARY_LDFLAGS="$LOG4CXX_LDFLAGS"
 AC_SUBST([EXTERN_LIBRARY_LDFLAGS])
 
+# -Wno-ignored-attributes to suppress warnings from lib Eigen included in the
+# precompiled header, which are seemingly erroneous.
 INTERNAL_CFLAGS="-I\$(top_srcdir)/src \
  -I\$(top_srcdir)/src/lib/GL \
  -I\$(top_srcdir)/src/lib/util \
  -I\$(top_srcdir)/src/lib/Controls \
  -I\$(top_srcdir)/3rdParty/eigen/Eigen \
- -I\$(top_srcdir)/3rdParty/fmt/include"
+ -I\$(top_srcdir)/3rdParty/fmt/include \
+ -Wno-ignored-attributes"
 AC_SUBST([INTERNAL_CFLAGS])
 
 DX_DOXYGEN_FEATURE(ON)
