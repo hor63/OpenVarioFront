@@ -15,18 +15,18 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=../resources lib/util lib/GL lib/Controls
+SUBDIRS=../resources lib/util lib/GL lib/GUI
 
 bin_PROGRAMS=OpenVarioFront$(EXEEXT)
 
 OpenVarioFront_SOURCES=OpenVarioFront.cpp
 
 LOCAL_LIBS_GROUP = \
-	lib/Controls/libOEV_Controls.a \
+	lib/GUI/libOEV_GUI.a \
 	lib/GL/libOEV_GLES.a \
 	lib/util/libOEV_util.a \
 	../resources/libOEV_resurces.a \
-	./lib/Controls/libOEV_Controls.a \
+	./lib/GUI/libOEV_GUI.a \
 	./lib/GL/libOEV_GLES.a \
 	./lib/util/libOEV_util.a \
 	./../resources/libOEV_resurces.a

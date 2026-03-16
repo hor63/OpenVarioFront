@@ -26,7 +26,7 @@
 #ifndef LIB_CONTROLS_BUTTONCONTROL_H_
 #define LIB_CONTROLS_BUTTONCONTROL_H_
 
-#include "lib/Controls/TextFieldControl.h"
+#include "TextFieldControl.h"
 
 namespace OevControls {
 

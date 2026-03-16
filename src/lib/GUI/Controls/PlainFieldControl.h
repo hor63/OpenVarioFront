@@ -26,7 +26,7 @@
 #ifndef LIB_CONTROLS_PLAINFIELDCONTROL_H_
 #define LIB_CONTROLS_PLAINFIELDCONTROL_H_
 
-#include <ControlBase.h>
+#include "ControlBase.h"
 
 namespace OevControls {
 

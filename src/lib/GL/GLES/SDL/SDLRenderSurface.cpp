@@ -27,7 +27,7 @@
 #include "GLES/GLObjectWrappers.h"
 #include "Renderers/RendererBase.h"
 
-#include "RootControl.h"
+#include "Controls/RootControl.h"
 
 #include "GLES/GLFramework.h"
 #include "SDLUtil.h"

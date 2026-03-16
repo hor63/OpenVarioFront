@@ -25690,7 +25690,7 @@ EXTERN_LIBRARY_LDFLAGS="$LOG4CXX_LDFLAGS"
 INTERNAL_CFLAGS="-I\$(top_srcdir)/src \
  -I\$(top_srcdir)/src/lib/GL \
  -I\$(top_srcdir)/src/lib/util \
- -I\$(top_srcdir)/src/lib/Controls \
+ -I\$(top_srcdir)/src/lib/GUI \
  -I\$(top_srcdir)/3rdParty/eigen/Eigen \
  -I\$(top_srcdir)/3rdParty/fmt/include \
  -Wno-ignored-attributes"
@@ -27790,7 +27790,7 @@ DX_RULES="${DX_SNIPPET_doc}"
 #echo DX_ENV=$DX_ENV
 
 
-ac_config_files="$ac_config_files Makefile po/Makefile.in 3rdParty/Makefile resources/Makefile src/Makefile src/lib/GL/Makefile src/lib/util/Makefile src/lib/Controls/Makefile"
+ac_config_files="$ac_config_files Makefile po/Makefile.in 3rdParty/Makefile resources/Makefile src/Makefile src/lib/GL/Makefile src/lib/util/Makefile src/lib/GUI/Makefile"
 
 
 
@@ -28930,7 +28930,7 @@ do
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/lib/GL/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/GL/Makefile" ;;
     "src/lib/util/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/util/Makefile" ;;
-    "src/lib/Controls/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/Controls/Makefile" ;;
+    "src/lib/GUI/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/GUI/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

@@ -27,7 +27,7 @@
 #define LIB_CONTROLS_TEXTFIELDCONTROL_H_
 
 #include "Renderers/RendererBase.h"
-#include "lib/Controls/PlainFieldControl.h"
+#include "PlainFieldControl.h"
 #include "GLTextRender/GLTextRenderer.h"
 
 namespace OevControls {

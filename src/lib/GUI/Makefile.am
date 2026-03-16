@@ -15,10 +15,10 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-noinst_LIBRARIES = libOEV_Controls.a
-libOEV_Controls_a_SOURCES = \
-	ControlBase.cpp ControlsContainer.cpp RootControl.cpp PlainFieldControl.cpp \
-	TextFieldControl.cpp ButtonControl.cpp
+noinst_LIBRARIES = libOEV_GUI.a
+libOEV_GUI_a_SOURCES = \
+	Controls/ControlBase.cpp Controls/ControlsContainer.cpp Controls/RootControl.cpp Controls/PlainFieldControl.cpp \
+	Controls/TextFieldControl.cpp Controls/ButtonControl.cpp
 
 AM_CXXFLAGS=$(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)
@@ -36,7 +36,7 @@ PRECOMP_HEADER_DIR = $(abs_top_builddir)/src
 PRECOMP_HEADER = OVFCommon.gch
 -include $(PRECOMP_HEADER_DIR)/.deps/OVFCommon.Po # am--include-marker
 
-$(libOEV_Controls_a_OBJECTS): $(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER)
+$(libOEV_GUI_a_OBJECTS): $(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER)
 
 $(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER):
 	$(MAKE) -C $(PRECOMP_HEADER_DIR) $(PRECOMP_HEADER)

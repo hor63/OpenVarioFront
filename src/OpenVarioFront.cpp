@@ -34,9 +34,9 @@
 #include "Renderers/CircleFilledRenderer.h"
 #include "Renderers/CirclePartialArcRenderer.h"
 #include "GLTextRender/GLTextRenderer.h"
-#include "RootControl.h"
-#include "PlainFieldControl.h"
-#include "TextFieldControl.h"
+#include "Controls/RootControl.h"
+#include "Controls/PlainFieldControl.h"
+#include "Controls/TextFieldControl.h"
 
 using namespace OevGLES;
 
@@ -181,7 +181,9 @@ int main(int argint,char** argv) {
 "\nhijk<i>lmn<span foreground=\"blue\">opq</span></i>rstuvwxzy!@#"
 "\n$%*()_+&lt;&gt;[]{}&amp;'.\\\\//.\\:\"|"
 "\n,./?€üöäÜÖÄ"
-"\níéóúêîôû'´`îêôû°ß-="};
+"\níéóúêîôû'´`îêôû°ß-="
+"\n\u2639\u263A"};
+// "\n\u0001F600"};
 
 /*
 				"\nLMNOPQRSTUV"

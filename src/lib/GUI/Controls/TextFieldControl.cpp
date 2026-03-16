@@ -24,7 +24,7 @@
  */
 #include "OVFCommon.h"
 
-#include "lib/Controls/TextFieldControl.h"
+#include "TextFieldControl.h"
 
 #if defined HAVE_LOG4CXX_H
 	static log4cxx::LoggerPtr logger;

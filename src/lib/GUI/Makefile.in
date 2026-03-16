@@ -106,7 +106,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = src/lib/Controls
+subdir = src/lib/GUI
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/host-cpu-c-abi.m4 \
@@ -130,13 +130,13 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libOEV_Controls_a_AR = $(AR) $(ARFLAGS)
-libOEV_Controls_a_LIBADD =
-am_libOEV_Controls_a_OBJECTS = ControlBase.$(OBJEXT) \
+libOEV_GUI_a_AR = $(AR) $(ARFLAGS)
+libOEV_GUI_a_LIBADD =
+am_libOEV_GUI_a_OBJECTS = ControlBase.$(OBJEXT) \
 	ControlsContainer.$(OBJEXT) RootControl.$(OBJEXT) \
 	PlainFieldControl.$(OBJEXT) TextFieldControl.$(OBJEXT) \
 	ButtonControl.$(OBJEXT)
-libOEV_Controls_a_OBJECTS = $(am_libOEV_Controls_a_OBJECTS)
+libOEV_GUI_a_OBJECTS = $(am_libOEV_GUI_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -157,12 +157,12 @@ am__depfiles_remade = ./$(DEPDIR)/ButtonControl.Po \
 	./$(DEPDIR)/PlainFieldControl.Po ./$(DEPDIR)/RootControl.Po \
 	./$(DEPDIR)/TextFieldControl.Po
 am__mv = mv -f
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) \
 	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
@@ -179,8 +179,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libOEV_Controls_a_SOURCES)
-DIST_SOURCES = $(libOEV_Controls_a_SOURCES)
+SOURCES = $(libOEV_GUI_a_SOURCES)
+DIST_SOURCES = $(libOEV_GUI_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -426,10 +426,10 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libOEV_Controls.a
-libOEV_Controls_a_SOURCES = \
-	ControlBase.cpp ControlsContainer.cpp RootControl.cpp PlainFieldControl.cpp \
-	TextFieldControl.cpp ButtonControl.cpp
+noinst_LIBRARIES = libOEV_GUI.a
+libOEV_GUI_a_SOURCES = \
+	Controls/ControlBase.cpp Controls/ControlsContainer.cpp Controls/RootControl.cpp Controls/PlainFieldControl.cpp \
+	Controls/TextFieldControl.cpp Controls/ButtonControl.cpp
 
 AM_CXXFLAGS = $(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)
@@ -456,9 +456,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/lib/Controls/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/lib/GUI/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/lib/Controls/Makefile
+	  $(AUTOMAKE) --gnu src/lib/GUI/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -480,10 +480,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libOEV_Controls.a: $(libOEV_Controls_a_OBJECTS) $(libOEV_Controls_a_DEPENDENCIES) $(EXTRA_libOEV_Controls_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libOEV_Controls.a
-	$(AM_V_AR)$(libOEV_Controls_a_AR) libOEV_Controls.a $(libOEV_Controls_a_OBJECTS) $(libOEV_Controls_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libOEV_Controls.a
+libOEV_GUI.a: $(libOEV_GUI_a_OBJECTS) $(libOEV_GUI_a_DEPENDENCIES) $(EXTRA_libOEV_GUI_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libOEV_GUI.a
+	$(AM_V_AR)$(libOEV_GUI_a_AR) libOEV_GUI.a $(libOEV_GUI_a_OBJECTS) $(libOEV_GUI_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libOEV_GUI.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -524,6 +524,90 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+ControlBase.o: Controls/ControlBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ControlBase.o -MD -MP -MF $(DEPDIR)/ControlBase.Tpo -c -o ControlBase.o `test -f 'Controls/ControlBase.cpp' || echo '$(srcdir)/'`Controls/ControlBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ControlBase.Tpo $(DEPDIR)/ControlBase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/ControlBase.cpp' object='ControlBase.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ControlBase.o `test -f 'Controls/ControlBase.cpp' || echo '$(srcdir)/'`Controls/ControlBase.cpp
+
+ControlBase.obj: Controls/ControlBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ControlBase.obj -MD -MP -MF $(DEPDIR)/ControlBase.Tpo -c -o ControlBase.obj `if test -f 'Controls/ControlBase.cpp'; then $(CYGPATH_W) 'Controls/ControlBase.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/ControlBase.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ControlBase.Tpo $(DEPDIR)/ControlBase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/ControlBase.cpp' object='ControlBase.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ControlBase.obj `if test -f 'Controls/ControlBase.cpp'; then $(CYGPATH_W) 'Controls/ControlBase.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/ControlBase.cpp'; fi`
+
+ControlsContainer.o: Controls/ControlsContainer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ControlsContainer.o -MD -MP -MF $(DEPDIR)/ControlsContainer.Tpo -c -o ControlsContainer.o `test -f 'Controls/ControlsContainer.cpp' || echo '$(srcdir)/'`Controls/ControlsContainer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ControlsContainer.Tpo $(DEPDIR)/ControlsContainer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/ControlsContainer.cpp' object='ControlsContainer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ControlsContainer.o `test -f 'Controls/ControlsContainer.cpp' || echo '$(srcdir)/'`Controls/ControlsContainer.cpp
+
+ControlsContainer.obj: Controls/ControlsContainer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ControlsContainer.obj -MD -MP -MF $(DEPDIR)/ControlsContainer.Tpo -c -o ControlsContainer.obj `if test -f 'Controls/ControlsContainer.cpp'; then $(CYGPATH_W) 'Controls/ControlsContainer.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/ControlsContainer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ControlsContainer.Tpo $(DEPDIR)/ControlsContainer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/ControlsContainer.cpp' object='ControlsContainer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ControlsContainer.obj `if test -f 'Controls/ControlsContainer.cpp'; then $(CYGPATH_W) 'Controls/ControlsContainer.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/ControlsContainer.cpp'; fi`
+
+RootControl.o: Controls/RootControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RootControl.o -MD -MP -MF $(DEPDIR)/RootControl.Tpo -c -o RootControl.o `test -f 'Controls/RootControl.cpp' || echo '$(srcdir)/'`Controls/RootControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RootControl.Tpo $(DEPDIR)/RootControl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/RootControl.cpp' object='RootControl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RootControl.o `test -f 'Controls/RootControl.cpp' || echo '$(srcdir)/'`Controls/RootControl.cpp
+
+RootControl.obj: Controls/RootControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RootControl.obj -MD -MP -MF $(DEPDIR)/RootControl.Tpo -c -o RootControl.obj `if test -f 'Controls/RootControl.cpp'; then $(CYGPATH_W) 'Controls/RootControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/RootControl.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RootControl.Tpo $(DEPDIR)/RootControl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/RootControl.cpp' object='RootControl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RootControl.obj `if test -f 'Controls/RootControl.cpp'; then $(CYGPATH_W) 'Controls/RootControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/RootControl.cpp'; fi`
+
+PlainFieldControl.o: Controls/PlainFieldControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PlainFieldControl.o -MD -MP -MF $(DEPDIR)/PlainFieldControl.Tpo -c -o PlainFieldControl.o `test -f 'Controls/PlainFieldControl.cpp' || echo '$(srcdir)/'`Controls/PlainFieldControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/PlainFieldControl.Tpo $(DEPDIR)/PlainFieldControl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/PlainFieldControl.cpp' object='PlainFieldControl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PlainFieldControl.o `test -f 'Controls/PlainFieldControl.cpp' || echo '$(srcdir)/'`Controls/PlainFieldControl.cpp
+
+PlainFieldControl.obj: Controls/PlainFieldControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PlainFieldControl.obj -MD -MP -MF $(DEPDIR)/PlainFieldControl.Tpo -c -o PlainFieldControl.obj `if test -f 'Controls/PlainFieldControl.cpp'; then $(CYGPATH_W) 'Controls/PlainFieldControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/PlainFieldControl.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/PlainFieldControl.Tpo $(DEPDIR)/PlainFieldControl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/PlainFieldControl.cpp' object='PlainFieldControl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PlainFieldControl.obj `if test -f 'Controls/PlainFieldControl.cpp'; then $(CYGPATH_W) 'Controls/PlainFieldControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/PlainFieldControl.cpp'; fi`
+
+TextFieldControl.o: Controls/TextFieldControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TextFieldControl.o -MD -MP -MF $(DEPDIR)/TextFieldControl.Tpo -c -o TextFieldControl.o `test -f 'Controls/TextFieldControl.cpp' || echo '$(srcdir)/'`Controls/TextFieldControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/TextFieldControl.Tpo $(DEPDIR)/TextFieldControl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/TextFieldControl.cpp' object='TextFieldControl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TextFieldControl.o `test -f 'Controls/TextFieldControl.cpp' || echo '$(srcdir)/'`Controls/TextFieldControl.cpp
+
+TextFieldControl.obj: Controls/TextFieldControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TextFieldControl.obj -MD -MP -MF $(DEPDIR)/TextFieldControl.Tpo -c -o TextFieldControl.obj `if test -f 'Controls/TextFieldControl.cpp'; then $(CYGPATH_W) 'Controls/TextFieldControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/TextFieldControl.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/TextFieldControl.Tpo $(DEPDIR)/TextFieldControl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/TextFieldControl.cpp' object='TextFieldControl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TextFieldControl.obj `if test -f 'Controls/TextFieldControl.cpp'; then $(CYGPATH_W) 'Controls/TextFieldControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/TextFieldControl.cpp'; fi`
+
+ButtonControl.o: Controls/ButtonControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ButtonControl.o -MD -MP -MF $(DEPDIR)/ButtonControl.Tpo -c -o ButtonControl.o `test -f 'Controls/ButtonControl.cpp' || echo '$(srcdir)/'`Controls/ButtonControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ButtonControl.Tpo $(DEPDIR)/ButtonControl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/ButtonControl.cpp' object='ButtonControl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ButtonControl.o `test -f 'Controls/ButtonControl.cpp' || echo '$(srcdir)/'`Controls/ButtonControl.cpp
+
+ButtonControl.obj: Controls/ButtonControl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ButtonControl.obj -MD -MP -MF $(DEPDIR)/ButtonControl.Tpo -c -o ButtonControl.obj `if test -f 'Controls/ButtonControl.cpp'; then $(CYGPATH_W) 'Controls/ButtonControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/ButtonControl.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ButtonControl.Tpo $(DEPDIR)/ButtonControl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/ButtonControl.cpp' object='ButtonControl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ButtonControl.obj `if test -f 'Controls/ButtonControl.cpp'; then $(CYGPATH_W) 'Controls/ButtonControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/ButtonControl.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -750,7 +834,7 @@ uninstall-am:
 
 -include $(PRECOMP_HEADER_DIR)/.deps/OVFCommon.Po # am--include-marker
 
-$(libOEV_Controls_a_OBJECTS): $(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER)
+$(libOEV_GUI_a_OBJECTS): $(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER)
 
 $(PRECOMP_HEADER_DIR)/$(PRECOMP_HEADER):
 	$(MAKE) -C $(PRECOMP_HEADER_DIR) $(PRECOMP_HEADER)

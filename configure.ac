@@ -306,7 +306,7 @@ AC_SUBST([EXTERN_LIBRARY_LDFLAGS])
 INTERNAL_CFLAGS="-I\$(top_srcdir)/src \
  -I\$(top_srcdir)/src/lib/GL \
  -I\$(top_srcdir)/src/lib/util \
- -I\$(top_srcdir)/src/lib/Controls \
+ -I\$(top_srcdir)/src/lib/GUI \
  -I\$(top_srcdir)/3rdParty/eigen/Eigen \
  -I\$(top_srcdir)/3rdParty/fmt/include \
  -Wno-ignored-attributes"
@@ -326,7 +326,7 @@ AC_CONFIG_FILES(Makefile
                 src/Makefile
                 src/lib/GL/Makefile
                 src/lib/util/Makefile
-                src/lib/Controls/Makefile
+                src/lib/GUI/Makefile
                 )
 
 AC_SUBST([AC_APP_CXXFLAGS])

@@ -459,15 +459,15 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = ../resources lib/util lib/GL lib/Controls
+SUBDIRS = ../resources lib/util lib/GL lib/GUI
 bin_PROGRAMS = OpenVarioFront$(EXEEXT)
 OpenVarioFront_SOURCES = OpenVarioFront.cpp
 LOCAL_LIBS_GROUP = \
-	lib/Controls/libOEV_Controls.a \
+	lib/GUI/libOEV_GUI.a \
 	lib/GL/libOEV_GLES.a \
 	lib/util/libOEV_util.a \
 	../resources/libOEV_resurces.a \
-	./lib/Controls/libOEV_Controls.a \
+	./lib/GUI/libOEV_GUI.a \
 	./lib/GL/libOEV_GLES.a \
 	./lib/util/libOEV_util.a \
 	./../resources/libOEV_resurces.a
