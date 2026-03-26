@@ -66,6 +66,12 @@ export PKG_CONFIG_PATH="${pkg_config_libdir}/pkgconfig"
 AC_PROG_CXX
 AM_PROG_AS
 AX_PROG_CXX_FOR_BUILD
+
+# Save the original C++ compiler command for pango.
+# Pango *i.e. Harfbuzz) may determine the applicable C++ standard itself
+# Setting the C++ standard explicitly crashes Meson for Pango.
+CXX_RAW="$CXX"
+
 AX_CXX_COMPILE_STDCXX(20, ext, mandatory)
 AX_PTHREAD()
 
@@ -259,8 +265,8 @@ AC_SUBST([SDL3_LIBS])
 PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 >= 1.55.5 pango  >= 1.55.5 harfbuzz],[PANGOFOUND=1],[PANGOFOUND=0])
 if test "${PANGOFOUND}". != 1.
 then
-	AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
-	CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
+	AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC=\"$CC\" CXX=\"$CXX_RAW\" "]) 
+	CC="$CC" CXX="$CXX_RAW" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
 	   -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
 	   -Ddefault_library=shared \
 	   -Doptimization=2 -Ddebug=true \
@@ -337,8 +343,8 @@ AC_OUTPUT
 AS_ECHO(["configure: creating directory doc/doxygen"]) 
 AS_MKDIR_P(doc/doxygen)
 
-AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "]) 
-CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
+AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC=\"$CC\" CXX=\"$CXX_RAW\" "]) 
+CC="$CC" CXX="$CXX_RAW" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
    -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
    -Ddefault_library=shared \
    -Doptimization=2 -Ddebug=true \

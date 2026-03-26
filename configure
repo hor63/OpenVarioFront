@@ -10801,6 +10801,12 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+# Save the original C++ compiler command for pango.
+# Pango *i.e. Harfbuzz) may determine the applicable C++ standard itself
+# Setting the C++ standard explicitly crashes Meson for Pango.
+CXX_RAW="$CXX"
+
+
   ax_cxx_compile_alternatives="20"    ax_cxx_compile_cxx20_required=true
   ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -25463,8 +25469,8 @@ printf "%s\n" "yes" >&6; }
 fi
 if test "${PANGOFOUND}". != 1.
 then
-	printf "%s\n" "configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "
-	CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
+	printf "%s\n" "configure: Use meson to create the ninja equivalent of a Makefile with CC=\"$CC\" CXX=\"$CXX_RAW\" "
+	CC="$CC" CXX="$CXX_RAW" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
 	   -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
 	   -Ddefault_library=shared \
 	   -Doptimization=2 -Ddebug=true \
@@ -30495,8 +30501,8 @@ fi
 printf "%s\n" "configure: creating directory doc/doxygen"
 as_dir=doc/doxygen; as_fn_mkdir_p
 
-printf "%s\n" "configure: Use meson to create the ninja equivalent of a Makefile with CC="$CC" CXX="$CXX" "
-CC="$CC" CXX="$CXX" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
+printf "%s\n" "configure: Use meson to create the ninja equivalent of a Makefile with CC=\"$CC\" CXX=\"$CXX_RAW\" "
+CC="$CC" CXX="$CXX_RAW" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
    -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
    -Ddefault_library=shared \
    -Doptimization=2 -Ddebug=true \
