@@ -2,10 +2,14 @@
 
 # Script to create an object file by including a file as binary data
 # 
-# Invocation: output_file input_file file_extension
+# Invocation: output_file input_file file_basename
 #
-# Enviroment variable: srcdir: Directory there Makefile.am resides.
-
+# input_file can be any file which you wish to include into your
+# executeable.
+#
+# output_file is a linkable object file and should have the system specific suffix
+# for object files, i.e. .o or .obj
+#
 inputFile="$2"
 outputFile="$1"
 fileStem="$3"
