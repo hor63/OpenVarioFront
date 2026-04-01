@@ -29,6 +29,8 @@
 #ifndef GLTEXTRENDER_GLTEXTGLOBALS_H_
 #define GLTEXTRENDER_GLTEXTGLOBALS_H_
 
+#include <memory>
+
 #include "GLTextPangoCPPWrappers.h"
 #include "GLTextFontCache.h"
 

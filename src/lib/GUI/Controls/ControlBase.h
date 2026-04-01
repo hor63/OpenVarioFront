@@ -26,6 +26,7 @@
 #ifndef LIB_CONTROLS_CONTROLBASE_H_
 #define LIB_CONTROLS_CONTROLBASE_H_
 
+#include "Uuid.h"
 #include "Renderers/RendererBase.h"
 #include "GLES/SDL/SDLRenderSurface.h"
 

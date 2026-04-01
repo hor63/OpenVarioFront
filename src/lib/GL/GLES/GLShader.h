@@ -26,6 +26,10 @@
 #ifndef GLES_GLSHADER_H_
 #define GLES_GLSHADER_H_
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+
 #include "ExceptionBase.h"
 
 namespace OevGLES {

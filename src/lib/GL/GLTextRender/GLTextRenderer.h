@@ -37,8 +37,6 @@
 #include "Renderers/RenderContext.h"
 #include "Renderers/RendererBase.h"
 
-
-
 // forward declarations for private types within the module.
 extern "C" {
 typedef struct _PangoGLTextRenderer PangoGLTextRenderer;

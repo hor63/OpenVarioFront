@@ -32,6 +32,8 @@
 #ifndef GLTEXTRENDER_GLTEXTFONTCACHE_H_
 #define GLTEXTRENDER_GLTEXTFONTCACHE_H_
 
+#include <unordered_map>
+
 #include "GLTextPangoCPPWrappers.h"
 #include "GLTextGlyphBBox.h"
 #include "GLTextFontTexture.h"

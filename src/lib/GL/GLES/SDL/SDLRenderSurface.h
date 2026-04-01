@@ -26,6 +26,13 @@
 #ifndef GLES_EGLRENDERSURFACE_H_
 #define GLES_EGLRENDERSURFACE_H_
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+#include "SDL3/SDL.h"
+
+#include <memory>
+
 #include "Renderers/RendererBase.h"
 #include "GLES/sysSDLWindow.h"
 #include "GLES/GLFramework.h"

@@ -24,6 +24,12 @@
 #ifndef VECMAT_H_
 #define VECMAT_H_
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+
+#include <memory>
+
 #if defined HAVE_LOG4CXX_H
 #	include <log4cxx/logger.h>
 #endif

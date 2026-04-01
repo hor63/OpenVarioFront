@@ -29,6 +29,8 @@
 #ifndef GLTEXTRENDER_GLTEXTPANGOCPPWRAPPERS_H_
 #define GLTEXTRENDER_GLTEXTPANGOCPPWRAPPERS_H_
 
+#include "pango/pango.h"
+
 namespace OevGLES {
 
 /** \brief C++ template wrapper class for managing gObject objects

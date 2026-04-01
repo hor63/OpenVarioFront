@@ -28,6 +28,9 @@
 #ifndef LIB_UTIL_UUID_H_
 #define LIB_UTIL_UUID_H_
 
+#include <string>
+#include <array>
+
 namespace OevUtil {
 
 

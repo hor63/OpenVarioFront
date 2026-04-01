@@ -26,6 +26,10 @@
 #ifndef TEXTUREDATA_H_
 #define TEXTUREDATA_H_
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+
 namespace OevGLES {
 
 /** \brief Texture data manager
