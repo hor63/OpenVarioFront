@@ -135,7 +135,9 @@ libOEV_GUI_a_LIBADD =
 am_libOEV_GUI_a_OBJECTS = ControlBase.$(OBJEXT) \
 	ControlsContainer.$(OBJEXT) RootControl.$(OBJEXT) \
 	PlainFieldControl.$(OBJEXT) TextFieldControl.$(OBJEXT) \
-	ButtonControl.$(OBJEXT)
+	ButtonControl.$(OBJEXT) MouseMoveEventHandler.$(OBJEXT) \
+	MouseEntersControlEventHandler.$(OBJEXT) \
+	MouseLeavesControlEventHandler.$(OBJEXT)
 libOEV_GUI_a_OBJECTS = $(am_libOEV_GUI_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -154,6 +156,9 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/ButtonControl.Po \
 	./$(DEPDIR)/ControlBase.Po ./$(DEPDIR)/ControlsContainer.Po \
+	./$(DEPDIR)/MouseEntersControlEventHandler.Po \
+	./$(DEPDIR)/MouseLeavesControlEventHandler.Po \
+	./$(DEPDIR)/MouseMoveEventHandler.Po \
 	./$(DEPDIR)/PlainFieldControl.Po ./$(DEPDIR)/RootControl.Po \
 	./$(DEPDIR)/TextFieldControl.Po
 am__mv = mv -f
@@ -428,8 +433,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libOEV_GUI.a
 libOEV_GUI_a_SOURCES = \
-	Controls/ControlBase.cpp Controls/ControlsContainer.cpp Controls/RootControl.cpp Controls/PlainFieldControl.cpp \
-	Controls/TextFieldControl.cpp Controls/ButtonControl.cpp
+	Controls/ControlBase.cpp Controls/ControlsContainer.cpp Controls/RootControl.cpp \
+	Controls/PlainFieldControl.cpp Controls/TextFieldControl.cpp Controls/ButtonControl.cpp \
+	Events/MouseMoveEventHandler.cpp Events/MouseEntersControlEventHandler.cpp \
+	Events/MouseLeavesControlEventHandler.cpp
 
 AM_CXXFLAGS = $(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)
@@ -494,6 +501,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ButtonControl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ControlBase.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ControlsContainer.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MouseEntersControlEventHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MouseLeavesControlEventHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MouseMoveEventHandler.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlainFieldControl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RootControl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextFieldControl.Po@am__quote@ # am--include-marker
@@ -608,6 +618,48 @@ ButtonControl.obj: Controls/ButtonControl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Controls/ButtonControl.cpp' object='ButtonControl.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ButtonControl.obj `if test -f 'Controls/ButtonControl.cpp'; then $(CYGPATH_W) 'Controls/ButtonControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Controls/ButtonControl.cpp'; fi`
+
+MouseMoveEventHandler.o: Events/MouseMoveEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MouseMoveEventHandler.o -MD -MP -MF $(DEPDIR)/MouseMoveEventHandler.Tpo -c -o MouseMoveEventHandler.o `test -f 'Events/MouseMoveEventHandler.cpp' || echo '$(srcdir)/'`Events/MouseMoveEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MouseMoveEventHandler.Tpo $(DEPDIR)/MouseMoveEventHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Events/MouseMoveEventHandler.cpp' object='MouseMoveEventHandler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MouseMoveEventHandler.o `test -f 'Events/MouseMoveEventHandler.cpp' || echo '$(srcdir)/'`Events/MouseMoveEventHandler.cpp
+
+MouseMoveEventHandler.obj: Events/MouseMoveEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MouseMoveEventHandler.obj -MD -MP -MF $(DEPDIR)/MouseMoveEventHandler.Tpo -c -o MouseMoveEventHandler.obj `if test -f 'Events/MouseMoveEventHandler.cpp'; then $(CYGPATH_W) 'Events/MouseMoveEventHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/Events/MouseMoveEventHandler.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MouseMoveEventHandler.Tpo $(DEPDIR)/MouseMoveEventHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Events/MouseMoveEventHandler.cpp' object='MouseMoveEventHandler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MouseMoveEventHandler.obj `if test -f 'Events/MouseMoveEventHandler.cpp'; then $(CYGPATH_W) 'Events/MouseMoveEventHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/Events/MouseMoveEventHandler.cpp'; fi`
+
+MouseEntersControlEventHandler.o: Events/MouseEntersControlEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MouseEntersControlEventHandler.o -MD -MP -MF $(DEPDIR)/MouseEntersControlEventHandler.Tpo -c -o MouseEntersControlEventHandler.o `test -f 'Events/MouseEntersControlEventHandler.cpp' || echo '$(srcdir)/'`Events/MouseEntersControlEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MouseEntersControlEventHandler.Tpo $(DEPDIR)/MouseEntersControlEventHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Events/MouseEntersControlEventHandler.cpp' object='MouseEntersControlEventHandler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MouseEntersControlEventHandler.o `test -f 'Events/MouseEntersControlEventHandler.cpp' || echo '$(srcdir)/'`Events/MouseEntersControlEventHandler.cpp
+
+MouseEntersControlEventHandler.obj: Events/MouseEntersControlEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MouseEntersControlEventHandler.obj -MD -MP -MF $(DEPDIR)/MouseEntersControlEventHandler.Tpo -c -o MouseEntersControlEventHandler.obj `if test -f 'Events/MouseEntersControlEventHandler.cpp'; then $(CYGPATH_W) 'Events/MouseEntersControlEventHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/Events/MouseEntersControlEventHandler.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MouseEntersControlEventHandler.Tpo $(DEPDIR)/MouseEntersControlEventHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Events/MouseEntersControlEventHandler.cpp' object='MouseEntersControlEventHandler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MouseEntersControlEventHandler.obj `if test -f 'Events/MouseEntersControlEventHandler.cpp'; then $(CYGPATH_W) 'Events/MouseEntersControlEventHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/Events/MouseEntersControlEventHandler.cpp'; fi`
+
+MouseLeavesControlEventHandler.o: Events/MouseLeavesControlEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MouseLeavesControlEventHandler.o -MD -MP -MF $(DEPDIR)/MouseLeavesControlEventHandler.Tpo -c -o MouseLeavesControlEventHandler.o `test -f 'Events/MouseLeavesControlEventHandler.cpp' || echo '$(srcdir)/'`Events/MouseLeavesControlEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MouseLeavesControlEventHandler.Tpo $(DEPDIR)/MouseLeavesControlEventHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Events/MouseLeavesControlEventHandler.cpp' object='MouseLeavesControlEventHandler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MouseLeavesControlEventHandler.o `test -f 'Events/MouseLeavesControlEventHandler.cpp' || echo '$(srcdir)/'`Events/MouseLeavesControlEventHandler.cpp
+
+MouseLeavesControlEventHandler.obj: Events/MouseLeavesControlEventHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MouseLeavesControlEventHandler.obj -MD -MP -MF $(DEPDIR)/MouseLeavesControlEventHandler.Tpo -c -o MouseLeavesControlEventHandler.obj `if test -f 'Events/MouseLeavesControlEventHandler.cpp'; then $(CYGPATH_W) 'Events/MouseLeavesControlEventHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/Events/MouseLeavesControlEventHandler.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MouseLeavesControlEventHandler.Tpo $(DEPDIR)/MouseLeavesControlEventHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Events/MouseLeavesControlEventHandler.cpp' object='MouseLeavesControlEventHandler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MouseLeavesControlEventHandler.obj `if test -f 'Events/MouseLeavesControlEventHandler.cpp'; then $(CYGPATH_W) 'Events/MouseLeavesControlEventHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/Events/MouseLeavesControlEventHandler.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -742,6 +794,9 @@ distclean: distclean-am
 		-rm -f ./$(DEPDIR)/ButtonControl.Po
 	-rm -f ./$(DEPDIR)/ControlBase.Po
 	-rm -f ./$(DEPDIR)/ControlsContainer.Po
+	-rm -f ./$(DEPDIR)/MouseEntersControlEventHandler.Po
+	-rm -f ./$(DEPDIR)/MouseLeavesControlEventHandler.Po
+	-rm -f ./$(DEPDIR)/MouseMoveEventHandler.Po
 	-rm -f ./$(DEPDIR)/PlainFieldControl.Po
 	-rm -f ./$(DEPDIR)/RootControl.Po
 	-rm -f ./$(DEPDIR)/TextFieldControl.Po
@@ -793,6 +848,9 @@ maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/ButtonControl.Po
 	-rm -f ./$(DEPDIR)/ControlBase.Po
 	-rm -f ./$(DEPDIR)/ControlsContainer.Po
+	-rm -f ./$(DEPDIR)/MouseEntersControlEventHandler.Po
+	-rm -f ./$(DEPDIR)/MouseLeavesControlEventHandler.Po
+	-rm -f ./$(DEPDIR)/MouseMoveEventHandler.Po
 	-rm -f ./$(DEPDIR)/PlainFieldControl.Po
 	-rm -f ./$(DEPDIR)/RootControl.Po
 	-rm -f ./$(DEPDIR)/TextFieldControl.Po

@@ -1,7 +1,7 @@
 /*
- * ButtonControl.h
+ * MouseLeavesControlEventHandler.cpp
  *
- *  Created on: Jan 16, 2026
+ *  Created on: Apr 5, 2026
  *      Author: hor
  *
  *   This file is part of OpenVarioFront, an electronic variometer display for glider planes
@@ -22,32 +22,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "OVFCommon.h"
 
-#ifndef LIB_CONTROLS_BUTTONCONTROL_H_
-#define LIB_CONTROLS_BUTTONCONTROL_H_
-
-#include <memory>
-
-#include "TextFieldControl.h"
-#include "Events/MouseMoveEventHandler.h"
+#include "lib/GUI/Events/MouseLeavesControlEventHandler.h"
 
 namespace OevControls {
 
-class ButtonControl: public TextFieldControl {
-public:
-	ButtonControl(ControlsContainerWeakPtr const &parent,
-				  RenderContextSharedPtr const &renderContextPtr,
-				  OevUtil::Uuid const &uuid, char const *name);
-	virtual ~ButtonControl();
-	ButtonControl(const ButtonControl &other) = delete;
-	ButtonControl(ButtonControl &&other) = delete;
-	ButtonControl& operator=(const ButtonControl &other) = delete;
-	ButtonControl& operator=(ButtonControl &&other) = delete;
-	
-private:
-	std::unique_ptr<MouseMoveEventHandler> mouseMoveHandler;
-};
+MouseLeavesControlEventHandler::~MouseLeavesControlEventHandler() {
+}
 
 } /* namespace OevControls */
-
-#endif /* LIB_CONTROLS_BUTTONCONTROL_H_ */

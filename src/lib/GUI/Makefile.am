@@ -17,8 +17,10 @@
 
 noinst_LIBRARIES = libOEV_GUI.a
 libOEV_GUI_a_SOURCES = \
-	Controls/ControlBase.cpp Controls/ControlsContainer.cpp Controls/RootControl.cpp Controls/PlainFieldControl.cpp \
-	Controls/TextFieldControl.cpp Controls/ButtonControl.cpp
+	Controls/ControlBase.cpp Controls/ControlsContainer.cpp Controls/RootControl.cpp \
+	Controls/PlainFieldControl.cpp Controls/TextFieldControl.cpp Controls/ButtonControl.cpp \
+	Events/MouseMoveEventHandler.cpp Events/MouseEntersControlEventHandler.cpp \
+	Events/MouseLeavesControlEventHandler.cpp
 
 AM_CXXFLAGS=$(INTERNAL_CFLAGS) \
 	$(EXTERN_LIBRARY_CFLAGS)

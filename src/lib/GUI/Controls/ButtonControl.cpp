@@ -32,7 +32,14 @@ namespace OevControls {
 ButtonControl::ButtonControl(ControlsContainerWeakPtr const &parent,
 							 RenderContextSharedPtr const &renderContextPtr,
 							 OevUtil::Uuid const &uuid, char const *name) :
-	TextFieldControl(parent, renderContextPtr, uuid, name) {
+		TextFieldControl(parent, renderContextPtr, uuid, name),
+		mouseMoveHandler(
+		 []() {
+			auto eventLambda = [](SDL_MouseMotionEvent &mouseMoveEvent){};
+			return new MouseMoveEventHandlerProxy(eventLambda);
+		 } ()
+		)
+	{
 		// look&feel is hardcoded flat style.
 		hasFrame_ = true;
 	}
