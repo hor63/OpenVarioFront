@@ -47,8 +47,10 @@ public:
 
 /** \brief Template class for an implementation of the class specific event handler
  *
- * The type \p Lambda is usually a lambda capturing \p this of the object which creates the lambda.
- * The lambda must be of type void and have a parameter \p SDL_MouseMotionEvent&.
+ * The type \p Functor is either a lambda capturing \p this of the object which creates the lambda,
+ * or a functor class.
+ *
+ * Either way the operator () must return \p bool, and have a parameter \p SDL_MouseMotionEvent&.
  */
 template <typename Lambda>
 class MouseMoveEventHandlerProxy : public MouseMoveEventHandler {

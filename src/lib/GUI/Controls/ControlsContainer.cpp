@@ -68,6 +68,8 @@ void ControlsContainer::onPositionChanged() {
 	ControlBase::onPositionChanged();
 	
 	for (auto & control : controlsMap) {
+		control.second->recalcAbsPosition();
+
 		control.second->onParentPositionChanged();
 	}
 }
@@ -76,6 +78,7 @@ void ControlsContainer::onParentPositionChanged() {
 	ControlBase::onParentPositionChanged();
 	
 	for (auto & control : controlsMap) {
+		control.second->recalcAbsPosition();
 		control.second->onParentPositionChanged();
 	}
 }

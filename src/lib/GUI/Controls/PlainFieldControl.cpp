@@ -57,7 +57,7 @@ void PlainFieldControl::setupVertexBuffers () {}
 
 void PlainFieldControl::draw () {
 
-	if (posOrSizeDirty) {
+	if (posDirty || sizeDirty) {
 		recalcSizePositionMatrix();
 	}
 	auto simpleFillProg = OevGLES::GLProgControlSimpleFill::getProgram();

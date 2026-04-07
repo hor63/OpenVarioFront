@@ -66,6 +66,18 @@ public:
 		int xPixel = 0;
 		/// \brief y goes from bottom to top, as usual in GL-world.
 		int yPixel = 0;
+		
+		PosPixel operator + (const PosPixel& pos1) const {
+			return PosPixel	{
+				.xPixel = xPixel + pos1.xPixel,
+				.yPixel = yPixel + pos1.yPixel
+			};
+		}
+		PosPixel const & operator += (const PosPixel& pos1) {
+			xPixel += pos1.xPixel;
+			yPixel += pos1.yPixel;
+			return *this;
+		}
 	};
 
 	using SizePixel = OevGLES::SDLRenderSurface::SizePixel;
@@ -102,7 +114,7 @@ public:
 
 	/// \see \ref position
 	auto getPosition () const {
-		return position;
+		return relativePosition;
 	}
 	/// Moves \ref topRight accordingly but leaves
 	/// \ref size unchanged.
@@ -124,11 +136,11 @@ public:
 
 	/// \see \ref position
 	auto getX() const {
-		return position.xPixel;
+		return relativePosition.xPixel;
 	}
 	/// \see \ref position
 	auto getY() const {
-		return position.yPixel;
+		return relativePosition.yPixel;
 	}
 	/// \see \ref topRight
 	auto getRight() const {
@@ -151,12 +163,18 @@ public:
 	/// \see \ref topRight
 	void setTopRight (PosPixel const& topRight);
 
-	/// \see \ref posOrSizeDirty
-	auto isPosOrSizeDirty() const {
-		return posOrSizeDirty;
+	/// \see \ref sizeDirty
+	auto isSizeDirty() const {
+		return sizeDirty;
 	}
-	/// \see \ref posOrSizeDirty
-	void setPosOrSizeDirty(bool posOrSizeDirty = true);
+	/// \see \ref posDirty
+	auto isPosDirty() const {
+		return posDirty;
+	}
+	/// \see \ref posDirty
+	void setPosDirty(bool posDirty = true);
+	/// \see \ref sizeDirty
+	void setSizeDirty(bool sizeDirty = true);
 
 	/// \see \ref dirty
 	auto isDirty() const {
@@ -300,6 +318,11 @@ public:
 	 */
 	virtual void draw() = 0;
 
+	/** \brief Re-calculate the absolute position
+	 * 
+	 * Add the own relative position and the parent's absolute position.
+	 */
+	void recalcAbsPosition();
 
 protected:
 	
@@ -317,8 +340,15 @@ protected:
 	ControlsContainerWeakPtr parent;
 
 	
-	/// \brief Official (bottom right) position of the control relative to its \ref parent
-	PosPixel position = {0,0};
+	/// \brief Relative (bottom right) position of the control relative to its \ref parent
+	PosPixel relativePosition;
+	/** \brief Absolute (bottom right) position of the control
+	  *
+	  * The absolute position is relative to the to the \ref OevGLES::SDLRenderSurface
+	  * which defines the absolute 0,0 position at the bottom right of the drawable area.
+	  */
+	PosPixel absolutePosition = {0,0};
+	
 	/// \brief the bounding box around the control
 	SizePixel size = {1,1};
 	/// \brief Derived and redundant convenience coordinates based on \ref position and \ref size
@@ -354,8 +384,17 @@ protected:
 	*/
 	OevGLES::RenderStandardUniforms::Mat4WithChangeCounterPtr parentModelMatrixPtr;
 	
-	/// \brief Only position or size changed, but not content.
-	bool posOrSizeDirty = true;
+	/// \brief Only size changed, but not content or position
+	///
+	/// Check this flag in \ref draw() and call
+	/// \ref recalcSizePositionMatrix() if it is \p true.
+	bool sizeDirty = true;
+	
+	/// \brief Only position changed, but not content or size
+	///
+	/// Check this flag in \ref draw() and call
+	/// \ref recalcSizePositionMatrix() if it is \p true.
+	bool posDirty = true;
 	
 	/// \brief A complete re-draw is due because content, position, size or visual attributes changed.
 	bool dirty = true;
