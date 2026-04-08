@@ -148,11 +148,16 @@ public:
 	/// \see RendererBase::draw()
 	virtual void draw() override;
 
-	/** \brief Request to re-calculate the own model matrix when the own position
+	/** \brief Request to re-calculate the text position and size matrix when the own position
 	 * changed.
 	 */
 	virtual void onPositionChanged() override;
 
+	/** \brief Request to re-calculate the text position and size matrix when the own size
+	 * changed.
+	 */
+	virtual void onSizeChanged() override;
+	
 protected:
 
 	OevGLES::GLTextRenderer textRenderer;

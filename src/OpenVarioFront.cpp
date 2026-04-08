@@ -306,7 +306,7 @@ int main(int argint,char** argv) {
 				textFieldControl->setFontSize(20);
 				textFieldControl->setText("This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|IIJgq|J the second line.");
 				textFieldControl->setWidthIsFixed();
-				textFieldControl->setHasFrame(true);
+				//textFieldControl->setHasFrame(true);
 			}
 			{
 				auto textFieldControl = new OevControls::TextFieldControl			(
@@ -324,7 +324,7 @@ int main(int argint,char** argv) {
 				textFieldControl->setText("This 流氓ชั่วq is gq|J|Jgq a test\nThis 流氓ชั่วที่ is gq|Jgq|J the second line.");
 				textFieldControl->setWidthIsFixed();
 				textFieldControl->setHeightIsFixed();
-				// textFieldControl->setHasFrame(true);
+				textFieldControl->setHasFrame(true);
 			}
 			rootCtrlPtr->setupVertexBuffers();
 		}

@@ -163,19 +163,6 @@ public:
 	/// \see \ref topRight
 	void setTopRight (PosPixel const& topRight);
 
-	/// \see \ref sizeDirty
-	auto isSizeDirty() const {
-		return sizeDirty;
-	}
-	/// \see \ref posDirty
-	auto isPosDirty() const {
-		return posDirty;
-	}
-	/// \see \ref posDirty
-	void setPosDirty(bool posDirty = true);
-	/// \see \ref sizeDirty
-	void setSizeDirty(bool sizeDirty = true);
-
 	/// \see \ref dirty
 	auto isDirty() const {
 		return dirty;
@@ -383,18 +370,6 @@ protected:
 	/** \brief Remember the parent's model matrix.
 	*/
 	OevGLES::RenderStandardUniforms::Mat4WithChangeCounterPtr parentModelMatrixPtr;
-	
-	/// \brief Only size changed, but not content or position
-	///
-	/// Check this flag in \ref draw() and call
-	/// \ref recalcSizePositionMatrix() if it is \p true.
-	bool sizeDirty = true;
-	
-	/// \brief Only position changed, but not content or size
-	///
-	/// Check this flag in \ref draw() and call
-	/// \ref recalcSizePositionMatrix() if it is \p true.
-	bool posDirty = true;
 	
 	/// \brief A complete re-draw is due because content, position, size or visual attributes changed.
 	bool dirty = true;

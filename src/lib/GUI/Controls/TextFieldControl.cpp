@@ -115,6 +115,7 @@ void TextFieldControl::setupVertexBuffers () {
 		
 		auto boxSize = textRenderer.getTextBoxSize();
 		int rightOffset,bottomOffset;
+		// These offsets are result of try and error to get a visually pleasing result.
 		if (hasFrame_) {
 			rightOffset = 8;
 			bottomOffset = 6;
@@ -160,19 +161,48 @@ void TextFieldControl::draw() {
 
 void TextFieldControl::onPositionChanged() {
 	
+	PlainFieldControl::onPositionChanged();
+	
 	// Take over the position into the model matrix of the text render uniforms.
-	auto const &controlModelMatrix = renderUniforms.getModelMatrix();
+	auto const &controlFrameModelMatrix = renderFrameUniforms.getModelMatrix();
 	auto &textModelMatrix = textRenderUniforms.getModelMatrix();
 	for (int i = 0; i < 2; ++i) {
-		textModelMatrix(i,3) = controlModelMatrix(i,3);
+		textModelMatrix(i,3) = controlFrameModelMatrix(i,3);
 	}
 	// The text position is the top right, not the bottom right.
 	// Therefore add the control height.
-	textModelMatrix(1,3) += controlModelMatrix(1,1);
+	textModelMatrix(1,3) = controlFrameModelMatrix(1,3) + controlFrameModelMatrix(1,1);
 	
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
-		<< ": controlModelMatrix = \n " << controlModelMatrix
-		<< ", textModelMatrix = \n" << textModelMatrix);
+		<< "\n: controlFrameModelMatrix = \n" << controlFrameModelMatrix
+		<< "\n, textModelMatrix = \n" << textModelMatrix);
+}
+
+void TextFieldControl::onSizeChanged() {
+	PlainFieldControl::onSizeChanged();
+
+	auto const &controlFrameModelMatrix = renderFrameUniforms.getModelMatrix();
+	auto &textModelMatrix = textRenderUniforms.getModelMatrix();
+	for (int i = 0; i < 2; ++i) {
+		// Copy the position. In case that the control has a frame the drawing of the
+		// frame depends if the control's size is large enough to draw a frame, and still have
+		// space inside the frame.
+		// If the size change from very small to large enough to draw the frame
+		// the position within the frame may need to be adjusted accordingly
+		textModelMatrix(i,3) = controlFrameModelMatrix(i,3);
+		
+		// Do *not* copy the size, i.e. indexes i,i. For a text model matrix this actually means the text would be enlarged by that
+		// factor!! The size remains at 1.0.
+	}
+
+	// The text position is the top right, not the bottom right.
+	// Therefore add the control height.
+	textModelMatrix(1,3) = controlFrameModelMatrix(1,3) + controlFrameModelMatrix(1,1);
+
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+		<< "\n: controlModelMatrix = \n" << controlFrameModelMatrix
+		<< "\n, textModelMatrix = \n" << textModelMatrix);
+	
 }
 
 } /* namespace OevControls */

@@ -120,8 +120,8 @@ void ControlBase::setPosition (PosPixel const& position) {
 
 		recalcAbsPosition();
 
-		posDirty = true;
-
+		recalcSizePositionMatrix();
+		
 		onPositionChanged();
 	}
 }
@@ -152,16 +152,19 @@ void ControlBase::setSize (SizePixel const& size) {
 		if (size.widthPixel >= 4 && size.heightPixel >= 4) {
 			frameModelMatrix(0,0) = size.widthPixel - 4;
 			frameModelMatrix(1,1) = size.heightPixel - 4;
+			frameModelMatrix(0,3) = modelMatrix(0,3) + 2;
+			frameModelMatrix(1,3) = modelMatrix(1,3) + 2;
 			doDrawFrame = hasFrame_;
 		} else {
 			// too small to fit a frame inside
 			frameModelMatrix(0,0) = size.widthPixel;
 			frameModelMatrix(1,1) = size.heightPixel;
+			frameModelMatrix(0,3) = modelMatrix(0,3);
+			frameModelMatrix(1,3) = modelMatrix(1,3);
 			doDrawFrame = false;
 		}
 
-		sizeDirty = true;
-
+		recalcSizePositionMatrix();
 		onSizeChanged();
 	}
 }
@@ -193,25 +196,22 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 		if (size.widthPixel >= 4 && size.heightPixel >= 4) {
 			frameModelMatrix(0,0) = size.widthPixel - 4;
 			frameModelMatrix(1,1) = size.heightPixel - 4;
+			frameModelMatrix(0,3) = modelMatrix(0,3) + 2;
+			frameModelMatrix(1,3) = modelMatrix(1,3) + 2;
 			doDrawFrame = hasFrame_;
 		} else {
 			// too small to fit a frame inside
 			frameModelMatrix(0,0) = size.widthPixel;
 			frameModelMatrix(1,1) = size.heightPixel;
+			frameModelMatrix(0,3) = modelMatrix(0,3);
+			frameModelMatrix(1,3) = modelMatrix(1,3);
 			doDrawFrame = false;
 		}
 
-		sizeDirty = true;
+		recalcSizePositionMatrix();
 
 		onSizeChanged();
 	}
-}
-
-void ControlBase::setPosDirty(bool posDirty) {
-	this->posDirty = posDirty;
-}
-void ControlBase::setSizeDirty(bool sizeDirty) {
-	this->sizeDirty = sizeDirty;
 }
 
 void ControlBase::setDirty(bool dirty) {
@@ -275,9 +275,6 @@ void ControlBase::onResetParentRenderUniforms(
 
 	renderUniforms.setModelMatrixPtr(saveModelMatrixPtr);
 
-	posDirty = true;
-	sizeDirty = true;
-
 	// Probably parent position changed too.
 	onParentPositionChanged();
 }
@@ -307,8 +304,6 @@ void ControlBase::recalcSizePositionMatrix() {
 		doDrawFrame = false;
 	}
 
-	posDirty = false;
-	sizeDirty = false;
 }
 
 void ControlBase::setHasFrame(bool hasFrame) {
