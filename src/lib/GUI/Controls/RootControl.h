@@ -28,6 +28,7 @@ public:
 	 * \see makeRootControl
 	 */
 	RootControl(ControlsContainerWeakPtr  const &parent,
+		std::weak_ptr<RootControl> pointerToSelf,
 		RenderContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
 		OevGLES::SDLRenderSurface &renderSurface,

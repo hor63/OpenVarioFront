@@ -33,11 +33,13 @@
 namespace OevControls {
 
 ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
+		std::weak_ptr<ControlBase> pointerToSelf,
 		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name
 	) :
 		parent {parent},
+		pointerToSelf{pointerToSelf},
 		renderContextPtr{renderContextPtr},
 		uuid {uuid},
 		name {name},

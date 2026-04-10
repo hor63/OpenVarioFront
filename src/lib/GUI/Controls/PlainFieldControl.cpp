@@ -35,10 +35,11 @@ namespace OevControls {
 
 
 PlainFieldControl::PlainFieldControl(ControlsContainerWeakPtr const &parent,
+		std::weak_ptr<PlainFieldControl> pointerToSelf,
 		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name) :
-		ControlBase(parent,renderContextPtr,uuid,name),
+		ControlBase(parent,pointerToSelf,renderContextPtr,uuid,name),
 		fillColorPtr{renderContextPtr->backgroundColorPtr},
 		frameColorPtr{renderContextPtr->foregroundColorPtr}
 {

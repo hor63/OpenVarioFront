@@ -40,10 +40,12 @@ public:
 	using ControlsWeakListT = std::list<ControlBaseWeakPtr>;
 
 	ControlsContainer(ControlsContainerWeakPtr  const &parent,
+		std::weak_ptr<ControlsContainer> pointerToSelf,
 		RenderContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name = "")
 		:ControlBase(parent,
+			pointerToSelf,
 			controlsContextPtr,
 			uuid,
 			name)

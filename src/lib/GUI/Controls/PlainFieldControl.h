@@ -33,6 +33,7 @@ namespace OevControls {
 class PlainFieldControl :public ControlBase {
 public:
 	PlainFieldControl(ControlsContainerWeakPtr const &parent,
+		std::weak_ptr<PlainFieldControl> pointerToSelf,
 		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name = "");

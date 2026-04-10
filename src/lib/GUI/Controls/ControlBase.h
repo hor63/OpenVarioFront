@@ -26,6 +26,8 @@
 #ifndef LIB_CONTROLS_CONTROLBASE_H_
 #define LIB_CONTROLS_CONTROLBASE_H_
 
+#include <memory>
+
 #include "Uuid.h"
 #include "Renderers/RendererBase.h"
 #include "GLES/SDL/SDLRenderSurface.h"
@@ -83,6 +85,7 @@ public:
 	using SizePixel = OevGLES::SDLRenderSurface::SizePixel;
 
 	ControlBase(ControlsContainerWeakPtr const &parent,
+		std::weak_ptr<ControlBase> pointerToSelf,
 		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name = ""
@@ -326,6 +329,12 @@ protected:
 	 */
 	ControlsContainerWeakPtr parent;
 
+	/** \brief A weak pointer to itself.
+	 *
+	 * Allows the control to pass a weak pointer to itself to others.
+	 * Primary use it to pass a weak pointer to itself to event handlers.
+	 */
+	std::weak_ptr<ControlBase> pointerToSelf;
 	
 	/// \brief Relative (bottom right) position of the control relative to its \ref parent
 	PosPixel relativePosition;
@@ -429,8 +438,34 @@ protected:
 
 static constexpr auto s = sizeof(ControlBase);
 
+template <typename ControlType>
+std::shared_ptr<ControlType> makeControl (ControlsContainerWeakPtr const &parent,
+		RenderContextSharedPtr const& renderContextPtr,
+		OevUtil::Uuid const & uuid,
+		char const* name = ""
+	) {
+std::shared_ptr<ControlType> newControlPtr;
+
+	// Now things are getting tricky:
+	// I need a pointer of the object before it is constructed
+	// because the parent of the root control is the root control itself.
+	// Bring in the allocators
+	using ControlAllocator = std::allocator<ControlType>;
+	using ControlAllocatorTraits = std::allocator_traits<ControlAllocator>;
+	ControlAllocator controlAllocator;
+	
+	ControlType* rawPtr = controlAllocator.allocate(1);
+
+	newControlPtr.reset(rawPtr);
+	
+	ControlAllocatorTraits::construct(controlAllocator,rawPtr, parent,
+										  newControlPtr, renderContextPtr,
+										  uuid, name);
+
+	return newControlPtr;
+
+}
+
 } /* namespace OevControls */
-
-
 
 #endif /* LIB_CONTROLS_CONTROLBASE_H_ */

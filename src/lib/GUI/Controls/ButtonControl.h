@@ -36,8 +36,9 @@ namespace OevControls {
 class ButtonControl: public TextFieldControl {
 public:
 	ButtonControl(ControlsContainerWeakPtr const &parent,
-				  RenderContextSharedPtr const &renderContextPtr,
-				  OevUtil::Uuid const &uuid, char const *name);
+ 		std::weak_ptr<ButtonControl> pointerToSelf,
+		RenderContextSharedPtr const &renderContextPtr,
+		OevUtil::Uuid const &uuid, char const *name);
 	virtual ~ButtonControl();
 	ButtonControl(const ButtonControl &other) = delete;
 	ButtonControl(ButtonControl &&other) = delete;

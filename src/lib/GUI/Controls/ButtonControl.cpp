@@ -30,9 +30,10 @@
 namespace OevControls {
 
 ButtonControl::ButtonControl(ControlsContainerWeakPtr const &parent,
+							 std::weak_ptr<ButtonControl> pointerToSelf,
 							 RenderContextSharedPtr const &renderContextPtr,
 							 OevUtil::Uuid const &uuid, char const *name) :
-		TextFieldControl(parent, renderContextPtr, uuid, name),
+		TextFieldControl(parent, pointerToSelf, renderContextPtr, uuid, name),
 		mouseMoveHandler(
 		 []() {
 			auto eventLambda = [](SDL_MouseMotionEvent &mouseMoveEvent){};

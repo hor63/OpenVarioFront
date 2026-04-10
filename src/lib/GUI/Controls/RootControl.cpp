@@ -51,18 +51,22 @@ RootControlSharedPtr newRootControlPtr;
 	newRootControlPtr.reset(rawPtr);
 	
 	RootControlAllocatorTraits::construct(rootCtlAllocator, rawPtr,
-										  newRootControlPtr, controlsContextPtr,rootControlUUID,
+										  newRootControlPtr,
+										  newRootControlPtr,
+										  controlsContextPtr,
+										  rootControlUUID,
 										  renderSurface, "root");
 
 	return newRootControlPtr;
 }
 
 RootControl::RootControl(ControlsContainerWeakPtr const &parent,
+		std::weak_ptr<RootControl> pointerToSelf,
 		RenderContextSharedPtr const& controlsContextPtr,
 		OevUtil::Uuid const & uuid,
 		OevGLES::SDLRenderSurface &renderSurface,
 		char const* name)
-	:ControlsContainer(parent,controlsContextPtr,uuid,name),
+	:ControlsContainer(parent,pointerToSelf,controlsContextPtr,uuid,name),
 	 renderSurface{renderSurface}
 {
 	#if defined HAVE_LOG4CXX_H

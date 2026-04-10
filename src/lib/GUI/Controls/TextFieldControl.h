@@ -35,6 +35,7 @@ namespace OevControls {
 class TextFieldControl: public PlainFieldControl {
 public:
 	TextFieldControl(ControlsContainerWeakPtr const &parent,
+		std::weak_ptr<TextFieldControl> pointerToSelf,
 		RenderContextSharedPtr const& renderContextPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name);

@@ -278,7 +278,7 @@ int main(int argint,char** argv) {
 		{
 			auto rootCtrlPtr = renderSurfacePtr1->getRootControlPtr().lock();
 
-			auto plainFieldControl = new OevControls::PlainFieldControl(
+			auto plainFieldControl = OevControls::makeControl<OevControls::PlainFieldControl>(
 								rootCtrlPtr,
 								renderSurfacePtr1->getRenderContextPtr(),
 								OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
@@ -292,7 +292,7 @@ int main(int argint,char** argv) {
 			plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(0,0,0.5f,1));
 
 			{
-				auto textFieldControl = new OevControls::TextFieldControl			(
+				auto textFieldControl = OevControls::makeControl<OevControls::TextFieldControl>	(
 												rootCtrlPtr,
 												renderSurfacePtr1->getRenderContextPtr(),
 												OevUtil::Uuid("04f0f49a-ec8d-11f0-a4bc-5bdf9f28664a"),
@@ -309,7 +309,7 @@ int main(int argint,char** argv) {
 				//textFieldControl->setHasFrame(true);
 			}
 			{
-				auto textFieldControl = new OevControls::TextFieldControl			(
+				auto textFieldControl = OevControls::makeControl<OevControls::TextFieldControl> (
 												rootCtrlPtr,
 												renderSurfacePtr1->getRenderContextPtr(),
 												OevUtil::Uuid("2cd9507e-eff8-11f0-91d0-db75aaf51cb6"),

@@ -33,10 +33,11 @@
 namespace OevControls {
 
 TextFieldControl::TextFieldControl(	ControlsContainerWeakPtr const &parent,
-			RenderContextSharedPtr const& renderContextPtr,
-			OevUtil::Uuid const & uuid,
-			char const* name)
-	: PlainFieldControl(parent,renderContextPtr,uuid,name),
+		std::weak_ptr<TextFieldControl> pointerToSelf,
+		RenderContextSharedPtr const& renderContextPtr,
+		OevUtil::Uuid const & uuid,
+		char const* name)
+	: PlainFieldControl(parent,pointerToSelf,renderContextPtr,uuid,name),
 	// the base class ControlBase asserts that renderContextPtr is not empty.
 	textRenderer(renderContextPtr),
 	textSizePointsPtr{&this->renderContextPtr->textSizePoints},
