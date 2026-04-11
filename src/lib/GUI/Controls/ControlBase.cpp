@@ -40,10 +40,20 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 	) :
 		parent {parent},
 		pointerToSelf{pointerToSelf},
+		absolutePosition{
+			[&,this,parent]() ->PosPixel {
+				auto parentPtr = this->parent.lock();
+					if (!parentPtr) {
+						return PosPixel();
+					} else {
+						return parentPtr->absolutePosition;
+					}
+			} ()
+		},
 		renderContextPtr{renderContextPtr},
 		uuid {uuid},
 		name {name},
-		renderUniforms ( // Use a lambda here 
+		renderUniforms { // Use a lambda here 
 			[&,this,parent]() -> OevGLES::RenderStandardUniforms {
 				auto parentPtr = this->parent.lock();
 	
@@ -64,17 +74,28 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 				}
 	
 			} ()//here call the lambda to initialize the member renderUniforms!
-		),
+		},
 		renderFrameUniforms {renderUniforms}
 {
 	auto parentPtr = this->parent.lock();
-	
 	if (!parentPtr) {
 		throw ControlsFatalException (
 			"Fatal error in ControlBase::ControlBase: parent must be a valid pointer"
 			"to an existing ControlsContainer!");
 	}
 
+	auto sharedPointerToSelf = this->pointerToSelf.lock();
+	if (!sharedPointerToSelf) {
+		throw ControlsFatalException (
+			"Fatal error in ControlBase::ControlBase: pointerToSelf must be a valid pointer"
+			"to an existing ControlsContainer!");
+	}
+	if (sharedPointerToSelf.get() != this) 	{
+			throw ControlsFatalException (
+				"Fatal error in ControlBase::ControlBase: pointerToSelf must point to myself!");
+		}
+
+	
 	if (!renderContextPtr) {
 		throw ControlsFatalException (
 			"Fatal error in ControlBase::ControlBase: renderContextPtr must be a valid pointer"
@@ -315,6 +336,10 @@ void ControlBase::setHasFrame(bool hasFrame) {
 }
 
 void ControlBase::recalcAbsPosition() {
+	auto parentPointer = parent.lock();
 	
+	if (parentPointer) {
+		absolutePosition = parentPointer->absolutePosition + relativePosition;
+	}	
 }
 } /* namespace OevControls */

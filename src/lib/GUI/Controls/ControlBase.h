@@ -336,12 +336,20 @@ protected:
 	 */
 	std::weak_ptr<ControlBase> pointerToSelf;
 	
-	/// \brief Relative (bottom right) position of the control relative to its \ref parent
+	/** \brief Relative (bottom right) position of the control relative to its \ref parent
+	 *
+	 * Is initially 0,0.
+	 */
 	PosPixel relativePosition;
+
 	/** \brief Absolute (bottom right) position of the control
 	  *
 	  * The absolute position is relative to the to the \ref OevGLES::SDLRenderSurface
 	  * which defines the absolute 0,0 position at the bottom right of the drawable area.
+	  *
+	  * Is initially the parent's absolute position because the initial relative position is 0,0.
+	  *
+	  * \see relativePosition
 	  */
 	PosPixel absolutePosition = {0,0};
 	
@@ -435,8 +443,6 @@ protected:
 	 */
 	RenderContextSharedPtr renderContextPtr;
 };
-
-static constexpr auto s = sizeof(ControlBase);
 
 template <typename ControlType>
 std::shared_ptr<ControlType> makeControl (ControlsContainerWeakPtr const &parent,

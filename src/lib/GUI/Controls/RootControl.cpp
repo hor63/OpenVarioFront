@@ -69,7 +69,7 @@ RootControl::RootControl(ControlsContainerWeakPtr const &parent,
 	:ControlsContainer(parent,pointerToSelf,controlsContextPtr,uuid,name),
 	 renderSurface{renderSurface}
 {
-	#if defined HAVE_LOG4CXX_H
+#if defined HAVE_LOG4CXX_H
 		// Get the logger if necessary
 		if (!logger) {
 			logger = log4cxx::Logger::getLogger("OpenVarioFront.Controls.RootControl");
@@ -82,6 +82,12 @@ RootControl::RootControl(ControlsContainerWeakPtr const &parent,
 		<< ": parent = " << reinterpret_cast<void const*>(parentPtr.get())
 		);
 #endif
+
+	// Overwrite the absolute position, and set it to 0,0 unconditionally.
+	// ControlBase copies the parent position. However, the root control's
+	// "parent" is the root control itself. So, it absolutePosition is most
+	// likely un-initialized and anything but 0,0.
+	absolutePosition = PosPixel();
 
 	if (reinterpret_cast<void const*>(this) != 
 		reinterpret_cast<void const*>(parentPtr.get())){

@@ -216,7 +216,10 @@ private:
 	std::string text;
 	
 	OevGLES::RenderStandardUniforms textRenderUniforms;
-};
+}; // class TextFieldControl
+
+// Just to check the size
+static constexpr auto s = sizeof(TextFieldControl);
 
 } /* namespace OevControls */
 
