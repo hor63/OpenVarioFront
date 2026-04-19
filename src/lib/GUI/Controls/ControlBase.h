@@ -454,8 +454,9 @@ std::shared_ptr<ControlType> newControlPtr;
 
 	// Now things are getting tricky:
 	// I need a pointer of the object before it is constructed
-	// because the parent of the root control is the root control itself.
-	// Bring in the allocators
+	// because ControlBase::pointerToSelf needs a weak pointer to the object
+	// just under construction.
+	// So, bring in the allocator and allocator_traits.
 	using ControlAllocator = std::allocator<ControlType>;
 	using ControlAllocatorTraits = std::allocator_traits<ControlAllocator>;
 	ControlAllocator controlAllocator;
