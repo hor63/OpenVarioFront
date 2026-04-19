@@ -45,9 +45,14 @@ public:
 	ButtonControl& operator=(const ButtonControl &other) = delete;
 	ButtonControl& operator=(ButtonControl &&other) = delete;
 	
+	bool handleMouseMove(SDL_MouseMotionEvent &mouseMoveEvent);
+	
 private:
-	std::unique_ptr<MouseMoveEventHandler> mouseMoveHandler;
 };
+
+static auto getButtonMouseMoveHandler(ButtonControl & button) {
+	return getMouseMoveHandler(button);
+}
 
 } /* namespace OevControls */
 

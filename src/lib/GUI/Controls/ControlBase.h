@@ -115,6 +115,10 @@ public:
 		return parent;
 	}
 
+	auto const &getPointerToSelf() {
+		return pointerToSelf;
+	}
+	
 	/// \see \ref position
 	auto getPosition () const {
 		return relativePosition;
