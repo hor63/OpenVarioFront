@@ -66,7 +66,7 @@ public:
 	struct PosPixel {
 		/// \brief x goes to the left
 		int xPixel = 0;
-		/// \brief y goes from bottom to top, as usual in GL-world.
+		/// \brief y goes from bottom to top, as usual in OpenGL-world.
 		int yPixel = 0;
 		
 		PosPixel operator + (const PosPixel& pos1) const {
@@ -75,9 +75,20 @@ public:
 				.yPixel = yPixel + pos1.yPixel
 			};
 		}
-		PosPixel const & operator += (const PosPixel& pos1) {
+		PosPixel operator - (const PosPixel& pos1) const {
+			return PosPixel	{
+				.xPixel = xPixel - pos1.xPixel,
+				.yPixel = yPixel - pos1.yPixel
+			};
+		}
+		PosPixel & operator += (const PosPixel& pos1) {
 			xPixel += pos1.xPixel;
 			yPixel += pos1.yPixel;
+			return *this;
+		}
+		PosPixel & operator -= (const PosPixel& pos1) {
+			xPixel -= pos1.xPixel;
+			yPixel -= pos1.yPixel;
 			return *this;
 		}
 	};
