@@ -105,6 +105,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@WITH_SDL_TRUE@am__append_1 = SDL-build
+@WITH_SDL_TRUE@am__append_2 = SDL-clean
+@WITH_SDL_TRUE@am__append_3 = SDL-install
+@WITH_PANGO_TRUE@am__append_4 = pango-build
+@WITH_PANGO_TRUE@am__append_5 = pango-clean
+@WITH_PANGO_TRUE@am__append_6 = pango-install
 subdir = 3rdParty
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
@@ -280,6 +286,7 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
+PANGOFOUND = @PANGOFOUND@
 PANGO_FT2_CFLAGS = @PANGO_FT2_CFLAGS@
 PANGO_FT2_LIBS = @PANGO_FT2_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
@@ -297,6 +304,7 @@ SDL3_LIBS = @SDL3_LIBS@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SLD3FOUND = @SLD3FOUND@
 STRIP = @STRIP@
 USE_NLS = @USE_NLS@
 UUID_CFLAGS = @UUID_CFLAGS@
@@ -366,6 +374,9 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+ALL_TARGETS = Makefile $(am__append_1) $(am__append_4)
+CLEAN_TARGETS = Makefile $(am__append_2) $(am__append_5)
+INSTALL_TARGETS = Makefile $(am__append_3) $(am__append_6)
 all: all-am
 
 .SUFFIXES:
@@ -557,35 +568,35 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-all: SDL-build pango-build
+all: $(ALL_TARGETS)
 
-SDL-build:
-	$(MAKE) -C SDL all VERBOSE=$(V)
-	$(MAKE) -C SDL install VERBOSE=$(V)
+clean: $(CLEAN_TARGETS)
 
-pango-build:
-	if [ "$(V)" == "1" ]; then \
-		cd pango; ninja -v ; \
-	else \
-		cd pango; ninja; \
-	fi
-	cd pango; ninja install
+install: $(INSTALL_TARGETS)
 
-clean: SDL-clean pango-clean
+@WITH_SDL_TRUE@SDL-build:
+@WITH_SDL_TRUE@	$(MAKE) -C SDL all VERBOSE=$(V)
+@WITH_SDL_TRUE@	$(MAKE) -C SDL install VERBOSE=$(V)
 
-SDL-clean:
-	$(MAKE) -C SDL clean VERBOSE=$(V)
+@WITH_SDL_TRUE@SDL-clean:
+@WITH_SDL_TRUE@	$(MAKE) -C SDL clean VERBOSE=$(V)
 
-pango-clean:
-	cd pango; ninja clean -v
+@WITH_SDL_TRUE@SDL-install:
+@WITH_SDL_TRUE@	$(MAKE) -C SDL install
 
-install: SDL-install pango-install
+@WITH_PANGO_TRUE@pango-build:
+@WITH_PANGO_TRUE@	if [ "$(V)" == "1" ]; then \
+@WITH_PANGO_TRUE@		cd pango; ninja -v ; \
+@WITH_PANGO_TRUE@	else \
+@WITH_PANGO_TRUE@		cd pango; ninja; \
+@WITH_PANGO_TRUE@	fi
+@WITH_PANGO_TRUE@	cd pango; ninja install
 
-SDL-install:
-	$(MAKE) -C SDL install
+@WITH_PANGO_TRUE@pango-clean:
+@WITH_PANGO_TRUE@	cd pango; ninja clean -v
 
-pango-install:
-	cd pango; ninja install
+@WITH_PANGO_TRUE@pango-install:
+@WITH_PANGO_TRUE@	cd pango; ninja install
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

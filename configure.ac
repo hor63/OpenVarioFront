@@ -240,10 +240,9 @@ then
 	cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
 	    -DCMAKE_BUILD_TYPE=Debug \
 	    -DSDL_STATIC=OFF -DSDL_SHARED=ON \
+	    -DSDL_X11_XTEST=OFF \
 	    -DCMAKE_INSTALL_LIBDIR="$pkg_config_libdir" \
 	    -DCMAKE_INSTALL_PREFIX="$pkg_config_prefix" \
-	    -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-	    -DCMAKE_LD_FLAGS="$LDFLAGS" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" \
 	    -DCMAKE_C_FLAGS="$CFLAGS -O2 -g3" -DCMAKE_CXX_FLAGS="$CXXFLAGS -O2 -g3" \
 	    -DCMAKE_LD_FLAGS="$LDFLAGS -O2 -g3" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS -O2 -g3"
 	    
@@ -252,6 +251,9 @@ then
 
 	PKG_CHECK_MODULES([SDL3], [sdl3])
 fi
+
+AC_SUBST([SLD3FOUND])
+AM_CONDITIONAL([WITH_SDL], [test $SLD3FOUND = 0]) 
 
 AC_SUBST([SDL3_CFLAGS])
 AC_SUBST([SDL3_LIBS])
@@ -262,7 +264,7 @@ AC_SUBST([SDL3_LIBS])
 # then finding the installed package is assured unless something with the build
 # process goes wrong, or particularly you cannot install the package in the destination.
 # This is standard when the prefix is the default /usr/local.
-PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 >= 1.55.5 pango  >= 1.55.5 harfbuzz],[PANGOFOUND=1],[PANGOFOUND=0])
+PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 pango harfbuzz],[PANGOFOUND=1],[PANGOFOUND=0])
 if test "${PANGOFOUND}". != 1.
 then
 	AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC=\"$CC\" CXX=\"$CXX_RAW\" "]) 
@@ -281,9 +283,12 @@ then
 	ninja install
 	popd
 
-	PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 >= 1.55.5 pango  >= 1.55.5 harfbuzz])
+	PKG_CHECK_MODULES([PANGO_FT2], [pangoft2 pango harfbuzz])
 
 fi
+
+AC_SUBST([PANGOFOUND])
+AM_CONDITIONAL([WITH_PANGO],[test $PANGOFOUND = 0]) 
 
 AC_SUBST([PANGO_FT2_CFLAGS])
 AC_SUBST([PANGO_FT2_LIBS])
@@ -343,6 +348,8 @@ AC_OUTPUT
 AS_ECHO(["configure: creating directory doc/doxygen"]) 
 AS_MKDIR_P(doc/doxygen)
 
+if test "${PANGOFOUND}". != 1.
+then
 AS_ECHO(["configure: Use meson to create the ninja equivalent of a Makefile with CC=\"$CC\" CXX=\"$CXX_RAW\" "]) 
 CC="$CC" CXX="$CXX_RAW" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rdParty/pango \
    -Dxft=disabled -Dcairo=disabled -Dfreetype=enabled \
@@ -353,17 +360,19 @@ CC="$CC" CXX="$CXX_RAW" meson setup `cd "$srcdir";pwd`/3rdParty/pango  `pwd`/3rd
    -Dbuild-testsuite=false -Dbuild-examples=false \
    -Dprefix="$pkg_config_prefix" \
    -Dlibdir="$pkg_config_libdir"
+fi # if test "${PANGOFOUND}". != 1.
 
-   
+if test "$SLD3FOUND". != 1.
+then
 AS_ECHO(["configure: Use cmake to create the Makefile for SDL"]) 
 cmake -S `cd "$srcdir";pwd`/3rdParty/SDL -B `pwd`/3rdParty/SDL \
     -DCMAKE_BUILD_TYPE=Debug \
     -DSDL_STATIC=OFF -DSDL_SHARED=ON \
+    -DSDL_X11_XTEST=OFF \
     -DCMAKE_INSTALL_LIBDIR="$pkg_config_libdir" \
     -DCMAKE_INSTALL_PREFIX="$pkg_config_prefix" \
     -DCMAKE_C_FLAGS="$CFLAGS -O2 -g3" -DCMAKE_CXX_FLAGS="$CXXFLAGS -O2 -g3" \
     -DCMAKE_LD_FLAGS="$LDFLAGS -O2 -g3" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS -O2 -g3"
-
-
+fi
 
 
