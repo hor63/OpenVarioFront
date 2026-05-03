@@ -37,6 +37,7 @@
 #include "Controls/RootControl.h"
 #include "Controls/PlainFieldControl.h"
 #include "Controls/TextFieldControl.h"
+#include "Controls/ButtonControl.h"
 
 using namespace OevGLES;
 
@@ -221,6 +222,9 @@ int main(int argint,char** argv) {
 		free(parsedString);
 		glTextRend.setText(strParsedString);
 		pango_layout_set_attributes( glTextRend.getPangoLayout(),attrList);
+		
+		pango_attr_list_unref (attrList);
+		attrList = nullptr;
 
 		// glTextRend.setTextColor(std::make_shared<Vec4>(blackColor));
 		glTextRend.setTextColor(std::make_shared<Vec4>(whiteColor));
@@ -325,6 +329,24 @@ int main(int argint,char** argv) {
 				textFieldControl->setWidthIsFixed();
 				textFieldControl->setHeightIsFixed();
 				textFieldControl->setHasFrame(true);
+			}
+			{
+				auto buttonControl = OevControls::makeControl<OevControls::ButtonControl> (
+												rootCtrlPtr,
+												renderSurfacePtr1->getRenderContextPtr(),
+												OevUtil::Uuid("1b50ada4-4721-11f1-a97e-7bf17544ebbe"),
+												"OKButton");
+				OevControls::ControlBasePtr buttonControlPtr(buttonControl);
+
+				rootCtrlPtr->addControl(buttonControlPtr);
+				buttonControl->setRelativePosition({50,60});
+				buttonControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
+				buttonControl->setFontSize(15);
+				buttonControl->setText("OK ");
+				
+				auto & textRenderer = buttonControl->getTextRenderer();
+				
+				
 			}
 			rootCtrlPtr->setupVertexBuffers();
 		}
