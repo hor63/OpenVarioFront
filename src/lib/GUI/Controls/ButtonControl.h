@@ -46,7 +46,7 @@ public:
 		auto buttonPtr = buttonWeakPtr.lock();
 		
 		if (buttonPtr) {
-			buttonPtr->mouseEnteresButton();
+			buttonPtr->mouseEntersButton();
 		}
 	}
 	
@@ -89,7 +89,7 @@ private:
 
 	MouseEntersControlEventHandlerProxy<MouseEntersFunctor> mouseEnterHandler;
 
-	void mouseEnteresButton ();
+	void mouseEntersButton ();
 	void mouseLeavesButton ();
 
 };

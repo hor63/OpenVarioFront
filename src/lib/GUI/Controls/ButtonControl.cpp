@@ -46,4 +46,12 @@ ButtonControl::~ButtonControl() {
 	// Nothing to to here myself.
 }
 
+void ButtonControl::mouseEntersButton () {
+	
+}
+
+void ButtonControl::mouseLeavesButton () {
+	
+}
+
 } /* namespace OevControls */
