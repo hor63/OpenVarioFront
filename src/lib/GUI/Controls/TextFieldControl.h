@@ -136,6 +136,10 @@ public:
 	const std::string& getFonts() {
 		return textRenderer.getFonts();
 	}
+	
+	auto & getTextRenderer () {
+		return textRenderer;
+	}
 
 	/** \brief Layout the text with the set attributes and text.
 	 *
