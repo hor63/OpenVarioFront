@@ -29,12 +29,52 @@
 #include <memory>
 
 #include "TextFieldControl.h"
-#include "Events/MouseMoveEventHandler.h"
+#include "Events/MouseEntersControlEventHandler.h"
 
 namespace OevControls {
 
 class ButtonControl: public TextFieldControl {
 public:
+
+class MouseEntersFunctor {
+public:
+	MouseEntersFunctor(std::weak_ptr<ControlBase> const& weakCtrlPtr) :
+	buttonWeakPtr{std::dynamic_pointer_cast<ButtonControl>(weakCtrlPtr.lock())}
+	{}
+	
+	void operator() (SDL_MouseMotionEvent& mouseMoveEvent) {
+		auto buttonPtr = buttonWeakPtr.lock();
+		
+		if (buttonPtr) {
+			buttonPtr->mouseEnteresButton();
+		}
+	}
+	
+private:
+
+std::weak_ptr<ButtonControl> buttonWeakPtr;
+}; // class MouseEntersFunctor
+class MouseLeavesFunctor {
+public:
+	MouseLeavesFunctor(std::weak_ptr<ControlBase> const& weakCtrlPtr) :
+	buttonWeakPtr{std::dynamic_pointer_cast<ButtonControl>(weakCtrlPtr.lock())}
+	{}
+	
+	void operator() (SDL_MouseMotionEvent& mouseMoveEvent) {
+		auto buttonPtr = buttonWeakPtr.lock();
+		
+		if (buttonPtr) {
+			buttonPtr->mouseLeavesButton();
+		}
+	}
+	
+private:
+
+std::weak_ptr<ButtonControl> buttonWeakPtr;
+}; // class MouseLeavesFunctor
+
+friend class MouseEntersFunctor;
+
 	ButtonControl(ControlsContainerWeakPtr const &parent,
  		std::weak_ptr<ButtonControl> pointerToSelf,
 		RenderContextSharedPtr const &renderContextPtr,
@@ -45,14 +85,14 @@ public:
 	ButtonControl& operator=(const ButtonControl &other) = delete;
 	ButtonControl& operator=(ButtonControl &&other) = delete;
 	
-	bool handleMouseMove(SDL_MouseMotionEvent &mouseMoveEvent);
-	
 private:
-};
 
-static auto getButtonMouseMoveHandler(ButtonControl & button) {
-	return getMouseMoveHandler(button);
-}
+	MouseEntersControlEventHandlerProxy<MouseEntersFunctor> mouseEnterHandler;
+
+	void mouseEnteresButton ();
+	void mouseLeavesButton ();
+
+};
 
 } /* namespace OevControls */
 

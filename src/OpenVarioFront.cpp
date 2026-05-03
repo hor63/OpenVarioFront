@@ -286,7 +286,7 @@ int main(int argint,char** argv) {
 			OevControls::ControlBasePtr plainFieldCtrlPtr(plainFieldControl);
 			rootCtrlPtr->addControl(plainFieldCtrlPtr);
 			
-			plainFieldCtrlPtr->setPosition({400,500});
+			plainFieldCtrlPtr->setRelativePosition({400,500});
 			plainFieldCtrlPtr->setSize ({300,40});
 			plainFieldCtrlPtr->setHasFrame(true);
 			plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(0,0,0.5f,1));
@@ -300,7 +300,7 @@ int main(int argint,char** argv) {
 				OevControls::ControlBasePtr textFieldCtrlPtr(textFieldControl);
 	
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
-				textFieldControl->setPosition({402,402});
+				textFieldControl->setRelativePosition({402,402});
 				textFieldControl->setSize ({250,40});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				textFieldControl->setFontSize(20);
@@ -317,7 +317,7 @@ int main(int argint,char** argv) {
 				OevControls::ControlBasePtr textFieldCtrlPtr(textFieldControl);
 
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
-				textFieldControl->setPosition({502,602});
+				textFieldControl->setRelativePosition({502,602});
 				textFieldControl->setSize ({200,90});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				textFieldControl->setFontSize(15);

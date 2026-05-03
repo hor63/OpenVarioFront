@@ -32,6 +32,7 @@
 #include "Renderers/RendererBase.h"
 #include "GLES/SDL/SDLRenderSurface.h"
 
+#include "PosPixel.h"
 
 // Forward declarations
 namespace OevGLES {
@@ -60,40 +61,13 @@ using ControlBaseWeakPtr = std::weak_ptr<ControlBase>;
 using ControlsContainerPtr     = std::shared_ptr<ControlsContainer>;
 using ControlsContainerWeakPtr = std::weak_ptr<ControlsContainer>;
 
+using SizePixel = OevGLES::SizePixel;
+
+class MouseEntersControlEventHandler;
+class MouseLeavesControlEventHandler;
+
 class ControlBase /*: public OevGLES::RendererBase*/ {
 public:
-
-	struct PosPixel {
-		/// \brief x goes to the left
-		int xPixel = 0;
-		/// \brief y goes from bottom to top, as usual in OpenGL-world.
-		int yPixel = 0;
-		
-		PosPixel operator + (const PosPixel& pos1) const {
-			return PosPixel	{
-				.xPixel = xPixel + pos1.xPixel,
-				.yPixel = yPixel + pos1.yPixel
-			};
-		}
-		PosPixel operator - (const PosPixel& pos1) const {
-			return PosPixel	{
-				.xPixel = xPixel - pos1.xPixel,
-				.yPixel = yPixel - pos1.yPixel
-			};
-		}
-		PosPixel & operator += (const PosPixel& pos1) {
-			xPixel += pos1.xPixel;
-			yPixel += pos1.yPixel;
-			return *this;
-		}
-		PosPixel & operator -= (const PosPixel& pos1) {
-			xPixel -= pos1.xPixel;
-			yPixel -= pos1.yPixel;
-			return *this;
-		}
-	};
-
-	using SizePixel = OevGLES::SDLRenderSurface::SizePixel;
 
 	ControlBase(ControlsContainerWeakPtr const &parent,
 		std::weak_ptr<ControlBase> pointerToSelf,
@@ -130,14 +104,18 @@ public:
 		return pointerToSelf;
 	}
 	
-	/// \see \ref position
-	auto getPosition () const {
+	/// \see \ref relativePosition
+	auto getRelativePosition () const {
 		return relativePosition;
+	}
+	/// \see \ref relativePosition
+	auto getAbsolutePosition () const {
+		return absolutePosition;
 	}
 	/// Moves \ref topRight accordingly but leaves
 	/// \ref size unchanged.
 	/// \see \ref position
-	void setPosition (PosPixel const& position);
+	void setRelativePosition (PosPixel const& position);
 
 	/// \see \ref size
 	auto getSize() const {
@@ -149,7 +127,7 @@ public:
 
 	/// \see \ref topRight
 	auto getTopRight() const {
-		return topRight;
+		return relativeTopRight;
 	}
 
 	/// \see \ref position
@@ -162,11 +140,11 @@ public:
 	}
 	/// \see \ref topRight
 	auto getRight() const {
-		return topRight.xPixel;
+		return relativeTopRight.xPixel;
 	}
 	/// \see \ref topRight
 	auto getTop() const {
-		return topRight.yPixel;
+		return relativeTopRight.yPixel;
 	}
 	/// \see \ref size
 	auto getWidth() const {
@@ -177,9 +155,9 @@ public:
 		return size.heightPixel;
 	}
 
-	/// Adjusts \ref size accordingly, but leaves \ref position unchanged.
-	/// \see \ref topRight
-	void setTopRight (PosPixel const& topRight);
+	/// Adjusts \ref size accordingly, but leaves \ref relativePosition unchanged.
+	/// \see \ref relativeTopRight
+	void setRelativeTopRight (PosPixel const& topRight);
 
 	/// \see \ref dirty
 	auto isDirty() const {
@@ -267,6 +245,14 @@ public:
 		return renderContextPtr;
 	}
 
+	MouseEntersControlEventHandler* getMouseEntersEventHandler () const {
+		return mouseEntersEventHandler;
+	}
+	MouseLeavesControlEventHandler* getMouseLeavesEventHandler () {
+		return mouseLeavesEventHandler;
+	}
+
+	
 	// Callbacks upon changes or actions
 
 	/** \brief Request to re-calculate the own model matrix or vertex arrays
@@ -328,6 +314,8 @@ public:
 	 * Add the own relative position and the parent's absolute position.
 	 */
 	void recalcAbsPosition();
+	
+	void recalcAbsTopRight();
 
 protected:
 	
@@ -373,7 +361,10 @@ protected:
 	/// \brief Derived and redundant convenience coordinates based on \ref position and \ref size
 	///
 	/// \p topRight is like \ref position also relative to position of \ref parent.
-	PosPixel topRight = {1,1};
+	PosPixel relativeTopRight;
+	
+	/// \brief Convenience calculated from \ref absolutePosition and \ref size
+	PosPixel absoluteTopRight = {1,1};
 	
 	// Helpers for rendering
 	
@@ -457,6 +448,9 @@ protected:
 	 *
 	 */
 	RenderContextSharedPtr renderContextPtr;
+	
+	MouseEntersControlEventHandler* mouseEntersEventHandler = nullptr;
+	MouseLeavesControlEventHandler* mouseLeavesEventHandler = nullptr;
 };
 
 template <typename ControlType>

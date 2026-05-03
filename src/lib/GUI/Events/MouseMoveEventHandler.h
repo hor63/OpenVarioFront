@@ -97,14 +97,6 @@ auto getMouseMoveHandler (std::shared_ptr<T>& controlShPtr) {
 	return mouseMoveHandlerProxy;
 }
 
-template <typename T>
-auto getMouseMoveHandler (T & control) {
-	auto shPointerToSelf = control.getPointerToSelf().lock();
-	auto controlShPtr = std::dynamic_pointer_cast<T>(shPointerToSelf);
-	
-	return getMouseMoveHandler (controlShPtr);
-}
-
 
 } /* namespace OevControls */
 

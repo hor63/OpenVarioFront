@@ -33,10 +33,13 @@ ButtonControl::ButtonControl(ControlsContainerWeakPtr const &parent,
 							 std::weak_ptr<ButtonControl> pointerToSelf,
 							 RenderContextSharedPtr const &renderContextPtr,
 							 OevUtil::Uuid const &uuid, char const *name) :
-		TextFieldControl(parent, pointerToSelf, renderContextPtr, uuid, name)
+		TextFieldControl(parent, pointerToSelf, renderContextPtr, uuid, name),
+		mouseEnterHandler {
+			MouseEntersFunctor (pointerToSelf)}
 	{
 		// look&feel is hardcoded flat style.
 		hasFrame_ = true;
+		mouseEntersEventHandler = &mouseEnterHandler;
 	}
 
 ButtonControl::~ButtonControl() {

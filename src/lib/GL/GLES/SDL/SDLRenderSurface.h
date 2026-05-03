@@ -66,15 +66,15 @@ using RenderContextSharedPtr = std::shared_ptr<RenderContext>;
 
 class GLFramework;
 
+struct SizePixel {
+	int widthPixel = 0;
+	int heightPixel = 0;
+};
+
 
 class SDLRenderSurface {
 	friend class GLFramework;
 public:
-
-	struct SizePixel {
-		int widthPixel = 0;
-		int heightPixel = 0;
-	};
 
 	virtual ~SDLRenderSurface();
 
@@ -192,7 +192,15 @@ protected:
 	 *
 	 */
 	RenderContextSharedPtr contextPtr;
-
+	
+	/** \brief The control which in which the mouse pointer currently resides.
+	 *
+	 * If a control which has no interaction with user inputs is not interested in mouse move,
+	 * mouse enter/leave or mouse clicks it will not be referenced here.
+	 * Instead the controlling \ref OevControls::ControlsContainer is referenced.
+	*/
+	OevControls::RootControlWeakPtr ControlWithMouseFocus;
+	
 	/// Only the friend \ref GLFramework shall be able to create a render surface.
 	SDLRenderSurface(GLFramework& framework);
 
@@ -201,6 +209,8 @@ protected:
 	 * \see \ref baseUniforms how projection and view matrix are calculated by default.
 	 */
 	virtual void calculateViewProjectionMatrix();
+	
+	void handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlMouseMove);
 	
 };
 

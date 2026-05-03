@@ -30,10 +30,14 @@
 #include "Controls/RootControl.h"
 
 #include "GLES/GLFramework.h"
+#include "SDL3/SDL_events.h"
 #include "SDLUtil.h"
 #include "Renderers/RenderContext.h"
 #include "GLTextRender/GLTextGlobals.h"
 #include "GLPrograms/GLProgControlSimpleFill.h"
+
+#include "Events/MouseMoveEvent.h"
+#include <log4cxx/logger.h>
 
 namespace OevGLES {
 
@@ -161,7 +165,7 @@ void SDLRenderSurface::createRenderSurface (GLint width, GLint height,
 			There is one more vertex in the array because the 5th vertex is identical to the 1st to close a loop
 			when I draw a closed loop of lines
 		*/
-		GLfloat vertexData[RenderContext::quadVertexBufferNumVertexes + 1][4] = {
+		static GLfloat const vertexData[RenderContext::quadVertexBufferNumVertexes + 1][4] = {
 			{0,0,0,1},
 			{1,0,0,1},
 			{1,1,0,1},
@@ -193,7 +197,7 @@ void SDLRenderSurface::makeContextCurrent() {
 		OevUtil::reportSDLError(std::source_location::current(),
 								"SDL_GL_MakeCurrent");
 	}
-	LOG4CXX_DEBUG(logger,"renderContext is now current");
+	LOG4CXX_TRACE(logger,"renderContext is now current");
 
 }
 
@@ -224,11 +228,26 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 		
 			onWindowResize();
 		break;
+		
+		case SDL_EVENT_MOUSE_MOTION:
+			handleSDLMouseMoveEvent (event.motion);
+		break;
 	} // switch (event.type)
 
 
 	return true;
 }
+
+void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlMouseMove) {
+	OevControls::MouseMoveEvent mouseMoveEvent(sdlMouseMove);
+	
+	LOG4CXX_DEBUG(logger,"Mouse move to " << mouseMoveEvent.mousePosition.xPixel
+		<< ":" << mouseMoveEvent.mousePosition.yPixel
+		<< ", relative motion = " << sdlMouseMove.xrel
+		<< ":" << sdlMouseMove.yrel
+		);
+}
+
 void SDLRenderSurface::onWindowResize() {
 	struct {
 		GLint x; GLint y;

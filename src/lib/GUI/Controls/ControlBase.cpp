@@ -133,7 +133,7 @@ void ControlBase::setName(std::string const & name) {
 	this->name = name;
 }
 
-void ControlBase::setPosition (PosPixel const& position) {
+void ControlBase::setRelativePosition (PosPixel const& position) {
 	if (this->relativePosition.xPixel != position.xPixel ||
 		this->relativePosition.yPixel != position.yPixel) {
 		this->relativePosition = position;
@@ -164,8 +164,8 @@ void ControlBase::setSize (SizePixel const& size) {
 		this->size.widthPixel != size.widthPixel) {
 		this->size = size;
 		
-		topRight.xPixel = relativePosition.xPixel + size.widthPixel;
-		topRight.yPixel = relativePosition.yPixel + size.heightPixel;
+		relativeTopRight.xPixel = relativePosition.xPixel + size.widthPixel;
+		relativeTopRight.yPixel = relativePosition.yPixel + size.heightPixel;
 
 		auto & modelMatrix = renderUniforms.getModelMatrix();
 		modelMatrix(0,0) = size.widthPixel;
@@ -187,29 +187,30 @@ void ControlBase::setSize (SizePixel const& size) {
 			doDrawFrame = false;
 		}
 
+		recalcAbsTopRight();
 		recalcSizePositionMatrix();
 		onSizeChanged();
 	}
 }
 
-void ControlBase::setTopRight (PosPixel const& topRight) {
-	if (topRight.xPixel <= relativePosition.xPixel ||
-		topRight.yPixel <= relativePosition.yPixel) {
+void ControlBase::setRelativeTopRight (PosPixel const& relativeTopRight) {
+	if (relativeTopRight.xPixel <= relativePosition.xPixel ||
+		relativeTopRight.yPixel <= relativePosition.yPixel) {
 		auto errTxt = fmt::format (
 			fmt::runtime(_(
-				"Control {0}:{1}: Error in ControlBase::setTopRight(): . "
-				"newTopRight is {2}x{3}, which is left or below relativePosition")),
-				uuid.getUuidString(),name,topRight.xPixel,topRight.yPixel);
+				"Control {0}:{1}: Error in ControlBase::setrelativeTopRight(): . "
+				"newrelativeTopRight is {2}x{3}, which is left or below relativePosition")),
+				uuid.getUuidString(),name,relativeTopRight.xPixel,relativeTopRight.yPixel);
 		throw ControlsFatalException(_(
 			errTxt.c_str()));
 	}
 	
-	if (this->topRight.xPixel != topRight.xPixel ||
-		this->topRight.yPixel != topRight.yPixel) {
-		this->topRight = topRight;
+	if (this->relativeTopRight.xPixel != relativeTopRight.xPixel ||
+		this->relativeTopRight.yPixel != relativeTopRight.yPixel) {
+		this->relativeTopRight = relativeTopRight;
 		
-		size.widthPixel  = topRight.xPixel - relativePosition.xPixel ;
-		size.heightPixel = topRight.yPixel - relativePosition.yPixel;
+		size.widthPixel  = relativeTopRight.xPixel - relativePosition.xPixel ;
+		size.heightPixel = relativeTopRight.yPixel - relativePosition.yPixel;
 		
 		auto & modelMatrix = renderUniforms.getModelMatrix();
 		modelMatrix(0,0) = size.widthPixel;
@@ -231,6 +232,7 @@ void ControlBase::setTopRight (PosPixel const& topRight) {
 			doDrawFrame = false;
 		}
 
+		recalcAbsTopRight();
 		recalcSizePositionMatrix();
 
 		onSizeChanged();
@@ -340,6 +342,13 @@ void ControlBase::recalcAbsPosition() {
 	
 	if (parentPointer) {
 		absolutePosition = parentPointer->absolutePosition + relativePosition;
+		
+		recalcAbsTopRight();
 	}	
+}
+
+void ControlBase::recalcAbsTopRight() {
+	
+	absoluteTopRight = absolutePosition + relativeTopRight;
 }
 } /* namespace OevControls */

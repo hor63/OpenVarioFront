@@ -84,6 +84,59 @@ public:
 	 */
 	virtual void onResetParentRenderUniforms(
 		OevGLES::RenderStandardUniforms const &parentUniforms) override;
+	
+	/// \see processControlsTree()
+	enum TreeProcessOrder {ChildrenFirst,SelfFirst} ;
+	
+	/** \brief Execute a functor \p f on the controls tree.
+	 *
+	 * Traverse the entire control tree. Call the functor \p f
+	 * on each control until the functor returns \p true.
+	 *
+	 * \param f Functor or lambda with return type bool, and a parameter of type \ref ControlBase*.
+	 	When the functor returns \p true the tree traversing stops, and this function returns \p true.
+	 * \param processOrder When \ref ChildrenFirst the function descends recursively down the tree first.
+	 *	When \ref SelfFirst the functor \p f is called for \p this first before descending the controls tree.
+	 *
+	 * \return \p true when traversing the tree shall stop. \p false when traversing the tree shall continue.
+	 *	The return value is determined by the return value of the functor \p f on the controls.
+	 */
+	template <typename Functor>
+	auto processControlsTree (Functor &f,TreeProcessOrder processingOrder) {
+		struct {bool processingIsDone = false;std::weak_ptr<ControlBase> controlThatProcessed;} result;
+		
+		if (processingOrder == SelfFirst && f(this)) {
+			result.processingIsDone = true;
+			result.controlThatProcessed = pointerToSelf;
+		} else {
+			for (auto &i: controlsMap) {
+				auto childContainer = 
+					dynamic_cast<ControlsContainer*>(i.second.get());
+					
+				if (childContainer != nullptr) {
+					result = childContainer->processControlsTree(f,processingOrder);
+					if (result.processingIsDone) {
+						break;
+					} else {
+						if (f(i.second.get())) {
+							result.processingIsDone = true;
+							result.controlThatProcessed = i.second->getPointerToSelf();
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		if (!result.processingIsDone && processingOrder == ChildrenFirst) {
+			if (f(this)) {
+				result.processingIsDone = true;
+				result.controlThatProcessed = pointerToSelf;
+			}
+		}
+		
+		return result;
+	}
 
 protected:
 
@@ -91,7 +144,7 @@ ControlsMapT controlsMap;
 
 ControlsWeakListT tabGroup;
 
-};
+}; // class ControlsContainer
 
 } /* namespace OevControls */
 

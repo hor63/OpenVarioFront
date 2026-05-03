@@ -57,7 +57,7 @@ template <typename Lambda>
 class MouseEntersControlEventHandlerProxy : public MouseEntersControlEventHandler {
 public:
 
-	MouseEntersControlEventHandlerProxy (Lambda &eventProcessor) :
+	MouseEntersControlEventHandlerProxy (Lambda eventProcessor) :
 		eventProcessor {eventProcessor}
 	{}
 	
