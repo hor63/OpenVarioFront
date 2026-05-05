@@ -36,8 +36,8 @@ namespace OevControls {
 class ControlsContainer: public ControlBase {
 public:
 
-	using ControlsMapT = std::unordered_map<OevUtil::Uuid, ControlBasePtr>;
-	using ControlsWeakListT = std::list<ControlBaseWeakPtr>;
+	using ControlsMapT = std::unordered_map<OevUtil::Uuid, ControlBaseSharedPtr>;
+	using ControlsContainerWeakPtrListT = std::list<ControlBaseWeakPtr>;
 
 	ControlsContainer(ControlsContainerWeakPtr  const &parent,
 		std::weak_ptr<ControlsContainer> pointerToSelf,
@@ -56,9 +56,9 @@ public:
 	ControlsContainer& operator=(const ControlsContainer &other) = delete;
 	ControlsContainer& operator=(ControlsContainer &&other) = delete;
 	
-	void addControl(ControlBasePtr const &controlPtr);
+	void addControl(ControlBaseSharedPtr const &controlPtr);
 	void appendControlToTabGroup (ControlBaseWeakPtr const &controlWeakPtr);
-	void insertControlInTabGroupBefore (ControlsWeakListT::iterator ref,
+	void insertControlInTabGroupBefore (ControlsContainerWeakPtrListT::iterator ref,
 		ControlBaseWeakPtr const &controlWeakPtr);
 	
 	virtual void setupVertexBuffers () override;
@@ -109,7 +109,7 @@ public:
 			result.processingIsDone = true;
 			result.controlThatProcessed = pointerToSelf;
 		} else {
-			for (auto &i: controlsMap) {
+			for (auto &i: controlsList) {
 				auto childContainer = 
 					dynamic_cast<ControlsContainer*>(i.second.get());
 					
@@ -140,9 +140,9 @@ public:
 
 protected:
 
-ControlsMapT controlsMap;
+ControlsMapT controlsList;
 
-ControlsWeakListT tabGroup;
+ControlsContainerWeakPtrListT tabGroup;
 
 }; // class ControlsContainer
 

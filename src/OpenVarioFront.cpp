@@ -287,7 +287,7 @@ int main(int argint,char** argv) {
 								renderSurfacePtr1->getRenderContextPtr(),
 								OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
 								"PLainField1");
-			OevControls::ControlBasePtr plainFieldCtrlPtr(plainFieldControl);
+			OevControls::ControlBaseSharedPtr plainFieldCtrlPtr(plainFieldControl);
 			rootCtrlPtr->addControl(plainFieldCtrlPtr);
 			
 			plainFieldCtrlPtr->setRelativePosition({400,500});
@@ -301,7 +301,7 @@ int main(int argint,char** argv) {
 												renderSurfacePtr1->getRenderContextPtr(),
 												OevUtil::Uuid("04f0f49a-ec8d-11f0-a4bc-5bdf9f28664a"),
 												"PLainField1");
-				OevControls::ControlBasePtr textFieldCtrlPtr(textFieldControl);
+				OevControls::ControlBaseSharedPtr textFieldCtrlPtr(textFieldControl);
 	
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
 				textFieldControl->setRelativePosition({402,402});
@@ -318,7 +318,7 @@ int main(int argint,char** argv) {
 												renderSurfacePtr1->getRenderContextPtr(),
 												OevUtil::Uuid("2cd9507e-eff8-11f0-91d0-db75aaf51cb6"),
 												"PLainField2");
-				OevControls::ControlBasePtr textFieldCtrlPtr(textFieldControl);
+				OevControls::ControlBaseSharedPtr textFieldCtrlPtr(textFieldControl);
 
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
 				textFieldControl->setRelativePosition({502,602});
@@ -336,7 +336,7 @@ int main(int argint,char** argv) {
 												renderSurfacePtr1->getRenderContextPtr(),
 												OevUtil::Uuid("1b50ada4-4721-11f1-a97e-7bf17544ebbe"),
 												"OKButton");
-				OevControls::ControlBasePtr buttonControlPtr(buttonControl);
+				OevControls::ControlBaseSharedPtr buttonControlPtr(buttonControl);
 
 				rootCtrlPtr->addControl(buttonControlPtr);
 				buttonControl->setRelativePosition({50,60});

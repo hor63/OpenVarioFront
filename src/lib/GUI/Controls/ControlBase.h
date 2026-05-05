@@ -55,10 +55,10 @@ class ControlsContainer;
 
 
 // smart pointer declarations
-using ControlBasePtr     = std::shared_ptr<ControlBase>;
+using ControlBaseSharedPtr     = std::shared_ptr<ControlBase>;
 using ControlBaseWeakPtr = std::weak_ptr<ControlBase>;
 
-using ControlsContainerPtr     = std::shared_ptr<ControlsContainer>;
+using ControlsContainerSharedPtr     = std::shared_ptr<ControlsContainer>;
 using ControlsContainerWeakPtr = std::weak_ptr<ControlsContainer>;
 
 using SizePixel = OevGLES::SizePixel;

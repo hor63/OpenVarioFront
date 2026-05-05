@@ -36,28 +36,28 @@ ControlsContainer::~ControlsContainer() {
 
 }
 
-void ControlsContainer::addControl(ControlBasePtr const &controlPtr) {
-	controlsMap.insert(std::pair(controlPtr->getUuid(),controlPtr));
+void ControlsContainer::addControl(ControlBaseSharedPtr const &controlPtr) {
+	controlsList.insert(std::pair(controlPtr->getUuid(),controlPtr));
 }
 
 void ControlsContainer::appendControlToTabGroup (ControlBaseWeakPtr const &controlWeakPtr) {
 	tabGroup.push_back(controlWeakPtr);
 }
 
-void ControlsContainer::insertControlInTabGroupBefore (ControlsWeakListT::iterator ref,
+void ControlsContainer::insertControlInTabGroupBefore (ControlsContainerWeakPtrListT::iterator ref,
 		ControlBaseWeakPtr const &controlWeakPtr) {
 	tabGroup.insert (ref,controlWeakPtr);
 }
 
 void ControlsContainer::setupVertexBuffers () {
-	for (auto& child: controlsMap) {
+	for (auto& child: controlsList) {
 		child.second->setupVertexBuffers();
 	}
 }
 
 void ControlsContainer::draw () {
 			
-	for (auto& child: controlsMap) {
+	for (auto& child: controlsList) {
 		if (child.second->isVisible()) {
 			child.second->draw();
 		}
@@ -67,7 +67,7 @@ void ControlsContainer::draw () {
 void ControlsContainer::onPositionChanged() {
 	ControlBase::onPositionChanged();
 	
-	for (auto & control : controlsMap) {
+	for (auto & control : controlsList) {
 		control.second->recalcAbsPosition();
 
 		control.second->recalcSizePositionMatrix();
@@ -79,7 +79,7 @@ void ControlsContainer::onPositionChanged() {
 void ControlsContainer::onParentPositionChanged() {
 	ControlBase::onParentPositionChanged();
 	
-	for (auto & control : controlsMap) {
+	for (auto & control : controlsList) {
 		control.second->recalcAbsPosition();
 		control.second->recalcSizePositionMatrix();
 		control.second->onParentPositionChanged();
@@ -92,7 +92,7 @@ void ControlsContainer::onResetParentRenderUniforms(
 	ControlBase::onResetParentRenderUniforms(parentUniforms);
 	
 	// ... and forward the new own renderUniforms as parentUniforms to the children
-	for (auto & control : controlsMap) {
+	for (auto & control : controlsList) {
 		control.second->onResetParentRenderUniforms(renderUniforms);
 	}
 }
