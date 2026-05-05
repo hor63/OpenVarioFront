@@ -103,10 +103,10 @@ void TextFieldControl::setupVertexBuffers () {
 		// Leave a bit space to the left of the background box.
 		int leftOffset, topOffset;
 		if (hasFrame_) {
-			leftOffset = 4;
+			leftOffset = 2;
 			topOffset = 2;
 		} else {
-			leftOffset = 2;
+			leftOffset = 0;
 			topOffset = 0;
 		}
 		textRenderer.renderLayout(leftOffset,topOffset);

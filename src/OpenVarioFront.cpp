@@ -178,7 +178,7 @@ int main(int argint,char** argv) {
 "\nএকজন দুর্বৃত্ত যে এটাকে"
 "\n খারাপ মনে করে"
 "\nمحتال يعتقد الشر في هذا"
-"\n<span foreground=\"red\" underline_color=\"yellow\">LMN^OPQRSTUVW</span><span background=\"purple\" foreground=\"yellow\">XA</span>BB<span foreground=\"green\">Ya</span>Z e<sup>x</sup>abcdefg"
+"\n<span foreground=\"red\" underline_color=\"yellow\">JLMN^OPQRSTUVW</span><span background=\"purple\" foreground=\"yellow\">XA</span>BB<span foreground=\"green\">Ya</span>Z e<sup>x</sup>abcdefg"
 "\nhijk<i>lmn<span foreground=\"blue\">opq</span></i>rstuvwxzy!@#"
 "\n$%*()_+&lt;&gt;[]{}&amp;'.\\\\//.\\:\"|"
 "\n,./?€üöäÜÖÄ"
@@ -187,7 +187,7 @@ int main(int argint,char** argv) {
 // "\n\u0001F600"};
 
 /*
-				"\nLMNOPQRSTUV"
+				"\nJLMNOPQRSTUV"
 				"\nWXZYabcdefg"
 				"\nhijklmnopqr"
 				"\nstuvwxzy!@#"
@@ -282,19 +282,24 @@ int main(int argint,char** argv) {
 		{
 			auto rootCtrlPtr = renderSurfacePtr1->getRootControlPtr().lock();
 
-			auto plainFieldControl = OevControls::makeControl<OevControls::PlainFieldControl>(
-								rootCtrlPtr,
-								renderSurfacePtr1->getRenderContextPtr(),
-								OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
-								"PLainField1");
-			OevControls::ControlBaseSharedPtr plainFieldCtrlPtr(plainFieldControl);
-			rootCtrlPtr->addControl(plainFieldCtrlPtr);
-			
-			plainFieldCtrlPtr->setRelativePosition({400,500});
-			plainFieldCtrlPtr->setSize ({300,40});
-			plainFieldCtrlPtr->setHasFrame(true);
-			plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(0,0,0.5f,1));
+			renderSurfacePtr1->getRenderContextPtr()->fontNameList =
+				"Noto Sans, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC";
+				//"Noto Serif, Noto Naskh Arabic, Noto Serif Thai, Noto Serif Bengali, Noto Serif CJK SC";
 
+			{
+				auto plainFieldControl = OevControls::makeControl<OevControls::PlainFieldControl>(
+									rootCtrlPtr,
+									renderSurfacePtr1->getRenderContextPtr(),
+									OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
+									"PLainField1");
+				OevControls::ControlBasePtr plainFieldCtrlPtr(plainFieldControl);
+				rootCtrlPtr->addControl(plainFieldCtrlPtr);
+				
+				plainFieldCtrlPtr->setRelativePosition({400,700});
+				plainFieldCtrlPtr->setSize ({300,40});
+				plainFieldCtrlPtr->setHasFrame(true);
+				plainFieldControl->setFrameColor(std::make_shared<OevGLES::Vec4>(0,0,0.5f,1));
+			}
 			{
 				auto textFieldControl = OevControls::makeControl<OevControls::TextFieldControl>	(
 												rootCtrlPtr,
@@ -308,9 +313,9 @@ int main(int argint,char** argv) {
 				textFieldControl->setSize ({250,40});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				textFieldControl->setFontSize(20);
-				textFieldControl->setText("This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|IIJgq|J the second line.");
+				textFieldControl->setText("This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|JIIgq|J the second line.");
 				textFieldControl->setWidthIsFixed();
-				//textFieldControl->setHasFrame(true);
+				textFieldControl->setHasFrame(true);
 			}
 			{
 				auto textFieldControl = OevControls::makeControl<OevControls::TextFieldControl> (
@@ -322,10 +327,10 @@ int main(int argint,char** argv) {
 
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
 				textFieldControl->setRelativePosition({502,602});
-				textFieldControl->setSize ({200,90});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				textFieldControl->setFontSize(15);
 				textFieldControl->setText("This 流氓ชั่วq is gq|J|Jgq a test\nThis 流氓ชั่วที่ is gq|Jgq|J the second line.");
+				textFieldControl->setSize ({200,90});
 				textFieldControl->setWidthIsFixed();
 				textFieldControl->setHeightIsFixed();
 				textFieldControl->setHasFrame(true);
@@ -342,11 +347,8 @@ int main(int argint,char** argv) {
 				buttonControl->setRelativePosition({50,60});
 				buttonControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				buttonControl->setFontSize(15);
-				buttonControl->setText("OK ");
-				
-				auto & textRenderer = buttonControl->getTextRenderer();
-				
-				
+				buttonControl->setText("OKokOKokOK");
+				//buttonControl->setHasFrame(false);
 			}
 			rootCtrlPtr->setupVertexBuffers();
 		}
