@@ -37,29 +37,29 @@ ControlsContainer::~ControlsContainer() {
 }
 
 void ControlsContainer::addControl(ControlBaseSharedPtr const &controlPtr) {
-	controlsList.insert(std::pair(controlPtr->getUuid(),controlPtr));
+	controlsList.push_back(controlPtr);
 }
 
 void ControlsContainer::appendControlToTabGroup (ControlBaseWeakPtr const &controlWeakPtr) {
 	tabGroup.push_back(controlWeakPtr);
 }
 
-void ControlsContainer::insertControlInTabGroupBefore (ControlsContainerWeakPtrListT::iterator ref,
+void ControlsContainer::insertControlInTabGroupBefore (ControlBaseWeakPtrListT::iterator ref,
 		ControlBaseWeakPtr const &controlWeakPtr) {
 	tabGroup.insert (ref,controlWeakPtr);
 }
 
 void ControlsContainer::setupVertexBuffers () {
 	for (auto& child: controlsList) {
-		child.second->setupVertexBuffers();
+		child->setupVertexBuffers();
 	}
 }
 
 void ControlsContainer::draw () {
 			
 	for (auto& child: controlsList) {
-		if (child.second->isVisible()) {
-			child.second->draw();
+		if (child->isVisible()) {
+			child->draw();
 		}
 	}
 }
@@ -68,11 +68,11 @@ void ControlsContainer::onPositionChanged() {
 	ControlBase::onPositionChanged();
 	
 	for (auto & control : controlsList) {
-		control.second->recalcAbsPosition();
+		control->recalcAbsPosition();
 
-		control.second->recalcSizePositionMatrix();
+		control->recalcSizePositionMatrix();
 
-		control.second->onParentPositionChanged();
+		control->onParentPositionChanged();
 	}
 }
 
@@ -80,9 +80,9 @@ void ControlsContainer::onParentPositionChanged() {
 	ControlBase::onParentPositionChanged();
 	
 	for (auto & control : controlsList) {
-		control.second->recalcAbsPosition();
-		control.second->recalcSizePositionMatrix();
-		control.second->onParentPositionChanged();
+		control->recalcAbsPosition();
+		control->recalcSizePositionMatrix();
+		control->onParentPositionChanged();
 	}
 }
 
@@ -93,7 +93,7 @@ void ControlsContainer::onResetParentRenderUniforms(
 	
 	// ... and forward the new own renderUniforms as parentUniforms to the children
 	for (auto & control : controlsList) {
-		control.second->onResetParentRenderUniforms(renderUniforms);
+		control->onResetParentRenderUniforms(renderUniforms);
 	}
 }
 

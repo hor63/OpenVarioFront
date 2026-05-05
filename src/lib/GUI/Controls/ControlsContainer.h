@@ -36,8 +36,8 @@ namespace OevControls {
 class ControlsContainer: public ControlBase {
 public:
 
-	using ControlsMapT = std::unordered_map<OevUtil::Uuid, ControlBaseSharedPtr>;
-	using ControlsContainerWeakPtrListT = std::list<ControlBaseWeakPtr>;
+	using ControlBaseSharedPointerListT = std::list<ControlBaseSharedPtr>;
+	using ControlBaseWeakPtrListT = std::list<ControlBaseWeakPtr>;
 
 	ControlsContainer(ControlsContainerWeakPtr  const &parent,
 		std::weak_ptr<ControlsContainer> pointerToSelf,
@@ -58,7 +58,7 @@ public:
 	
 	void addControl(ControlBaseSharedPtr const &controlPtr);
 	void appendControlToTabGroup (ControlBaseWeakPtr const &controlWeakPtr);
-	void insertControlInTabGroupBefore (ControlsContainerWeakPtrListT::iterator ref,
+	void insertControlInTabGroupBefore (ControlBaseWeakPtrListT::iterator ref,
 		ControlBaseWeakPtr const &controlWeakPtr);
 	
 	virtual void setupVertexBuffers () override;
@@ -111,16 +111,16 @@ public:
 		} else {
 			for (auto &i: controlsList) {
 				auto childContainer = 
-					dynamic_cast<ControlsContainer*>(i.second.get());
+					dynamic_cast<ControlsContainer*>(i.get());
 					
 				if (childContainer != nullptr) {
 					result = childContainer->processControlsTree(f,processingOrder);
 					if (result.processingIsDone) {
 						break;
 					} else {
-						if (f(i.second.get())) {
+						if (f(i.get())) {
 							result.processingIsDone = true;
-							result.controlThatProcessed = i.second->getPointerToSelf();
+							result.controlThatProcessed = i->getPointerToSelf();
 							break;
 						}
 					}
@@ -140,9 +140,15 @@ public:
 
 protected:
 
-ControlsMapT controlsList;
+/** \brief List of controls owned by this \p ControlsContainer.
+ */
+ControlBaseSharedPointerListT controlsList;
 
-ControlsContainerWeakPtrListT tabGroup;
+/** \brief List of controls in a tab group within this container.
+ *
+ * Only controls which can receive input focus are being listed here.
+ */
+ControlBaseWeakPtrListT tabGroup;
 
 }; // class ControlsContainer
 
