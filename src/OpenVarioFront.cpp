@@ -25,6 +25,7 @@
  *
  */
 
+#include "Controls/ControlBase.h"
 #include "OVFCommon.h"
 
 #include "GLES/GLFramework.h"
@@ -292,7 +293,7 @@ int main(int argint,char** argv) {
 									renderSurfacePtr1->getRenderContextPtr(),
 									OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
 									"PLainField1");
-				OevControls::ControlBasePtr plainFieldCtrlPtr(plainFieldControl);
+				OevControls::ControlBaseSharedPtr plainFieldCtrlPtr(plainFieldControl);
 				rootCtrlPtr->addControl(plainFieldCtrlPtr);
 				
 				plainFieldCtrlPtr->setRelativePosition({400,700});
