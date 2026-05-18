@@ -48,29 +48,6 @@ public:
 
 };
 
-/** \brief Template class for an implementation of the class specific event handler
- *
- * The type \p Lambda is usually a lambda capturing \p this of the object which creates the lambda.
- * The lambda must be of type void and have a parameter \p SDL_MouseMotionEvent&.
- */
-template <typename Lambda>
-class MouseEntersControlEventHandlerProxy : public MouseEntersControlEventHandler {
-public:
-
-	MouseEntersControlEventHandlerProxy (Lambda eventProcessor) :
-		eventProcessor {eventProcessor}
-	{}
-	
-	/// \brief An SDL mouse moved within this control
-	virtual void mouseEntersControl (SDL_MouseMotionEvent &mouseMoveEvent) override {
-		eventProcessor(mouseMoveEvent);
-	}	
-		
-private:
-
-	Lambda eventProcessor;	
-
-}; // template  class MouseEntersControlEventHandlerProxy
 
 } /* namespace OevControls */
 

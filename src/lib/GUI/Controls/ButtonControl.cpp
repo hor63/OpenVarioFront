@@ -34,12 +34,18 @@ ButtonControl::ButtonControl(ControlsContainerWeakPtr const &parent,
 							 RenderContextSharedPtr const &renderContextPtr,
 							 OevUtil::Uuid const &uuid, char const *name) :
 		TextFieldControl(parent, pointerToSelf, renderContextPtr, uuid, name),
-		mouseEnterHandler {
-			MouseEntersFunctor (pointerToSelf)}
+		mouseEntersHandler {*this},
+		mouseLeavesHandler {*this}
 	{
 		// look&feel is hardcoded flat style.
 		hasFrame_ = true;
-		mouseEntersEventHandler = &mouseEnterHandler;
+		
+		// Set the mouse enter functor to my functor, but use the pointerToSelf control block.
+		auto sharedPtrToSelf = pointerToSelf.lock();
+		mouseEntersHandlerWeakPtr = 
+			std::shared_ptr<MouseEntersControlEventHandler> (pointerToSelf.lock(),&mouseEntersHandler);
+		mouseLeavesHandlerWeakPtr = 
+			std::shared_ptr<MouseLeavesControlEventHandler> (pointerToSelf.lock(),&mouseLeavesHandler);
 	}
 
 ButtonControl::~ButtonControl() {
@@ -54,4 +60,11 @@ void ButtonControl::mouseLeavesButton () {
 	
 }
 
+void ButtonControl::MouseEntersButtonHandler::mouseEntersControl (SDL_MouseMotionEvent& mouseMoveEvent) {
+	buttonObj.mouseEntersButton();
+}
+void ButtonControl::MouseLeavesButtonFunctor::mouseLeavesControl (SDL_MouseMotionEvent& mouseMoveEvent) {
+	buttonObj.mouseLeavesButton();
+}
+	
 } /* namespace OevControls */

@@ -52,52 +52,6 @@ public:
 	
 }; // class MouseMoveEventHandler
 
-/** \brief Template class for an implementation of the class specific event handler
- *
- * The type \p Functor is either a lambda capturing \p this of the object which creates the lambda,
- * or a functor class whose operator () handles the event.
- *
- * Either way the operator () must return \p bool, and have a parameter \p SDL_MouseMotionEvent&.
- */
-template <typename Lambda>
-class MouseMoveEventHandlerProxy : public MouseMoveEventHandler {
-public:
-
-	MouseMoveEventHandlerProxy (Lambda &eventProcessor) :
-		eventProcessor {eventProcessor}
-	{}
-	
-	/// \brief An SDL mouse moved within this control
-	virtual bool mouseMoves (SDL_MouseMotionEvent &mouseMoveEvent) override {
-		return eventProcessor(mouseMoveEvent);
-	}	
-		
-private:
-
-	Lambda eventProcessor;	
-
-}; // template  class MouseMoveProxy
-
-
-template <typename T>
-auto getMouseMoveHandler (std::shared_ptr<T>& controlShPtr) {
-	std::weak_ptr<T> controlWeakPtr = controlShPtr;
-	auto mouseMoveHandler =
-		[controlWeakPtr] (SDL_MouseMotionEvent &mouseMoveEvent) -> bool {
-			auto controlShPtr = controlWeakPtr.lock();
-			if (controlShPtr) {
-				return controlShPtr->handleMouseMove(mouseMoveEvent);
-			} else {
-				return false;
-			}
-		};
-
-	MouseMoveEventHandlerProxy mouseMoveHandlerProxy (mouseMoveHandler);
-		
-	return mouseMoveHandlerProxy;
-}
-
-
 } /* namespace OevControls */
 
 #endif /* LIB_GUI_EVENTS_MOUSEMOVEEVENTHANDLER_H_ */

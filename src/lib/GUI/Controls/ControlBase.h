@@ -245,14 +245,6 @@ public:
 		return renderContextPtr;
 	}
 
-	MouseEntersControlEventHandler* getMouseEntersEventHandler () const {
-		return mouseEntersEventHandler;
-	}
-	MouseLeavesControlEventHandler* getMouseLeavesEventHandler () {
-		return mouseLeavesEventHandler;
-	}
-
-	
 	// Callbacks upon changes or actions
 
 	/** \brief Request to re-calculate the own model matrix or vertex arrays
@@ -284,6 +276,12 @@ public:
 	 */
 	virtual void onResetParentRenderUniforms(
 		OevGLES::RenderStandardUniforms const &parentUniforms);
+		
+
+	std::weak_ptr<MouseEntersControlEventHandler> const & getMouseEnterFunctorWeakPtr () {
+		return mouseEntersHandlerWeakPtr;
+	}
+
 
 	/** \brief Recalculate the modelMatrix \ref renderUniforms when \ref posOrSizeDirty is true.
 	 
@@ -317,6 +315,7 @@ public:
 	
 	void recalcAbsTopRight();
 
+	
 protected:
 	
 	/// \brief The name can be used for anything the control wishes to do with it
@@ -448,9 +447,27 @@ protected:
 	 *
 	 */
 	RenderContextSharedPtr renderContextPtr;
-	
-	MouseEntersControlEventHandler* mouseEntersEventHandler = nullptr;
-	MouseLeavesControlEventHandler* mouseLeavesEventHandler = nullptr;
+
+	/** \brief Weak pointer to the functor of the mouse enters handler.
+	 * 
+	 * By default it is an empty pointer. A subclass which implements the mouse enter handler will
+	 * set the weak pointer to its own handler which is member of that class. However, the control block
+	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted 
+	 * \p mouseEntersHandlerWeakPtr becomes invalid too.
+	 * 
+	 */
+	std::weak_ptr<MouseEntersControlEventHandler> mouseEntersHandlerWeakPtr;
+
+	/** \brief Weak pointer to the functor of the mouse leaves handler.
+	 * 
+	 * By default it is an empty pointer. A subclass which implements the mouse enter handler will
+	 * set the weak pointer to its own handler which is member of that class. However, the control block
+	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted
+	 * \p mouseLeavesHandlerWeakPtr becomes invalid too.
+	 * 
+	 */
+	std::weak_ptr<MouseLeavesControlEventHandler> mouseLeavesHandlerWeakPtr;
+
 };
 
 template <typename ControlType>

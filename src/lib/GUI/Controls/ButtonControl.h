@@ -30,50 +30,76 @@
 
 #include "TextFieldControl.h"
 #include "Events/MouseEntersControlEventHandler.h"
+#include "Events/MouseLeavesControlEventHandler.h"
 
 namespace OevControls {
 
 class ButtonControl: public TextFieldControl {
 public:
 
-class MouseEntersFunctor {
-public:
-	MouseEntersFunctor(std::weak_ptr<ControlBase> const& weakCtrlPtr) :
-	buttonWeakPtr{std::dynamic_pointer_cast<ButtonControl>(weakCtrlPtr.lock())}
-	{}
-	
-	void operator() (SDL_MouseMotionEvent& mouseMoveEvent) {
-		auto buttonPtr = buttonWeakPtr.lock();
+	class MouseEntersButtonHandler :public MouseEntersControlEventHandler {
 		
-		if (buttonPtr) {
-			buttonPtr->mouseEntersButton();
-		}
-	}
-	
-private:
-
-std::weak_ptr<ButtonControl> buttonWeakPtr;
-}; // class MouseEntersFunctor
-class MouseLeavesFunctor {
-public:
-	MouseLeavesFunctor(std::weak_ptr<ControlBase> const& weakCtrlPtr) :
-	buttonWeakPtr{std::dynamic_pointer_cast<ButtonControl>(weakCtrlPtr.lock())}
-	{}
-	
-	void operator() (SDL_MouseMotionEvent& mouseMoveEvent) {
-		auto buttonPtr = buttonWeakPtr.lock();
+		friend class ButtonControl;
 		
-		if (buttonPtr) {
-			buttonPtr->mouseLeavesButton();
-		}
-	}
+	public:
+		
+		// This will be the one and only object. No copies.
+		MouseEntersButtonHandler(MouseEntersButtonHandler const &) = delete;
+		MouseEntersButtonHandler(MouseEntersButtonHandler &&) = delete;
+		MouseEntersButtonHandler& operator = (MouseEntersButtonHandler const &) = delete;
+		MouseEntersButtonHandler& operator = (MouseEntersButtonHandler &&) = delete;
+		
+		virtual void mouseEntersControl (SDL_MouseMotionEvent& mouseMoveEvent) override;
+		
+	private:
+
+		MouseEntersButtonHandler(ButtonControl & buttonObj) :
+			buttonObj {buttonObj}
+		{}
 	
-private:
+		/** \brief Reference to the owning object.
+		 *
+		 * Using a raw reference is allowed here: Only \ref ButtonControl can create an object which is
+		 * \ref ButtonControl::mouseEntersFunctor.
+		 * No copies can be created. References are only passed around as std::weak_ptr objects.
+		 * When the \ref ButtonControl is destroyed the weak pointers to this are also becoming emtpy.
+		 */
+		ButtonControl & buttonObj;
+	}; // class MouseEntersFunctor
 
-std::weak_ptr<ButtonControl> buttonWeakPtr;
-}; // class MouseLeavesFunctor
+	class MouseLeavesButtonFunctor :public MouseLeavesControlEventHandler {
+		
+		friend class ButtonControl;
+		
+	public:
+		
+		// This will be the one and only object. No copies.
+		MouseLeavesButtonFunctor(MouseLeavesButtonFunctor const &) = delete;
+		MouseLeavesButtonFunctor(MouseLeavesButtonFunctor &&) = delete;
+		MouseLeavesButtonFunctor& operator = (MouseLeavesButtonFunctor const &) = delete;
+		MouseLeavesButtonFunctor& operator = (MouseLeavesButtonFunctor &&) = delete;
+		
+		virtual void mouseLeavesControl (SDL_MouseMotionEvent& mouseMoveEvent) override;
+		
+	private:
 
-friend class MouseEntersFunctor;
+		MouseLeavesButtonFunctor(ButtonControl & buttonObj) :
+			buttonObj {buttonObj}
+		{}
+
+		/** \brief Reference to the owning object.
+		 *
+		 * Using a raw reference is allowed here: Only \ref ButtonControl can create an object which is
+		 * \ref ButtonControl::mouseEntersFunctor.
+		 * No copies can be created. References are only passed around as std::weak_ptr objects.
+		 * When the \ref ButtonControl is destroyed the weak pointers to this are also becoming emtpy.
+		 */
+		ButtonControl & buttonObj;
+	}; // class MouseEntersFunctor
+
+
+	friend class MouseEntersButtonHandler;
+	friend class MouseLeavesButtonFunctor;
 
 	ButtonControl(ControlsContainerWeakPtr const &parent,
  		std::weak_ptr<ButtonControl> pointerToSelf,
@@ -87,8 +113,9 @@ friend class MouseEntersFunctor;
 	
 private:
 
-	MouseEntersControlEventHandlerProxy<MouseEntersFunctor> mouseEnterHandler;
-
+MouseEntersButtonHandler mouseEntersHandler;
+MouseLeavesButtonFunctor mouseLeavesHandler;
+	
 	void mouseEntersButton ();
 	void mouseLeavesButton ();
 
