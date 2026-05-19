@@ -30,13 +30,12 @@
 #include "Controls/RootControl.h"
 
 #include "GLES/GLFramework.h"
-#include "SDL3/SDL_events.h"
 #include "SDLUtil.h"
 #include "Renderers/RenderContext.h"
 #include "GLTextRender/GLTextGlobals.h"
 #include "GLPrograms/GLProgControlSimpleFill.h"
 
-#include "Events/MouseMoveEvent.h"
+#include "Events/OVFEvents.h"
 #include <log4cxx/logger.h>
 
 namespace OevGLES {
