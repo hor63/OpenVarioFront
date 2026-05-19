@@ -49,7 +49,7 @@ public:
 		MouseEntersButtonHandler& operator = (MouseEntersButtonHandler const &) = delete;
 		MouseEntersButtonHandler& operator = (MouseEntersButtonHandler &&) = delete;
 		
-		virtual void mouseEntersControl (SDL_MouseMotionEvent& mouseMoveEvent) override;
+		virtual void mouseEntersControl (MouseMoveEvent const & mouseMoveEvent) override;
 		
 	private:
 
@@ -79,7 +79,7 @@ public:
 		MouseLeavesButtonFunctor& operator = (MouseLeavesButtonFunctor const &) = delete;
 		MouseLeavesButtonFunctor& operator = (MouseLeavesButtonFunctor &&) = delete;
 		
-		virtual void mouseLeavesControl (SDL_MouseMotionEvent& mouseMoveEvent) override;
+		virtual void mouseLeavesControl (MouseMoveEvent const & mouseMoveEvent) override;
 		
 	private:
 

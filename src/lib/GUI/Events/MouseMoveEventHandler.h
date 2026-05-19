@@ -26,8 +26,7 @@
 #ifndef LIB_GUI_EVENTS_MOUSEMOVEEVENTHANDLER_H_
 #define LIB_GUI_EVENTS_MOUSEMOVEEVENTHANDLER_H_
 
-#include <SDL3/SDL_events.h>
-#include <memory>
+#include "Events/OVFEvents.h"
 
 namespace OevControls {
 
@@ -48,7 +47,7 @@ public:
 	 *					In this case the caller needs to raise the event
 	 *					with the control's parent.
 	 */
-	virtual bool mouseMoves (SDL_MouseMotionEvent &mouseMoveEvent) = 0;
+	virtual bool mouseMoves (MouseMoveEvent const &mouseMoveEvent) = 0;
 	
 }; // class MouseMoveEventHandler
 

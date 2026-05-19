@@ -36,7 +36,9 @@
 #include "GLPrograms/GLProgControlSimpleFill.h"
 
 #include "Events/OVFEvents.h"
-#include <log4cxx/logger.h>
+#include "Events/MouseMoveEventHandler.h"
+#include "Events/MouseEntersControlEventHandler.h"
+#include "Events/MouseLeavesControlEventHandler.h"
 
 namespace OevGLES {
 
@@ -245,6 +247,31 @@ void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlM
 		<< ", relative motion = " << sdlMouseMove.xrel
 		<< ":" << sdlMouseMove.yrel
 		);
+		
+		
+	auto controlWhereMouseHoversSharedPtr = controlWhereMouseHovers.lock();
+	if(controlWhereMouseHoversSharedPtr) {
+		if(controlWhereMouseHoversSharedPtr->isPositionWithinControl(mouseMoveEvent.mousePosition)) {
+			auto mouseMoveHandlerSharedPtr = 
+				controlWhereMouseHoversSharedPtr->getMouseMoveHandlerWeakPtr().lock();
+			if (mouseMoveHandlerSharedPtr) {
+				mouseMoveHandlerSharedPtr->mouseMoves(mouseMoveEvent);
+				
+				// I'm done here.
+				return; 
+			}
+		} else {
+			auto mouseLeavesControlHandlerSharedPtr = 
+				controlWhereMouseHoversSharedPtr->getMouseLeavesHandlerWeakPtr().lock();
+			if(mouseLeavesControlHandlerSharedPtr) {
+				mouseLeavesControlHandlerSharedPtr->mouseLeavesControl(mouseMoveEvent);
+			}
+		}
+	}
+	// Either the mouse cursor did not hover over any control before or the mouse cursor does no longer
+	// hover of the previous control.
+	// Look for a new control where the cursor now hovers.
+	#warning Find the control over which the cursor now hovers, and send the mouse enters and mouse move events. 
 }
 
 void SDLRenderSurface::onWindowResize() {

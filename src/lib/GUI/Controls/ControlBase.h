@@ -65,6 +65,7 @@ using SizePixel = OevGLES::SizePixel;
 
 class MouseEntersControlEventHandler;
 class MouseLeavesControlEventHandler;
+class MouseMoveEventHandler;
 
 class ControlBase /*: public OevGLES::RendererBase*/ {
 public:
@@ -278,10 +279,20 @@ public:
 		OevGLES::RenderStandardUniforms const &parentUniforms);
 		
 
-	std::weak_ptr<MouseEntersControlEventHandler> const & getMouseEnterFunctorWeakPtr () {
+	/// \see mouseEntersHandlerWeakPtr
+	std::weak_ptr<MouseEntersControlEventHandler> const & getMouseEnterFunctorWeakPtr () const {
 		return mouseEntersHandlerWeakPtr;
 	}
 
+	/// \see mouseLeavesHandlerWeakPtr
+	std::weak_ptr<MouseLeavesControlEventHandler> getMouseLeavesHandlerWeakPtr () {
+		return mouseLeavesHandlerWeakPtr;
+	}
+	
+	/// \see mouseMoveHandlerWeakPtr
+	std::weak_ptr<MouseMoveEventHandler> getMouseMoveHandlerWeakPtr () {
+		return mouseMoveHandlerWeakPtr;
+	}
 
 	/** \brief Recalculate the modelMatrix \ref renderUniforms when \ref posOrSizeDirty is true.
 	 
@@ -313,8 +324,18 @@ public:
 	 */
 	void recalcAbsPosition();
 	
+	/** \brief Re-calculate the absolute top-right position
+	 * 
+	 * Add the own absolute position and the the control width and height.
+	 */
 	void recalcAbsTopRight();
 
+	bool isPositionWithinControl(PosPixel const &checkPos) {
+		return (checkPos.xPixel >= absolutePosition.xPixel &&
+			checkPos.xPixel <= absoluteTopRight.xPixel &&
+			checkPos.yPixel >= absolutePosition.yPixel &&
+			checkPos.yPixel <= absoluteTopRight.yPixel);
+	}
 	
 protected:
 	
@@ -468,6 +489,15 @@ protected:
 	 */
 	std::weak_ptr<MouseLeavesControlEventHandler> mouseLeavesHandlerWeakPtr;
 
+	/** \brief Weak pointer to the functor of the mouse move handler.
+	 * 
+	 * By default it is an empty pointer. A subclass which implements the mouse move handler will
+	 * set the weak pointer to its own handler which is member of that class. However, the control block
+	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted
+	 * \p mouseMoveHandlerWeakPtr becomes invalid too.
+	 * 
+	 */
+	std::weak_ptr<MouseMoveEventHandler> mouseMoveHandlerWeakPtr;
 };
 
 template <typename ControlType>

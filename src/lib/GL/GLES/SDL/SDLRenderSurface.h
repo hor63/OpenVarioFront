@@ -50,6 +50,7 @@ using SDLRenderSurfaceWeakPtr = std::weak_ptr<SDLRenderSurface>;
 
 namespace OevControls {
 
+class ControlBase;
 class RootControl;
 
 using RootControlSharedPtr = std::shared_ptr<RootControl>;
@@ -153,6 +154,9 @@ protected:
 
 	/// \brief Each render surface, a.k.a. base window can have one root control.
 	OevControls::RootControlSharedPtr rootControlPtr;
+	
+	/// \brief When valid the mouse pointer hovers of the referenced control.
+	std::weak_ptr<OevControls::ControlBase> controlWhereMouseHovers;
 	
 	/** \brief Base set of render uniforms
 	 * 

@@ -26,7 +26,8 @@
 #ifndef LIB_GUI_EVENTS_MOUSEENTERSCONTROLEVENTHANDLER_H_
 #define LIB_GUI_EVENTS_MOUSEENTERSCONTROLEVENTHANDLER_H_
 
-#include <SDL3/SDL_events.h>
+#include "Events/OVFEvents.h"
+
 
 namespace OevControls {
 
@@ -44,7 +45,7 @@ public:
 	virtual ~MouseEntersControlEventHandler();
 	
 	/// \brief The mouse cursor entered this control from outside.
-	virtual void mouseEntersControl (SDL_MouseMotionEvent &mouseMoveEvent) = 0;
+	virtual void mouseEntersControl (MouseMoveEvent const &mouseMoveEvent) = 0;
 
 };
 
