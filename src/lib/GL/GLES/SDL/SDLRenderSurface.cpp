@@ -22,6 +22,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+#include "Controls/ControlBase.h"
+#include "Controls/ControlsContainer.h"
 #include "OVFCommon.h"
 
 #include "GLES/GLObjectWrappers.h"
@@ -241,38 +243,74 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 
 void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlMouseMove) {
 	OevControls::MouseMoveEvent mouseMoveEvent(sdlMouseMove);
+	OevControls::ControlsContainer::ProcessControlsTreeResult controlUnderTheMouse;
 	
-	LOG4CXX_DEBUG(logger,"Mouse move to " << mouseMoveEvent.mousePosition.xPixel
+	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+		<< "Mouse move to " << mouseMoveEvent.mousePosition.xPixel
 		<< ":" << mouseMoveEvent.mousePosition.yPixel
 		<< ", relative motion = " << sdlMouseMove.xrel
 		<< ":" << sdlMouseMove.yrel
 		);
 		
+	// A lambda to check if the mouse pointer is over a control.
+	auto isControlUnderTheMousePointer = [&,mouseMoveEvent] (OevControls::ControlBase const * control) -> bool {
+		auto result = control->isPositionWithinControl(mouseMoveEvent.mousePosition);
 		
-	auto controlWhereMouseHoversSharedPtr = controlWhereMouseHovers.lock();
-	if(controlWhereMouseHoversSharedPtr) {
-		if(controlWhereMouseHoversSharedPtr->isPositionWithinControl(mouseMoveEvent.mousePosition)) {
-			auto mouseMoveHandlerSharedPtr = 
-				controlWhereMouseHoversSharedPtr->getMouseMoveHandlerWeakPtr().lock();
-			if (mouseMoveHandlerSharedPtr) {
-				mouseMoveHandlerSharedPtr->mouseMoves(mouseMoveEvent);
+		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
+			<< "Control " << control->getName() << ':' << control->getUuid().getUuidString()
+			<< (result?" is ":" is not ") << "under the mouse pointer."
+			<< "\n\tMouse position is " << mouseMoveEvent.mousePosition.xPixel<<'x'<<mouseMoveEvent.mousePosition.yPixel
+			<< "\n\tControl position = " << control->getAbsolutePosition().xPixel
+			<< 'x' << control->getAbsolutePosition().yPixel
+			<< " to " << control->getAbsoluteTopRight().xPixel << 'x' << control->getAbsoluteTopRight().yPixel
+		);
+			
+		return result;
+	};
+		
+	auto controlWhereMouseHoveredSharedPtr = controlWhereMouseHovers.lock();
+	if(controlWhereMouseHoveredSharedPtr) {
+		
+		if(controlWhereMouseHoveredSharedPtr->isPositionWithinControl(mouseMoveEvent.mousePosition)) {
+			LOG4CXX_DEBUG(logger, "\tThe mouse still hovers over the same control.\n"
+				"\tThis control is a container. Therefore check if the mouse moved to a control within the container.");
+			auto controlsContainer = 
+				dynamic_cast<OevControls::ControlsContainer*>(controlWhereMouseHoveredSharedPtr.get());
+
+			if (controlsContainer != nullptr) {
+				// The control is a container.
+				// By moving the mouse within the container there is a chance that I am moving over a control which is
+				// being managed by this container.
+				controlUnderTheMouse = controlsContainer->processControlsTree(
+					isControlUnderTheMousePointer, OevControls::ControlsContainer::ChildrenFirst);
 				
-				// I'm done here.
-				return; 
-			}
-		} else {
-			auto mouseLeavesControlHandlerSharedPtr = 
-				controlWhereMouseHoversSharedPtr->getMouseLeavesHandlerWeakPtr().lock();
-			if(mouseLeavesControlHandlerSharedPtr) {
-				mouseLeavesControlHandlerSharedPtr->mouseLeavesControl(mouseMoveEvent);
+			} else {
+				// This is a simple control. 
+				controlUnderTheMouse.processingIsDone = true;
+				controlUnderTheMouse.controlThatProcessed = controlWhereMouseHovers;
 			}
 		}
 	}
-	// Either the mouse cursor did not hover over any control before or the mouse cursor does no longer
-	// hover of the previous control.
-	// Look for a new control where the cursor now hovers.
-	#warning Find the control over which the cursor now hovers, and send the mouse enters and mouse move events.
-	 
+
+	if (!controlUnderTheMouse.processingIsDone) {
+		LOG4CXX_DEBUG(logger, "\tNo control is under the mouse pointer. Search from the root control.\n");
+		controlUnderTheMouse = rootControlPtr->processControlsTree(
+			isControlUnderTheMousePointer, OevControls::ControlsContainer::ChildrenFirst);
+	}
+
+	auto controlWhereMouseHoversSharedPtr = controlWhereMouseHovers.lock();
+	auto newControlUnderTheMouse = controlUnderTheMouse.controlThatProcessed.lock();
+	if (controlWhereMouseHoversSharedPtr != newControlUnderTheMouse) {
+		if (newControlUnderTheMouse) {
+			LOG4CXX_DEBUG(logger, "\tA new control " 
+				<< newControlUnderTheMouse->getName() << ':' << newControlUnderTheMouse->getUuid().getUuidString()
+				<< " is under the mouse cursor.");
+		} else {
+			LOG4CXX_DEBUG(logger, "\tNo control is now under the mouse");
+		}
+		
+		controlWhereMouseHovers = controlUnderTheMouse.controlThatProcessed;
+	}
 }
 
 void SDLRenderSurface::onWindowResize() {

@@ -32,7 +32,7 @@
 #include "Renderers/RendererBase.h"
 #include "GLES/SDL/SDLRenderSurface.h"
 
-#include "PosPixel.h"
+#include "PosSizePixel.h"
 
 // Forward declarations
 namespace OevGLES {
@@ -127,8 +127,13 @@ public:
 	void setSize (SizePixel const& size);
 
 	/// \see \ref relativeTopRight
-	auto getTopRight() const {
+	auto getRelativeTopRight() const {
 		return relativeTopRight;
+	}
+
+	/// \see \ref absoluteTopRight
+	auto getAbsoluteTopRight() const {
+		return absoluteTopRight;
 	}
 
 	/// \see \ref relativePosition
@@ -328,7 +333,7 @@ public:
 	 */
 	void recalcAbsTopRight();
 
-	bool isPositionWithinControl(PosPixel const &checkPos) {
+	bool isPositionWithinControl(PosPixel const &checkPos) const {
 		return (checkPos.xPixel >= absolutePosition.xPixel &&
 			checkPos.xPixel <= absoluteTopRight.xPixel &&
 			checkPos.yPixel >= absolutePosition.yPixel &&

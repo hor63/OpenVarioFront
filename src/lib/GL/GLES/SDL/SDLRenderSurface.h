@@ -26,13 +26,14 @@
 #ifndef GLES_EGLRENDERSURFACE_H_
 #define GLES_EGLRENDERSURFACE_H_
 
+#include <memory>
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
 #include "SDL3/SDL.h"
 
-#include <memory>
-
+#include "PosSizePixel.h"
 #include "Renderers/RendererBase.h"
 #include "GLES/sysSDLWindow.h"
 #include "GLES/GLFramework.h"
@@ -66,12 +67,6 @@ struct RenderContext;
 using RenderContextSharedPtr = std::shared_ptr<RenderContext>;
 
 class GLFramework;
-
-struct SizePixel {
-	int widthPixel = 0;
-	int heightPixel = 0;
-};
-
 
 class SDLRenderSurface {
 	friend class GLFramework;

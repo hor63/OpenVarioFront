@@ -88,6 +88,10 @@ public:
 	/// \see processControlsTree()
 	enum TreeProcessOrder {ChildrenFirst,SelfFirst} ;
 	
+	struct ProcessControlsTreeResult{
+		bool processingIsDone = false;
+		std::weak_ptr<ControlBase> controlThatProcessed;
+	} ;
 	/** \brief Execute a functor \p f on the controls tree.
 	 *
 	 * Traverse the entire control tree. Call the functor \p f
@@ -102,8 +106,8 @@ public:
 	 *	The return value is determined by the return value of the functor \p f on the controls.
 	 */
 	template <typename Functor>
-	auto processControlsTree (Functor &f,TreeProcessOrder processingOrder) {
-		struct {bool processingIsDone = false;std::weak_ptr<ControlBase> controlThatProcessed;} result;
+	ProcessControlsTreeResult processControlsTree (Functor &f,TreeProcessOrder processingOrder) {
+		ProcessControlsTreeResult result;
 		
 		if (processingOrder == SelfFirst && f(this)) {
 			result.processingIsDone = true;
@@ -117,12 +121,12 @@ public:
 					result = childContainer->processControlsTree(f,processingOrder);
 					if (result.processingIsDone) {
 						break;
-					} else {
-						if (f(i.get())) {
-							result.processingIsDone = true;
-							result.controlThatProcessed = i->getPointerToSelf();
-							break;
-						}
+					}
+				} else {
+					if (f(i.get())) {
+						result.processingIsDone = true;
+						result.controlThatProcessed = i->getPointerToSelf();
+						break;
 					}
 				}
 			}

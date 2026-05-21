@@ -164,8 +164,7 @@ void ControlBase::setSize (SizePixel const& size) {
 		this->size.widthPixel != size.widthPixel) {
 		this->size = size;
 		
-		relativeTopRight.xPixel = relativePosition.xPixel + size.widthPixel;
-		relativeTopRight.yPixel = relativePosition.yPixel + size.heightPixel;
+		relativeTopRight = relativePosition + size;
 
 		auto & modelMatrix = renderUniforms.getModelMatrix();
 		modelMatrix(0,0) = size.widthPixel;
