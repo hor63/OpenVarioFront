@@ -10,7 +10,7 @@
 
 #include <cmath>
 #include <SDL3/SDL_events.h>
-#include "Controls/PosPixel.h"
+#include "PosSizePixel.h"
 
 namespace OevControls {
 
