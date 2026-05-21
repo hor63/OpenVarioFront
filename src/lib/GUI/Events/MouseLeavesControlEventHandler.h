@@ -35,8 +35,8 @@ namespace OevControls {
  * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
  * when it figures that the mouse cursor entered a control 
  *
- * Must be overloaded. This is usually done with an instance of 
- * template class \ref MouseMoveEventHandlerProxy
+ * This is a pure virtual class. It must be overloaded.
+ *
  */
 class MouseLeavesControlEventHandler {
 public:

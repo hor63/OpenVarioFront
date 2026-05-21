@@ -50,7 +50,7 @@ ControlBase::ControlBase(ControlsContainerWeakPtr const & parent,
 					}
 			} ()
 		},
-		renderContextPtr{renderContextPtr},
+		renderContextSharedPtr{renderContextPtr},
 		uuid {uuid},
 		name {name},
 		renderUniforms { // Use a lambda here 

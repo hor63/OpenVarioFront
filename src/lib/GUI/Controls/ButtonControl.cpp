@@ -63,7 +63,7 @@ void ButtonControl::mouseLeavesButton () {
 void ButtonControl::MouseEntersButtonHandler::mouseEntersControl (MouseMoveEvent const & mouseMoveEvent) {
 	buttonObj.mouseEntersButton();
 }
-void ButtonControl::MouseLeavesButtonFunctor::mouseLeavesControl (MouseMoveEvent const & mouseMoveEvent) {
+void ButtonControl::MouseLeavesButtonHandler::mouseLeavesControl (MouseMoveEvent const & mouseMoveEvent) {
 	buttonObj.mouseLeavesButton();
 }
 	

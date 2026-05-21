@@ -95,7 +95,7 @@ public:
 	 *
 	 * \param f Functor or lambda with return type bool, and a parameter of type \ref ControlBase*.
 	 	When the functor returns \p true the tree traversing stops, and this function returns \p true.
-	 * \param processOrder When \ref ChildrenFirst the function descends recursively down the tree first.
+	 * \param processingOrder When \ref ChildrenFirst the function descends recursively down the tree first.
 	 *	When \ref SelfFirst the functor \p f is called for \p this first before descending the controls tree.
 	 *
 	 * \return \p true when traversing the tree shall stop. \p false when traversing the tree shall continue.

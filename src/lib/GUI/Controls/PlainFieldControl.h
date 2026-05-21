@@ -45,10 +45,10 @@ public:
 
 	/** \brief Overwrite the default background fill color
 	 *
-	 * By default the fill color is defined as backgroundColorPtr in \ref renderContextPtr.
+	 * By default the fill color is defined as backgroundColorPtr in \ref renderContextSharedPtr.
 	 * Here you can overwrite the default.
 	 *
-	 * You can reset the fill color to the \ref renderContext default by calling
+	 * You can reset the fill color to the \ref renderContextSharedPtr default by calling
 	 * with an empty shared pointer.
 	 *
 	 * \see OevGLES::RenderContext::backgroundColorPtr
@@ -57,16 +57,16 @@ public:
 		if (fillColorPtr) {
 			this->fillColorPtr = fillColorPtr;
 		} else {
-			this->fillColorPtr = renderContextPtr->backgroundColorPtr;
+			this->fillColorPtr = renderContextSharedPtr->backgroundColorPtr;
 		}
 	}
 
 	/** \brief Overwrite the default frame color
 	 *
-	 * By default the frame color is defined as foregroundColorPtr in \ref renderContextPtr.
+	 * By default the frame color is defined as foregroundColorPtr in \ref renderContextSharedPtr.
 	 * Here you can overwrite the default.
 	 *
-	 * You can reset the frame color to the \ref renderContext default by calling
+	 * You can reset the frame color to the \ref renderContextSharedPtr default by calling
 	 * with an empty shared pointer.
 	 *
 	 * \see OevGLES::RenderContext::backgroundColorPtr
@@ -75,7 +75,7 @@ public:
 		if (frameColorPtr) {
 			this->frameColorPtr = frameColorPtr;
 		} else {
-			this->frameColorPtr = renderContextPtr->foregroundColorPtr;
+			this->frameColorPtr = renderContextSharedPtr->foregroundColorPtr;
 		}
 	}
 
@@ -96,7 +96,7 @@ public:
 protected:
 
 	/** 
-	 * The fill color points by default to renderContextPtr->backgroundColorPtr.
+	 * The fill color points by default to renderContextSharedPtr->backgroundColorPtr.
 	 * The pointer can be overwritten, e.g. with the \ref OevGLES::RenderContext::textBackgroundColorPtr
 	 * or any other color shared pointer.
 	 *
@@ -105,7 +105,7 @@ protected:
 	OevGLES::Vec4ShPtr fillColorPtr;
 	
 	/** 
-	 * The frame color points by default to renderContextPtr->foregroundColorPtr.
+	 * The frame color points by default to renderContextSharedPtr->foregroundColorPtr.
 	 * The pointer can be overwritten, e.g. with the \ref OevGLES::RenderContext::textForegroundColorPtr
 	 * or any other color shared pointer.
 	 *

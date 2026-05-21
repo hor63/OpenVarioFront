@@ -40,8 +40,8 @@ TextFieldControl::TextFieldControl(	ControlsContainerWeakPtr const &parent,
 	: PlainFieldControl(parent,pointerToSelf,renderContextPtr,uuid,name),
 	// the base class ControlBase asserts that renderContextPtr is not empty.
 	textRenderer(renderContextPtr),
-	textSizePointsPtr{&this->renderContextPtr->textSizePoints},
-	fontListPtr{&this->renderContextPtr->fontNameList},
+	textSizePointsPtr{&this->renderContextSharedPtr->textSizePoints},
+	fontListPtr{&this->renderContextSharedPtr->fontNameList},
 	textRenderUniforms{renderUniforms}
 {
 	#if defined HAVE_LOG4CXX_H

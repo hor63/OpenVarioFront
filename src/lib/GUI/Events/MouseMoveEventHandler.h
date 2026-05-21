@@ -32,8 +32,7 @@ namespace OevControls {
 
 /** \brief Abstract/pure virtual mouse move handler
  *
- * Must be overloaded. This is usually done with an instance of 
- * template class \ref MouseMoveEventHandlerProxy
+ * This is a pure virtual class. It must be overloaded.
  */
 class MouseMoveEventHandler {
 public:

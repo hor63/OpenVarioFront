@@ -113,37 +113,37 @@ public:
 	auto getAbsolutePosition () const {
 		return absolutePosition;
 	}
-	/// Moves \ref topRight accordingly but leaves
+	/// Moves \ref relativeTopRight accordingly but leaves
 	/// \ref size unchanged.
-	/// \see \ref position
+	/// \see \ref relativePosition
 	void setRelativePosition (PosPixel const& position);
 
 	/// \see \ref size
 	auto getSize() const {
 		return size;
 	}
-	/// Leaves \ref position unchanged, but adjusts \ref topRight accordingly
+	/// Leaves \ref relativePosition unchanged, but adjusts \ref relativeTopRight accordingly
 	/// \see \ref size
 	void setSize (SizePixel const& size);
 
-	/// \see \ref topRight
+	/// \see \ref relativeTopRight
 	auto getTopRight() const {
 		return relativeTopRight;
 	}
 
-	/// \see \ref position
+	/// \see \ref relativePosition
 	auto getX() const {
 		return relativePosition.xPixel;
 	}
-	/// \see \ref position
+	/// \see \ref relativePosition
 	auto getY() const {
 		return relativePosition.yPixel;
 	}
-	/// \see \ref topRight
+	/// \see \ref relativeTopRight
 	auto getRight() const {
 		return relativeTopRight.xPixel;
 	}
-	/// \see \ref topRight
+	/// \see \ref relativeTopRight
 	auto getTop() const {
 		return relativeTopRight.yPixel;
 	}
@@ -243,7 +243,7 @@ public:
 	 * share pointer in \p this.
 	 */
 	RenderContextSharedPtr const& getControlsContextPtr() const {
-		return renderContextPtr;
+		return renderContextSharedPtr;
 	}
 
 	// Callbacks upon changes or actions
@@ -294,13 +294,11 @@ public:
 		return mouseMoveHandlerWeakPtr;
 	}
 
-	/** \brief Recalculate the modelMatrix \ref renderUniforms when \ref posOrSizeDirty is true.
-	 
-	 When you override this method make sure to call the base class method here.
-	 
-	 Here modelMatrix of \ref renderUniforms is being re-calculated.
-	 
-	 \ref posOrSizeDirty is being reset.
+	/** \brief Recalculate the modelMatrix \ref renderUniforms.
+	 * 
+	 * When you override this method make sure to call the base class method here.
+	 * 
+	 * Here modelMatrix of \ref renderUniforms is being re-calculated.
 	 */
 	virtual void recalcSizePositionMatrix();
 	
@@ -378,9 +376,9 @@ protected:
 	
 	/// \brief the bounding box around the control
 	SizePixel size = {1,1};
-	/// \brief Derived and redundant convenience coordinates based on \ref position and \ref size
+	/// \brief Derived and redundant convenience coordinates based on \ref relativePosition and \ref size
 	///
-	/// \p topRight is like \ref position also relative to position of \ref parent.
+	/// \p relativeTopRight is like \ref relativePosition also relative to position of \ref parent.
 	PosPixel relativeTopRight;
 	
 	/// \brief Convenience calculated from \ref absolutePosition and \ref size
@@ -467,7 +465,7 @@ protected:
 	 * control for a \ref OevGLES::SDLRenderSurface.
 	 *
 	 */
-	RenderContextSharedPtr renderContextPtr;
+	RenderContextSharedPtr renderContextSharedPtr;
 
 	/** \brief Weak pointer to the functor of the mouse enters handler.
 	 * 

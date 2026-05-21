@@ -271,7 +271,8 @@ void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlM
 	// Either the mouse cursor did not hover over any control before or the mouse cursor does no longer
 	// hover of the previous control.
 	// Look for a new control where the cursor now hovers.
-	#warning Find the control over which the cursor now hovers, and send the mouse enters and mouse move events. 
+	#warning Find the control over which the cursor now hovers, and send the mouse enters and mouse move events.
+	 
 }
 
 void SDLRenderSurface::onWindowResize() {

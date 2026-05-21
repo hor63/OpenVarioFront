@@ -49,7 +49,7 @@ static constexpr std::size_t AllOnesSizeT = ~static_cast<size_t>(0U);
 namespace OevGLES {
 
 /** \brief Class to be the key for \ref GLTextRenderer::vertextBufferPerTextureMap and
- * \ref GLTextRenderer::vertexBufferTrapezoidsPerPart;  
+ * \ref GLTextRenderer::vertexBufferTrapezoidsPerColor;  
  *
  * In addition objects also carry the current color for the stuff to render with GL. 
  */
@@ -65,7 +65,7 @@ public:
 
 	/** \brief Constructor for a static color object
 	 *
-	 * \param sharedDefaultColor Usually comes from \ref RenderContext.
+	 * \param staticColor Usually comes from \ref RenderContext.
 	 * \param textureHandle Only used when being the key for \ref GLTextRenderer::vertextBufferPerTextureMap
 	 */  
 	VertexBufferKey(Vec4 const& staticColor,GLuint textureHandle = 0U) :

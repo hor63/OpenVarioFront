@@ -60,37 +60,37 @@ public:
 		/** \brief Reference to the owning object.
 		 *
 		 * Using a raw reference is allowed here: Only \ref ButtonControl can create an object which is
-		 * \ref ButtonControl::mouseEntersFunctor.
+		 * \ref ButtonControl::mouseEntersHandler.
 		 * No copies can be created. References are only passed around as std::weak_ptr objects.
 		 * When the \ref ButtonControl is destroyed the weak pointers to this are also becoming emtpy.
 		 */
 		ButtonControl & buttonObj;
 	}; // class MouseEntersFunctor
 
-	class MouseLeavesButtonFunctor :public MouseLeavesControlEventHandler {
+	class MouseLeavesButtonHandler :public MouseLeavesControlEventHandler {
 		
 		friend class ButtonControl;
 		
 	public:
 		
 		// This will be the one and only object. No copies.
-		MouseLeavesButtonFunctor(MouseLeavesButtonFunctor const &) = delete;
-		MouseLeavesButtonFunctor(MouseLeavesButtonFunctor &&) = delete;
-		MouseLeavesButtonFunctor& operator = (MouseLeavesButtonFunctor const &) = delete;
-		MouseLeavesButtonFunctor& operator = (MouseLeavesButtonFunctor &&) = delete;
+		MouseLeavesButtonHandler(MouseLeavesButtonHandler const &) = delete;
+		MouseLeavesButtonHandler(MouseLeavesButtonHandler &&) = delete;
+		MouseLeavesButtonHandler& operator = (MouseLeavesButtonHandler const &) = delete;
+		MouseLeavesButtonHandler& operator = (MouseLeavesButtonHandler &&) = delete;
 		
 		virtual void mouseLeavesControl (MouseMoveEvent const & mouseMoveEvent) override;
 		
 	private:
 
-		MouseLeavesButtonFunctor(ButtonControl & buttonObj) :
+		MouseLeavesButtonHandler(ButtonControl & buttonObj) :
 			buttonObj {buttonObj}
 		{}
 
 		/** \brief Reference to the owning object.
 		 *
 		 * Using a raw reference is allowed here: Only \ref ButtonControl can create an object which is
-		 * \ref ButtonControl::mouseEntersFunctor.
+		 * \ref ButtonControl::mouseLeavesHandler.
 		 * No copies can be created. References are only passed around as std::weak_ptr objects.
 		 * When the \ref ButtonControl is destroyed the weak pointers to this are also becoming emtpy.
 		 */
@@ -99,7 +99,7 @@ public:
 
 
 	friend class MouseEntersButtonHandler;
-	friend class MouseLeavesButtonFunctor;
+	friend class MouseLeavesButtonHandler;
 
 	ButtonControl(ControlsContainerWeakPtr const &parent,
  		std::weak_ptr<ButtonControl> pointerToSelf,
@@ -114,7 +114,7 @@ public:
 private:
 
 MouseEntersButtonHandler mouseEntersHandler;
-MouseLeavesButtonFunctor mouseLeavesHandler;
+MouseLeavesButtonHandler mouseLeavesHandler;
 	
 	void mouseEntersButton ();
 	void mouseLeavesButton ();

@@ -79,11 +79,11 @@ void PlainFieldControl::draw () {
 	OevGLES::GLBindVertexArrayObject bindVertexArrayObject;
 	OevGLES::GLBindVertexArrayObject bindVertexArray;
 
-	if (renderContextPtr->quadVertexArray.valid()) {
+	if (renderContextSharedPtr->quadVertexArray.valid()) {
 		bindVertexArrayObject =
-			OevGLES::GLBindVertexArrayObject(renderContextPtr->quadVertexArray);
+			OevGLES::GLBindVertexArrayObject(renderContextSharedPtr->quadVertexArray);
 	} else {
-		bindVertexArray = OevGLES::GLBindVertexArrayObject (renderContextPtr->quadVertexArray);
+		bindVertexArray = OevGLES::GLBindVertexArrayObject (renderContextSharedPtr->quadVertexArray);
 		// setup the vertex coordinates
 		OevGLES::GLVertexArrayAttribObject enableVertexPosAttr(
 			true, simpleFillProg->getVertexPosLocation());

@@ -36,7 +36,7 @@ class TextFieldControl: public PlainFieldControl {
 public:
 	TextFieldControl(ControlsContainerWeakPtr const &parent,
 		std::weak_ptr<TextFieldControl> pointerToSelf,
-		RenderContextSharedPtr const& renderContextPtr,
+		RenderContextSharedPtr const& renderContextSharedPtr,
 		OevUtil::Uuid const & uuid,
 		char const* name);
 	virtual ~TextFieldControl();
@@ -56,9 +56,9 @@ public:
 
 	/** \brief Set the font size
 	*
-	* The default is being set from \p textSizePoints in \ref renderContextPtr.
+	* The default is being set from \p textSizePoints in \ref renderContextSharedPtr.
 	*
-	* You can reset the text size to the default from \ref renderContextPtr
+	* You can reset the text size to the default from \ref renderContextSharedPtr
 	* by passing a text size <= 0.0.
 	*
 	* \param sizePoints Font size in points (what else 🙃)
@@ -72,7 +72,7 @@ public:
 			textSizePointsPtr = &locTextSizePoints;
 			textRenderer.setFontSize(sizePoints);
 		} else {
-			textSizePointsPtr = &renderContextPtr->textSizePoints;
+			textSizePointsPtr = &renderContextSharedPtr->textSizePoints;
 		}
 		
 		textFieldAttribsChanged = true;
@@ -83,9 +83,9 @@ public:
 
 	/** \brief Set the text foreground color, overwriting the default text color.
 	 * 
-	 * Default is \p textForegroundColorPtr in \ref renderContextPtr.
+	 * Default is \p textForegroundColorPtr in \ref renderContextSharedPtr.
 	 * 
-	 * You can reset the text color back to the default from \ref renderContextPtr
+	 * You can reset the text color back to the default from \ref renderContextSharedPtr
 	 * by passing an empty shared pointer.
 	 * 
 	 * \see OevGLES::RenderContext::textForegroundColorPtr
@@ -95,7 +95,7 @@ public:
 			this->textColorPtr = textColorPtr;
 		} else {
 			// revert to the context color.
-			this->textColorPtr = renderContextPtr->textForegroundColorPtr;
+			this->textColorPtr = renderContextSharedPtr->textForegroundColorPtr;
 		}
 
 		textFieldAttribsChanged = true;
@@ -122,7 +122,7 @@ public:
 
 	/** \brief Set the font name or list of font names to choose from
 	 *
-	 * The default is being set from the \p fontNameList in \ref renderContextPtr.
+	 * The default is being set from the \p fontNameList in \ref renderContextSharedPtr.
 	 * You can reset the font name list to the default by passing an empty string.
 	 *
 	 * \param fontNames Name of the font family, or comma separated list of font families to choose from
@@ -142,9 +142,9 @@ public:
 	}
 
 	/** \brief Layout the text with the set attributes and text.
-	 *
-	 * Is called from \ref draw () when \ref textFieldAttribsDirty is true.\n
-	 * Resets \ref textFieldAttribsDirty to \p false.
+textChanged || textFieldAttribsChanged	 *
+	 * Is called from \ref draw () when \ref textChanged or \ref textFieldAttribsChanged is true.\n
+	 * Resets \ref textChanged and \ref textFieldAttribsChanged to \p false.
 	 *
 	 * \see RendererBase::setupVertexBuffers()
 	 */
@@ -204,7 +204,7 @@ private:
 	bool heightIsFixed_ = false;
 
 	/** 
-	 * The text foreground color points by default to renderContextPtr->textForegroundColorPtr.
+	 * The text foreground color points by default to renderContextSharedPtr->textForegroundColorPtr.
 	 * The pointer can be overwritten by \ref setTextColor ().
 	 *
 	 * \see OevGLES::RenderContext::textForegroundColorPtr
