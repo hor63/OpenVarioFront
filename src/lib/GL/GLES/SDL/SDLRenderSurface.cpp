@@ -242,7 +242,7 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 }
 
 void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlMouseMove) {
-	OevControls::MouseMoveEvent mouseMoveEvent(sdlMouseMove);
+	OevControls::MouseMoveEvent mouseMoveEvent(sdlMouseMove,windowSize);
 	OevControls::ControlsContainer::ProcessControlsTreeResult controlUnderTheMouse;
 	
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__

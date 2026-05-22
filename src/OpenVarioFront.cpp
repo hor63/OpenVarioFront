@@ -292,7 +292,7 @@ int main(int argint,char** argv) {
 									rootCtrlPtr,
 									renderSurfacePtr1->getRenderContextPtr(),
 									OevUtil::Uuid("93a22a0c-e282-11f0-b16a-9347e013a17a"),
-									"PLainField1");
+									"PlainField1");
 				OevControls::ControlBaseSharedPtr plainFieldCtrlPtr(plainFieldControl);
 				rootCtrlPtr->addControl(plainFieldCtrlPtr);
 				
@@ -306,7 +306,7 @@ int main(int argint,char** argv) {
 												rootCtrlPtr,
 												renderSurfacePtr1->getRenderContextPtr(),
 												OevUtil::Uuid("04f0f49a-ec8d-11f0-a4bc-5bdf9f28664a"),
-												"PLainField1");
+												"TextField1");
 				OevControls::ControlBaseSharedPtr textFieldCtrlPtr(textFieldControl);
 	
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
@@ -314,7 +314,7 @@ int main(int argint,char** argv) {
 				textFieldControl->setSize ({250,40});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				textFieldControl->setFontSize(20);
-				textFieldControl->setText("This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|JIIgq|J the second line.");
+				textFieldControl->setText("TextField1:This 流氓 is gq|J|Jgq a test\nThis 流氓 is gq|JIIgq|J the second line.");
 				textFieldControl->setWidthIsFixed();
 				textFieldControl->setHasFrame(true);
 			}
@@ -323,14 +323,14 @@ int main(int argint,char** argv) {
 												rootCtrlPtr,
 												renderSurfacePtr1->getRenderContextPtr(),
 												OevUtil::Uuid("2cd9507e-eff8-11f0-91d0-db75aaf51cb6"),
-												"PLainField2");
+												"TextField2");
 				OevControls::ControlBaseSharedPtr textFieldCtrlPtr(textFieldControl);
 
 				rootCtrlPtr->addControl(textFieldCtrlPtr);
 				textFieldControl->setRelativePosition({502,602});
 				textFieldControl->setTextColor(std::make_shared<OevGLES::Vec4>(0,0,0.5,1));
 				textFieldControl->setFontSize(15);
-				textFieldControl->setText("This 流氓ชั่วq is gq|J|Jgq a test\nThis 流氓ชั่วที่ is gq|Jgq|J the second line.");
+				textFieldControl->setText("TextField2:This 流氓ชั่วq is gq|J|Jgq a test\nThis 流氓ชั่วที่ is gq|Jgq|J the second line.");
 				textFieldControl->setSize ({200,90});
 				textFieldControl->setWidthIsFixed();
 				textFieldControl->setHeightIsFixed();
