@@ -348,6 +348,6 @@ void ControlBase::recalcAbsPosition() {
 
 void ControlBase::recalcAbsTopRight() {
 	
-	absoluteTopRight = absolutePosition + relativeTopRight;
+	absoluteTopRight = absolutePosition + size;
 }
 } /* namespace OevControls */
