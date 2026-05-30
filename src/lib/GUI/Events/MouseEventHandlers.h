@@ -1,5 +1,5 @@
 /*
- * MouseMoveEventHandler.h
+ * MouseEventHandlers.h
  *
  *  Created on: Apr 3, 2026
  *      Author: hor
@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef LIB_GUI_EVENTS_MOUSEMOVEEVENTHANDLER_H_
-#define LIB_GUI_EVENTS_MOUSEMOVEEVENTHANDLER_H_
+#ifndef LIB_GUI_EVENTS_MOUSEEVENTHANDLERS_H_
+#define LIB_GUI_EVENTS_MOUSEEVENTHANDLERS_H_
 
 #include "Events/OVFEvents.h"
 
@@ -50,6 +50,42 @@ public:
 	
 }; // class MouseMoveEventHandler
 
+/** \brief Abstract/pure virtual handler when the mouse pointer enters a control
+ * 
+ * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
+ * when it figures that the mouse cursor entered a control 
+ *
+ * This is a pure virtual class. It must be overloaded.
+ */
+class MouseEntersControlEventHandler {
+public:
+	MouseEntersControlEventHandler() {}
+	virtual ~MouseEntersControlEventHandler();
+	
+	/// \brief The mouse cursor entered this control from outside.
+	virtual void mouseEntersControl (MouseMoveEvent const &mouseMoveEvent) = 0;
+
+};
+
+/** \brief Abstract/pure virtual handler when the mouse pointer Leaves a control
+ * 
+ * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
+ * when it figures that the mouse cursor entered a control 
+ *
+ * This is a pure virtual class. It must be overloaded.
+ *
+ */
+class MouseLeavesControlEventHandler {
+public:
+	MouseLeavesControlEventHandler() {}
+	virtual ~MouseLeavesControlEventHandler();
+	
+	/// \brief The mouse cursor entered this control from outside.
+	virtual void mouseLeavesControl (MouseMoveEvent const &mouseMoveEvent) = 0;
+
+};
+
+
 } /* namespace OevControls */
 
-#endif /* LIB_GUI_EVENTS_MOUSEMOVEEVENTHANDLER_H_ */
+#endif /* LIB_GUI_EVENTS_MOUSEEVENTHANDLERS_H_ */

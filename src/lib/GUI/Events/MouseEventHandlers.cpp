@@ -24,10 +24,14 @@
  */
 #include "OVFCommon.h"
  
-#include "lib/GUI/Events/MouseMoveEventHandler.h"
+#include "lib/GUI/Events/MouseEventHandlers.h"
 
 namespace OevControls {
 
 MouseMoveEventHandler::~MouseMoveEventHandler() {}
+
+MouseEntersControlEventHandler::~MouseEntersControlEventHandler() {}
+
+MouseLeavesControlEventHandler::~MouseLeavesControlEventHandler() {}
 
 } /* namespace OevControls */
