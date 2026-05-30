@@ -46,6 +46,10 @@ ButtonControl::ButtonControl(ControlsContainerWeakPtr const &parent,
 			std::shared_ptr<MouseEntersControlEventHandler> (pointerToSelf.lock(),&mouseEntersHandler);
 		mouseLeavesHandlerWeakPtr = 
 			std::shared_ptr<MouseLeavesControlEventHandler> (pointerToSelf.lock(),&mouseLeavesHandler);
+			
+		// By default the frame blends with the background.
+		// Then the mouse pointer hovers over the control the frame gets the forground color, and is visible.
+		frameColorPtr = renderContextSharedPtr->backgroundColorPtr;
 	}
 
 ButtonControl::~ButtonControl() {
@@ -53,11 +57,11 @@ ButtonControl::~ButtonControl() {
 }
 
 void ButtonControl::mouseEntersButton () {
-	
+	frameColorPtr = renderContextSharedPtr->foregroundColorPtr;
 }
 
 void ButtonControl::mouseLeavesButton () {
-	
+	frameColorPtr = renderContextSharedPtr->backgroundColorPtr;
 }
 
 void ButtonControl::MouseEntersButtonHandler::mouseEntersControl (MouseMoveEvent const & mouseMoveEvent) {
