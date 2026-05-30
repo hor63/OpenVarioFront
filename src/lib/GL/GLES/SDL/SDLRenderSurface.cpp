@@ -38,9 +38,7 @@
 #include "GLPrograms/GLProgControlSimpleFill.h"
 
 #include "Events/OVFEvents.h"
-#include "Events/MouseMoveEventHandler.h"
-#include "Events/MouseEntersControlEventHandler.h"
-#include "Events/MouseLeavesControlEventHandler.h"
+#include "Events/MouseEventHandlers.h"
 
 namespace OevGLES {
 

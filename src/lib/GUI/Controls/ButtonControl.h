@@ -29,8 +29,7 @@
 #include <memory>
 
 #include "TextFieldControl.h"
-#include "Events/MouseEntersControlEventHandler.h"
-#include "Events/MouseLeavesControlEventHandler.h"
+#include "Events/MouseEventHandlers.h"
 
 namespace OevControls {
 
