@@ -243,7 +243,7 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 
 void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlMouseMove) {
 	OevControls::MouseMoveEvent mouseMoveEvent(sdlMouseMove,windowSize);
-	OevControls::ControlsContainer::ProcessControlsTreeResult controlUnderTheMouse;
+	OevControls::ControlsContainer::ProcessControlsTreeResult searchControlsResult;
 	
 	LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 		<< "Mouse move to " << mouseMoveEvent.mousePosition.xPixel
@@ -272,8 +272,6 @@ void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlM
 	if(controlWhereMouseHoveredSharedPtr) {
 		
 		if(controlWhereMouseHoveredSharedPtr->isPositionWithinControl(mouseMoveEvent.mousePosition)) {
-			LOG4CXX_DEBUG(logger, "\tThe mouse still hovers over the same control.\n"
-				"\tThis control is a container. Therefore check if the mouse moved to a control within the container.");
 			auto controlsContainer = 
 				dynamic_cast<OevControls::ControlsContainer*>(controlWhereMouseHoveredSharedPtr.get());
 
@@ -281,35 +279,50 @@ void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlM
 				// The control is a container.
 				// By moving the mouse within the container there is a chance that I am moving over a control which is
 				// being managed by this container.
-				controlUnderTheMouse = controlsContainer->processControlsTree(
+				LOG4CXX_DEBUG(logger, "\tThe mouse still hovers over the same control.\n"
+					"\tThis control is a container. Therefore check if the mouse moved to a control within the container.");
+
+				searchControlsResult = controlsContainer->processControlsTree(
 					isControlUnderTheMousePointer, OevControls::ControlsContainer::ChildrenFirst);
 				
 			} else {
 				// This is a simple control. 
-				controlUnderTheMouse.processingIsDone = true;
-				controlUnderTheMouse.controlThatProcessed = controlWhereMouseHovers;
+				searchControlsResult.processingIsDone = true;
+				searchControlsResult.controlThatProcessed = controlWhereMouseHovers;
 			}
 		}
 	}
 
-	if (!controlUnderTheMouse.processingIsDone) {
+	if (!searchControlsResult.processingIsDone) {
 		LOG4CXX_DEBUG(logger, "\tNo control is under the mouse pointer. Search from the root control.\n");
-		controlUnderTheMouse = rootControlPtr->processControlsTree(
+		searchControlsResult = rootControlPtr->processControlsTree(
 			isControlUnderTheMousePointer, OevControls::ControlsContainer::ChildrenFirst);
 	}
 
-	auto controlWhereMouseHoversSharedPtr = controlWhereMouseHovers.lock();
-	auto newControlUnderTheMouse = controlUnderTheMouse.controlThatProcessed.lock();
-	if (controlWhereMouseHoversSharedPtr != newControlUnderTheMouse) {
-		if (newControlUnderTheMouse) {
+	auto previousControlUnderMousePtr = controlWhereMouseHovers.lock();
+	auto newControlUnderTheMousePtr = searchControlsResult.controlThatProcessed.lock();
+	if (previousControlUnderMousePtr != newControlUnderTheMousePtr) {
+		if (previousControlUnderMousePtr) {
+			LOG4CXX_DEBUG(logger, "\tThe mouse cursor left control " 
+				<< previousControlUnderMousePtr->getName() << ':' << previousControlUnderMousePtr->getUuid().getUuidString()
+				<< ".");
+			if (auto mouseLeavesHandlerPtr = previousControlUnderMousePtr->getMouseLeavesHandlerWeakPtr().lock()) {
+				mouseLeavesHandlerPtr->mouseLeavesControl(mouseMoveEvent);
+			}
+			
+		}
+		if (newControlUnderTheMousePtr) {
 			LOG4CXX_DEBUG(logger, "\tA new control " 
-				<< newControlUnderTheMouse->getName() << ':' << newControlUnderTheMouse->getUuid().getUuidString()
+				<< newControlUnderTheMousePtr->getName() << ':' << newControlUnderTheMousePtr->getUuid().getUuidString()
 				<< " is under the mouse cursor.");
+			if (auto mouseEntersHandlerPtr = newControlUnderTheMousePtr->getMouseEnterFunctorWeakPtr().lock()) {
+				mouseEntersHandlerPtr->mouseEntersControl(mouseMoveEvent);
+			}
 		} else {
 			LOG4CXX_DEBUG(logger, "\tNo control is now under the mouse");
 		}
 		
-		controlWhereMouseHovers = controlUnderTheMouse.controlThatProcessed;
+		controlWhereMouseHovers = searchControlsResult.controlThatProcessed;
 	}
 }
 
