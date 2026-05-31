@@ -64,10 +64,10 @@ void ButtonControl::mouseLeavesButton () {
 	frameColorPtr = renderContextSharedPtr->backgroundColorPtr;
 }
 
-void ButtonControl::MouseEntersButtonHandler::mouseEntersControl (MouseMoveEvent const & mouseMoveEvent) {
+void ButtonControl::MouseEntersButtonHandler::mouseEntersControl () {
 	buttonObj.mouseEntersButton();
 }
-void ButtonControl::MouseLeavesButtonHandler::mouseLeavesControl (MouseMoveEvent const & mouseMoveEvent) {
+void ButtonControl::MouseLeavesButtonHandler::mouseLeavesControl () {
 	buttonObj.mouseLeavesButton();
 }
 	

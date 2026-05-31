@@ -48,7 +48,7 @@ public:
 		MouseEntersButtonHandler& operator = (MouseEntersButtonHandler const &) = delete;
 		MouseEntersButtonHandler& operator = (MouseEntersButtonHandler &&) = delete;
 		
-		virtual void mouseEntersControl (MouseMoveEvent const & mouseMoveEvent) override;
+		virtual void mouseEntersControl () override;
 		
 	private:
 
@@ -78,7 +78,7 @@ public:
 		MouseLeavesButtonHandler& operator = (MouseLeavesButtonHandler const &) = delete;
 		MouseLeavesButtonHandler& operator = (MouseLeavesButtonHandler &&) = delete;
 		
-		virtual void mouseLeavesControl (MouseMoveEvent const & mouseMoveEvent) override;
+		virtual void mouseLeavesControl () override;
 		
 	private:
 

@@ -472,7 +472,7 @@ protected:
 	 */
 	RenderContextSharedPtr renderContextSharedPtr;
 
-	/** \brief Weak pointer to the functor of the mouse enters handler.
+	/** \brief Weak pointer to the mouse enters handler.
 	 * 
 	 * By default it is an empty pointer. A subclass which implements the mouse enter handler will
 	 * set the weak pointer to its own handler which is member of that class. However, the control block
@@ -482,7 +482,7 @@ protected:
 	 */
 	std::weak_ptr<MouseEntersControlEventHandler> mouseEntersHandlerWeakPtr;
 
-	/** \brief Weak pointer to the functor of the mouse leaves handler.
+	/** \brief Weak pointer to the mouse leaves handler.
 	 * 
 	 * By default it is an empty pointer. A subclass which implements the mouse enter handler will
 	 * set the weak pointer to its own handler which is member of that class. However, the control block
@@ -492,7 +492,7 @@ protected:
 	 */
 	std::weak_ptr<MouseLeavesControlEventHandler> mouseLeavesHandlerWeakPtr;
 
-	/** \brief Weak pointer to the functor of the mouse move handler.
+	/** \brief Weak pointer to the mouse move handler.
 	 * 
 	 * By default it is an empty pointer. A subclass which implements the mouse move handler will
 	 * set the weak pointer to its own handler which is member of that class. However, the control block

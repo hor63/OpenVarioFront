@@ -545,6 +545,7 @@ static void printEventType (SDL_Event& event) {
 			break;
 		    
 			case SDL_EVENT_WINDOW_MOVED:
+			std::cout << "SDL event is SDL_EVENT_WINDOW_MOVED" << std::endl;
 			break;
 		    
 			case SDL_EVENT_WINDOW_RESIZED:
@@ -682,7 +683,7 @@ static void printEventType (SDL_Event& event) {
 		    /* Mouse events */
 		    
 			case SDL_EVENT_MOUSE_MOTION:
-			// std::cout << "SDL event is SDL_EVENT_MOUSE_MOTION" << std::endl;
+			std::cout << "SDL event is SDL_EVENT_MOUSE_MOTION" << std::endl;
 			break;
 		    
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:

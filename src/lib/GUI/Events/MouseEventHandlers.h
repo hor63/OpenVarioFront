@@ -63,7 +63,7 @@ public:
 	virtual ~MouseEntersControlEventHandler();
 	
 	/// \brief The mouse cursor entered this control from outside.
-	virtual void mouseEntersControl (MouseMoveEvent const &mouseMoveEvent) = 0;
+	virtual void mouseEntersControl () = 0;
 
 };
 
@@ -81,7 +81,7 @@ public:
 	virtual ~MouseLeavesControlEventHandler();
 	
 	/// \brief The mouse cursor entered this control from outside.
-	virtual void mouseLeavesControl (MouseMoveEvent const &mouseMoveEvent) = 0;
+	virtual void mouseLeavesControl () = 0;
 
 };
 
