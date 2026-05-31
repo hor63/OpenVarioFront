@@ -218,7 +218,12 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 		<< ": event.type = " << event.type);
 
 	switch (event.type) {
+		case SDL_EVENT_WINDOW_SHOWN:
 		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+		case SDL_EVENT_WINDOW_RESIZED:
+		case SDL_EVENT_WINDOW_MAXIMIZED:
+		case SDL_EVENT_WINDOW_RESTORED:
+		case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
 			LOG4CXX_DEBUG(logger, "\tSDL event is SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED");
 			LOG4CXX_DEBUG(logger, "\t Window size changed to " << event.window.data1 
 				<< 'x' << event.window.data2 << " Pixels");
@@ -232,7 +237,16 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 		
 		case SDL_EVENT_MOUSE_MOTION:
 			handleSDLMouseMoveEvent (event.motion);
-		break;
+		case SDL_EVENT_WINDOW_MOUSE_ENTER:
+			// Nothing is to be done here. This event is immediately followed by
+			// a mouse move event which establishes which control is being entered.
+			// This event here does not define where the mouse cursor is positioned now.
+			break;
+		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+			// 
+			break;
+		default:
+			break;
 	} // switch (event.type)
 
 
@@ -305,23 +319,45 @@ void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlM
 				<< previousControlUnderMousePtr->getName() << ':' << previousControlUnderMousePtr->getUuid().getUuidString()
 				<< ".");
 			if (auto mouseLeavesHandlerPtr = previousControlUnderMousePtr->getMouseLeavesHandlerWeakPtr().lock()) {
-				mouseLeavesHandlerPtr->mouseLeavesControl(mouseMoveEvent);
+				mouseLeavesHandlerPtr->mouseLeavesControl();
 			}
 			
-		}
+		} // if (previousControlUnderMousePtr) {
 		if (newControlUnderTheMousePtr) {
 			LOG4CXX_DEBUG(logger, "\tA new control " 
 				<< newControlUnderTheMousePtr->getName() << ':' << newControlUnderTheMousePtr->getUuid().getUuidString()
 				<< " is under the mouse cursor.");
 			if (auto mouseEntersHandlerPtr = newControlUnderTheMousePtr->getMouseEnterFunctorWeakPtr().lock()) {
-				mouseEntersHandlerPtr->mouseEntersControl(mouseMoveEvent);
+				mouseEntersHandlerPtr->mouseEntersControl();
 			}
 		} else {
 			LOG4CXX_DEBUG(logger, "\tNo control is now under the mouse");
-		}
+		} // if (newControlUnderTheMousePtr) {
 		
 		controlWhereMouseHovers = searchControlsResult.controlThatProcessed;
+	} // if (previousControlUnderMousePtr != newControlUnderTheMousePtr) {
+		
+	if (newControlUnderTheMousePtr ) {
+		if (auto mouseMoveHandlerPtr = newControlUnderTheMousePtr->getMouseMoveHandlerWeakPtr().lock()) {
+			mouseMoveHandlerPtr->mouseMoves(mouseMoveEvent);
+		}
 	}
+}
+
+void SDLRenderSurface::handleSDLMouseLeavesSurface (SDL_WindowEvent const &windowEvent) {
+	auto previousControlUnderMousePtr = controlWhereMouseHovers.lock();
+
+	if (previousControlUnderMousePtr) {
+		LOG4CXX_DEBUG(logger, "\tThe mouse cursor left control " 
+			<< previousControlUnderMousePtr->getName() << ':' << previousControlUnderMousePtr->getUuid().getUuidString()
+			<< " as the mouse leaves the surface area.");
+		if (auto mouseLeavesHandlerPtr = previousControlUnderMousePtr->getMouseLeavesHandlerWeakPtr().lock()) {
+			mouseLeavesHandlerPtr->mouseLeavesControl();
+		}
+	}
+	
+	// And now there is no control under the mouse cursor because the cursor left my display surface altogether.
+	controlWhereMouseHovers = std::weak_ptr<OevControls::ControlBase>();
 }
 
 void SDLRenderSurface::onWindowResize() {

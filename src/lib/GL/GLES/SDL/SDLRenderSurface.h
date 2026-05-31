@@ -208,8 +208,22 @@ protected:
 	 * \see \ref baseUniforms how projection and view matrix are calculated by default.
 	 */
 	virtual void calculateViewProjectionMatrix();
-	
+
+	/** \brief Check if the mouse covers a different control; sends enter, level and move events.
+	 *
+	 * Checks if the mouse pointer moves to a different control. If so checks if the controls
+	 * implement \ref OevControls::MouseMoveEventHandler, 
+	 * \ref OevControls::MouseEntersControlEventHandler or
+	 * \ref OevControls::MouseLeavesControlEventHandler. 
+	 * If the weak pointer is valid the handler is being invoked.
+	 *
+	 * \see \ref OevControls::MouseMoveEventHandler
+	 * \see \ref OevControls::MouseEntersControlEventHandler
+	 * \see \ref OevControls::MouseLeavesControlEventHandler
+	 */	
 	void handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlMouseMove);
+	
+	void handleSDLMouseLeavesSurface (SDL_WindowEvent const &windowEvent);
 	
 };
 
