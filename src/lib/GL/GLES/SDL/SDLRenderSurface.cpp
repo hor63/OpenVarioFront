@@ -266,7 +266,8 @@ void SDLRenderSurface::handleSDLMouseMoveEvent (SDL_MouseMotionEvent const &sdlM
 		
 	// A lambda to check if the mouse pointer is over a control.
 	auto isControlUnderTheMousePointer = [&,mouseMoveEvent] (OevControls::ControlBase const * control) -> bool {
-		auto result = control->isPositionWithinControl(mouseMoveEvent.mousePosition);
+		auto result = control->isVisible() &&
+			control->isPositionWithinControl(mouseMoveEvent.mousePosition);
 		
 		LOG4CXX_DEBUG(logger, __PRETTY_FUNCTION__
 			<< "Control " << control->getName() << ':' << control->getUuid().getUuidString()
