@@ -688,10 +688,26 @@ static void printEventType (SDL_Event& event) {
 		    
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			std::cout << "SDL event is SDL_EVENT_MOUSE_BUTTON_DOWN" << std::endl;
+			{
+			auto& mouseButtonEvent = event.button;
+			std::cout << "\tButton No. = " << static_cast<uint32_t>(mouseButtonEvent.button)
+				<< ", number clicks = " << static_cast<uint32_t>(mouseButtonEvent.clicks)
+				<< ", button down = " << mouseButtonEvent.down
+				<< ", position = " << mouseButtonEvent.x << 'x' << mouseButtonEvent.y
+				<< std::endl;
+			}
 			break;
 		    
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 			std::cout << "SDL event is SDL_EVENT_MOUSE_BUTTON_UP" << std::endl;
+			{
+			auto& mouseButtonEvent = event.button;
+			std::cout << "\tButton No. = " << static_cast<uint32_t>(mouseButtonEvent.button)
+				<< ", number clicks = " << static_cast<uint32_t>(mouseButtonEvent.clicks)
+				<< ", button down = " << mouseButtonEvent.down
+				<< ", position = " << mouseButtonEvent.x << 'x' << mouseButtonEvent.y
+				<< std::endl;
+			}
 			break;
 		    
 			case SDL_EVENT_MOUSE_WHEEL:
