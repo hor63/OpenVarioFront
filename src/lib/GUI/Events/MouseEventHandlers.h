@@ -85,6 +85,23 @@ public:
 
 };
 
+/** \brief Abstract/pure virtual handler when the mouse pointer Leaves a control
+ * 
+ * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
+ * when it figures that the mouse cursor entered a control 
+ *
+ * This is a pure virtual class. It must be overloaded.
+ *
+ */
+class MouseButtonDownEventHandler {
+public:
+	MouseButtonDownEventHandler() {}
+	virtual ~MouseButtonDownEventHandler();
+	
+	/// \brief The mouse cursor entered this control from outside.
+	virtual void mouseButtonDown () = 0;
+
+};
 
 } /* namespace OevControls */
 
