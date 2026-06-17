@@ -41,6 +41,10 @@ public:
 
 	/** \brief An SDL mouse moved within this control
 	 *
+	 *
+	 * \param mouseMoveEvent Event structure with the original SDL mouse move event
+	 *		and coordinates converted to the GL coordinates.
+	 *
 	 * \return	\p true when the handler deal with the event finally.
 	 * 			\p false when the handler did not handle the event.
 	 *					In this case the caller needs to raise the event
@@ -67,7 +71,7 @@ public:
 
 };
 
-/** \brief Abstract/pure virtual handler when the mouse pointer Leaves a control
+/** \brief Abstract/pure virtual handler when the mouse pointer leaves a control
  * 
  * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
  * when it figures that the mouse cursor entered a control 
@@ -80,12 +84,12 @@ public:
 	MouseLeavesControlEventHandler() {}
 	virtual ~MouseLeavesControlEventHandler();
 	
-	/// \brief The mouse cursor entered this control from outside.
+	/// \brief The mouse cursor left this control.
 	virtual void mouseLeavesControl () = 0;
 
 };
 
-/** \brief Abstract/pure virtual handler when the mouse pointer Leaves a control
+/** \brief Abstract/pure virtual handler when mouse button is being pressed.
  * 
  * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
  * when it figures that the mouse cursor entered a control 
@@ -98,10 +102,65 @@ public:
 	MouseButtonDownEventHandler() {}
 	virtual ~MouseButtonDownEventHandler();
 	
-	/// \brief The mouse cursor entered this control from outside.
-	virtual void mouseButtonDown () = 0;
+	/** \brief A mouse button was pressed.
+	 *
+	 * Get the button which was pressed from SDL_MouseButtonEvent::button.
+	 * 
+	 *  \note The button index SDL_MouseButtonEvent::button conforms to the bit mask constants
+	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
+	 */
+	virtual void mouseButtonDown (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
 
 };
+
+/** \brief Abstract/pure virtual handler when mouse button is being pressed.
+ * 
+ * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
+ * when it figures that the mouse cursor entered a control 
+ *
+ * This is a pure virtual class. It must be overloaded.
+ *
+ */
+class MouseButtonUpEventHandler {
+public:
+	MouseButtonUpEventHandler() {}
+	virtual ~MouseButtonUpEventHandler();
+	
+	/** \brief A mouse button was released.
+	 *
+	 * Get the button which was released from SDL_MouseButtonEvent::button.
+	 * 
+	 *  \note The button index SDL_MouseButtonEvent::button conforms to the bit mask constants
+	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
+	 */
+	virtual void mouseButtonUp (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
+
+};
+
+/** \brief Abstract/pure virtual handler when a single click on a control occurred.
+ * 
+ * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
+ * when it figures that the mouse cursor entered a control 
+ *
+ * This is a pure virtual class. It must be overloaded.
+ *
+ */
+class MouseSingleKlickEventHandler {
+public:
+	MouseSingleKlickEventHandler() {}
+	virtual ~MouseSingleKlickEventHandler();
+	
+	/** \brief The control was single-clicked.
+	 *
+	 * Get the button which clicked from SDL_MouseButtonEvent::button.
+	 * 
+	 *  \note The button index SDL_MouseButtonEvent::button conforms to the bit mask constants
+	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
+	 */
+	virtual void mouseSingleClick (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
+
+};
+
 
 } /* namespace OevControls */
 

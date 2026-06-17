@@ -42,17 +42,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1166382612.676208016" name="/" resourcePath="src/lib">
-						<toolChain id="org.eclipse.linuxtools.cdt.autotools.core.toolChain.679749907" name="GNU Autotools Toolchain" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolChain" unusedChildren="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc">
-							<tool id="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure.611760823" name="configure" superClass="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure.216624458"/>
-							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.1160605220" name="autogen.sh" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.1261550321"/>
-							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.952747404" name="GCC C++ Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.867208401"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="3rdParty/SDL/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="3rdParty/pango/pango"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="3rdParty/pango/subprojects/harfbuzz/src"/>
 						<entry excluding="SDL/acinclude/|SDL/android-project/|SDL/android-project-ant/|SDL/autom4te.cache/|SDL/build-scripts/|SDL/cmake/|SDL/docs/|SDL/mingw/|SDL/test/|SDL/VisualC/|SDL/VisualC-GDK/|SDL/VisualC-WinRT/|SDL/visualtest/|SDL/Xcode/|SDL/Xcode-iOS/" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
