@@ -139,10 +139,10 @@ public:
 
 /** \brief Abstract/pure virtual handler when a single click on a control occurred.
  * 
- * It is fired by a \ref MouseMoveEventHandler for a \ref ControlsContainer
- * when it figures that the mouse cursor entered a control 
- *
- * This is a pure virtual class. It must be overloaded.
+ * A single click event is fired when 
+ *	- a mouse button up event is received for the same control that received the previous mouse button down event
+ *	- for the same button as the previous mouse button down event
+  *	- and SDL_MouseButtonEvent::clicks == 1.
  *
  */
 class MouseSingleKlickEventHandler {
@@ -158,6 +158,34 @@ public:
 	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
 	 */
 	virtual void mouseSingleClick (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
+
+};
+
+/** \brief Abstract/pure virtual handler when a double-click on a control occurred.
+ * 
+ * A double click event is fired when 
+ *	- a mouse button up event is received for the same control that received the previous mouse button down event
+ *	- for the same button as the previous mouse button down event
+ *	- for the same control which received the previous single click event.
+ *	- and SDL_MouseButtonEvent::clicks == 2.
+ 
+ *	\note Only exact double-clicks will cause a double-click event. Any more clicks in quick succession will be ignored.
+ *	only a break between multi-clicks which is longer then the multi-click threshold time will reset the click count.
+ *
+ */
+class MouseDoubleKlickEventHandler {
+public:
+	MouseDoubleKlickEventHandler() {}
+	virtual ~MouseDoubleKlickEventHandler();
+	
+	/** \brief The control was double-clicked.
+	 *
+	 * Get the button which clicked from SDL_MouseButtonEvent::button.
+	 * 
+	 *  \note The button index SDL_MouseButtonEvent::button conforms to the bit mask constants
+	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
+	 */
+	virtual void mouseDoubleClick (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
 
 };
 
