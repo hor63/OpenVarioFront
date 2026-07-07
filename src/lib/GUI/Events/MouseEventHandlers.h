@@ -170,7 +170,7 @@ public:
  *	- and SDL_MouseButtonEvent::clicks == 2.
  
  *	\note Only exact double-clicks will cause a double-click event. Any more clicks in quick succession will be ignored.
- *	only a break between multi-clicks which is longer then the multi-click threshold time will reset the click count.
+ *	Only a break between multi-clicks which is longer then the multi-click threshold time will reset the click count.
  *
  */
 class MouseDoubleKlickEventHandler {
