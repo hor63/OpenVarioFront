@@ -74,6 +74,7 @@ RootControl::RootControl(ControlsContainerWeakPtr const &parent,
 		if (!logger) {
 			logger = log4cxx::Logger::getLogger("OpenVarioFront.Controls.RootControl");
 		}
+#endif
 
 	auto parentPtr = this->getParent().lock();
 	
@@ -81,7 +82,6 @@ RootControl::RootControl(ControlsContainerWeakPtr const &parent,
 		<< ": this = " << reinterpret_cast<void const*>(this)
 		<< ": parent = " << reinterpret_cast<void const*>(parentPtr.get())
 		);
-#endif
 
 	// Overwrite the absolute position, and set it to 0,0 unconditionally.
 	// ControlBase copies the parent position. However, the root control's

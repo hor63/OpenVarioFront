@@ -197,9 +197,11 @@ void JpegReader::readImageToTexture(TextureData &textureData) {
 		jpegInfo.err->error_exit = JpegReader::jpegErrorExit;
 		jpegInfo.err->emit_message = JpegReader::jpegEmitMessage;
 		jpegInfo.err->output_message = JpegReader::jpegOutputMessage;
+#if defined HAVE_LOG4CXX_H
 		if (logger->isTraceEnabled()) {
 			jpegInfo.err->trace_level = 5;
 		}
+#endif
 
 		jpeg_create_decompress(&jpegInfo);
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "Created decompress struct.");
@@ -398,9 +400,11 @@ bool JpegReader::checkImageValidity () {
 		jpegInfo.err->error_exit = JpegReader::jpegErrorExit;
 		jpegInfo.err->emit_message = JpegReader::jpegEmitMessage;
 		jpegInfo.err->output_message = JpegReader::jpegOutputMessage;
+#if defined HAVE_LOG4CXX_H
 		if (logger->isTraceEnabled()) {
 			jpegInfo.err->trace_level = 5;
 		}
+#endif
 
 		jpeg_create_decompress(&jpegInfo);
 		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "Created decompress struct.");

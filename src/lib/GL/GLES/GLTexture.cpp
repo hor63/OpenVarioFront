@@ -90,6 +90,7 @@ void GLTexture::createTextureHandle() {
 
 		glGenTextures(1,&textureHandle);
 
+#if defined HAVE_LOG4CXX_H
 		if (logger->isDebugEnabled()) {
 			glError = glGetError();
 			while (glError!= GL_NO_ERROR) {
@@ -98,6 +99,7 @@ void GLTexture::createTextureHandle() {
 			}
 
 		}
+#endif
 
 		if (textureHandle == 0) {
 			throw TextureException("glGenTextures did not return a valid texture handle");
@@ -121,6 +123,7 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": textureHandle = " << textureHandle);
 
 	glBindTexture(GL_TEXTURE_2D,textureHandle);
+#if defined HAVE_LOG4CXX_H
 	if (logger->isDebugEnabled()) {
 		glError = glGetError();
 		while (glError!= GL_NO_ERROR) {
@@ -129,6 +132,7 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 		}
 
 	}
+#endif
 
 	//
 	if (textureData.getWidth() & 1) {
@@ -151,6 +155,7 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 	glGetIntegerv(GL_UNPACK_ALIGNMENT,&orgUnPackAlignment);
 
 	glPixelStorei(GL_PACK_ALIGNMENT,packAlignment);
+#if defined HAVE_LOG4CXX_H
 	if (logger->isDebugEnabled()) {
 		glError = glGetError();
 		while (glError!= GL_NO_ERROR) {
@@ -159,7 +164,10 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 		}
 
 	}
+#endif
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT,packAlignment);
+#if defined HAVE_LOG4CXX_H
 	if (logger->isDebugEnabled()) {
 		glError = glGetError();
 		while (glError!= GL_NO_ERROR) {
@@ -168,6 +176,8 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 		}
 
 	}
+#endif
+
 	glTexImage2D(
 			GL_TEXTURE_2D,
 			mipMapLevel,
@@ -179,6 +189,7 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 			textureData.getDataType(),
 			textureData.getDataPtr()
 			);
+#if defined HAVE_LOG4CXX_H
 	if (logger->isDebugEnabled()) {
 		glError = glGetError();
 		while (glError!= GL_NO_ERROR) {
@@ -187,6 +198,7 @@ void GLTexture::setTextureData(const TextureData& textureData, GLint mipMapLevel
 		}
 
 	}
+#endif
 	LOG4CXX_DEBUG(logger,"\t call glTexImage2D (target=" << std::hex << GL_TEXTURE_2D << std::dec
 			<< ", level="<< mipMapLevel
 			<< ", internalformat=0x" << std::hex << textureData.getGlFormat() << std::dec
