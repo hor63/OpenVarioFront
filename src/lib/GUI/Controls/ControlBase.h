@@ -66,6 +66,10 @@ using SizePixel = OevGLES::SizePixel;
 class MouseEntersControlEventHandler;
 class MouseLeavesControlEventHandler;
 class MouseMoveEventHandler;
+class MouseButtonDownEventHandler;
+class MouseButtonUpEventHandler;
+class MouseSingleKlickEventHandler;
+class MouseDoubleKlickEventHandler;
 
 class ControlBase /*: public OevGLES::RendererBase*/ {
 public:
@@ -479,6 +483,7 @@ protected:
 	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted 
 	 * \p mouseEntersHandlerWeakPtr becomes invalid too.
 	 * 
+	 * \see MouseEntersControlEventHandler
 	 */
 	std::weak_ptr<MouseEntersControlEventHandler> mouseEntersHandlerWeakPtr;
 
@@ -489,6 +494,7 @@ protected:
 	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted
 	 * \p mouseLeavesHandlerWeakPtr becomes invalid too.
 	 * 
+	 * \see MouseLeavesControlEventHandler
 	 */
 	std::weak_ptr<MouseLeavesControlEventHandler> mouseLeavesHandlerWeakPtr;
 
@@ -501,6 +507,51 @@ protected:
 	 * 
 	 */
 	std::weak_ptr<MouseMoveEventHandler> mouseMoveHandlerWeakPtr;
+	
+	/** \brief Weak pointer to the mouse button down handler.
+	 * 
+	 * By default it is an empty pointer. A subclass which implements the mouse move handler will
+	 * set the weak pointer to its own handler which is member of that class. However, the control block
+	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted
+	 * \p mouseButtonDownHandlerWeakPtr becomes invalid too.
+	 * 
+	 * \see MouseButtonDownEventHandler
+	 */
+	std::weak_ptr<MouseButtonDownEventHandler> mouseButtonDownHandlerWeakPtr;
+
+	/** \brief Weak pointer to the mouse button up handler.
+	 * 
+	 * By default it is an empty pointer. A subclass which implements the mouse move handler will
+	 * set the weak pointer to its own handler which is member of that class. However, the control block
+	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted
+	 * \p mouseButtonUpHandlerWeakPtr becomes invalid too.
+	 * 
+	 * \see MouseButtonUpEventHandler
+	 */
+	std::weak_ptr<MouseButtonUpEventHandler> mouseButtonUpHandlerWeakPtr;
+	
+	/** \brief Weak pointer to the mouse single click handler.
+	 * 
+	 * By default it is an empty pointer. A subclass which implements the mouse move handler will
+	 * set the weak pointer to its own handler which is member of that class. However, the control block
+	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted
+	 * \p mouseSingleKlickHandler becomes invalid too.
+	 * 
+	 * \see MouseSingleKlickEventHandler
+	 */
+	std::weak_ptr<MouseSingleKlickEventHandler> mouseSingleKlickHandler;
+
+	/** \brief Weak pointer to the mouse double click handler.
+	 * 
+	 * By default it is an empty pointer. A subclass which implements the mouse move handler will
+	 * set the weak pointer to its own handler which is member of that class. However, the control block
+	 * of the weak pointer is the same as \ref pointerToSelf, i.e. when the object gets deleted
+	 * \p mouseDoubleKlickHandler becomes invalid too.
+	 * 
+	 * \see MouseDoubleKlickEventHandler
+	 */
+	std::weak_ptr<MouseDoubleKlickEventHandler> mouseDoubleKlickHandler;
+
 };
 
 template <typename ControlType>
