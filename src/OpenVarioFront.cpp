@@ -847,12 +847,14 @@ static void printEventType (SDL_Event& event) {
 static bool handleSLEDvent (SDL_Event& event,OevGLES::GLFramework &framework) {
 
 	printEventType (event);
-	framework.handleSdlEvent(event);
 	
 	if (event.type == SDL_EVENT_QUIT) {
 		return false;
 	}
-	
+
+	return framework.handleSdlEvent(event);
+
+/*		
 	if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
 		auto windowID = event.button.windowID;
 		auto renderSurfacePtr = 
@@ -896,7 +898,7 @@ static bool handleSLEDvent (SDL_Event& event,OevGLES::GLFramework &framework) {
 			<< "text = " << event.text.text
 			<< std::endl;
 	}
-	
+*/	
 	return true;
 }
 

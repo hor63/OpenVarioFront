@@ -34,6 +34,7 @@
 #include "Controls/RootControl.h"
 
 #include "GLES/GLFramework.h"
+#include "SDL3/SDL_events.h"
 #include "SDLUtil.h"
 #include "Renderers/RenderContext.h"
 #include "GLTextRender/GLTextGlobals.h"
@@ -246,6 +247,17 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 			break;
 		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
 			// 
+			break;
+			
+		case 	SDL_EVENT_KEY_DOWN:
+			{
+				auto& keyEvent = event.key;
+				
+				if (keyEvent.key == SDLK_Q) {
+					// Quit the program
+					return false;
+				}
+			}
 			break;
 		default:
 			break;
