@@ -246,7 +246,7 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 			// This event here does not define where the mouse cursor is positioned now.
 			break;
 		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
-			// 
+			handleSDLMouseLeavesSurface (event.window);
 			break;
 			
 		case 	SDL_EVENT_KEY_DOWN:
