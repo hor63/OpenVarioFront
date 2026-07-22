@@ -47,7 +47,7 @@ template <GLboolean destBlendFlag = GL_TRUE,
 		GLint destFuncSRGB = GL_SRC_ALPHA,
 		GLint destFuncDRGB = GL_ONE_MINUS_SRC_ALPHA,
 		GLint destFuncSAlpha = GL_ONE,
-		GLint destFuncDAlpha = GL_ZERO,
+		GLint destFuncDAlpha = GL_ONE,
 
 		GLint destEquationRGB = GL_FUNC_ADD,
 		GLint destEquationAlpha = GL_FUNC_ADD
@@ -145,7 +145,7 @@ private:
 using BlendAttributeSetRestoreStd =
 		BlendAttributeSetRestore<
 			GL_TRUE,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA,GL_ONE,
-			GL_ZERO,GL_FUNC_ADD,GL_FUNC_ADD>;
+			GL_ONE,GL_FUNC_ADD,GL_FUNC_ADD>;
 
 /** \brief Holds the standard vectors and matrixes commonly used as uniforms for
 	rendering stuff, particular for \ref RendererBase::draw().
