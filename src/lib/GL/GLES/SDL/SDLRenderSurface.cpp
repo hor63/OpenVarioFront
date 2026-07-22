@@ -249,6 +249,10 @@ bool SDLRenderSurface::handleSLEDvent (SDL_Event& event) {
 			handleSDLMouseLeavesSurface (event.window);
 			break;
 			
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		case SDL_EVENT_MOUSE_BUTTON_UP:
+			handleSDLMouseButtonEvent(event.button);
+			break;
 		case 	SDL_EVENT_KEY_DOWN:
 			{
 				auto& keyEvent = event.key;
@@ -373,6 +377,124 @@ void SDLRenderSurface::handleSDLMouseLeavesSurface (SDL_WindowEvent const &windo
 	
 	// And now there is no control under the mouse cursor because the cursor left my display surface altogether.
 	controlWhereMouseHovers = std::weak_ptr<OevControls::ControlBase>();
+}
+
+void SDLRenderSurface::handleSDLMouseButtonEvent (SDL_MouseButtonEvent const& sdlMouseButtonEvent) {
+
+	LOG4CXX_DEBUG(logger,"Mouse button " 
+		<< (sdlMouseButtonEvent.down ? "down":"up")
+		<< ", button index = " << static_cast<int>(sdlMouseButtonEvent.button)
+		<< ", # clicks = " << static_cast<int>(sdlMouseButtonEvent.clicks)
+	);
+
+	// I only accept the three standard buttons
+	if (sdlMouseButtonEvent.button > MaxMouseButtonIndex || sdlMouseButtonEvent.button == 0) {
+		return;
+	}
+
+	if (sdlMouseButtonEvent.down) {
+		handleSDLMouseButtonDownEvent(sdlMouseButtonEvent);
+	} else {
+		switch (sdlMouseButtonEvent.clicks) {
+			case 1:
+				handleSDLMouseButtonSingleUpEvent (sdlMouseButtonEvent);
+				break;
+			case 2:
+				handleSDLMouseButtonDoubleUpEvent (sdlMouseButtonEvent);
+				break;
+			default:
+				// Just reset the previous button down control
+				controlLastMouseDown[sdlMouseButtonEvent.button - 1] = std::weak_ptr<OevControls::ControlBase>();
+		}
+	}
+}
+
+void SDLRenderSurface::handleSDLMouseButtonDownEvent (SDL_MouseButtonEvent const& sdlMouseButtonEvent) {
+	
+	#if defined HAVE_LOG4CXX_H
+	if (logger->isDebugEnabled()) {
+		auto previousControlUnderMousePtr = controlWhereMouseHovers.lock();
+	
+		if (previousControlUnderMousePtr) {
+			LOG4CXX_DEBUG(logger, "Button down under control " 
+				<< previousControlUnderMousePtr->getName() << ':' << previousControlUnderMousePtr->getUuid().getUuidString()
+				);
+		}
+	}
+	#endif // if defined HAVE_LOG4CXX_H
+
+	// just remember the control.
+	controlLastMouseDown[sdlMouseButtonEvent.button - 1] = controlWhereMouseHovers;
+
+}
+
+void SDLRenderSurface::handleSDLMouseButtonSingleUpEvent (SDL_MouseButtonEvent const& sdlMouseButtonEvent) {
+	auto previousControlUnderMousePtr = controlWhereMouseHovers.lock();
+	auto controlButtonDown = controlLastMouseDown[sdlMouseButtonEvent.button - 1].lock();
+
+
+	if (previousControlUnderMousePtr) {
+		LOG4CXX_DEBUG(logger, "Button Up under control " 
+			<< previousControlUnderMousePtr->getName() << ':' << previousControlUnderMousePtr->getUuid().getUuidString()
+			);
+		if (previousControlUnderMousePtr == controlButtonDown) {
+			// The mouse button was released under the same control as the one where it was pressed.
+			LOG4CXX_DEBUG(logger, "This was a valid click." );
+			
+			// Remember the button for double-click evaluation
+			controlLastSingleClick[sdlMouseButtonEvent.button - 1] = previousControlUnderMousePtr;
+
+			if (auto singleClickHandler = previousControlUnderMousePtr->getMouseSingleKlickHandler().lock()) {
+				singleClickHandler->mouseSingleClick(sdlMouseButtonEvent);
+			}
+
+		} else {
+			LOG4CXX_DEBUG(logger, "Button was released under a different control." );
+			// Reset the previous single clicked control.
+			controlLastSingleClick[sdlMouseButtonEvent.button - 1] = std::weak_ptr<OevControls::ControlBase>();
+		}
+	} else {
+		LOG4CXX_DEBUG(logger, "The button had been pressed outside the application window." );
+		// Reset the previous single clicked control.
+		controlLastSingleClick[sdlMouseButtonEvent.button - 1] = std::weak_ptr<OevControls::ControlBase>();
+	}
+	
+	// Reset the previous button down control since the button is now released.
+	controlLastMouseDown[sdlMouseButtonEvent.button - 1] = std::weak_ptr<OevControls::ControlBase>();
+
+}
+
+void SDLRenderSurface::handleSDLMouseButtonDoubleUpEvent (SDL_MouseButtonEvent const& sdlMouseButtonEvent) {
+	auto previousControlUnderMousePtr = controlWhereMouseHovers.lock();
+	auto controlButtonDown = controlLastMouseDown[sdlMouseButtonEvent.button - 1].lock();
+	auto controlSingleClick = controlLastSingleClick[sdlMouseButtonEvent.button - 1].lock();
+
+
+	if (previousControlUnderMousePtr) {
+		LOG4CXX_DEBUG(logger, "Button Up under control " 
+			<< previousControlUnderMousePtr->getName() << ':' << previousControlUnderMousePtr->getUuid().getUuidString()
+			);
+		if (previousControlUnderMousePtr == controlSingleClick &&
+			previousControlUnderMousePtr == controlButtonDown) {
+			// The mouse button was released under the same control as the one where it was pressed.
+			// and the same one as 
+			LOG4CXX_DEBUG(logger, "This was a valid double-click." );
+			
+			if (auto doubleClickHandler = previousControlUnderMousePtr->getMouseDoubleKlickHandler().lock()) {
+				doubleClickHandler->mouseDoubleClick(sdlMouseButtonEvent);
+			}
+
+		} else {
+			LOG4CXX_DEBUG(logger, "Button was released under a different control." );
+		}
+	} else {
+		LOG4CXX_DEBUG(logger, "The button had been pressed outside the application window." );
+	}
+
+	// Reset the previous button down control since the button is now released.
+	controlLastMouseDown[sdlMouseButtonEvent.button - 1] = std::weak_ptr<OevControls::ControlBase>();
+	// and the previous single clicked control.
+	controlLastSingleClick[sdlMouseButtonEvent.button - 1] = std::weak_ptr<OevControls::ControlBase>();
 }
 
 void SDLRenderSurface::onWindowResize() {

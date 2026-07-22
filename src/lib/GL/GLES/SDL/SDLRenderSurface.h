@@ -37,6 +37,7 @@
 #include "Renderers/RendererBase.h"
 #include "GLES/sysSDLWindow.h"
 #include "GLES/GLFramework.h"
+#include "SDL3/SDL_events.h"
 
 // Forward declaration
 struct SDL_GLContextState;
@@ -71,6 +72,14 @@ class GLFramework;
 class SDLRenderSurface {
 	friend class GLFramework;
 public:
+
+	/** \brief Only left, middle and right mouse buttons are supported.
+	 *
+	 * Button indexes are a 1,2,3 in the SDL event.
+	 *
+	 * Any other button click will be ignored.
+	 */
+	static constexpr uint32_t MaxMouseButtonIndex = 3;
 
 	virtual ~SDLRenderSurface();
 
@@ -153,6 +162,33 @@ protected:
 	/// \brief When valid the mouse pointer hovers of the referenced control.
 	std::weak_ptr<OevControls::ControlBase> controlWhereMouseHovers;
 	
+	/** \brief When valid the control that received the last button down event
+	 *
+	 *	Used to determine if a valid mouse click event happened on one control.
+	 *
+	 *	This is an array. The index indicates the mouse button which was pressed:
+	 *		0. Left button
+	 *		1. Middle button
+	 *		2. Right button
+	 *
+	 * \see For conditions for a single click event see \ref MouseSingleKlickEventHandler
+	 */
+	std::array<std::weak_ptr<OevControls::ControlBase>,MaxMouseButtonIndex> controlLastMouseDown;
+
+	/** \brief When valid the control that received the last single-click event
+	 *
+	 * Used to determine if a double-click happened on the same control as the
+	 * last single click event.
+	 *
+	 *	This is an array. The index indicates the mouse button which was pressed:
+	 *		0. Left button
+	 *		1. Middle button
+	 *		2. Right button
+	 *
+	 * \see For conditions for a double click event see \ref MouseDoubleKlickEventHandler
+	 */ 
+	std::array<std::weak_ptr<OevControls::ControlBase>,MaxMouseButtonIndex> controlLastSingleClick;
+	
 	/** \brief Base set of render uniforms
 	 * 
 	 * Default values are:
@@ -225,6 +261,10 @@ protected:
 	
 	void handleSDLMouseLeavesSurface (SDL_WindowEvent const &windowEvent);
 	
+	void handleSDLMouseButtonEvent (SDL_MouseButtonEvent const& sdlMouseButtonEvent);
+	void handleSDLMouseButtonDownEvent (SDL_MouseButtonEvent const& sdlMouseButtonEvent);
+	void handleSDLMouseButtonSingleUpEvent (SDL_MouseButtonEvent const& sdlMouseButtonEvent);
+	void handleSDLMouseButtonDoubleUpEvent (SDL_MouseButtonEvent const& sdlMouseButtonEvent);
 };
 
 // using SDLRenderSurfaceSharedPtr = std::shared_ptr<SDLRenderSurface>;

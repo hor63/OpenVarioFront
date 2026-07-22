@@ -109,7 +109,7 @@ public:
 	 *  \note The button index SDL_MouseButtonEvent::button conforms to the bit mask constants
 	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
 	 */
-	virtual void mouseButtonDown (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
+	virtual void mouseButtonDown (SDL_MouseButtonEvent const &mouseButtonEvent) = 0;
 
 };
 
@@ -133,7 +133,7 @@ public:
 	 *  \note The button index SDL_MouseButtonEvent::button conforms to the bit mask constants
 	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
 	 */
-	virtual void mouseButtonUp (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
+	virtual void mouseButtonUp (SDL_MouseButtonEvent const &mouseButtonEvent) = 0;
 
 };
 
@@ -157,7 +157,7 @@ public:
 	 *  \note The button index SDL_MouseButtonEvent::button conforms to the bit mask constants
 	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
 	 */
-	virtual void mouseSingleClick (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
+	virtual void mouseSingleClick (SDL_MouseButtonEvent const &mouseButtonEvent) = 0;
 
 };
 
@@ -185,7 +185,7 @@ public:
 	 *  \note The button index SDL_MouseButtonEvent::button conforms to the bit mask constants
 	 *  SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE and SDL_BUTTON_RIGHT
 	 */
-	virtual void mouseDoubleClick (SDL_MouseButtonEvent &mouseButtonEvent) = 0;
+	virtual void mouseDoubleClick (SDL_MouseButtonEvent const &mouseButtonEvent) = 0;
 
 };
 

@@ -289,18 +289,38 @@ public:
 		
 
 	/// \see mouseEntersHandlerWeakPtr
-	std::weak_ptr<MouseEntersControlEventHandler> const & getMouseEnterFunctorWeakPtr () const {
+	std::weak_ptr<MouseEntersControlEventHandler> getMouseEnterFunctorWeakPtr () const {
 		return mouseEntersHandlerWeakPtr;
 	}
 
 	/// \see mouseLeavesHandlerWeakPtr
-	std::weak_ptr<MouseLeavesControlEventHandler> getMouseLeavesHandlerWeakPtr () {
+	std::weak_ptr<MouseLeavesControlEventHandler> getMouseLeavesHandlerWeakPtr () const {
 		return mouseLeavesHandlerWeakPtr;
 	}
 	
 	/// \see mouseMoveHandlerWeakPtr
-	std::weak_ptr<MouseMoveEventHandler> getMouseMoveHandlerWeakPtr () {
+	std::weak_ptr<MouseMoveEventHandler> getMouseMoveHandlerWeakPtr () const {
 		return mouseMoveHandlerWeakPtr;
+	}
+
+	/// \see mouseButtonDownHandlerWeakPtr
+	std::weak_ptr<MouseButtonDownEventHandler> getMouseButtonDownHandlerWeakPtr () const {
+		return mouseButtonDownHandlerWeakPtr;
+	}
+
+	/// \see mouseButtonUpHandlerWeakPtr
+	std::weak_ptr<MouseButtonUpEventHandler> getMouseButtonUpHandlerWeakPtr () const {
+		return mouseButtonUpHandlerWeakPtr;
+	}
+
+	/// \see mouseSingleKlickHandler
+	std::weak_ptr<MouseSingleKlickEventHandler> getMouseSingleKlickHandler () const {
+		return mouseSingleKlickHandler;
+	}
+
+	/// \see mouseDoubleKlickHandler
+	std::weak_ptr<MouseDoubleKlickEventHandler> getMouseDoubleKlickHandler () const {
+		return mouseDoubleKlickHandler;
 	}
 
 	/** \brief Recalculate the modelMatrix \ref renderUniforms.
