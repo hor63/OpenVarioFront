@@ -1185,14 +1185,9 @@ void GLTextRenderer::draw(RenderStandardUniforms const &stdUniformData) {
 	GLint depthFuncBackup = GL_LESS;
 	glGetIntegerv(GL_DEPTH_FUNC,&depthFuncBackup);
 	glDepthFunc(GL_LEQUAL);
-	
-	// All text and trapezoids are drawn transparent
-	{
-		auto blendAttrs = std::make_unique<BlendAttributeSetRestoreStd>();
 
-		drawTrapezoids (stdUniformData.getMVPMatrixC());
-		drawGlyphs(stdUniformData.getMVPMatrixC());
-	}
+	drawTrapezoids (stdUniformData.getMVPMatrixC());
+	drawGlyphs(stdUniformData.getMVPMatrixC());
 
 	glDepthFunc(depthFuncBackup);
 
